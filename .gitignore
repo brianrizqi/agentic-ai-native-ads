@@ -1,0 +1,86 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Data files (besar)
+data/llm_dataset_*.json
+data/llm_dataset_*.jsonl
+data/batch_results*.json
+data/training_data*.json
+data/feedback/
+data/vector_db/
+
+# Dataset asli (opsional, uncomment jika tidak ingin di-commit)
+# native_ads_dataset.xlsx
+
+# Model cache
+.cache/
+models/
+*.pth
+*.pt
+*.bin
+*.safetensors
+
+# Sentence Transformers cache
+~/.cache/torch/sentence_transformers/
+
+# API Keys & Secrets
+.env
+config_local.json
+*_api_key.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Test results
+test_results/
+*.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+temp/
+tmp/
+
+# OS
+Thumbs.db
+.DS_Store

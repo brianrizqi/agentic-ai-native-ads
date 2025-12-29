@@ -1,0 +1,20 @@
+[
+  {
+    "true_label": "native ads",
+    "predicted_label": "general",
+    "confidence": 0.6,
+    "correct": false
+  },
+  {
+    "true_label": "berita murni",
+    "predicted_label": "general",
+    "confidence": 0.6,
+    "correct": false
+  },
+  {
+    "true_label": "berita murni",
+    "predicted_label": "general",
+    "confidence": 0.6,
+    "correct": false
+  }
+]

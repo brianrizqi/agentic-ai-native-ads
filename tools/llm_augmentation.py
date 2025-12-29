@@ -1,0 +1,268 @@
+"""
+LLM Data Augmentation
+Menggunakan LLM gratis untuk meng-augment dataset dengan generate:
+- Pertanyaan yang bervariasi
+- Penjelasan yang lebih detail
+- Reasoning chains
+"""
+
+import pandas as pd
+import json
+from pathlib import Path
+from typing import List, Dict
+import time
+
+
+class LLMAugmenter:
+    """
+    Augment dataset menggunakan LLM gratis (Groq, Ollama, HuggingFace).
+    """
+    
+    def __init__(self, llm_provider: str = 'groq'):
+        """
+        Initialize augmenter.
+        
+        Args:
+            llm_provider: 'groq', 'ollama', atau 'huggingface'
+        """
+        self.llm_provider = llm_provider
+        self.client = self._initialize_llm()
+    
+    def _initialize_llm(self):
+        """Initialize LLM client berdasarkan provider."""
+        
+        if self.llm_provider == 'groq':
+            try:
+                from groq import Groq
+                # Groq API key gratis: https://console.groq.com
+                api_key = input("Enter Groq API key (gratis dari console.groq.com): ").strip()
+                client = Groq(api_key=api_key)
+                print("✓ Groq client initialized")
+                return client
+            except ImportError:
+                print("Install groq: pip install groq")
+                return None
+        
+        elif self.llm_provider == 'ollama':
+            try:
+                import ollama
+                print("✓ Ollama client initialized (pastikan Ollama running)")
+                return ollama
+            except ImportError:
+                print("Install ollama: pip install ollama")
+                return None
+        
+        elif self.llm_provider == 'huggingface':
+            try:
+                from transformers import pipeline
+                print("Loading HuggingFace model...")
+                client = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta")
+                print("✓ HuggingFace client initialized")
+                return client
+            except ImportError:
+                print("Install transformers: pip install transformers torch")
+                return None
+        
+        return None
+    
+    def generate_questions(self, content: str, label: str, num_questions: int = 3) -> List[str]:
+        """
+        Generate variasi pertanyaan untuk satu sample.
+        
+        Args:
+            content: Konten artikel
+            label: Label (native_ads, editorial, dll)
+            num_questions: Jumlah pertanyaan yang di-generate
+        
+        Returns:
+            List of questions
+        """
+        
+        prompt = f"""Generate {num_questions} different questions in Indonesian that could be asked about this article to determine if it's native advertising or editorial content.
+
+Article excerpt: {content[:300]}
+Label: {label}
+
+Generate questions that vary in:
+- Directness (direct vs indirect)
+- Specificity (general vs specific)
+- Focus (content analysis, intent detection, classification)
+
+Return only the questions, one per line."""
+        
+        if self.llm_provider == 'groq':
+            response = self.client.chat.completions.create(
+                model="mixtral-8x7b-32768",  # Gratis dan bagus
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.8,
+                max_tokens=500
+            )
+            questions_text = response.choices[0].message.content
+        
+        elif self.llm_provider == 'ollama':
+            response = self.client.generate(
+                model="llama2",  # atau "mistral"
+                prompt=prompt
+            )
+            questions_text = response['response']
+        
+        else:
+            # Fallback: template-based
+            questions_text = self._generate_template_questions(label)
+        
+        # Parse questions
+        questions = [q.strip() for q in questions_text.split('\n') if q.strip() and '?' in q]
+        return questions[:num_questions]
+    
+    def generate_explanation(self, content: str, label: str) -> str:
+        """
+        Generate penjelasan detail mengapa konten diklasifikasikan sebagai label tertentu.
+        """
+        
+        prompt = f"""Analyze this article and explain in detail (in Indonesian) why it should be classified as "{label}".
+
+Article: {content[:500]}
+
+Provide:
+1. Classification reasoning
+2. Key indicators found
+3. Specific examples from the text
+4. Confidence level
+
+Be specific and cite evidence from the text."""
+        
+        if self.llm_provider == 'groq':
+            response = self.client.chat.completions.create(
+                model="mixtral-8x7b-32768",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.5,
+                max_tokens=800
+            )
+            explanation = response.choices[0].message.content
+        
+        elif self.llm_provider == 'ollama':
+            response = self.client.generate(
+                model="llama2",
+                prompt=prompt
+            )
+            explanation = response['response']
+        
+        else:
+            explanation = self._generate_template_explanation(content, label)
+        
+        return explanation
+    
+    def _generate_template_questions(self, label: str) -> str:
+        """Fallback: generate questions using templates."""
+        templates = [
+            f"Apakah artikel ini termasuk {label}?",
+            f"Bagaimana cara mengidentifikasi artikel ini sebagai {label}?",
+            f"Apa indikator yang menunjukkan artikel ini adalah {label}?"
+        ]
+        return '\n'.join(templates)
+    
+    def _generate_template_explanation(self, content: str, label: str) -> str:
+        """Fallback: generate explanation using templates."""
+        return f"Artikel ini diklasifikasikan sebagai {label} berdasarkan analisis konten dan karakteristik yang ditemukan."
+    
+    def augment_dataset(self, input_file: str, output_file: str,
+                       content_col: str = 'content',
+                       label_col: str = 'label'):
+        """
+        Augment seluruh dataset dengan LLM-generated content.
+        """
+        
+        print(f"Loading dataset: {input_file}")
+        df = pd.read_excel(input_file)
+        
+        augmented_data = []
+        
+        print(f"\nAugmenting {len(df)} samples...")
+        
+        for idx, row in df.iterrows():
+            content = str(row[content_col])
+            label = str(row[label_col])
+            
+            print(f"[{idx+1}/{len(df)}] Processing sample {idx}...")
+            
+            # Generate questions
+            questions = self.generate_questions(content, label, num_questions=3)
+            
+            # Generate explanation
+            explanation = self.generate_explanation(content, label)
+            
+            # Create augmented samples
+            for i, question in enumerate(questions):
+                augmented_data.append({
+                    'id': f'sample_{idx}_q{i}',
+                    'original_id': idx,
+                    'question': question,
+                    'context': content[:1000],
+                    'answer': explanation,
+                    'label': label
+                })
+            
+            # Rate limiting
+            time.sleep(0.5)
+        
+        # Save
+        output_path = Path(output_file)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(augmented_data, f, indent=2, ensure_ascii=False)
+        
+        print(f"\n✓ Augmented dataset saved: {output_file}")
+        print(f"Original samples: {len(df)}")
+        print(f"Augmented samples: {len(augmented_data)}")
+
+
+def main():
+    """Main function."""
+    
+    print("="*80)
+    print("LLM DATA AUGMENTATION")
+    print("Generate variasi pertanyaan dan penjelasan menggunakan LLM gratis")
+    print("="*80 + "\n")
+    
+    print("Pilih LLM Provider:")
+    print("1. Groq (gratis, cepat, perlu API key)")
+    print("2. Ollama (local, gratis, perlu install)")
+    print("3. Skip (gunakan template saja)")
+    
+    choice = input("\nPilihan (1/2/3): ").strip()
+    
+    provider_map = {
+        '1': 'groq',
+        '2': 'ollama',
+        '3': 'template'
+    }
+    
+    provider = provider_map.get(choice, 'template')
+    
+    if provider == 'template':
+        print("\nMenggunakan template-based generation (tanpa LLM)")
+        print("Untuk hasil lebih baik, gunakan Groq atau Ollama")
+        return
+    
+    # Initialize augmenter
+    augmenter = LLMAugmenter(llm_provider=provider)
+    
+    if not augmenter.client:
+        print("\n❌ Gagal initialize LLM client")
+        return
+    
+    # Augment dataset
+    input_file = "native_ads_dataset.xlsx"
+    output_file = "data/llm_dataset_augmented.json"
+    
+    content_col = input("\nNama kolom konten (default: 'content'): ").strip() or 'content'
+    label_col = input("Nama kolom label (default: 'label'): ").strip() or 'label'
+    
+    augmenter.augment_dataset(input_file, output_file, content_col, label_col)
+    
+    print("\n✓ Augmentation complete!")
+
+
+if __name__ == "__main__":
+    main()

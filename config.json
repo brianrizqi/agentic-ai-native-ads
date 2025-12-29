@@ -1,0 +1,41 @@
+{
+    "system": {
+        "name": "Agentic AI System",
+        "version": "2.0.0",
+        "description": "Web Scraping + Agentic AI Pipeline for Content Analysis"
+    },
+    "web_agent": {
+        "timeout": 30,
+        "max_retries": 3,
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "preprocessing": {
+        "max_length": 2000,
+        "clean_text": true,
+        "extract_entities": true
+    },
+    "retriever": {
+        "vector_db_path": "data/vector_db",
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "top_k": 5,
+        "similarity_threshold": 0.7
+    },
+    "llm": {
+        "api_key": "your-openai-api-key-here",
+        "model_name": "gpt-4",
+        "temperature": 0.3,
+        "max_tokens": 1000,
+        "explanation_temperature": 0.7,
+        "explanation_max_tokens": 1500
+    },
+    "feedback": {
+        "feedback_dir": "data/feedback",
+        "auto_export": true,
+        "quality_threshold": 0.7
+    },
+    "logging": {
+        "level": "INFO",
+        "log_file": "logs/system.log",
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    }
+}
