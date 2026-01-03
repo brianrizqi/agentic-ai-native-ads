@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 def main():
     parser = argparse.ArgumentParser(description='Run Local Agentic AI Demo')
     parser.add_argument('--provider', type=str, default='huggingface', choices=['huggingface', 'openai'], help='LLM Provider')
-    parser.add_argument('--model', type=str, default='openai/gpt-oss-20b', help='Model name (default: openai/gpt-oss-20b)')
+    parser.add_argument('--model', type=str, default='meta-llama/Llama-2-7b-chat-hf', help='Model name (default: meta-llama/Llama-2-7b-chat-hf)')
     parser.add_argument('--url', type=str, required=True, help='URL to analyze')
     args = parser.parse_args()
     
