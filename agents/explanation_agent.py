@@ -1,7 +1,7 @@
 """
 Explanation Agent Module
 Generates human-readable explanations for classifications.
-Supports: OpenAI, Ollama (Local), HuggingFace (Local)
+Supports: OpenAI, HuggingFace (Local)
 """
 
 import logging
@@ -16,8 +16,8 @@ class ExplanationAgent:
     Explanation Agent yang menghasilkan penjelasan untuk klasifikasi.
     """
     
-    def __init__(self, api_key: str = '', model_name: str = 'llama2',
-                 provider: str = 'ollama', temperature: float = 0.7, 
+    def __init__(self, api_key: str = '', model_name: str = 'openai/gpt-oss-20b',
+                 provider: str = 'huggingface', temperature: float = 0.7, 
                  max_tokens: int = 1500):
         """
         Initialize Explanation Agent.
@@ -48,18 +48,6 @@ class ExplanationAgent:
                 logger.warning("OpenAI library not installed")
                 return None
                 
-        elif self.provider == 'ollama':
-            try:
-                import ollama
-                # Check connection
-                try:
-                    ollama.list()
-                    return ollama
-                except Exception:
-                    logger.warning("Ollama service not running or not accessible")
-                    return None
-            except ImportError:
-                logger.warning("ollama library not installed")
                 return None
                 
         elif self.provider == 'huggingface':
@@ -114,17 +102,6 @@ class ExplanationAgent:
                     max_tokens=self.max_tokens
                 )
                 explanation_text = response.choices[0].message.content
-                
-            elif self.provider == 'ollama' and self.client:
-                response = self.client.generate(
-                    model=self.model_name,
-                    prompt=prompt,
-                    options={
-                        'temperature': self.temperature,
-                        'num_predict': self.max_tokens
-                    }
-                )
-                explanation_text = response['response']
                 
             elif self.provider == 'huggingface' and self.client:
                 response = self.client(
