@@ -1,30 +1,34 @@
 # Agentic AI untuk Deteksi Native Ads pada Portal Berita Elektronik
 
-**Penelitian Postdoc**: Pengembangan sistem Agentic AI untuk mendeteksi native advertising pada portal berita elektronik menggunakan pendekatan multi-agent dengan LLM.
+**Penelitian Postdoc**: Pengembangan sistem Agentic AI untuk mendeteksi native advertising pada portal berita elektronik menggunakan pendekatan multi-agent dengan LLM (Large Language Model).
 
 ## 📋 Deskripsi Penelitian
 
 Native advertising adalah bentuk iklan yang menyerupai konten editorial, sehingga sulit dibedakan oleh pembaca. Penelitian ini mengembangkan sistem Agentic AI yang dapat:
 
-1. **Scraping otomatis** artikel dari portal berita
-2. **Analisis konten** untuk mengidentifikasi karakteristik native ads
-3. **Klasifikasi** menggunakan LLM dengan context-aware reasoning
-4. **Explainability** untuk memahami keputusan klasifikasi
-5. **Continuous learning** dari feedback
+1.  **Scraping otomatis** artikel dari portal berita
+2.  **Analisis konten** untuk mengidentifikasi karakteristik native ads
+3.  **Klasifikasi** menggunakan LLM dengan context-aware reasoning
+4.  **Explainability** untuk memahami keputusan klasifikasi
+5.  **Continuous learning** dari feedback
 
 ## 🏗️ Arsitektur Sistem
 
-```
-Portal Berita (URL)
-    ↓
-Web Agent (Scraping)
-    ↓
-Preprocessing Agent (Feature Extraction)
-    ↓
-    ├─→ Retriever Agent (Knowledge Base)
-    ├─→ LLM Classifier Agent (Native Ads Detection)
-    ├─→ Explanation Agent (Interpretability)
-    └─→ Feedback/ReTrainer Agent (Learning)
+```mermaid
+graph TD
+    User[User/Researcher] -->|Input URL| WebAgent
+    WebAgent -->|Scraped Data| PreprocessingAgent
+    PreprocessingAgent -->|Cleaned Text| Pipeline
+    
+    subgraph Pipeline [Agentic AI Pipeline]
+        RetrieverAgent -->|Context Docs| LLMClassifierAgent
+        LLMClassifierAgent -->|Classification| ExplanationAgent
+        ExplanationAgent -->|Explanation| Result
+    end
+    
+    Dataset[(Native Ads Dataset)] -->|Vector DB| RetrieverAgent
+    LocalLLM[Local LLM (Ollama/HF)] --> LLMClassifierAgent
+    LocalLLM --> ExplanationAgent
 ```
 
 ## 📁 Struktur Proyek
@@ -32,225 +36,134 @@ Preprocessing Agent (Feature Extraction)
 ```
 agentic-ai/
 ├── main.py                          # Orchestrator utama
+├── run_local_demo.py                # Script demo (Local LLM)
 ├── config.json                      # Konfigurasi sistem
 ├── requirements.txt                 # Dependencies
 │
 ├── agents/                          # Modular agents
-│   ├── web_agent.py                # Web scraping portal berita
-│   ├── preprocessing_agent.py      # Text preprocessing & features
-│   ├── retriever_agent.py          # Document retrieval (RAG)
-│   ├── llm_classifier_agent.py     # LLM-based classification
+│   ├── web_agent.py                # Web scraping
+│   ├── preprocessing_agent.py      # Text preprocessing
+│   ├── retriever_agent.py          # RAG Retrieval
+│   ├── llm_classifier_agent.py     # Classification
 │   ├── explanation_agent.py        # Explainable AI
-│   └── feedback_retrainer_agent.py # Continuous learning
+│   └── ...
 │
-├── examples/
-│   ├── example_native_ads.py       # Contoh deteksi native ads
-│   ├── example_simple.py           # Contoh sederhana
-│   └── example_batch.py            # Batch processing
+├── tools/
+│   ├── dataset_converter.py        # Konversi Excel -> JSON untuk RAG
+│   └── llm_augmentation.py         # Augmentasi dataset
 │
 └── data/
-    ├── feedback/                   # Feedback logs
-    └── vector_db/                  # Knowledge base
+    ├── native_ads_dataset.xlsx     # Raw dataset
+    └── llm_dataset_qna.json        # Converted knowledge base
 ```
 
-## 🚀 Instalasi
+## 🚀 Instalasi & Persiapan
+
+### 1. Prasyarat Sistem
+-   **Python 3.10+**
+-   **Ollama** (untuk menjalankan LLM lokal seperti Llama 3 / Mistral)
+-   *Optional*: GPU NVIDIA dengan CUDA untuk performa lebih baik (jika menggunakan HuggingFace provider).
+
+### 2. Setup Lingkungan
+Disarankan menggunakan virtual environment:
 
 ```bash
-# 1. Clone/navigate ke direktori
-cd "/Users/brianrizqi/Documents/Post Doc/agentic-ai"
+# Buat virtual environment
+python -m venv .venv
 
-# 2. Install dependencies
+# Activate (Windows)
+.venv\Scripts\activate
+
+# Activate (Mac/Linux)
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
-
-# 3. Setup OpenAI API key di config.json
-# Edit config.json dan masukkan API key Anda
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124  # Jika pakai GPU
+pip install ollama
 ```
 
-## ⚙️ Konfigurasi
+### 4. Setup Ollama (Wajib untuk Local LLM)
+1.  Download & Install [Ollama](https://ollama.com/)
+2.  Pull model yang akan digunakan (contoh: `llama3` atau `mistral`):
+    ```bash
+    ollama pull llama3
+    ```
+3.  Jalankan service:
+    ```bash
+    ollama serve
+    ```
 
-Edit `config.json`:
+---
 
-```json
-{
-  "llm": {
-    "api_key": "sk-your-openai-api-key",
-    "model_name": "gpt-4"
-  }
-}
+## 📖 Quick Start Guide (Tutorial)
+
+Berikut urutan langkah untuk menjalankan sistem dari awal hingga eksperimen.
+
+### Langkah 1: Konversi Dataset
+Kita perlu mengubah dataset mentah (Excel) menjadi format JSON yang bisa dibaca oleh Retriever Agent (RAG).
+
+1.  Pastikan file dataset ada di folder root atau `tools/`.
+2.  Jalankan script konversi:
+    ```bash
+    python tools/dataset_converter.py
+    ```
+3.  Ikuti prompt di terminal:
+    -   Masukkan path file Excel: `native_ads_dataset.xlsx`
+    -   Pilih format output: `1` (QnA / Knowledge Base format)
+    -   Isi nama kolom (jika diminta, default usually OK).
+4.  **Hasil**: File `data/llm_dataset_qna.json` akan terbentuk. Ini adalah "otak" atau knowledge base untuk sistem.
+
+### Langkah 2: Menjalankan Eksperimen (Pipeline Executor)
+Gunakan script `run_local_demo.py` untuk menjalankan pipeline lengkap pada satu artikel berita.
+
+**Command Dasar (Menggunakan Ollama):**
+```bash
+python run_local_demo.py --url "https://news-url.com/artikel" --provider ollama --model llama3
 ```
 
-## 📖 Penggunaan
-
-### 1. Deteksi Native Ads pada Artikel Berita
-
-```python
-from main import AgenticAISystem
-import json
-
-# Load config
-with open('config.json', 'r') as f:
-    config = json.load(f)
-
-# Initialize system
-system = AgenticAISystem(config)
-
-# Scrape dan analisis artikel
-url = "https://detik.com/artikel-contoh"
-result = system.process_url(url)
-
-# Lihat hasil klasifikasi
-print(f"Tipe Konten: {result['classification']['label']}")
-print(f"Confidence: {result['classification']['confidence']:.2%}")
-print(f"Penjelasan: {result['explanation']['summary']}")
+**Command Menggunakan HuggingFace (GPU):**
+```bash
+python run_local_demo.py --url "https://news-url.com/artikel" --provider huggingface --model gpt2
 ```
 
-### 2. Kategori Klasifikasi
+**Penjelasan Parameter:**
+-   `--url`: URL artikel berita yang ingin dianalisis.
+-   `--provider`: Backend LLM (`ollama` atau `huggingface`).
+-   `--model`: Nama model (sesuai yang di-pull di Ollama atau nama repo HF).
 
-Sistem mengklasifikasikan konten ke dalam kategori:
+### Langkah 3: Membaca Hasil
+Script akan menampilkan log proses di terminal:
+1.  **Scraping**: Judul dan panjang teks yang diambil.
+2.  **Preprocessing**: Tokenisasi dan cleaning.
+3.  **Retrieval**: Dokumen mirip yang ditemukan di dataset (Context).
+4.  **Classification**: Hasil deteksi (Native Ads vs Editorial) beserta confidence score.
+5.  **Explanation**: Penjelasan mengapa konten tersebut diklasifikasikan demikian.
 
-- **Editorial Content**: Konten berita murni/editorial
-- **Native Advertising**: Iklan yang menyerupai konten editorial
-- **Sponsored Content**: Konten bersponsor yang jelas ditandai
-- **Advertorial**: Iklan dalam format editorial
-- **Promotional**: Konten promosi produk/layanan
+Hasil lengkap juga disimpan otomatis ke file `local_demo_result.json`.
 
-## 🎯 Fitur Utama
+---
 
-### 1. Web Agent - Portal Berita Scraping
-- Scraping otomatis dari berbagai portal berita Indonesia
-- Ekstraksi title, content, metadata
-- Handle berbagai format HTML
+## 🎯 Komponen Utama
 
-### 2. Preprocessing Agent
-- Text cleaning dan normalization
-- Feature extraction khusus native ads:
-  - Promotional language detection
-  - Brand mention frequency
-  - Call-to-action patterns
-  - Disclosure statement analysis
+### 1. Web Agent (`web_agent.py`)
+Bertugas mengambil konten mentah HTML dari URL dan mengekstrak teks utama, judul, dan metadata.
 
-### 3. Retriever Agent (RAG)
-- Knowledge base native ads examples
-- Vector similarity search
-- Context-aware retrieval
+### 2. Retriever Agent (`retriever_agent.py`)
+Menggunakan **Sentence Transformers** untuk mengubah teks artikel menjadi vektor, lalu mencari artikel serupa di database (`llm_dataset_qna.json`) sebagai konteks bagi LLM.
 
-### 4. LLM Classifier Agent
-- GPT-4 based classification
-- Context dari knowledge base
-- Multi-factor analysis
+### 3. LLM Classifier & Explanation Agent
+Menggunakan Local LLM untuk "berpikir".
+-   **Classifier**: Memutuskan label (Native Ads/Editorial) berdasarkan konten dan konteks retrieval.
+-   **Explainer**: Menulis paragraf penjelasan yang mudah dipahami manusia.
 
-### 5. Explanation Agent
-- Interpretable AI decisions
-- Key factors identification
-- Transparency untuk penelitian
+## ⚠️ Troubleshooting
 
-### 6. Feedback/ReTrainer Agent
-- Collect feedback dari expert
-- Quality metrics
-- Export training data
+-   **Error `c10.dll` / Torch**: Install Microsoft Visual C++ Redistributable atau pastikan versi Torch sesuai dengan CUDA system Anda.
+-   **Ollama Connection Error**: Pastikan aplikasi Ollama sudah berjalan (`ollama serve`).
+-   **UnicodeEncodeError**: Pada Windows, terminal kadang gagal print karakter emoji (✓). Script otomatis menangani ini, tapi jika masih muncul, set `chcp 65001` di terminal.
 
-## 📊 Contoh Output
-
-```json
-{
-  "classification": {
-    "label": "Native Advertising",
-    "confidence": 0.87,
-    "reasoning": "Artikel mengandung promotional language, multiple brand mentions, dan call-to-action tersembunyi"
-  },
-  "explanation": {
-    "summary": "Konten terdeteksi sebagai native advertising...",
-    "key_factors": [
-      "Penggunaan bahasa promosi: 'terbaik', 'solusi'",
-      "Brand mention: 15 kali dalam artikel",
-      "Tidak ada disclosure statement",
-      "Struktur menyerupai artikel editorial"
-    ]
-  },
-  "features": {
-    "promotional_words": 12,
-    "brand_mentions": 15,
-    "has_disclosure": false,
-    "cta_detected": true
-  }
-}
-```
-
-## 🔬 Untuk Penelitian
-
-### Dataset Collection
-
-```python
-# Collect dataset dari multiple portal berita
-news_portals = [
-    "https://detik.com",
-    "https://kompas.com",
-    "https://tribunnews.com"
-]
-
-# Process dan simpan hasil
-results = system.process_multiple_urls(urls_from_portals)
-```
-
-### Evaluation Metrics
-
-```python
-# Get feedback summary untuk evaluasi
-stats = system.feedback_agent.get_feedback_summary()
-
-print(f"Accuracy: {stats['avg_quality_score']:.2%}")
-print(f"Total samples: {stats['total_feedback']}")
-```
-
-### Export Training Data
-
-```python
-# Export untuk retraining atau analysis
-system.feedback_agent.export_training_data('data/native_ads_dataset.json')
-```
-
-## 📚 Komponen Penelitian
-
-### 1. Novelty
-- **Multi-agent architecture** untuk native ads detection
-- **LLM-based classification** dengan explainability
-- **RAG approach** untuk context-aware detection
-- **Continuous learning** dari expert feedback
-
-### 2. Metodologi
-- Web scraping otomatis dari portal berita
-- Feature extraction khusus native advertising
-- LLM classification dengan prompt engineering
-- Explainable AI untuk interpretability
-
-### 3. Kontribusi
-- Framework Agentic AI untuk native ads detection
-- Dataset native ads dari portal berita Indonesia
-- Comparative analysis: Agentic AI vs traditional ML
-- Explainability analysis untuk transparency
-
-## 🎓 Publikasi Potensial
-
-Sistem ini mendukung penelitian untuk publikasi:
-- **Jurnal Internasional**: AI, NLP, Digital Marketing
-- **Konferensi**: AAAI, ACL, ICML, WWW
-- **Topik**: Agentic AI, Native Ads Detection, Explainable AI
-
-## 📝 Citation
-
-```bibtex
-@phdthesis{native_ads_agentic_ai,
-  title={Pengembangan Agentic AI untuk Deteksi Native Ads pada Portal Berita Elektronik},
-  author={[Your Name]},
-  year={2024},
-  school={[Your University]}
-}
-```
-
-## 📧 Contact
-
-[Your Contact Information]
-
-## 📄 License
-
-[Your License]
+## 📧 Kontak & Sitasi
+[Informasi Peneliti / Lab]
