@@ -55,12 +55,17 @@ class ExplanationAgent:
                 from transformers import pipeline
                 import torch
                 
-                device = 0 if torch.cuda.is_available() else -1
-                device_name = "GPU" if device == 0 else "CPU"
-                print(f"   [INFO] Loading HuggingFace model: {self.model_name} on {device_name}...")
+                print(f"   [INFO] Loading HuggingFace model for explanation: {self.model_name}...")
                 
-                generator = pipeline("text-generation", model=self.model_name, device=device, token=self.api_key)
-                print(f"   [SUCCESS] Model loaded successfully!")
+                # Use device_map="auto" for MIG compatibility
+                generator = pipeline(
+                    "text-generation", 
+                    model=self.model_name, 
+                    device_map="auto",
+                    torch_dtype=torch.float16,
+                    token=self.api_key
+                )
+                print(f"   [SUCCESS] Explanation model loaded!")
                 return generator
             except ImportError as e:
                 print(f"   [ERROR] Missing dependencies: {e}")

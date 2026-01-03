@@ -55,13 +55,17 @@ class LLMClassifierAgent:
                 from transformers import pipeline
                 import torch
                 
-                device = 0 if torch.cuda.is_available() else -1
-                device_name = "GPU" if device == 0 else "CPU"
-                print(f"   [INFO] Loading HuggingFace model: {self.model_name} on {device_name}...")
-                print(f"   [INFO] This may take a while for the first download (20B params)...")
+                print(f"   [INFO] Loading HuggingFace model: {self.model_name}...")
+                print(f"   [INFO] Using device_map='auto' for MIG compatibility...")
                 
-                # Use text-generation pipeline with device and token/api_key
-                generator = pipeline("text-generation", model=self.model_name, device=device, token=self.api_key)
+                # Use device_map="auto" for MIG compatibility (no sudo needed)
+                generator = pipeline(
+                    "text-generation", 
+                    model=self.model_name, 
+                    device_map="auto",  # Auto handle MIG and multi-GPU
+                    torch_dtype=torch.float16,  # Use FP16 for efficiency
+                    token=self.api_key
+                )
                 print(f"   [SUCCESS] Model loaded successfully!")
                 return generator
             except ImportError as e:
