@@ -58,11 +58,13 @@ class ExplanationAgent:
                 print(f"   [INFO] Loading HuggingFace model for explanation: {self.model_name}...")
                 
                 # Use device_map="auto" for MIG compatibility
+                # Force framework='pt' to avoid Keras 3 issue
                 generator = pipeline(
                     "text-generation", 
                     model=self.model_name, 
                     device_map="auto",
                     torch_dtype=torch.float16,
+                    framework="pt",  # Force PyTorch
                     token=self.api_key
                 )
                 print(f"   [SUCCESS] Explanation model loaded!")
