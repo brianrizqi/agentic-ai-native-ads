@@ -59,11 +59,13 @@ class LLMClassifierAgent:
                 print(f"   [INFO] Using device_map='auto' for MIG compatibility...")
                 
                 # Use device_map="auto" for MIG compatibility (no sudo needed)
+                # Force framework='pt' to avoid Keras 3 issue
                 generator = pipeline(
                     "text-generation", 
                     model=self.model_name, 
                     device_map="auto",  # Auto handle MIG and multi-GPU
                     torch_dtype=torch.float16,  # Use FP16 for efficiency
+                    framework="pt",  # Force PyTorch (avoid TensorFlow/Keras)
                     token=self.api_key
                 )
                 print(f"   [SUCCESS] Model loaded successfully!")
