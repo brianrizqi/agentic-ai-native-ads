@@ -1,6 +1,7 @@
 """
 Explanation Agent Module
 Generates human-readable explanations for classifications.
+Supports: OpenAI, Ollama (Local), HuggingFace (Local)
 """
 
 import logging
@@ -15,52 +16,79 @@ class ExplanationAgent:
     Explanation Agent yang menghasilkan penjelasan untuk klasifikasi.
     """
     
-    def __init__(self, api_key: str, model_name: str = 'gpt-4',
-                 temperature: float = 0.7, max_tokens: int = 1500):
+    def __init__(self, api_key: str = '', model_name: str = 'llama2',
+                 provider: str = 'ollama', temperature: float = 0.7, 
+                 max_tokens: int = 1500):
         """
         Initialize Explanation Agent.
         
         Args:
-            api_key: API key for LLM service
+            api_key: API key (optional for local)
             model_name: LLM model name
+            provider: 'openai', 'ollama', or 'huggingface'
             temperature: Sampling temperature
             max_tokens: Maximum tokens in response
         """
         self.api_key = api_key
         self.model_name = model_name
+        self.provider = provider
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.client = self._initialize_client()
-        logger.info(f"Explanation Agent initialized with {model_name}")
+        logger.info(f"Explanation Agent initialized with {model_name} ({provider})")
     
     def _initialize_client(self):
         """Initialize LLM client."""
-        try:
-            from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
-            return client
-        except ImportError:
-            logger.warning("OpenAI library not installed")
-            return None
-        except Exception as e:
-            logger.warning(f"Failed to initialize client: {e}")
-            return None
+        if self.provider == 'openai':
+            try:
+                from openai import OpenAI
+                client = OpenAI(api_key=self.api_key)
+                return client
+            except ImportError:
+                logger.warning("OpenAI library not installed")
+                return None
+                
+        elif self.provider == 'ollama':
+            try:
+                import ollama
+                # Check connection
+                try:
+                    ollama.list()
+                    return ollama
+                except Exception:
+                    logger.warning("Ollama service not running or not accessible")
+                    return None
+            except ImportError:
+                logger.warning("ollama library not installed")
+                return None
+                
+        elif self.provider == 'huggingface':
+            try:
+                from transformers import pipeline
+                import torch
+                
+                device = 0 if torch.cuda.is_available() else -1
+                device_name = "GPU" if device == 0 else "CPU"
+                logger.info(f"Loading local HuggingFace model: {self.model_name} on {device_name}...")
+                
+                generator = pipeline("text-generation", model=self.model_name, device=device)
+                return generator
+            except ImportError:
+                logger.warning("transformers/torch not installed")
+                return None
+            except Exception as e:
+                logger.error(f"Failed to load HF model: {e}")
+                return None
+                
+        return None
     
     def explain(self, classification: Dict[str, Any], 
                 preprocessed_data: Dict[str, Any],
                 retrieved_context: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Generate explanation for classification.
-        
-        Args:
-            classification: Classification result
-            preprocessed_data: Preprocessed input data
-            retrieved_context: Retrieved context documents
-            
-        Returns:
-            Detailed explanation
         """
-        logger.info("Generating explanation")
+        logger.info(f"Generating explanation with {self.provider}")
         
         # Extract data
         text = preprocessed_data.get('cleaned_text', '')[:500]
@@ -72,25 +100,51 @@ class ExplanationAgent:
         )
         
         # Generate explanation
-        if self.client:
-            try:
+        explanation_text = ""
+        
+        try:
+            if self.provider == 'openai' and self.client:
                 response = self.client.chat.completions.create(
                     model=self.model_name,
                     messages=[
-                        {"role": "system", "content": "You are an expert at explaining AI classifications in clear, understandable language."},
+                        {"role": "system", "content": "You are an expert at explaining AI classifications."},
                         {"role": "user", "content": prompt}
                     ],
                     temperature=self.temperature,
                     max_tokens=self.max_tokens
                 )
-                
                 explanation_text = response.choices[0].message.content
-                explanation = self._structure_explanation(explanation_text, classification)
                 
-            except Exception as e:
-                logger.error(f"Explanation generation failed: {e}")
-                explanation = self._get_fallback_explanation(classification)
-        else:
+            elif self.provider == 'ollama' and self.client:
+                response = self.client.generate(
+                    model=self.model_name,
+                    prompt=prompt,
+                    options={
+                        'temperature': self.temperature,
+                        'num_predict': self.max_tokens
+                    }
+                )
+                explanation_text = response['response']
+                
+            elif self.provider == 'huggingface' and self.client:
+                response = self.client(
+                    prompt, 
+                    max_length=len(prompt.split()) + self.max_tokens,
+                    num_return_sequences=1,
+                    temperature=self.temperature
+                )
+                explanation_text = response[0]['generated_text']
+                if explanation_text.startswith(prompt):
+                    explanation_text = explanation_text[len(prompt):]
+            
+            else:
+                return self._get_fallback_explanation(classification)
+                
+            # Structure result
+            explanation = self._structure_explanation(explanation_text, classification)
+            
+        except Exception as e:
+            logger.error(f"Explanation generation failed: {e}")
             explanation = self._get_fallback_explanation(classification)
         
         logger.info("Explanation generated successfully")
@@ -104,7 +158,7 @@ class ExplanationAgent:
         confidence = classification.get('confidence', 0)
         reasoning = classification.get('reasoning', '')
         
-        prompt = f"""Generate a clear, comprehensive explanation for the following classification:
+        prompt = f"""[INST] Generate a clear explanation for this classification result.
 
 CONTENT TITLE: {title}
 
@@ -119,13 +173,13 @@ CLASSIFICATION RESULT:
 NUMBER OF CONTEXT DOCUMENTS USED: {len(context)}
 
 Please provide:
-1. A brief summary of what was classified
+1. Summary of what was classified
 2. Why this classification was chosen
 3. Key factors that influenced the decision
 4. Confidence level explanation
-5. Any alternative interpretations considered
+5. Alternative interpretations (if any)
 
-Write in a clear, professional tone suitable for a research report."""
+Write in a clear, professional tone. [/INST]"""
         
         return prompt
     
@@ -141,92 +195,50 @@ Write in a clear, professional tone suitable for a research report."""
             'alternative_interpretations': self._extract_alternatives(explanation_text),
             'metadata': {
                 'model': self.model_name,
-                'explanation_length': len(explanation_text),
-                'temperature': self.temperature
+                'provider': self.provider,
+                'explanation_length': len(explanation_text)
             }
         }
     
     def _extract_summary(self, text: str) -> str:
         """Extract summary from explanation."""
-        # Simple extraction: first paragraph or first 200 chars
-        paragraphs = text.split('\n\n')
+        paragraphs = text.strip().split('\n\n')
         if paragraphs:
-            summary = paragraphs[0]
-            if len(summary) > 200:
-                summary = summary[:200] + '...'
-            return summary
-        return text[:200] + '...'
+            return paragraphs[0][:300] + '...'
+        return text[:300] + '...'
     
     def _extract_key_factors(self, text: str) -> List[str]:
         """Extract key factors from explanation."""
-        # Look for numbered or bulleted lists
         factors = []
         lines = text.split('\n')
-        
         for line in lines:
             line = line.strip()
-            # Check for numbered items (1., 2., etc.) or bullets (-, *, •)
-            if any(line.startswith(prefix) for prefix in ['1.', '2.', '3.', '4.', '5.', '-', '*', '•']):
-                # Clean up the line
+            if any(line.startswith(p) for p in ['1.', '2.', '3.', '-', '*', '•']):
                 cleaned = line.lstrip('0123456789.-*• ')
-                if cleaned:
+                if len(cleaned) > 10:  # Minimum length check
                     factors.append(cleaned)
-        
-        return factors[:5]  # Return top 5 factors
+        return factors[:5]
     
     def _extract_alternatives(self, text: str) -> List[str]:
         """Extract alternative interpretations."""
-        # Simple keyword-based extraction
         alternatives = []
-        text_lower = text.lower()
-        
-        if 'alternative' in text_lower or 'however' in text_lower or 'could also' in text_lower:
-            # Extract sentences containing these keywords
-            sentences = text.split('.')
-            for sentence in sentences:
-                if any(keyword in sentence.lower() for keyword in ['alternative', 'however', 'could also', 'might be']):
-                    alternatives.append(sentence.strip())
-        
+        lines = text.split('\n')
+        for line in lines:
+            if any(k in line.lower() for k in ['alternative', 'however', 'could also']):
+                alternatives.append(line.strip())
         return alternatives[:3]
     
     def _get_fallback_explanation(self, classification: Dict[str, Any]) -> Dict[str, Any]:
         """Generate fallback explanation."""
         label = classification.get('label', 'unknown')
         confidence = classification.get('confidence', 0)
-        reasoning = classification.get('reasoning', 'No reasoning provided')
-        
-        summary = f"The content was classified as '{label}' with {confidence:.0%} confidence."
-        
-        detailed = f"""Classification Explanation:
-
-The content has been classified as '{label}' based on the analysis performed.
-
-Confidence Level: {confidence:.0%}
-This confidence score indicates {'high' if confidence > 0.8 else 'moderate' if confidence > 0.5 else 'low'} certainty in the classification.
-
-Reasoning:
-{reasoning}
-
-Key Factors:
-- Content analysis and pattern matching
-- Contextual relevance assessment
-- Semantic similarity evaluation
-
-This classification was generated using automated analysis. For critical decisions, human review is recommended."""
         
         return {
-            'summary': summary,
-            'detailed_explanation': detailed,
-            'key_factors': [
-                'Content analysis',
-                'Pattern matching',
-                'Contextual relevance'
-            ],
+            'summary': f"Classified as '{label}' with {confidence:.0%} confidence.",
+            'detailed_explanation': "Explanation generation failed or unavailable.",
+            'key_factors': [],
             'classification_label': label,
             'confidence_score': confidence,
             'alternative_interpretations': [],
-            'metadata': {
-                'model': 'fallback',
-                'explanation_length': len(detailed)
-            }
+            'metadata': {'model': 'fallback'}
         }

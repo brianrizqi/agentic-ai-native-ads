@@ -32,7 +32,7 @@ class DatasetConverter:
         print(f"Loading dataset from: {self.input_file}")
         # Read from 'Clean' sheet to get all 12088 rows
         self.df = pd.read_excel(self.input_file, sheet_name='Clean')
-        print(f"✓ Loaded {len(self.df)} samples")
+        print(f"[OK] Loaded {len(self.df)} samples")
         print(f"Columns: {list(self.df.columns)}")
         print(f"\nSample data:")
         print(self.df.head())
@@ -81,7 +81,7 @@ class DatasetConverter:
                 "label": label
             })
         
-        print(f"✓ Converted {len(qna_data)} samples to QnA format")
+        print(f"[OK] Converted {len(qna_data)} samples to QnA format")
         return qna_data
     
     def convert_to_instruction_format(self,
@@ -124,7 +124,7 @@ class DatasetConverter:
                 "output": output
             })
         
-        print(f"✓ Converted {len(instruction_data)} samples to Instruction format")
+        print(f"[OK] Converted {len(instruction_data)} samples to Instruction format")
         return instruction_data
     
     def convert_to_chat_format(self,
@@ -171,7 +171,7 @@ Berikan klasifikasi dan penjelasan yang detail."""
                 ]
             })
         
-        print(f"✓ Converted {len(chat_data)} samples to Chat format")
+        print(f"[OK] Converted {len(chat_data)} samples to Chat format")
         return chat_data
     
     def _generate_answer(self, content: str, label: str) -> str:
@@ -235,7 +235,7 @@ Berikan klasifikasi dan penjelasan yang detail."""
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         
-        print(f"✓ Saved to: {output_file}")
+        print(f"[OK] Saved to: {output_file}")
     
     def save_to_jsonl(self, data: List[Dict], output_file: str):
         """Save converted data ke JSONL (untuk fine-tuning)."""
@@ -246,14 +246,14 @@ Berikan klasifikasi dan penjelasan yang detail."""
             for item in data:
                 f.write(json.dumps(item, ensure_ascii=False) + '\n')
         
-        print(f"✓ Saved to: {output_file}")
+        print(f"[OK] Saved to: {output_file}")
 
 
 def main():
     """Main function untuk konversi dataset."""
     
     print("="*80)
-    print("DATASET CONVERTER: Deep Learning → LLM Format")
+    print("DATASET CONVERTER: Deep Learning -> LLM Format")
     print("Native Ads Detection - Postdoc Research")
     print("="*80 + "\n")
     
@@ -262,7 +262,7 @@ def main():
     
     # Check if file exists
     if not Path(input_file).exists():
-        print(f"❌ File tidak ditemukan: {input_file}")
+        print(f"[X] File tidak ditemukan: {input_file}")
         print("\nPastikan file native_ads_dataset.xlsx ada di direktori yang sama.")
         return
     
