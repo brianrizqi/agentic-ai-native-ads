@@ -43,25 +43,25 @@ class LLMAugmenter:
                 print("Install groq: pip install groq")
                 return None
         
-        elif self.llm_provider == 'ollama':
-            try:
-                import ollama
-                print("✓ Ollama client initialized (pastikan Ollama running)")
-                return ollama
-            except ImportError:
-                print("Install ollama: pip install ollama")
-                return None
         
         elif self.llm_provider == 'huggingface':
             try:
                 from transformers import pipeline
-                print("Loading HuggingFace model...")
-                client = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta")
-                print("✓ HuggingFace client initialized")
-                return client
+                import torch
+                device = 0 if torch.cuda.is_available() else -1
+                print(f"Loading HuggingFace model (Device: {'GPU' if device==0 else 'CPU'})...")
+                # Updated to use GPT-OSS 20B as requested
+                generator = pipeline("text-generation", model="openai/gpt-oss-20b", device=device)
+                print("✓ HuggingFace client initialized with openai/gpt-oss-20b")
+                return generator
             except ImportError:
-                print("Install transformers: pip install transformers torch")
+                print("Install transformers: pip install transformers torch accelerate")
                 return None
+            except Exception as e:
+                print(f"Error loading HF model: {e}")
+                return None
+        
+        return None
         
         return None
     
