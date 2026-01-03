@@ -1,0 +1,20 @@
+{
+  "url": "https://www.cnnindonesia.com/ekonomi/20231212140523-532-1036329/promo-spesial-bri-di-hut-ke-128-diskon-hingga-rp1-28-juta",
+  "scraped": "Jokowi Tunjuk Ridwan Kamil Jadi Kurator Infrastruktur IKN",
+  "classification": {
+    "label": "unknown",
+    "confidence": 0.0,
+    "reasoning": "LLM inference failed, fallback used"
+  },
+  "explanation": {
+    "summary": "Classified as 'unknown' with 0% confidence.",
+    "detailed_explanation": "Explanation generation failed or unavailable.",
+    "key_factors": [],
+    "classification_label": "unknown",
+    "confidence_score": 0.0,
+    "alternative_interpretations": [],
+    "metadata": {
+      "model": "fallback"
+    }
+  }
+}
