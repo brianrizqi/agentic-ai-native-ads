@@ -1,7 +1,7 @@
 """
 LLM Classifier Agent Module
 Uses Large Language Model for classification with context.
-Supports: OpenAI, Ollama (Local), HuggingFace (Local)
+Supports: OpenAI, HuggingFace (Local)
 """
 
 import logging
@@ -16,8 +16,8 @@ class LLMClassifierAgent:
     LLM Classifier Agent yang menggunakan LLM untuk klasifikasi.
     """
     
-    def __init__(self, api_key: str = '', model_name: str = 'llama2', 
-                 provider: str = 'ollama', temperature: float = 0.3, 
+    def __init__(self, api_key: str = '', model_name: str = 'openai/gpt-oss-20b', 
+                 provider: str = 'huggingface', temperature: float = 0.3, 
                  max_tokens: int = 1000):
         """
         Initialize LLM Classifier Agent.
@@ -48,20 +48,8 @@ class LLMClassifierAgent:
                 logger.warning("OpenAI library not installed")
                 return None
                 
-        elif self.provider == 'ollama':
-            try:
-                import ollama
-                # Check connection
-                try:
-                    ollama.list()
-                    return ollama
-                except Exception:
-                    logger.warning("Ollama service not running or not accessible")
-                    return None
-            except ImportError:
-                logger.warning("ollama library not installed (pip install ollama)")
                 return None
-                
+        
         elif self.provider == 'huggingface':
             try:
                 from transformers import pipeline
@@ -116,17 +104,6 @@ class LLMClassifierAgent:
                     max_tokens=self.max_tokens
                 )
                 response_text = response.choices[0].message.content
-                
-            elif self.provider == 'ollama' and self.client:
-                response = self.client.generate(
-                    model=self.model_name,
-                    prompt=prompt,
-                    options={
-                        'temperature': self.temperature,
-                        'num_predict': self.max_tokens
-                    }
-                )
-                response_text = response['response']
                 
             elif self.provider == 'huggingface' and self.client:
                 # HF pipeline
