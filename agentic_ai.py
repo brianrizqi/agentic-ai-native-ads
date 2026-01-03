@@ -109,7 +109,7 @@ class LLMClassifierAgent:
     LLM Classifier Agent that uses a Large Language Model for classification.
     """
     
-    def __init__(self, api_key: str, model_name: str = 'gpt-4'):
+    def __init__(self, api_key: str, model_name: str = 'openai/gpt-oss-20b'):
         """
         Initialize the LLM Classifier Agent.
         
@@ -206,7 +206,7 @@ class ExplanationAgent:
     Explanation Agent that generates human-readable explanations for classifications.
     """
     
-    def __init__(self, api_key: str, model_name: str = 'gpt-4'):
+    def __init__(self, api_key: str, model_name: str = 'openai/gpt-oss-20b'):
         """
         Initialize the Explanation Agent.
         

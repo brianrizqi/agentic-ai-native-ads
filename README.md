@@ -1,169 +1,114 @@
 # Agentic AI untuk Deteksi Native Ads pada Portal Berita Elektronik
 
-**Penelitian Postdoc**: Pengembangan sistem Agentic AI untuk mendeteksi native advertising pada portal berita elektronik menggunakan pendekatan multi-agent dengan LLM (Large Language Model).
+**Penelitian Postdoc**: Pengembangan sistem Agentic AI untuk mendeteksi native advertising pada portal berita elektronik menggunakan pendekatan multi-agent dengan LLM (Large Language Model) `openai/gpt-oss-20b`.
 
-## 📋 Deskripsi Penelitian
+## 🗺️ Peta Metodologi (Architecture)
 
-Native advertising adalah bentuk iklan yang menyerupai konten editorial, sehingga sulit dibedakan oleh pembaca. Penelitian ini mengembangkan sistem Agentic AI yang dapat:
-
-1.  **Scraping otomatis** artikel dari portal berita
-2.  **Analisis konten** untuk mengidentifikasi karakteristik native ads
-3.  **Klasifikasi** menggunakan LLM dengan context-aware reasoning
-4.  **Explainability** untuk memahami keputusan klasifikasi
-5.  **Continuous learning** dari feedback
-
-## 🏗️ Arsitektur Sistem
+Sistem ini mengikuti alur kerja agentic sebagai berikut:
 
 ```mermaid
 graph TD
-    User[User/Researcher] -->|Input URL| WebAgent
-    WebAgent -->|Scraped Data| PreprocessingAgent
-    PreprocessingAgent -->|Cleaned Text| Pipeline
+    Start([Start: Input URL]) --> WA[Web Scraping Agent]
     
-    subgraph Pipeline [Agentic AI Pipeline]
-        RetrieverAgent -->|Context Docs| LLMClassifierAgent
-        LLMClassifierAgent -->|Classification| ExplanationAgent
-        ExplanationAgent -->|Explanation| Result
+    subgraph "Data Acquisition & Processing"
+        WA -->|Raw HTML| PA[Preprocessing Agent]
+        PA -->|Cleaned Text & Features| Pipeline
     end
     
-    Dataset[(Native Ads Dataset)] -->|Vector DB| RetrieverAgent
-    LocalLLM[Local LLM (Ollama/HF)] --> LLMClassifierAgent
-    LocalLLM --> ExplanationAgent
+    subgraph "Agentic AI Core (Reasoning)"
+        Pipeline -->|Query| RA[Retriever Agent]
+        Dataset[(Knowledge Base)] -->|Context| RA
+        
+        RA -->|Context + Content| CA[LLM Classifier Agent]
+        CA -->|Classification Label| EA[Explanation Agent]
+    end
+    
+    subgraph "Output"
+        EA -->|Final Report| End([Result: JSON/Display])
+    end
 ```
 
-## 📁 Struktur Proyek
+### Penjelasan Alur Agent:
+1.  **Web Scraping Agent**: Mengambil data mentah dari URL berita.
+2.  **Preprocessing Agent**: Membersihkan teks, menghapus noise, dan mengekstrak fitur linguistik.
+3.  **Retriever Agent (RAG)**: Mencari contoh kasus serupa dari dataset `native_ads_dataset` untuk memberikan konteks pada LLM.
+4.  **LLM Classifier Agent**: Menggunakan model `openai/gpt-oss-20b` untuk menentukan apakah artikel adalah Native Ads atau Editorial.
+5.  **Explanation Agent**: Menjelaskan alasan keputusan klasifikasi dalam bahasa yang mudah dipahami.
 
-```
-agentic-ai/
-├── main.py                          # Orchestrator utama
-├── run_local_demo.py                # Script demo (Local LLM)
-├── config.json                      # Konfigurasi sistem
-├── requirements.txt                 # Dependencies
-│
-├── agents/                          # Modular agents
-│   ├── web_agent.py                # Web scraping
-│   ├── preprocessing_agent.py      # Text preprocessing
-│   ├── retriever_agent.py          # RAG Retrieval
-│   ├── llm_classifier_agent.py     # Classification
-│   ├── explanation_agent.py        # Explainable AI
-│   └── ...
-│
-├── tools/
-│   ├── dataset_converter.py        # Konversi Excel -> JSON untuk RAG
-│   └── llm_augmentation.py         # Augmentasi dataset
-│
-└── data/
-    ├── native_ads_dataset.xlsx     # Raw dataset
-    └── llm_dataset_qna.json        # Converted knowledge base
-```
+---
 
-## 🚀 Instalasi & Persiapan
+## 🚀 Panduan Eksekusi (Step-by-Step)
 
-### 1. Prasyarat Sistem
--   **Python 3.10+**
--   **Ollama** (untuk menjalankan LLM lokal seperti Llama 3 / Mistral)
--   *Optional*: GPU NVIDIA dengan CUDA untuk performa lebih baik (jika menggunakan HuggingFace provider).
+Ikuti langkah-langkah ini secara **berurutan** untuk menjalankan sistem.
 
-### 2. Setup Lingkungan
-Disarankan menggunakan virtual environment:
+### 1. Persiapan Lingkungan (Environment)
+
+Pastikan Anda memiliki Python 3.10+ dan GPU NVIDIA (disarankan VRAM >24GB untuk model 20B, atau gunakan teknik kuantisasi).
 
 ```bash
-# Buat virtual environment
+# 1. Buat Virtual Environment
 python -m venv .venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Mac/Linux
 
-# Activate (Windows)
-.venv\Scripts\activate
-
-# Activate (Mac/Linux)
-source .venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
+# 2. Install Dependencies utama
 pip install -r requirements.txt
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124  # Jika pakai GPU
-pip install ollama
+
+# 3. Install PyTorch dengan dukungan CUDA (Wajib untuk GPU)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+pip install accelerate
 ```
 
-### 4. Setup Ollama (Wajib untuk Local LLM)
-1.  Download & Install [Ollama](https://ollama.com/)
-2.  Pull model yang akan digunakan (contoh: `llama3` atau `mistral`):
-    ```bash
-    ollama pull llama3
-    ```
-3.  Jalankan service:
-    ```bash
-    ollama serve
-    ```
+### 2. Persiapan Data (Dataset Converter)
+
+Sebelum menjalankan AI, kita perlu "melatih" ingatan Retriever Agent dengan mengubah dataset Excel menjadi knowledge base.
+
+*   **Input**: `native_ads_dataset.xlsx` (Excel file)
+*   **Output**: `data/llm_dataset_qna.json`
+
+**Jalankan Command:**
+```bash
+python tools/dataset_converter.py
+```
+*Ikuti instruksi di layar (Pilih format `1` untuk RAG).*
+
+### 3. Menjalankan Demo (Execution)
+
+Gunakan script `run_local_demo.py` untuk menjalankan seluruh pipeline agent pada satu artikel berita.
+
+**Command:**
+```bash
+python run_local_demo.py --url "MASUKKAN_URL_BERITA_DISINI"
+```
+
+**Contoh:**
+```bash
+python run_local_demo.py --url "https://www.cnnindonesia.com/ekonomi/20231212140523-532-1036329/promo-spesial-bri-di-hut-ke-128-diskon-hingga-rp1-28-juta"
+```
+
+*Catatan: Saat pertama kali dijalankan, sistem akan otomatis mendownload model `openai/gpt-oss-20b` dari HuggingFace. Proses ini membutuhkan koneksi internet dan waktu beberapa saat.*
 
 ---
 
-## 📖 Quick Start Guide (Tutorial)
+## 📂 Struktur Project
 
-Berikut urutan langkah untuk menjalankan sistem dari awal hingga eksperimen.
-
-### Langkah 1: Konversi Dataset
-Kita perlu mengubah dataset mentah (Excel) menjadi format JSON yang bisa dibaca oleh Retriever Agent (RAG).
-
-1.  Pastikan file dataset ada di folder root atau `tools/`.
-2.  Jalankan script konversi:
-    ```bash
-    python tools/dataset_converter.py
-    ```
-3.  Ikuti prompt di terminal:
-    -   Masukkan path file Excel: `native_ads_dataset.xlsx`
-    -   Pilih format output: `1` (QnA / Knowledge Base format)
-    -   Isi nama kolom (jika diminta, default usually OK).
-4.  **Hasil**: File `data/llm_dataset_qna.json` akan terbentuk. Ini adalah "otak" atau knowledge base untuk sistem.
-
-### Langkah 2: Menjalankan Eksperimen (Pipeline Executor)
-Gunakan script `run_local_demo.py` untuk menjalankan pipeline lengkap pada satu artikel berita.
-
-**Command Dasar (Menggunakan Ollama):**
-```bash
-python run_local_demo.py --url "https://news-url.com/artikel" --provider ollama --model llama3
-```
-
-**Command Menggunakan HuggingFace (GPU):**
-```bash
-python run_local_demo.py --url "https://news-url.com/artikel" --provider huggingface --model gpt2
-```
-
-**Penjelasan Parameter:**
--   `--url`: URL artikel berita yang ingin dianalisis.
--   `--provider`: Backend LLM (`ollama` atau `huggingface`).
--   `--model`: Nama model (sesuai yang di-pull di Ollama atau nama repo HF).
-
-### Langkah 3: Membaca Hasil
-Script akan menampilkan log proses di terminal:
-1.  **Scraping**: Judul dan panjang teks yang diambil.
-2.  **Preprocessing**: Tokenisasi dan cleaning.
-3.  **Retrieval**: Dokumen mirip yang ditemukan di dataset (Context).
-4.  **Classification**: Hasil deteksi (Native Ads vs Editorial) beserta confidence score.
-5.  **Explanation**: Penjelasan mengapa konten tersebut diklasifikasikan demikian.
-
-Hasil lengkap juga disimpan otomatis ke file `local_demo_result.json`.
+*   `run_local_demo.py`: Script utama untuk menjalankan demo.
+*   `config.json`: File konfigurasi (nama model, parameter).
+*   `agents/`: Folder berisi kode untuk setiap agent.
+    *   `web_agent.py`: Scraping.
+    *   `preprocessing_agent.py`: Cleaning.
+    *   `retriever_agent.py`: Retrieval/Search.
+    *   `llm_classifier_agent.py`: Klasifikasi (Core AI).
+    *   `explanation_agent.py`: Penjelasan hasil.
+*   `tools/`: Tools bantu (konverter data, augmentasi).
+*   `data/`: Tempat menyimpan dataset dan hasil output.
 
 ---
-
-## 🎯 Komponen Utama
-
-### 1. Web Agent (`web_agent.py`)
-Bertugas mengambil konten mentah HTML dari URL dan mengekstrak teks utama, judul, dan metadata.
-
-### 2. Retriever Agent (`retriever_agent.py`)
-Menggunakan **Sentence Transformers** untuk mengubah teks artikel menjadi vektor, lalu mencari artikel serupa di database (`llm_dataset_qna.json`) sebagai konteks bagi LLM.
-
-### 3. LLM Classifier & Explanation Agent
-Menggunakan Local LLM untuk "berpikir".
--   **Classifier**: Memutuskan label (Native Ads/Editorial) berdasarkan konten dan konteks retrieval.
--   **Explainer**: Menulis paragraf penjelasan yang mudah dipahami manusia.
 
 ## ⚠️ Troubleshooting
 
--   **Error `c10.dll` / Torch**: Install Microsoft Visual C++ Redistributable atau pastikan versi Torch sesuai dengan CUDA system Anda.
--   **Ollama Connection Error**: Pastikan aplikasi Ollama sudah berjalan (`ollama serve`).
--   **UnicodeEncodeError**: Pada Windows, terminal kadang gagal print karakter emoji (✓). Script otomatis menangani ini, tapi jika masih muncul, set `chcp 65001` di terminal.
-
-## 📧 Kontak & Sitasi
-[Informasi Peneliti / Lab]
+1.  **Out of Memory (OOM)**: Jika VRAM GPU tidak cukup untuk model 20B, Anda mungkin perlu mengubah model di `config.json` ke model yang lebih kecil (misal: `gpt2` atau `bert-base-uncased`) untuk testing awal, atau menggunakan versi terkuantisasi (bitsandbytes).
+2.  **HuggingFace Login**: Jika model `gpt-oss-20b` bersifat gated/private, login dulu via terminal:
+    ```bash
+    huggingface-cli login
+    ```

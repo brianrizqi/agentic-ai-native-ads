@@ -72,7 +72,7 @@ class AgenticAISystem:
         # LLM Classifier Agent
         self.llm_classifier = LLMClassifierAgent(
             api_key=config.get('llm', {}).get('api_key', ''),
-            model_name=config.get('llm', {}).get('model_name', 'gpt-4'),
+            model_name=config.get('llm', {}).get('model_name', 'openai/gpt-oss-20b'),
             temperature=config.get('llm', {}).get('temperature', 0.3),
             max_tokens=config.get('llm', {}).get('max_tokens', 1000)
         )
@@ -80,7 +80,7 @@ class AgenticAISystem:
         # Explanation Agent
         self.explanation_agent = ExplanationAgent(
             api_key=config.get('llm', {}).get('api_key', ''),
-            model_name=config.get('llm', {}).get('model_name', 'gpt-4'),
+            model_name=config.get('llm', {}).get('model_name', 'openai/gpt-oss-20b'),
             temperature=config.get('llm', {}).get('explanation_temperature', 0.7),
             max_tokens=config.get('llm', {}).get('explanation_max_tokens', 1500)
         )
