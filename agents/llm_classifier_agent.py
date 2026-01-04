@@ -119,9 +119,11 @@ class LLMClassifierAgent:
                 # HF pipeline
                 response = self.client(
                     prompt, 
-                    max_length=len(prompt.split()) + self.max_tokens,
+                    max_new_tokens=512,  # Increased for complete JSON response
                     num_return_sequences=1,
-                    temperature=self.temperature
+                    temperature=self.temperature,
+                    do_sample=False if self.temperature == 0 else True,  # Deterministic for temp=0
+                    truncation=True
                 )
                 response_text = response[0]['generated_text']
                 # Strip prompt from response if duplicated
