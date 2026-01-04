@@ -7,6 +7,8 @@ import os
 # Force PyTorch-only mode, disable TensorFlow to avoid Keras 3 issue
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['TRANSFORMERS_NO_TF'] = '1'
+# MIG workaround - bypass NVML check
+os.environ['PYTORCH_NVML_BASED_CUDA_CHECK'] = '0'
 
 import json
 import torch

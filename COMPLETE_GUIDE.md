@@ -98,7 +98,7 @@ print(f'Sample: {data[0]}')
 ### 3.1 Test Single URL
 
 ```bash
-python run_local_demo.py --url "https://www.cnnindonesia.com/ekonomi/20231212140523-532-1036329/promo-spesial-bri-di-hut-ke-128-diskon-hingga-rp1-28-juta"
+python run_local_demo.py --url "https://www.cnnindonesia.com/teknologi/20221203112947-190-882335/jadwalkan-rapat-kian-mudah-cek-cara-bagikan-google-calendar"
 ```
 
 **Proses yang terjadi**:
