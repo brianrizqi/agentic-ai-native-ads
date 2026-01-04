@@ -4,6 +4,10 @@ Compatible with A100 MIG mode using device_map="auto"
 """
 
 import os
+# Force PyTorch-only mode, disable TensorFlow to avoid Keras 3 issue
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TRANSFORMERS_NO_TF'] = '1'
+
 import json
 import torch
 from pathlib import Path
