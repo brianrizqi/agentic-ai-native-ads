@@ -67,7 +67,8 @@ config_local.json
 
 # Jupyter Notebook
 .ipynb_checkpoints/
-*.ipynb
+# Allow notebooks in notebooks/ folder
+!notebooks/*.ipynb
 
 # Test results
 test_results/
