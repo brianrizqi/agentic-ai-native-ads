@@ -146,28 +146,28 @@ class ExplanationAgent:
         confidence = classification.get('confidence', 0)
         reasoning = classification.get('reasoning', '')
         
-        prompt = f"""[INST] Generate a clear explanation for this classification result.
+        prompt = f"""[INST] Buatkan penjelasan yang jelas untuk hasil klasifikasi ini dalam Bahasa Indonesia.
 
-CONTENT TITLE: {title}
+JUDUL KONTEN: {title}
 
-CONTENT EXCERPT:
+KUTIPAN KONTEN:
 {text}
 
-CLASSIFICATION RESULT:
+HASIL KLASIFIKASI:
 - Label: {label}
 - Confidence: {confidence:.0%}
 - Reasoning: {reasoning}
 
-NUMBER OF CONTEXT DOCUMENTS USED: {len(context)}
+JUMLAH DOKUMEN KONTEKS YANG DIGUNAKAN: {len(context)}
 
-Please provide:
-1. Summary of what was classified
-2. Why this classification was chosen
-3. Key factors that influenced the decision
-4. Confidence level explanation
-5. Alternative interpretations (if any)
+Berikan penjelasan dalam Bahasa Indonesia yang mencakup:
+1. Ringkasan konten yang diklasifikasikan
+2. Mengapa klasifikasi ini dipilih
+3. Faktor-faktor kunci yang mempengaruhi keputusan
+4. Penjelasan tingkat confidence
+5. Interpretasi alternatif (jika ada)
 
-Write in a clear, professional tone. [/INST]"""
+Tulis dengan nada yang jelas dan profesional dalam Bahasa Indonesia. [/INST]"""
         
         return prompt
     
