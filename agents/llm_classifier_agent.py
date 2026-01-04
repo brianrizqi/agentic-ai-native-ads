@@ -183,6 +183,23 @@ Kutipan Konten:
 Contoh Relevan (Konteks):
 {context}
 
+Contoh Klasifikasi:
+
+CONTOH 1 (native ads):
+"Promo spesial BRI di HUT ke-128, diskon hingga Rp1.28 juta untuk berbagai produk perbankan."
+Label: native ads
+Alasan: Mengandung promosi produk (BRI), diskon, dan penawaran khusus.
+
+CONTOH 2 (berita murni):
+"Presiden Jokowi menunjuk Ridwan Kamil sebagai kurator infrastruktur IKN pada hari Selasa."
+Label: berita murni
+Alasan: Berita faktual tentang kebijakan pemerintah, tidak ada promosi produk.
+
+CONTOH 3 (native ads):
+"Dapatkan cashback hingga 50% untuk pembelian produk elektronik di Tokopedia hari ini!"
+Label: native ads
+Alasan: Ajakan beli dengan cashback, promosi e-commerce.
+
 Tugas: Klasifikasikan konten ini ke dalam SALAH SATU kategori berikut:
 - native ads (Iklan berbayar yang menyerupai berita)
 - berita murni (Konten berita murni/jurnalisme)
