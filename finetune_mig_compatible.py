@@ -202,7 +202,12 @@ def main():
     
     print(f"✅ Model saved to: {args.output}")
     print(f"Total steps: {global_step}")
-    print(f"Final loss: {total_loss / global_step:.4f}")
+    
+    if global_step > 0:
+        print(f"Final loss: {total_loss / global_step:.4f}")
+    else:
+        print("[WARNING] No training steps completed. Check for errors above.")
+    
     print("="*80)
 
 
