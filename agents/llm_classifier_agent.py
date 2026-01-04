@@ -184,13 +184,12 @@ Related Examples (Context):
 {context}
 
 Task: Classify this content into ONE of these categories:
-- Native Advertising (Paid content looking like news)
-- Editorial Content (Pure news/journalism)
-- Sponsored Content (Clearly labeled paid content)
+- native ads (Iklan berbayar yang menyerupai berita)
+- berita murni (Konten berita murni/jurnalisme)
 
 Provide output in valid JSON format:
 {{
-  "label": "category_name",
+  "label": "native ads" or "berita murni",
   "confidence": 0.0_to_1.0,
   "reasoning": "brief explanation"
 }}
@@ -222,15 +221,15 @@ Provide output in valid JSON format:
             logger.warning(f"Failed to parse JSON: {e}")
             
             import re
-            label = 'Editorial Content'
+            label = 'berita murni'  # Default
             confidence = 0.7
             
             # Extract label from text
-            if 'native advertising' in response_text.lower() or 'native ads' in response_text.lower():
-                label = 'Native Advertising'
+            if 'native ads' in response_text.lower() or 'native advertising' in response_text.lower():
+                label = 'native ads'
                 confidence = 0.75
-            elif 'editorial' in response_text.lower():
-                label = 'Editorial Content'
+            elif 'berita murni' in response_text.lower() or 'editorial' in response_text.lower():
+                label = 'berita murni'
                 confidence = 0.75
             
             # Try to extract confidence
@@ -254,13 +253,13 @@ Provide output in valid JSON format:
         
         if promo_count >= 2:
             return {
-                'label': 'Native Advertising',
+                'label': 'native ads',
                 'confidence': 0.65,
                 'reasoning': f'Keyword-based: detected {promo_count} promotional terms'
             }
         else:
             return {
-                'label': 'Editorial Content',
+                'label': 'berita murni',
                 'confidence': 0.60,
-                'reasoning': 'Keyword-based: appears to be editorial content'
+                'reasoning': 'Keyword-based: appears to be pure news content'
             }
