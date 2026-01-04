@@ -115,11 +115,15 @@ class ExplanationAgent:
                 
             elif self.provider == 'huggingface' and self.client:
                 response = self.client(
-                    prompt, 
-                    max_new_tokens=1024,  # Increased for complete explanation
+                    prompt,
+                    max_new_tokens=512,
                     num_return_sequences=1,
                     temperature=self.temperature,
-                    truncation=True
+                    do_sample=True,
+                    top_p=0.95,
+                    repetition_penalty=1.2,
+                    truncation=True,
+                    pad_token_id=self.client.tokenizer.eos_token_id
                 )
                 explanation_text = response[0]['generated_text']
                 if explanation_text.startswith(prompt):

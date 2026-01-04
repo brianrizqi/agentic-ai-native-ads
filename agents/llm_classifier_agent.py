@@ -121,9 +121,12 @@ class LLMClassifierAgent:
                     prompt, 
                     max_new_tokens=512,  # Increased for complete JSON response
                     num_return_sequences=1,
-                    temperature=self.temperature,
-                    do_sample=False if self.temperature == 0 else True,  # Deterministic for temp=0
-                    truncation=True
+                    temperature=self.temperature if self.temperature > 0 else 0.7,
+                    do_sample=True,  # Always sample to avoid repetition
+                    top_p=0.95,  # Nucleus sampling
+                    repetition_penalty=1.2,  # Prevent repetitive text
+                    truncation=True,
+                    pad_token_id=self.client.tokenizer.eos_token_id
                 )
                 response_text = response[0]['generated_text']
                 # Strip prompt from response if duplicated
