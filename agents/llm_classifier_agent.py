@@ -177,21 +177,21 @@ class LLMClassifierAgent:
 Title: {title}
 Summary: {summary}
 
-Content Excerpt:
+Kutipan Konten:
 {text[:800]}
 
-Related Examples (Context):
+Contoh Relevan (Konteks):
 {context}
 
-Task: Classify this content into ONE of these categories:
+Tugas: Klasifikasikan konten ini ke dalam SALAH SATU kategori berikut:
 - native ads (Iklan berbayar yang menyerupai berita)
 - berita murni (Konten berita murni/jurnalisme)
 
-Provide output in valid JSON format:
+Berikan output dalam format JSON yang valid:
 {{
-  "label": "native ads" or "berita murni",
-  "confidence": 0.0_to_1.0,
-  "reasoning": "brief explanation"
+  "label": "native ads" atau "berita murni",
+  "confidence": 0.0_sampai_1.0,
+  "reasoning": "penjelasan singkat dalam Bahasa Indonesia"
 }}
 [/INST]"""
         return prompt
@@ -255,11 +255,11 @@ Provide output in valid JSON format:
             return {
                 'label': 'native ads',
                 'confidence': 0.65,
-                'reasoning': f'Keyword-based: detected {promo_count} promotional terms'
+                'reasoning': f'Berbasis kata kunci: terdeteksi {promo_count} istilah promosi'
             }
         else:
             return {
                 'label': 'berita murni',
                 'confidence': 0.60,
-                'reasoning': 'Keyword-based: appears to be pure news content'
+                'reasoning': 'Berbasis kata kunci: tampak seperti konten berita murni'
             }
