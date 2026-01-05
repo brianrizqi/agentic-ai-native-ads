@@ -1,114 +1,178 @@
-# Agentic AI untuk Deteksi Native Ads pada Portal Berita Elektronik
+# Agentic AI untuk Deteksi Native Ads
 
-**Penelitian Postdoc**: Pengembangan sistem Agentic AI untuk mendeteksi native advertising pada portal berita elektronik menggunakan pendekatan multi-agent dengan LLM (Large Language Model) `openai/gpt-oss-20b`.
-
-## 🗺️ Peta Metodologi (Architecture)
-
-Sistem ini mengikuti alur kerja agentic sebagai berikut:
-
-```mermaid
-graph TD
-    Start([Start: Input URL]) --> WA[Web Scraping Agent]
-    
-    subgraph "Data Acquisition & Processing"
-        WA -->|Raw HTML| PA[Preprocessing Agent]
-        PA -->|Cleaned Text & Features| Pipeline
-    end
-    
-    subgraph "Agentic AI Core (Reasoning)"
-        Pipeline -->|Query| RA[Retriever Agent]
-        Dataset[(Knowledge Base)] -->|Context| RA
-        
-        RA -->|Context + Content| CA[LLM Classifier Agent]
-        CA -->|Classification Label| EA[Explanation Agent]
-    end
-    
-    subgraph "Output"
-        EA -->|Final Report| End([Result: JSON/Display])
-    end
-```
-
-### Penjelasan Alur Agent:
-1.  **Web Scraping Agent**: Mengambil data mentah dari URL berita.
-2.  **Preprocessing Agent**: Membersihkan teks, menghapus noise, dan mengekstrak fitur linguistik.
-3.  **Retriever Agent (RAG)**: Mencari contoh kasus serupa dari dataset `native_ads_dataset` untuk memberikan konteks pada LLM.
-4.  **LLM Classifier Agent**: Menggunakan model `openai/gpt-oss-20b` untuk menentukan apakah artikel adalah Native Ads atau Editorial.
-5.  **Explanation Agent**: Menjelaskan alasan keputusan klasifikasi dalam bahasa yang mudah dipahami.
+**Penelitian Postdoc**: Sistem AI untuk mendeteksi iklan terselubung (native ads) di portal berita online menggunakan teknologi Agentic AI.
 
 ---
 
-## 🚀 Panduan Eksekusi (Step-by-Step)
+## 📖 Apa itu Project Ini?
 
-Ikuti langkah-langkah ini secara **berurutan** untuk menjalankan sistem.
+Project ini adalah sistem AI yang bisa **membedakan artikel berita asli dengan iklan yang menyamar sebagai berita** (native ads). Sistem ini menggunakan beberapa "agen AI" yang bekerja sama seperti tim detektif untuk menganalisis artikel berita.
 
-### 1. Persiapan Lingkungan (Environment)
+### Contoh Kasus:
+- ✅ **Berita Asli**: "Inflasi Bulan Ini Naik 2%, BI Pertimbangkan Naikkan Suku Bunga"
+- ❌ **Native Ads**: "Promo Spesial BRI di HUT ke-128, Diskon Hingga Rp1,28 Juta!" ← Ini iklan yang ditulis seperti berita
 
-Pastikan Anda memiliki Python 3.10+ dan GPU NVIDIA (disarankan VRAM >24GB untuk model 20B, atau gunakan teknik kuantisasi).
+---
 
-```bash
-# 1. Buat Virtual Environment
-python -m venv .venv
-.venv\Scripts\activate  # Windows
-# source .venv/bin/activate  # Mac/Linux
+## 🎯 Cara Kerja Sistem (Sederhana)
 
-# 2. Install Dependencies utama
-pip install -r requirements.txt
+Sistem ini punya 5 "agen AI" yang bekerja berurutan:
 
-# 3. Install PyTorch dengan dukungan CUDA (Wajib untuk GPU)
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-pip install accelerate
+```
+1. Web Scraper → Ambil artikel dari URL
+2. Preprocessor → Bersihkan teks
+3. Retriever → Cari contoh serupa di database
+4. Classifier → Tentukan: Native Ads atau Berita Asli?
+5. Explainer → Jelaskan alasannya
 ```
 
-### 2. Persiapan Data (Dataset Converter)
+**Analogi**: Seperti tim dokter yang memeriksa pasien:
+- Dokter 1: Ambil data pasien
+- Dokter 2: Bersihkan data
+- Dokter 3: Cek riwayat kasus serupa
+- Dokter 4: Diagnosis
+- Dokter 5: Jelaskan diagnosis ke pasien
 
-Sebelum menjalankan AI, kita perlu "melatih" ingatan Retriever Agent dengan mengubah dataset Excel menjadi knowledge base.
+---
 
-*   **Input**: `native_ads_dataset.xlsx` (Excel file)
-*   **Output**: `data/llm_dataset_qna.json`
+## 🚀 Cara Menjalankan (Step-by-Step)
 
-**Jalankan Command:**
+### Langkah 1: Persiapan Awal
+
+**Install Python dan Library:**
+```bash
+# 1. Buat virtual environment
+python -m venv .venv
+
+# 2. Aktifkan virtual environment
+# Untuk Mac/Linux:
+source .venv/bin/activate
+# Untuk Windows:
+.venv\Scripts\activate
+
+# 3. Install semua library yang dibutuhkan
+pip install -r requirements.txt
+```
+
+---
+
+### Langkah 2: Siapkan Dataset
+
+Dataset adalah "buku pengetahuan" yang dipakai AI untuk belajar membedakan berita asli vs iklan.
+
+**Jalankan converter:**
 ```bash
 python tools/dataset_converter.py
 ```
-*Ikuti instruksi di layar (Pilih format `1` untuk RAG).*
 
-### 3. Menjalankan Demo (Execution)
-
-Gunakan script `run_local_demo.py` untuk menjalankan seluruh pipeline agent pada satu artikel berita.
-
-**Command:**
-```bash
-python run_local_demo.py --url "MASUKKAN_URL_BERITA_DISINI"
-```
-
-**Contoh:**
-```bash
-python run_local_demo.py --url "https://www.cnnindonesia.com/ekonomi/20231212140523-532-1036329/promo-spesial-bri-di-hut-ke-128-diskon-hingga-rp1-28-juta"
-```
-
-*Catatan: Saat pertama kali dijalankan, sistem akan otomatis mendownload model `openai/gpt-oss-20b` dari HuggingFace. Proses ini membutuhkan koneksi internet dan waktu beberapa saat.*
+**Apa yang terjadi?**
+- File `native_ads_dataset.xlsx` (Excel) akan diubah jadi format JSON
+- Hasilnya: `data/llm_dataset_qna.json` (database pengetahuan AI)
 
 ---
 
-## 📂 Struktur Project
+### Langkah 3: Jalankan Deteksi
 
-*   `run_local_demo.py`: Script utama untuk menjalankan demo.
-*   `config.json`: File konfigurasi (nama model, parameter).
-*   `agents/`: Folder berisi kode untuk setiap agent.
-    *   `web_agent.py`: Scraping.
-    *   `preprocessing_agent.py`: Cleaning.
-    *   `retriever_agent.py`: Retrieval/Search.
-    *   `llm_classifier_agent.py`: Klasifikasi (Core AI).
-    *   `explanation_agent.py`: Penjelasan hasil.
-*   `tools/`: Tools bantu (konverter data, augmentasi).
-*   `data/`: Tempat menyimpan dataset dan hasil output.
+**Command untuk analisis artikel:**
+```bash
+python run_cpu_mode.py --url "MASUKKAN_URL_ARTIKEL_DISINI"
+```
+
+**Contoh nyata:**
+```bash
+python run_cpu_mode.py --url "https://www.cnnindonesia.com/ekonomi/20231212140523-532-1036329/promo-spesial-bri-di-hut-ke-128-diskon-hingga-rp1-28-juta"
+```
+
+**Output yang akan muncul:**
+```
+CLASSIFICATION RESULT:
+Label: Native Ads
+Confidence: 92%
+Reasoning: Artikel ini mengandung promosi produk, call-to-action, dan bahasa marketing
+```
 
 ---
 
-## ⚠️ Troubleshooting
+## 📂 Struktur Folder Project
 
-1.  **Out of Memory (OOM)**: Jika VRAM GPU tidak cukup untuk model 20B, Anda mungkin perlu mengubah model di `config.json` ke model yang lebih kecil (misal: `gpt2` atau `bert-base-uncased`) untuk testing awal, atau menggunakan versi terkuantisasi (bitsandbytes).
-2.  **HuggingFace Login**: Jika model `gpt-oss-20b` bersifat gated/private, login dulu via terminal:
-    ```bash
-    huggingface-cli login
-    ```
+```
+agentic-ai-native-ads/
+│
+├── agents/                          # Folder berisi semua agen AI
+│   ├── web_agent.py                # Agen 1: Scraping artikel
+│   ├── preprocessing_agent.py      # Agen 2: Bersihkan teks
+│   ├── retriever_agent.py          # Agen 3: Cari contoh serupa
+│   ├── llm_classifier_agent.py     # Agen 4: Klasifikasi
+│   └── explanation_agent.py        # Agen 5: Penjelasan
+│
+├── tools/                           # Tools bantu
+│   └── dataset_converter.py        # Ubah Excel → JSON
+│
+├── data/                            # Folder data
+│   ├── native_ads_dataset.xlsx     # Dataset asli (Excel)
+│   └── llm_dataset_qna.json        # Dataset untuk AI (JSON)
+│
+├── run_cpu_mode.py                 # Script utama (CPU mode)
+├── requirements.txt                # Daftar library Python
+└── README.md                       # File ini
+```
+
+---
+
+## 🔧 Troubleshooting (Kalau Ada Masalah)
+
+### Problem 1: "Dataset not found"
+**Solusi**: Jalankan dulu converter dataset
+```bash
+python tools/dataset_converter.py
+```
+
+### Problem 2: "Out of Memory"
+**Solusi**: Gunakan model yang lebih kecil
+```bash
+python run_cpu_mode.py --model microsoft/phi-2 --url "URL_ANDA"
+```
+
+### Problem 3: "CUDA Error"
+**Solusi**: Gunakan CPU mode (sudah otomatis di `run_cpu_mode.py`)
+
+---
+
+## 📊 Hasil Penelitian
+
+Sistem ini diharapkan mencapai:
+- ✅ **Akurasi**: >90%
+- ✅ **Precision**: >85%
+- ✅ **Recall**: >85%
+- ✅ **Explainability**: Bisa menjelaskan alasan keputusan
+
+---
+
+## 📧 Kontak
+
+**Peneliti**: Brian Rizqi  
+**Institusi**: [Universitas Anda]  
+**Email**: [Email Anda]
+
+---
+
+## 📝 Catatan Penting
+
+1. **Pertama kali run akan lama** karena download model AI (~2-5GB)
+2. **Butuh koneksi internet** untuk download model
+3. **CPU mode lebih lambat** tapi lebih stabil (tidak perlu GPU)
+4. **Hasil disimpan** di file `local_demo_result_cpu.json`
+
+---
+
+## 🎓 Untuk Publikasi
+
+Project ini adalah bagian dari penelitian postdoc dengan target publikasi di jurnal internasional Q1/Q2 seperti:
+- Expert Systems with Applications
+- Information Processing & Management
+- Digital Journalism
+
+**Kontribusi Penelitian:**
+- Framework Agentic AI untuk deteksi native ads
+- Dataset native ads Indonesia (akan dipublikasikan)
+- Sistem dengan explainability tinggi
