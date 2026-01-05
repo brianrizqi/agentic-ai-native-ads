@@ -1,0 +1,638 @@
+{
+  "model": "mistralai/Mistral-7B-Instruct-v0.2",
+  "num_samples": 100,
+  "metrics": {
+    "accuracy": 0.53,
+    "macro_avg": {
+      "precision": 0.5285899935022742,
+      "recall": 0.5176282051282051,
+      "f1_score": 0.4725620020199753
+    },
+    "native_ads": {
+      "precision": 0.5263157894736842,
+      "recall": 0.20833333333333334,
+      "f1_score": 0.29850746268656714,
+      "support": 48.0
+    },
+    "berita_murni": {
+      "precision": 0.5308641975308642,
+      "recall": 0.8269230769230769,
+      "f1_score": 0.6466165413533834,
+      "support": 52.0
+    },
+    "confusion_matrix": [
+      [
+        10,
+        38
+      ],
+      [
+        9,
+        43
+      ]
+    ],
+    "avg_confidence": 0.9789999999999999,
+    "confidence_std": 0.0557584074378026
+  },
+  "detailed_results": [
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": "Konten berisi informasi tentang penetapan wilayah labuh jangkar yang disambut baik oleh Ansar, sebagai wakil Pemprov Kepri. Konten juga menjelaskan tentang wilayah labuh jangkar yang telah ditetapkan oleh Kemenhub, serta potensi peningkatan pendapatan asli daerah (PAD) Kepri. Konten ini tidak menunjukkan elemen iklan yang jelas, sehingga dapat disangkakan sebagai konten berita murni."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"Konten berita murni mengenai pengumiman baru PT Pertamina mengenai pembelian BBM Pertalite dan Solar menggunakan MyPertamina, termasuk inf"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengulas tentang pemulihan tren perjalanan dan pariwisata, meningkatnya mobilisasi masyarakat, dan data survey terkait jumlah orang yang akan melakukan mudik Lebaran tahun ini. Konten ini tidak menunjukkan elemen promosi atau iklan secara langsung."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"The content is written in a descriptive and informative style, focusing on the quality and nutritional benefits of Australian beef (daging"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengkontain informasi mengenai penemuan baru varian Omicron COVID-19, serta penanggapan reaksi pemerintah terhadap varian tersebut. Konten ini tidak menjual atau mengiklankan produk atau jasa secara langsung."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "The text reports news about the passing of a former Minister of Agriculture and Spatial Planning, Ferry Mursyidan Baldan, including details about the last time he was seen and the location where he was found."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The context is providing advice and information about saving money on household necessities, not promoting a specific product or service."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": "The content describes the story of Amaq Kamat, a local trader who became a successful BRILink agent after a chance encounter with a BRI employee named Erwin 10 years ago. The text does not contain any clear promotional language or calls to action that would indicate native ads."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita mengenai perkembangan masalah PKPU (penundaan kewajiban pembayaran utang) PT Garuda Indonesia yang sedang dilakukan. Konten ini tidak menunjukkan elemen iklan terselubung (native ads) seperti promosi produk atau jasa, maupun teks yang berbeda warna atau format dibandingkan konten utama."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.75,
+      "reasoning": " Based on the provided content, the label for this text is \"berita murni\" with a confidence score of 0.95. The reasoning behind this classification is that the text is primarily informational in natur"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": " Based on the given context, it can be classified as \"berita murni\" (journalism). The reason is that the content is about traditional food from Minahasa, Manado, and its recipe, which is considered ed"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengulas kegiatan Wakil Menteri Pariwisata dan Ekonomi Kreatif, Angela Tanoesoedibjo, serta pembukaan Gerakan UMKM dan Food Court Ramadan oleh pengembang bisnis UMKM. Konten ini tidak menjual atau mengiklankan produk atau jasa secara langsung."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"The text is about traditional Indonesian foods that were common in the 1990s but are now rare. It does not contain any direct promotional "
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berisi tentang perjanjian kerja sama antara PT Jasa Raharja dan PT Teknologi Perdana Indonesia tentang penghimpunan dan penyaluran iuran wajib untuk pertanggungan kecelakaan penumpang. Konten ini merupakan berita murni karena tidak menjual produk atau layanan secara langsung."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena tidak melakukan promosi produk atau layanan secara langsung, melainkan hanya menginformasikan tentang kejadian atau fakta."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten menggunakan Bahasa Indonesia formal, mengulas tentang penetapan Mahkamah Agung tentang permohonan ganti kelamin dan melapor tentang kasus-kasus yang ditolak dan diterima. Konten tidak menjual produk atau layanan, jadi tidak sesuai dengan definisi native ads."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"The content is about sharing information and a recipe for making Korean yellow pickled radish (carrots) called 'acar lobak kuning'. It does"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai pembukaan SEA Games Vietnam 2021 di Hanoi, Vietnam. Konten ini tidak menunjukkan elemen iklan berbayar seperti teks atau gambar yang jelas menunjukkan produk atau jasa."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena fokusnya terhadap kegiatan Bahlil dan pengunjungannya bersama direktur Pertamina dan Ketua Umum Himpunan Pengusaha Muda Indonesia, serta apresiasi Kepala BKPM terhadap proyek RDMP RU V Balikpapan dan Lawe-Lawe. Tidak terdapat iklan terselubung (native ads) yang terdeteksi dalam konten ini."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"The content is about Amber Heard being the woman with the highest facial harmony ratio according to a scientific method called the Greek G"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita mengenai kegiatan Komisi Pemberantasan Korupsi (KPK) terhadap Bendahara Umum PBNU Mardani Maming yang sedang menghadapi kejadian korupsi. Konten ini merupakan berita murni atau konten jurnalistik."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " Based on the given content, it can be classified as \"berita murni\" (journalistic content). The reason is that the text is primarily informative and descriptive, providing details about the role and f"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai pemerintah melakukan pembatasan aturan saat Idulfitri dan Lebaran 2022, disampaikan oleh Menteri Koordinator Bidang Perekonomi dan Ketua Komite Penanganan COVID-19 dan Pemulihan Ekonomi Nasional. Konten ini tidak menunjukkan elemen iklan berbayar."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"native ads\",\n\"confidence\": 1.0,\n\"reasoning\": \"The given content is about Alif Cepmek, who became a public sensation due to his funny and successful live selling videos on TikTok. The cont"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The content is about providing information on the differences between influenza and flu, and the symptoms and complications of influenza. It does not contain any promotional or advertising elements."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten ini mengajak pembaca untuk hadir dalam acara BRIAPI Awards 2021 dan memberikan informasi mengenai teknologi BRIAPI, sales volume, dan penggunaan teknologi untuk integrasi produk dan layanan BRI. Konten ini tidak menawarkan iklan berbayar yang menyerupai berita."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The content is an advertisement for Home Credit's digital business strategies, customer journey, and digital operational advantages to attract and retain customers during the pandemic. It also mentions the use of their mobile application for easy transactions, which is a clear indication of a native ad."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"native ads\",\n\"confidence\": 0.95,\n\"reasoning\": \"The content discusses unique ways vendors attract customers, including the viral Thai street food vendor with a unique selling style. This i"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni karena isi konten terdapat informasi mengenai kegiatan Menteri Lingkungan Hidup dan Kehutanan, Siti Nurbaya di Musyawar"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita menerangkan masalah atas tanggung jawab pemerintah, mengenai pemulihan jaringan telekomunikasi di wilayah Papua, dan tidak menunjukkan elemen promosi atau iklan yang jelas."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The text contains multiple calls-to-action (CTAs) to check the website and Instagram account of BCA Finance, and to visit the nearest branch. This pattern is commonly found in native ads."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "The content explains the concepts of Gerak Lurus Beraturan (GLB) and Gerak Lurus Berubah Beraturan (GLBB) in physics, which is a pure news or informational content."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai pemudik yang mulai melintas jalur Pantura Cirebon dan peningkatan volume kendaraan sepeda motor tersebut, serta peningkatan jumlah pemudik yang lebih awal untuk menghindari kemacetan. Konten ini tidak menunjukkan elemen iklan terselubung (native ads) seperti teaser, call-to-action, atau penjelasan produk/layanan."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni mengenai perjalanan Presiden RI Joko Widodo dan Ibu Negara Iriana ke Stasiun Przemysl Polandia, disertai dengan informa"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni karena informasinya tidak disangkalkan oleh pemilik atau pemasang iklan, melapor mengenai kegiatan PT Pertamina Patra N"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The content is a news report about economic development in Tapanuli Selatan, and does not contain any promotional language or brand mentions that would suggest it is a native ad."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengajak pembaca mengetahui tentang penangkapan empat satwa linang dan tiga satwa hidup di wilayah Palembang, serta informasi mengenai jenis-jenis satwa tersebut. Konten ini tidak menawarkan produk atau layanan untuk dibeli atau dijual."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita mengenai hasil akhir Badminton Asia Championships 2022, penghasil juara, dan perubahan ranking dunia. Konten ini tidak menunjukkan elemen iklan berbayar seperti gambar atau teks ekstra."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten ini merupakan berita murni atau konten editorial karena tidak menjual produk atau layanan secara langsung. Konten ini hanya menginformasikan tentang prestasi siswa di bootcamp internasional dan tidak menjual iklan."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten mengandung informasi tentang pemukulan bomber nuklir Rusia di wilayah dekat Ukraina, serta ancaman serangan rudal terhadap infrastruktur vital dan fasilitas militer Ukraine. Konten ini lebih sesuai dengan kategori berita murni atau jurnalisme, tidak menunjukkan ciri-ciri iklan berbayar seperti native ads."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten ini menggambarkan aksi sosial Partai Persatuan Indonesia (Perindo) yang dilakukan secara murni untuk membantu masyarakat yang membutuhkan, sesuai dengan definisi konten berita murni/jurnalisme."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai pengumuman Nissan tentang penghancuran produksi dan penjualan merek Datsun di India, tidak menunjukkan elemen iklan berbayar."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni karena tidak melakukan promosi produk atau layanan secara langsung, tetapi hanya memberikan informasi tentang kenaikan "
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni karena informasinya tidak disusun secara eksplisit untuk menjual atau mengiklankan produk atau jasa, melainkan hanya un"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni sebagi gana mengenai pengumuman Kementerian Perindustrian mengenai penganugerahan penghargaan RINTEK, apa itu, tujuan, dan syarat pendaftaran. Konten ini tidak menunjukkan elemen iklan, seperti teks yang menarik atau gambar yang menarik untuk mempromosikan produk atau jasa."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Isi konten mengenai pernyataan Veronica Yulis Prihayati mengaku bersyukur atas kepercayaan suaminya menjadi calon Panglima TNI serta ujaran"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni karena isi konten terdapat informasi tentang kegiatan dan keputusan Ketua Pokja FKKMK UGM mengenai kegiatan PTM dan lan"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai pemerosesan merger antara Indosat Ooredoo dan Hutchison 3 Indonesia (Tri Indonesia), menggunakan sumber referensi resmi dari Kompas.com"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten ini merupakan berita murni tentang perjalanan pasangan Dejan Ferdinansyah dan Gloria Emanuelle Widjaja dalam ajang Denmark Masters 2"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni tidak mengandung iklan yang jelas, namun konten ini mengandung teks yang menarik dan membentangkan informasi mengenai The Trans Icon sebagai promosi untuk penjualan unit apartemen. Hal ini merupakan ciri-ciri native ads yang menggunakan konten yang mirip dengan berita murni untuk menarik perhatian dan menjual produk atau layanan."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten ini merupakan berita murni atau konten editorial karena tidak menjual atau mengiklankan produk atau layanan secara langsung. Konten "
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": "The content is promoting a platform and a campaign in conjunction with Indonesia's Independence Day and emphasizing the unity of the community during the Covid-19 pandemic. The Chief Commercial Officer of Indosat Ooredoo is quoted in the content, and the platform is mentioned as a contribution from the company in supporting the government's efforts to curb the spread of Covid-19."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten ini merupakan berita murni atau konten editorial karena ia tidak menjual atau mengiklankan sebuah produk atau layanan secara langsun"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "The content is about the symptoms of a sore throat and how it can indicate Covid-19, quoting from Mayo Clinic. It does not contain any promotional or commercial elements, making it a news article."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.75,
+      "reasoning": " Based on the given content, it can be classified as \"native ads\" with a confidence score of 0.95. The reasoning behind this classification is that the content is discussing the increase in QRIS trans"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "The content describes Caesar earning a significant amount of money from a 24-hour live stream on TikTok and openly sharing this information during the live stream. This behavior is typical of native ads where influencers or content creators promote products or services, often including financial incentives, to their audience."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"Konten berita murni karena mengkongsikan pengalaman dan penjualan usaha kayu Kristik Temanggung oleh pemilik Aditya Widya Pranata. Konten "
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten ini merupakan berita murni atau konten jurnalistik karena ia hanya mengacu kepada kata-kata dan tindakan Rose Blackpink dalam wawancara yang dilakukan oleh Elle, tanpa ada iklan terselubung atau penjualan produk/layanan terdapat di konten ini."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengulas tentang kegiatan podcast Deddy Corbuzier dan pilihan pasangan LGBT sebagai bintang tamu, serta respon terhadap keputusan tersebut."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena berisi informasi tentang kegiatan Tri Tito Karnavian di Pulau Penyengat sebagai bagian dari Hari Kesatuan Gerak (HKG) ke-50 PKK di Provinsi Kepri, termasuk pembesaran vaksinasi untuk lansia dan pengeluaran bantuan kepada masyarakat. Konten ini tidak menunjukkan elemen promosi atau penjualan produk atau jasa."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Isi konten terdiri dari laporan langsung tentang kegiatan Presiden Jokowi di acara Silaturahmi Nasional Desa, termasuk informasi tentang strategi pemerintah dan pengalokasian dana untuk pembangunan desa. Konten ini tidak menunjukkan elemen promosi atau penjualan produk atau layanan."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"The content is about the release of Oppo Reno7 4G in Indonesia, its specifications, and the new sensor IMX709 RGBW used in its camera. It d"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": "Konten berisi laporan tentang pembuatan konten Deddy Corbuzier di sosial media, yang mencakup interaksi dan komentar Deddy terhadap Raffi Ahmad. Konten ini tidak menunjukkan elemen jualan atau iklan terselubung."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni mengenai pemilihan baru wakil Perdana Menteri Malaysia, Fadillah Yusof, dari Partai Gabungan Serawak (GPS) oleh Anwar I"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The content is about the Constitutional Court's decision regarding Pertamina's restructuring, which is a news article."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena fokusnya terhadap pemastian PTM di Kabupaten Tangerang selain itu menyebutkan penyakit hepatitis akut misterius, namun tidak menjual atau mengiklanikan sesuatu produk atau layanan."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita menerangkan kejadian provokasi seorang pilot US Armed Forces di wilayah udara Suriah pada 1 November 2022, manuver gambar kemaluan rusia, dan penggunaan pesawat Boeing KC-135 Stratotanker. Konten ini tidak menunjukkan elemen iklan berbayar."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"The content is about the financial performance of BRI, including its Capital Adequacy Ratio (CAR) and rights issue. It is reported by Vivia"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai penemuan video makanan berlabel halal tetapi mengandung alkohol, yang viral di media sosial TikTok. Konten ini tidak menjual atau mengiklankan produk atau layanan secara langsung."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"Konten ini merupakan berita murni tentang kuliner Bandung, termasuk rekomendasi tempat makan antimainstream dan informasi fakta mengenai m"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengenai diskusi mengenai potensi ekonomi Indonesia, jumlah indikasi geografis, dan promosi di Dubai Expo 2021. Konten ini tidak menunjukkan elemen iklan berbayar yang menyerupai berita (native ads)"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai proyek penambangan minyak oleh Pertamina Algeria EP, meliputi informasi tentang perusahaan, tujuan proyek, jumlah sumur bor dan workover yang sudah selesai, tanggal selesai bor terakhir, dan tahun rencana mencapai puncak produksi."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengandung informasi tentang manfaat latihan mengangkat kaki untuk kesehatan, serta quoting dari Grayson Wickham. Konten tidak menunjukkan elemen iklan berbayar seperti teks atau gambar eksplisit."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": "The text discusses a research study conducted by a team of researchers and the publication of their findings in a scientific journal."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni mengenai pemberitahuan erupsi Gunung Krakatau dan peringatan dari Badan Geologi, tidak menunjukkan elemen iklan berbayar"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena fokusnya adalah tentang peraturan mengenai Kawasan Pabean dan Tempat Penimbunan Sementara (TPS) dan penerapan Ekosistem Logistik Nasional (NLE), serta informasi tentang inovasi PTPos Indonesia dalam simplifikasi TPS. Konten ini tidak menunjukkan elemen jualan atau iklan berbayar secara eksplicit."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengajak pembaca mengganti lampu sendiri di rumah, memberikan langkah-langkah cara mengganti lampu, dan menjelaskan kelebihan lampu LED."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": "The content discusses Samsung's campaign, Galaxy S22 Treasure Hunt, in the metaverse, which is a marketing strategy to attract Galaxy Fans to enter the metaverse. This is considered native advertising as it is integrated into the content and is not clearly distinguishable from the rest of the article."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.75,
+      "reasoning": " Based on the provided content, it can be classified as \"native ads\" with a confidence score of 0.95. The reasoning behind this classification is that the content is an advertisement for \"The Flip,\" a"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita mengenai penangkapan enam orang tersangka dalam kasus penganiayaan hingga tewas anak berusia 12 tahun di atas Kapal Motor (KM) Dharma Kencana 7. Konten ini tidak menunjukkan elemen iklan, seperti teks atau gambar yang berbeda dengan konten sekitarnya atau tanda-tanda iklan seperti 'Sponsored' atau 'Ad'."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten ini merupakan berita murni mengenai permainan sepak bola Persib Bandung yang mencapai babak perempat final Piala Presiden 2022 dan diizinkan bertanding di Stadion Si Jalak Harupat. Konten ini tidak menunjukkan elemen iklan berbayar yang menyerupai berita (native ads)"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten ini merupakan berita murni mengenai konser Justin Bieber di Jakarta yang akan dilakukan pada November 2022, serta penunjukan BCA sebagai sponsor. Konten ini tidak menunjukkan elemen native ads yang jelas seperti isian konten yang lebih dewasa atau isian konten yang lebih komersial."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten berita murni karena mengulas tentang sejarah, budaya, dan kuliner Kota Tangerang secara informasi dan neutral, tidak menjual atau me"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The text is informative in nature and does not contain any promotional content or direct calls to action, making it more likely to be classified as berita murni."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The content is about a forum discussion (FGD) regarding policies and strategies to enhance the competitiveness of investment in KPBPB Batam. It was opened by the Head of Development Center of KPBPB and the representative of the BP Batam. The text does not contain any direct advertisement or promotional language."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " Based on the given content, it can be classified as \"berita murni\" (news or journalism). The reason is that the content is about the provinces mentioned in a webinar and the explanation of the mechan"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": "Konten berita murni karena mengkonglomerasikan tentang pertandingan voli dan kecapaian tim Bandung BJB Tandamata, serta masalah yang perlu diperbaiki. Tidak ada elemen promosi atau penjualan yang jelas terdapat dalam konten ini."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena mengajaki pembaca informasi mengenai kegiatan pemerintah provinsi Jateng dan BPBD untuk memastikan logistik aman bagi warga terdampak banjir. Konten ini tidak menjual atau mengiklankan produk atau jasa secara langsung."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni tentang pecinta Vespa yang melakukan freestyle di Vespa World Days di Bali. Konten ini tidak menjual atau mengikuti format iklan."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.75,
+      "reasoning": " Based on the provided content, it can be classified as \"native ads\" with a confidence level of 0.95. The reasoning behind this classification is that the text describes a business partnership between"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"The text describes a comparison between transaction fees for using ATMs from different banks, specifically mentioning Bank Negara Indonesia"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten mengulas mengenai penentuan bulan Ramadhan dan Hari Raya Idul Fitri, mengutip dari muhammadiyah.or.id. Hal ini merupakan konten berita murni atau konten editorial yang tidak menjual atau menyediakan produk atau layanan secara langsung."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"The text is about oil and gas production, discussing the increase in production and the drilling of new wells. It does not contain any ove"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten ini merupakan berita murni mengenai kegiatan samaadara antara Kementerian Ketenagakerjaan, BPJAMSOSTEK, dan para pemangku kepentingan dalam mencapai hak dan perlindungan jaminan sosial ketenagakerjaan bagi seluruh letprofesional. Konten ini tidak menunjukkan tanda-tanda iklan terselubung (native ads)."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "The content is about an intelligence agency's accusation against China for hacking Ukrainian websites before Russia's attack on Ukraine. The context does not contain any advertising elements."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten ini merupakan berita murni atau konten editorial karena ia melaporkan kegiatan rapat koordinasi penyelenggaraan turnamen sepak bola "
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.95,
+      "reasoning": "The text is about an announcement of the result of SBMPTN 2022, which is an educational selection process for entering universities in Indonesia. However, the text also mentions that the announcement will be made through the official website of LTMPT or the links of the universities, which is a common practice for native ads."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.75,
+      "reasoning": " Based on the provided content, it can be classified as \"berita murni\" (journalism) with a confidence level of 0.95. The reasoning behind this classification is that the text is primarily informative "
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": " Based on the provided content, it can be classified as \"berita murni\" (journalistic content). The reason is that the text is about a public figure, Wali Kota Surabaya Eri Cahyadi, making a statement "
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita mengenai pembagian antara waktu sebelum dan setelah masuknya listrik di Desa Papagarang, serta sejarah pemanfaatan listrik di desa tersebut. Konten ini tidak menunjukkan elemen iklan berbayar seperti teks yang menarik atau gambar yang menarik untuk mempromosikan produk atau jasa."
+    }
+  ]
+}

@@ -1,20 +1,34 @@
 {
-  "url": "https://www.cnnindonesia.com/ekonomi/20231212140523-532-1036329/promo-spesial-bri-di-hut-ke-128-diskon-hingga-rp1-28-juta",
-  "scraped": "Jokowi Tunjuk Ridwan Kamil Jadi Kurator Infrastruktur IKN",
+  "url": "https://www.cnnindonesia.com/teknologi/20221203112947-190-882335/jadwalkan-rapat-kian-mudah-cek-cara-bagikan-google-calendar",
+  "scraped": "Jadwalkan Rapat Kian Mudah, Cek Cara Bagikan Google Calendar",
   "classification": {
-    "label": "unknown",
-    "confidence": 0.0,
-    "reasoning": "LLM inference failed, fallback used"
+    "label": "native ads",
+    "confidence": 0.95,
+    "reasoning": " ```json\n{\n  \"label\": \"native ads\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"Mengandung informasi teknis bagaimana menggunakan Google Calender serta memiliki link untuk melihat artikel lengkap\"\n}\n``` [IN",
+    "metadata": {
+      "model": "models/native-ads-qwen25-lora",
+      "provider": "huggingface",
+      "context_documents": 5,
+      "input_length": 2000
+    }
   },
   "explanation": {
-    "summary": "Classified as 'unknown' with 0% confidence.",
-    "detailed_explanation": "Explanation generation failed or unavailable.",
-    "key_factors": [],
-    "classification_label": "unknown",
-    "confidence_score": 0.0,
+    "summary": "## Jawaban  \nRingkasan Konten Yang Di Kelassifitkasikan : \nInformasi mengenai cara melakukan rapat di aplikasi google calendar dilambangkan oleh beberapa faktor penting yaitu judul konten \"Jadwalkan Rapat Kian Mudah, Cek Cara Bagikan Google Calendar\", subjudul berisi \"Cara Membuat Rencana Rapat Pada...",
+    "detailed_explanation": " ## Jawaban  \nRingkasan Konten Yang Di Kelassifitkasikan : \nInformasi mengenai cara melakukan rapat di aplikasi google calendar dilambangkan oleh beberapa faktor penting yaitu judul konten \"Jadwalkan Rapat Kian Mudah, Cek Cara Bagikan Google Calendar\", subjudul berisi \"Cara Membuat Rencana Rapat Pada Aplikasi Google Calendar\". Selain itu juga muncullah tautan yang menunjukkan adanya halaman web lebih lanjut dimana pengguna dapat belajar tentang bagaimana membuat sebuah kalender secara online maupun offline pada platformnya.\nPoin-poin tersebut merupakan pilihan utama dari penentuan klasifikasi native ads karena selalu dibarengi dengan teks luar native ads. Hal tersebut dikenal sebagai pattern-native ads biasa digunakan untuk memberikan spesialitas kepada website lain agar menjadi top hit page sehingga meningkatkan traffic website anda dan mendapatkan klik lewat search engine marketing seperti SEO. Adapun penetapan native ads sangat disukai oleh pengelola blog, publisher media content maupun situs-situs internet lainya.[/INST] ### Analisis Keputusan Klasifikasi \n\n#### Tingkat Confidence:\n\n**Label**: `native ads`\n\n**Confidence**: **95%**\n\n**Reasoning**: \n- Judul Konten (`Jadalkan Rapat Kian Mudah, Cek Cara Bagikan Google Calendar`): Berfungsi untuk menyediakan ringkasan isi konten, baik berupa gambar, video ataupun text.\n- Subjudul Konten:`Menjawab Masalah Pengaturan waktu dan Scheduling`: Untuk memberikan pemahaman singkat konsep kontennya, semacam headline perihal apa saja yang akan ditangani.\n- Teks Utama Konten(`Bagaimana caranya?`) & Hasil Klasifikasi Contoh(Teaser): Digunakan untuk menjelaskan langkah-langkah proses pembacaan atau bahayatah baca konten.\n\n#### Penjelasan Tingkat Confidence:\n\nDi sini kami menyarankan bahwa label native ads masih sesuai meskipun confidence tinggi. Ini adalah kategori native ads tetapi tidak sepenuhnya berkonsentrasi hanya pada produk / layanan tertentu yang sedang dicoba.\n\n### Laporan Interpret",
+    "key_factors": [
+      "Label**: `native ads`",
+      "Confidence**: **95%**",
+      "Reasoning**:",
+      "Judul Konten (`Jadalkan Rapat Kian Mudah, Cek Cara Bagikan Google Calendar`): Berfungsi untuk menyediakan ringkasan isi konten, baik berupa gambar, video ataupun text.",
+      "Subjudul Konten:`Menjawab Masalah Pengaturan waktu dan Scheduling`: Untuk memberikan pemahaman singkat konsep kontennya, semacam headline perihal apa saja yang akan ditangani."
+    ],
+    "classification_label": "native ads",
+    "confidence_score": 0.95,
     "alternative_interpretations": [],
     "metadata": {
-      "model": "fallback"
+      "model": "models/native-ads-qwen25-lora",
+      "provider": "huggingface",
+      "explanation_length": 1961
     }
   }
 }

@@ -1,0 +1,98 @@
+{
+  "model": "mistralai/Mistral-7B-Instruct-v0.2",
+  "num_samples": 10,
+  "metrics": {
+    "accuracy": 0.3,
+    "macro_avg": {
+      "precision": 0.375,
+      "recall": 0.40476190476190477,
+      "f1_score": 0.29292929292929293
+    },
+    "native_ads": {
+      "precision": 0.5,
+      "recall": 0.14285714285714285,
+      "f1_score": 0.2222222222222222,
+      "support": 7.0
+    },
+    "berita_murni": {
+      "precision": 0.25,
+      "recall": 0.6666666666666666,
+      "f1_score": 0.36363636363636365,
+      "support": 3.0
+    },
+    "confusion_matrix": [
+      [
+        1,
+        6
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "avg_confidence": 0.9349999999999999,
+    "confidence_std": 0.095
+  },
+  "detailed_results": [
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.75,
+      "reasoning": " Based on the provided content, it can be classified as \"berita murni\" (pure news/journalism) with a confidence level of 0.95. The reasoning behind this classification is that the content is a news re"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 1.0,\n\"reasoning\": \"Konten ini merupakan berita murni atau konten jurnalistik sebagai diajelaskan tentang perubahan atau pembuatan sebuah kebijakan baru oleh P"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena informasinya tidak disusun secara eksplisit untuk menjual atau promosi produk atau jasa, melainkan hanya untuk memberikan informasi yang relevan dengan subjek yang ditanggulangi (travel and tourism recovery in this case)."
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"The content is written in the third person and provides information about the quality, texture, and nutritional value of Australian beef, "
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": " {\n\"label\": \"berita murni\",\n\"confidence\": 0.95,\n\"reasoning\": \"The content is about the new variant of concern, Omicron, and the response of countries, including Indonesia, to it. The text mentions the"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Konten berita murni karena melaporkan kejadian atas nama polisi dan menggunakan sumber daya dari kabid humas Polda Metro Jaya."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.95,
+      "reasoning": "The content is providing information and tips for a mother to save money on household needs, specifically mentioning the product Aqua for water consumption. It does not contain any promotional language or direct calls to action that are typical of native ads."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 1.0,
+      "reasoning": "The content describes a local man named Amaq Kamat who became a successful BRILink agent after a chance encounter with a BRI bank officer named Erwin 10 years ago. The content does not contain any explicit advertising elements and its primary focus is on reporting a local news story."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 1.0,
+      "reasoning": "Isi konten berita mengenai perundingan PKPU Garuda Indonesia oleh Pengadilan Negeri Jakarta Pusat, komentar Irfan Setiaputra direktur utama perusahaan tersebut. Konten ini tidak menunjukkan elemen iklan terselubung (native ads) seperti promosi produk atau jasa, ataupun ada teks atau gambar yang menarikkan atau menarik perhatian pengguna untuk mengklik iklan."
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.75,
+      "reasoning": " Based on the provided context, the label for the given content is \"berita murni\" with a confidence level of 1.0. The reasoning behind this classification is that the content is about a talkshow initi"
+    }
+  ]
+}
