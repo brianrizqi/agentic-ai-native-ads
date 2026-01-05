@@ -174,8 +174,14 @@ class LLMClassifierAgent:
     
     def _build_classification_prompt(self, text: str, title: str, 
                                      summary: str, context: str) -> str:
-        """Build classification prompt."""
-        prompt = f"""[INST] You are an expert classifier. Analyze the following content and classify it.
+        """Build classification prompt with BALANCED examples."""
+        prompt = f"""[INST] You are an expert classifier for detecting native advertising in Indonesian news.
+
+CRITICAL INSTRUCTIONS:
+- Analyze carefully - NOT everything is native ads!
+- Berita murni (pure news) is EQUALLY common as native ads
+- Look for CLEAR promotional intent before labeling as native ads
+- When in doubt, prefer "berita murni"
 
 Title: {title}
 Summary: {summary}
@@ -186,31 +192,46 @@ Kutipan Konten:
 Contoh Relevan (Konteks):
 {context}
 
-Contoh Klasifikasi:
+CONTOH KLASIFIKASI (BALANCED):
 
-CONTOH 1 (native ads):
+CONTOH 1 - NATIVE ADS:
 "Promo spesial BRI di HUT ke-128, diskon hingga Rp1.28 juta untuk berbagai produk perbankan."
 Label: native ads
-Alasan: Mengandung promosi produk (BRI), diskon, dan penawaran khusus.
+Alasan: Promosi produk bank, diskon, ajakan transaksi.
 
-CONTOH 2 (berita murni):
+CONTOH 2 - BERITA MURNI:
 "Presiden Jokowi menunjuk Ridwan Kamil sebagai kurator infrastruktur IKN pada hari Selasa."
 Label: berita murni
-Alasan: Berita faktual tentang kebijakan pemerintah, tidak ada promosi produk.
+Alasan: Berita faktual kebijakan pemerintah, tidak ada promosi produk.
 
-CONTOH 3 (native ads):
+CONTOH 3 - NATIVE ADS:
 "Dapatkan cashback hingga 50% untuk pembelian produk elektronik di Tokopedia hari ini!"
 Label: native ads
 Alasan: Ajakan beli dengan cashback, promosi e-commerce.
 
-Tugas: Klasifikasikan konten ini ke dalam SALAH SATU kategori berikut:
-- native ads (Iklan berbayar yang menyerupai berita)
-- berita murni (Konten berita murni/jurnalisme)
+CONTOH 4 - BERITA MURNI:
+"Inflasi Indonesia pada bulan Maret tercatat 4.97%, turun dari bulan sebelumnya menurut BPS."
+Label: berita murni
+Alasan: Laporan ekonomi faktual dari sumber resmi, tidak ada ajakan beli.
 
-Berikan output dalam format JSON yang valid:
+CONTOH 5 - NATIVE ADS:
+"Investasi emas Antam kini lebih mudah dengan aplikasi baru, gratis biaya admin bulan ini."
+Label: native ads
+Alasan: Promosi aplikasi investasi, gratis biaya, ajakan menggunakan produk.
+
+CONTOH 6 - BERITA MURNI:
+"Mahkamah Agung menolak kasasi terdakwa kasus korupsi dengan vonis 8 tahun penjara."
+Label: berita murni
+Alasan: Berita hukum faktual, tidak ada promosi atau ajakan komersial.
+
+TUGAS: Klasifikasikan konten di atas ke dalam SALAH SATU kategori:
+- "native ads" → Iklan berbayar yang menyerupai berita, ada promosi/ajakan beli
+- "berita murni" → Konten jurnalistik murni, laporan faktual tanpa promosi
+
+OUTPUT FORMAT (JSON):
 {{
   "label": "native ads" atau "berita murni",
-  "confidence": 0.0_sampai_1.0,
+  "confidence": 0.0-1.0,
   "reasoning": "penjelasan singkat dalam Bahasa Indonesia"
 }}
 [/INST]"""
