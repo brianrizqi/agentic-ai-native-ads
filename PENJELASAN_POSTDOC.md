@@ -1,4 +1,4 @@
-# Penjelasan Postdoc 
+# Penjelasan Postdoc
 
 ## 🎯 Masalahnya Apa?
 
@@ -36,7 +36,7 @@ Saya buat sistem AI yang bisa **otomatis membedakan** berita asli vs iklan menya
 
 ### Teknologi yang Dipakai: **Agentic AI**
 
-**Apa itu Agentic AI?** (Bahasa Bayi Version)
+**Apa itu Agentic AI?**
 
 Bayangkan Anda punya **tim robot** yang bekerja sama:
 
@@ -55,6 +55,102 @@ Robot 5 (Explainer)      → Jelaskan alasannya dengan bahasa manusia
 **Kenapa pakai banyak robot?**
 - Kalau cuma 1 robot → kurang akurat
 - Kalau pakai tim robot → setiap robot punya tugas spesifik → lebih akurat!
+
+---
+
+## 🤖 Model AI yang Dipakai
+
+### ⚠️ Penting: Tidak Semua Agen Pakai AI!
+
+Dari 5 agen, hanya **3 agen yang pakai model AI**. Yang lain pakai library programming biasa.
+
+### Agen yang TIDAK Pakai AI:
+
+#### 1. **Web Scraper Agent** (Tidak Pakai AI)
+**Library**: BeautifulSoup4 + Requests  
+**Fungsi**: Ambil artikel dari website (seperti copy-paste otomatis)
+
+**Analogi**: Seperti **fotokopi**
+- Anda pergi ke perpustakaan
+- Fotokopi halaman buku yang Anda butuhkan
+- Tidak perlu AI, cuma butuh mesin fotokopi
+
+**Cara Kerja**:
+1. Buka URL berita
+2. Download HTML-nya
+3. Extract teks artikel (buang iklan, sidebar, footer)
+
+#### 2. **Preprocessing Agent** (Tidak Pakai AI)
+**Library**: NLTK, spaCy, Regex  
+**Fungsi**: Bersihkan teks sebelum dianalisis AI
+
+**Analogi**: Seperti **cuci sayuran** sebelum dimasak
+- Buang daun yang layu (emoji, special characters)
+- Potong-potong (tokenisasi)
+- Buang bagian yang tidak perlu (stopwords)
+
+**Cara Kerja**:
+```
+Input: "Wah!!! Promo GEDE-GEDEAN 🎉 diskon 50% lho!!!"
+         ↓ (cleaning)
+Output: "promo besar diskon 50 persen"
+```
+
+---
+
+### Agen yang PAKAI AI (3 Agen):
+
+#### 3. **Retriever Agent** ✅ PAKAI AI
+**Nama**: `sentence-transformers/all-MiniLM-L6-v2`  
+**Ukuran**: 80MB (kecil!)  
+**Fungsi**: Ubah kalimat jadi angka-angka (vector) untuk bisa dicari
+
+**Analogi**: Seperti **barcode** di supermarket
+- Setiap produk punya barcode unik
+- Kasir scan barcode → langsung tahu produknya apa
+- Model ini ubah artikel jadi "barcode" → bisa cari artikel serupa
+
+#### 4. **LLM Classifier Agent** (Otak Utama) ✅ PAKAI AI
+**Nama**: `mistralai/Mistral-7B-Instruct-v0.2`  
+**Ukuran**: 7GB  
+**Fungsi**: Baca artikel → Putuskan: Native Ads atau Editorial?
+
+**Kenapa Mistral?**
+- ✅ Open source (gratis)
+- ✅ Akurasi tinggi (90%+)
+- ✅ Support bahasa Indonesia
+- ✅ Bisa jalan di GPU biasa
+
+**Alternatif (kalau tidak ada GPU):**
+- `microsoft/phi-2` (2.7GB) → Lebih kecil, bisa jalan di CPU
+- `Qwen2.5-3B` (3GB) → Alternatif lain untuk CPU
+
+#### 5. **Explanation Agent** ✅ PAKAI AI
+**Nama**: `mistralai/Mistral-7B-Instruct-v0.2` (sama dengan Classifier)  
+**Fungsi**: Jelaskan alasan keputusan dengan bahasa manusia
+
+**Contoh Output**:
+```
+Artikel ini diklasifikasikan sebagai NATIVE ADS karena:
+1. Ada kata promosi: "diskon", "promo spesial"
+2. Ada call-to-action: "buruan daftar"
+3. Menyebut brand 15 kali
+4. Gaya bahasa marketing, bukan jurnalistik
+```
+
+### 📊 Perbandingan Model (Sederhana):
+
+| Model | Ukuran | Butuh GPU? | Akurasi | Kecepatan |
+|-------|--------|------------|---------|----------|
+| **Mistral-7B** | 7GB | Ya (recommended) | 90%+ | Sedang |
+| **Phi-2** | 2.7GB | Tidak (CPU OK) | 85%+ | Cepat |
+| **GPT-OSS-20B** | 20GB | Ya (GPU kuat) | 95%+ | Lambat |
+| **Qwen2.5-3B** | 3GB | Tidak (CPU OK) | 87%+ | Cepat |
+
+**Pilihan Terbaik**:
+- Punya GPU → Pakai **Mistral-7B** (akurasi tinggi)
+- Tidak punya GPU → Pakai **Phi-2** (cepat di CPU)
+- Untuk paper (butuh akurasi maksimal) → Pakai **GPT-OSS-20B**
 
 ---
 
@@ -134,6 +230,10 @@ Seperti polisi yang selidiki kasus:
 
 ### Q1: "Jadi kamu pakai AI apa?"
 **A**: Saya pakai **Agentic AI**, yaitu sistem AI yang terdiri dari **banyak agen** yang bekerja sama. Setiap agen punya tugas spesifik (scraping, preprocessing, retrieval, classification, explanation).
+
+**Model utama**: 
+- **Mistral-7B** untuk classification & explanation
+- **Sentence Transformers** untuk retrieval (cari artikel serupa)
 
 ### Q2: "Bedanya dengan machine learning biasa?"
 **A**: 

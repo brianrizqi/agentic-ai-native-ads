@@ -35,6 +35,65 @@ Sistem ini punya 5 "agen AI" yang bekerja berurutan:
 
 ---
 
+## 🤖 Model AI yang Digunakan
+
+### 1. Web Scraper Agent
+**Model AI**: ❌ Tidak pakai (ini bukan AI, cuma scraping biasa)  
+**Library**: BeautifulSoup4 + Requests (library Python standar)  
+**Fungsi**: 
+- Ambil HTML dari URL berita
+- Extract teks artikel, judul, tanggal
+- Hapus iklan banner, sidebar, footer
+
+**Analogi**: Seperti **fotokopi** artikel dari koran → ambil artikelnya saja, buang iklan
+
+### 2. Preprocessing Agent
+**Model AI**: ❌ Tidak pakai (ini text processing biasa)  
+**Library**: 
+- **NLTK** (Natural Language Toolkit) → untuk tokenisasi
+- **spaCy** → untuk NLP dasar (remove stopwords, lemmatization)
+- **Regex** → untuk cleaning teks
+
+**Fungsi**: 
+- Bersihkan teks (hapus emoji, URL, special characters)
+- Tokenisasi (pecah kalimat jadi kata-kata)
+- Remove stopwords (hapus kata "yang", "di", "ke", dll)
+- Lemmatization (ubah "berlari" → "lari")
+
+**Analogi**: Seperti **editor** yang rapikan naskah sebelum dikirim ke penerbit
+
+### 3. Retriever Agent (RAG)
+**Model**: `sentence-transformers/all-MiniLM-L6-v2`  
+**Ukuran**: ~80MB  
+**Fungsi**: Ubah teks jadi vector untuk cari artikel serupa  
+**Kenapa model ini?**: Ringan, cepat, akurat untuk bahasa Indonesia
+
+### 4. LLM Classifier Agent (Otak Utama)
+**Model Default**: `mistralai/Mistral-7B-Instruct-v0.2`  
+**Ukuran**: ~7GB  
+**Alternatif (CPU Mode)**: `microsoft/phi-2` (~2.7GB)  
+**Fungsi**: Klasifikasi artikel (Native Ads vs Editorial)  
+**Kenapa Mistral?**: 
+- Open source & gratis
+- Akurasi tinggi untuk classification task
+- Support bahasa Indonesia
+
+### 5. Explanation Agent
+**Model**: `mistralai/Mistral-7B-Instruct-v0.2` (sama dengan Classifier)  
+**Fungsi**: Generate penjelasan dalam bahasa manusia  
+**Output**: Alasan kenapa artikel diklasifikasikan sebagai Native Ads/Editorial
+
+### 📊 Perbandingan Model:
+
+| Model | Ukuran | Kecepatan | Akurasi | Rekomendasi |
+|-------|--------|-----------|---------|-------------|
+| **Mistral-7B** | 7GB | Sedang | Tinggi (90%+) | ✅ Untuk GPU |
+| **Phi-2** | 2.7GB | Cepat | Baik (85%+) | ✅ Untuk CPU |
+| **GPT-OSS-20B** | 20GB | Lambat | Sangat Tinggi (95%+) | ⚠️ Butuh GPU kuat |
+| **Qwen2.5-3B** | 3GB | Cepat | Baik (87%+) | ✅ Alternatif CPU |
+
+---
+
 ## 🚀 Cara Menjalankan (Step-by-Step)
 
 ### Langkah 1: Persiapan Awal
