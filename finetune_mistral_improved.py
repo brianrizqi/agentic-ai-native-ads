@@ -94,13 +94,13 @@ Answer: {sample['answer']}"""
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Fine-tune with Mistral (No Gated Access)')
-    parser.add_argument('--model', type=str, default='mistralai/Mistral-7B-Instruct-v0.3',
-                       help='Base model (alternatives: microsoft/Phi-3-mini-4k-instruct)')
+    parser = argparse.ArgumentParser(description='Fine-tune with GPT-OSS (Memory Efficient)')
+    parser.add_argument('--model', type=str, default='openai-community/gpt2-medium',
+                       help='Base model (alternatives: EleutherAI/gpt-neo-1.3B, microsoft/phi-2)')
     parser.add_argument('--dataset', type=str, default='data/llm_dataset_instruction.json')
-    parser.add_argument('--output', type=str, default='models/native-ads-mistral-lora')
+    parser.add_argument('--output', type=str, default='models/native-ads-gpt-lora')
     parser.add_argument('--epochs', type=int, default=5)
-    parser.add_argument('--batch-size', type=int, default=4)
+    parser.add_argument('--batch-size', type=int, default=2)
     parser.add_argument('--learning-rate', type=float, default=5e-6)
     args = parser.parse_args()
     
@@ -144,9 +144,9 @@ def main():
     # Apply LoRA
     print("[3/6] Applying LoRA...")
     lora_config = LoraConfig(
-        r=16,
-        lora_alpha=32,
-        target_modules=["q_proj", "v_proj", "k_proj", "o_proj"],
+        r=8,  # Reduced for smaller model
+        lora_alpha=16,
+        target_modules=["c_attn", "c_proj"],  # GPT-2 style modules
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM"
