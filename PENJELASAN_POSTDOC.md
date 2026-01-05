@@ -1,8 +1,4 @@
-# Penjelasan Postdoc dengan Bahasa Bayi 👶
-
-**Untuk Promotor/Pembimbing yang Bertanya: "Jadi penelitianmu tentang apa sih?"**
-
----
+# Penjelasan Postdoc 
 
 ## 🎯 Masalahnya Apa?
 
