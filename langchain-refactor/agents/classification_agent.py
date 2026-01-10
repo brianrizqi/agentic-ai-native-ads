@@ -5,7 +5,7 @@ Main agent for classifying content as native ads or pure news
 
 from typing import Dict, Any, Optional
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEndpoint
 from langchain.callbacks.manager import CallbackManager
 import json

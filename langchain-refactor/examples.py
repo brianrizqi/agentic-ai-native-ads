@@ -98,8 +98,8 @@ print("\n" + "="*80)
 print("Example 5: Using Vector Store for RAG")
 print("="*80)
 
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 
 # Create sample documents
