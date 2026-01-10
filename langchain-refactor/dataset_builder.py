@@ -31,7 +31,8 @@ class DatasetBuilder:
             provider=provider,
             api_key=api_key
         )
-        self.crawler = NewsCrawlerTool()
+        # Pass the LLM from the pipeline to the crawler for AI discovery
+        self.crawler = NewsCrawlerTool(llm=self.pipeline.llm)
         
     def collect_and_build(
         self,
