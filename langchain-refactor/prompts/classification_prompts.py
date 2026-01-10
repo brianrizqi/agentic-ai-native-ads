@@ -148,26 +148,26 @@ explanation_prompt = PromptTemplate(
 
 
 # Link discovery prompt for AI-driven crawling
-DISCOVERY_PROMPT_TEMPLATE = """Anda adalah asisten riset media yang sangat teliti. Tugas Anda adalah mengidentifikasi URL berita asli dari daftar link yang diberikan.
+DISCOVERY_PROMPT_TEMPLATE = """Anda adalah asisten riset media yang sangat teliti. Tugas Anda adalah mengidentifikasi URL berita asli DAN konten bersponsor (native ads/advertorial) dari daftar link yang diberikan.
 
 Daftar Link dari {source}:
 {links}
 
 KRITERIA SELEKSI (WAJIB):
-1. HANYA pilih link yang merupakan ARTIKEL BERITA spesifik (memiliki judul berita).
-2. JANGAN PILIH link yang mengandung kata '/tag/', '/topik-pilihan/', '/indeks/', '/search/', atau '/category/'.
-3. JANGAN PILIH link utama portal atau subdomain (contoh: https://tekno.kompas.com/, https://viva.co.id/, dll).
-4. JANGAN PILIH link video, gallery foto, atau profil author.
-5. Link berita biasanya memiliki pola tanggal (misal: /2024/01/...) atau ID artikel yang unik.
+1. Pilih link yang merupakan ARTIKEL BERITA spesifik atau ARTIKEL ADVERTORIAL/SPONSORED.
+2. SANGAT DISARANKAN memilih jika ada indikasi 'Advertorial', 'Sponsored', 'Branded Content', 'Infografis', atau 'Kerja Sama' dalam teks link.
+3. JANGAN PILIH link yang mengandung kata '/tag/', '/indeks/', '/search/', atau '/author/'.
+4. JANGAN PILIH link navigasi utama (Home, News, Bisnis, dll) atau link gallery foto/video saja.
+5. Prioritaskan variasi antara berita murni dan konten promosi halus (native ads) agar dataset seimbang.
 
 TUGAS:
-- Pilih maksimal {limit} link terbaik yang 100% adalah artikel berita.
+- Pilih maksimal {limit} link terbaik.
 - Kembalikan hasilnya dalam format JSON list of strings (URL saja).
 
 CONTOH OUTPUT:
 [
-  "https://nasional.kompas.com/read/2024/01/10/12345/judul-berita-a",
-  "https://www.cnnindonesia.com/ekonomi/202401100912-32-123456/judul-berita-b"
+  "https://biz.kompas.com/read/2024/01/10/promosi-produk-a",
+  "https://www.cnnindonesia.com/ekonomi/202401100912-berita-ekonomi-b"
 ]
 
 HASIL:"""
