@@ -5,7 +5,7 @@ Generates human-readable explanations for classification decisions
 
 from typing import Dict, Any, Optional
 from langchain_openai import ChatOpenAI
-from langchain_huggingface import HuggingFaceEndpoint
+from langchain_huggingface import HuggingFaceEndpoint, HuggingFacePipeline
 from langchain_core.output_parsers import StrOutputParser
 import logging
 
