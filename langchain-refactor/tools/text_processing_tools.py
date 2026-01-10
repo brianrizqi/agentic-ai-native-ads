@@ -5,8 +5,8 @@ Provides tools for text cleaning, tokenization, and feature extraction
 
 from typing import Optional, Type, Dict, Any, List
 from pydantic import BaseModel, Field
-from langchain.tools import BaseTool
-from langchain.callbacks.manager import CallbackManagerForToolRun
+from langchain_core.tools import BaseTool
+from langchain_core.callbacks.manager import CallbackManagerForToolRun
 import re
 import logging
 from collections import Counter

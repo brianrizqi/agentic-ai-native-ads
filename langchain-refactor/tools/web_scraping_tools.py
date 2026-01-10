@@ -5,8 +5,8 @@ Provides tools for scraping web content using BeautifulSoup and Selenium
 
 from typing import Optional, Type
 from pydantic import BaseModel, Field
-from langchain.tools import BaseTool
-from langchain.callbacks.manager import CallbackManagerForToolRun
+from langchain_core.tools import BaseTool
+from langchain_core.callbacks.manager import CallbackManagerForToolRun
 import requests
 from bs4 import BeautifulSoup
 import logging

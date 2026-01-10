@@ -5,8 +5,8 @@ Provides tools for document retrieval using vector similarity search
 
 from typing import Optional, Type, List, Dict, Any
 from pydantic import BaseModel, Field
-from langchain.tools import BaseTool
-from langchain.callbacks.manager import CallbackManagerForToolRun
+from langchain_core.tools import BaseTool
+from langchain_core.callbacks.manager import CallbackManagerForToolRun
 import logging
 
 logger = logging.getLogger(__name__)
