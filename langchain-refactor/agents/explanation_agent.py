@@ -4,7 +4,7 @@ Generates human-readable explanations for classification decisions
 """
 
 from typing import Dict, Any, Optional
-from langchain.chains import LLMChain
+from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEndpoint
 import logging
