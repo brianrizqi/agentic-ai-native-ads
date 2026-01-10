@@ -83,11 +83,25 @@ class NewsCrawlerTool(BaseTool):
                             domain = re.match(r'(https?://[^/]+)', source).group(1)
                             href = domain + href
                         
-                        if href.startswith('http') and len(text) > 10:
+                        # PRE-FILTERING (Penting agar tidak mengotori AI context)
+                        # Lewati jika link mengandung tag, indeks, atau hal non-berita lainnya
+                        exclude_patterns = [
+                            '/tag/', '/indeks/', '/search/', '/author/', 
+                            '/topik-pilihan/', '/video/', '/foto/', 
+                            '/gallery/', '/category/', '/newsletter/'
+                        ]
+                        
+                        if any(p in href.lower() for p in exclude_patterns):
+                            continue
+                            
+                        # Pastikan link memiliki panjang minimal (menghindari link kosong/home saja)
+                        if href.startswith('http') and len(text) > 10 and len(href.split('/')) > 4:
                             potential_links.append(f"{text}: {href}")
                     
                     # 2. Limit potential links to avoid context overflow
-                    sample_links = "\n".join(potential_links[:100])
+                    # Sort to get potentially better links first
+                    potential_links = list(dict.fromkeys(potential_links))
+                    sample_links = "\n".join(potential_links[:80])
                     
                     # 3. Use AI to identify news links
                     if self.llm:
