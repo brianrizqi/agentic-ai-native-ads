@@ -72,8 +72,10 @@ def main():
                        help='Dataset path')
     parser.add_argument('--output', type=str, default='models/native-ads-llama8b-lora',
                        help='Output directory')
-    parser.add_argument('--epochs', type=int, default=3,
-                       help='Number of epochs')
+    parser.add_argument('--epochs', type=int, default=1,
+                       help='Number of epochs (use 1 for step-based training)')
+    parser.add_argument('--max-steps', type=int, default=None,
+                       help='Maximum training steps (e.g., 500). If set, overrides epochs.')
     parser.add_argument('--batch-size', type=int, default=2,
                        help='Per device batch size')
     parser.add_argument('--learning-rate', type=float, default=2e-4,
@@ -88,7 +90,10 @@ def main():
     print(f"Base Model: {args.model}")
     print(f"Dataset: {args.dataset}")
     print(f"Output: {args.output}")
-    print(f"Epochs: {args.epochs}")
+    if args.max_steps:
+        print(f"Training Steps: {args.max_steps} (step-based training)")
+    else:
+        print(f"Epochs: {args.epochs}")
     print("\n🚀 Unsloth Benefits:")
     print("   ✅ 2x faster training")
     print("   ✅ 50% less memory usage")
@@ -155,7 +160,8 @@ def main():
             per_device_eval_batch_size=args.batch_size,
             gradient_accumulation_steps=4,  # Unsloth recommendation
             warmup_steps=5,  # Unsloth uses 5 for GPT-OSS
-            num_train_epochs=args.epochs,
+            num_train_epochs=args.epochs if not args.max_steps else 1,
+            max_steps=args.max_steps if args.max_steps else -1,  # -1 means use epochs
             learning_rate=args.learning_rate,
             fp16=not torch.cuda.is_bf16_supported(),
             bf16=torch.cuda.is_bf16_supported(),
