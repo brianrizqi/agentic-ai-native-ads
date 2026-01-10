@@ -4,10 +4,10 @@ Main agent for classifying content as native ads or pure news
 """
 
 from typing import Dict, Any, Optional
-from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEndpoint
 from langchain_core.callbacks.manager import CallbackManager
+from langchain_core.output_parsers import StrOutputParser
 import json
 import logging
 
@@ -50,12 +50,8 @@ class ClassificationAgent:
         # Select prompt
         prompt = few_shot_classification_prompt if use_few_shot else simple_classification_prompt
         
-        # Create chain
-        self.chain = LLMChain(
-            llm=self.llm,
-            prompt=prompt,
-            verbose=True
-        )
+        # Create chain using LCEL (more robust than deprecated LLMChain)
+        self.chain = prompt | self.llm | StrOutputParser()
         
         logger.info(f"Classification Agent initialized with {model_name} ({provider})")
     
@@ -123,10 +119,10 @@ class ClassificationAgent:
                     "context": context if context else "No additional context available."
                 }
             
-            # Run chain
-            response = self.chain.run(**input_data)
+            # Run chain using LCEL invoke
+            response = self.chain.invoke(input_data)
             
-            # Parse response
+            # Parse response (response is already a string thanks to StrOutputParser)
             result = self._parse_response(response)
             
             # Add metadata

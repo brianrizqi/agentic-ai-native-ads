@@ -4,9 +4,9 @@ Generates human-readable explanations for classification decisions
 """
 
 from typing import Dict, Any, Optional
-from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEndpoint
+from langchain_core.output_parsers import StrOutputParser
 import logging
 
 from prompts.classification_prompts import explanation_prompt
@@ -43,12 +43,8 @@ class ExplanationAgent:
         # Initialize LLM
         self.llm = self._initialize_llm(api_key)
         
-        # Create chain
-        self.chain = LLMChain(
-            llm=self.llm,
-            prompt=explanation_prompt,
-            verbose=True
-        )
+        # Create chain using LCEL
+        self.chain = explanation_prompt | self.llm | StrOutputParser()
         
         logger.info(f"Explanation Agent initialized with {model_name} ({provider})")
     
@@ -111,8 +107,8 @@ class ExplanationAgent:
                 'reasoning': reasoning
             }
             
-            # Run chain
-            explanation = self.chain.run(**input_data)
+            # Run chain using LCEL invoke
+            explanation = self.chain.invoke(input_data)
             
             logger.info("Explanation generated successfully")
             return explanation.strip()

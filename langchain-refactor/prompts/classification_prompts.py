@@ -3,7 +3,7 @@ Classification Prompts for Native Ads Detection
 Provides prompt templates for LLM-based classification
 """
 
-from langchain.prompts import PromptTemplate, FewShotPromptTemplate
+from langchain_core.prompts import PromptTemplate, FewShotPromptTemplate
 
 
 # Few-shot examples for classification
