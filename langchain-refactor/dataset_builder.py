@@ -38,7 +38,8 @@ class DatasetBuilder:
         self,
         target_count: int = 50,
         output_name: str = "news_dataset",
-        formats: List[str] = ["csv", "json"]
+        formats: List[str] = ["csv", "json"],
+        manual_urls: Optional[List[str]] = None
     ) -> Dict[str, str]:
         """
         Main function to collect news articles and build a dataset.
@@ -47,19 +48,25 @@ class DatasetBuilder:
             target_count: Number of articles to collect
             output_name: Base name for output files
             formats: List of output formats ('csv', 'json')
+            manual_urls: Optional list of URLs to include manually
             
         Returns:
             Dictionary with paths to generated files
         """
         logger.info(f"Starting dataset collection for {target_count} articles...")
         
-        # 1. Collect URLs
-        urls = self.crawler.run({"limit": target_count})
+        # 1. Collect URLs (Crawled + Manual)
+        crawled_urls = self.crawler.run({"limit": target_count})
+        all_urls = (manual_urls or []) + crawled_urls
+        
+        # De-duplicate while preserving order
+        urls = list(dict.fromkeys(all_urls))[:target_count]
+        
         if not urls:
             logger.error("No article URLs found. Collection aborted.")
             return {}
             
-        logger.info(f"Collected {len(urls)} URLs. Starting processing...")
+        logger.info(f"Total {len(urls)} URLs to process ({len(manual_urls or [])} manual, {len(urls) - len(manual_urls or [])} crawled).")
         
         # 2. Process through pipeline
         results = []

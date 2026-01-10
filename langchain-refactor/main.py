@@ -72,7 +72,23 @@ def main():
             provider=args.provider,
             api_key=args.api_key
         )
-        output_paths = builder.collect_and_build(target_count=args.collect)
+        # Manual high-value native ads URLs provided by user
+        MANUAL_URLS = [
+            "https://tekno.sindonews.com/read/474336/776/zte-dan-telkomsel-hadirkan-skenario-penggunaan-5g-pada-peluncuran-telkomsel-5g-1625450849",
+            "https://tekno.sindonews.com/read/464846/776/perkuat-pasar-di-indonesia-vivo-perluas-jangkauan-layanan-purnajual-1624500405",
+            "https://tekno.sindonews.com/read/462176/776/rekomendasi-smartwatch-dengan-harga-di-bawah-rp1-juta-di-shopee-1624266370",
+            "https://tekno.sindonews.com/read/447848/776/inovasi-hp-kamera-terbaik-vivo-pada-7-tahun-kiprahnya-di-indonesia-1622988418",
+            "https://otomotif.sindonews.com/read/787347/778/begini-sensasi-mengendarai-all-new-hondabr-v-untuk-perjalanan-jauh-bersama-keluarga-1654236414",
+            "https://otomotif.sindonews.com/read/767061/778/service-improvement-mitsubishi-dalam-gelaran-iims-2022-1652324702",
+            "https://otomotif.sindonews.com/read/747837/778/perbandingan-antara-honda-br-v-lama-dan-baru-signifikan-bedanya-1650362675",
+            "https://otomotif.sindonews.com/read/740347/778/5-keunggulan-all-new-honda-br-v-nyaman-untuk-harian-hingga-mudik-lebaran-1649682288",
+            "https://otomotif.sindonews.com/read/737447/778/sediakan-layanan-after-sales-mitsubishi-tawarkan-banyak-diskon-di-iims-2022-1649408664",
+            "https://otomotif.sindonews.com/read/737143/778/hadir-di-iims-2022-mitsubishi-motors-berikan-booth-experience-hingga-promo-menarik-1649394271"
+        ]
+        output_paths = builder.collect_and_build(
+            target_count=args.collect,
+            manual_urls=MANUAL_URLS
+        )
         print(f"\n✅ Dataset collection complete!")
         for fmt, path in output_paths.items():
             print(f"   - {fmt.upper()}: {path}")
