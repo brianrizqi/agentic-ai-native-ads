@@ -2,7 +2,7 @@
 Crawl Tools for News URL Discovery
 """
 
-from typing import Optional, Type, List
+from typing import Optional, Type, List, Any
 from pydantic import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_core.callbacks.manager import CallbackManagerForToolRun
