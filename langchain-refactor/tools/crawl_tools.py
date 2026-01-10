@@ -31,10 +31,10 @@ class NewsCrawlerTool(BaseTool):
     """
     args_schema: Type[BaseModel] = NewsCrawlerInput
     llm: Any = None
+    discovery_chain: Any = None
     
     def __init__(self, llm=None, **kwargs):
-        super().__init__(**kwargs)
-        self.llm = llm
+        super().__init__(llm=llm, **kwargs)
         if self.llm:
             self.discovery_chain = discovery_prompt | self.llm | StrOutputParser()
     
