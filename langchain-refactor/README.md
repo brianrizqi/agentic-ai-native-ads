@@ -102,6 +102,19 @@ Edit `config/model_config.py` to customize:
 - Vector store settings
 - RAG parameters
 
+### 5. Automated Dataset Collection
+
+You can now automatically collect news articles, classify them, and save them as a dataset:
+
+```bash
+python main.py --collect 50 --provider openrouter --model openai/gpt-4o-mini
+```
+
+This will:
+1. Crawl latest news from Indonesian portals.
+2. Clean, summarize, and classify each article.
+3. Save the results to `data/news_dataset.csv` and `data/news_dataset_llm_ready.json`.
+
 ## Project Structure
 
 ```
