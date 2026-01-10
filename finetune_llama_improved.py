@@ -48,13 +48,22 @@ def prepare_training_data(data, tokenizer, format_type='instruction'):
     """Prepare data untuk training dengan balanced examples."""
     
     def format_instruction(sample):
-        """Format sample dengan balanced prompt."""
+        """Format sample dengan prompt yang sama seperti di LangChain."""
         if format_type == 'instruction':
-            # Use improved balanced prompt
+            # Use EXACT same prompt as simple_local_prompt in classification_prompts.py
             text = f"""### Instruction:
-Klasifikasikan konten berita berikut sebagai "native ads" (iklan berbayar yang menyerupai berita) atau "berita murni" (konten jurnalistik murni).
+Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-PENTING: Analisis dengan hati-hati. TIDAK semua konten adalah native ads. Berita murni sama umumnya dengan native ads.
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
 
 ### Input:
 {sample['input'][:500]}

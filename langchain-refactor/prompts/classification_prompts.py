@@ -94,7 +94,7 @@ few_shot_classification_prompt = FewShotPromptTemplate(
     prefix="""Anda adalah expert classifier untuk mendeteksi native advertising.
 
 KARAKTERISTIK NATIVE ADS (INDIKATOR UTAMA):
-1. Nada berita bersifat POSITIF atau NETRAL.
+1. Nada berita bersifat POSITIF atau NETRAL (tidak pernah mengkritik subjek).
 2. Bahasa bersifat PERSUASIF (meyakinkan pembaca).
 3. Mempromosikan PRODUK, LAYANAN, atau CITRA BRAND.
 4. Hanya menyajikan SATU SUDUT PANDANG (one-sided).
@@ -182,4 +182,32 @@ HASIL:"""
 discovery_prompt = PromptTemplate(
     input_variables=["source", "links", "limit"],
     template=DISCOVERY_PROMPT_TEMPLATE
+)
+
+
+# Simplified prompt for local fine-tuned models
+SIMPLE_LOCAL_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
+
+Klasifikasi:"""
+
+simple_local_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template=SIMPLE_LOCAL_PROMPT_TEMPLATE
 )
