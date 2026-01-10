@@ -80,7 +80,7 @@ class FullPipelineChain:
             
             # Step 1: Web Scraping
             logger.info("[1/4] Scraping web content...")
-            scraped_data = self.web_scraper.run(url)
+            scraped_data = self.web_scraper.run({"url": url})
             
             if 'error' in scraped_data:
                 return {
@@ -92,14 +92,14 @@ class FullPipelineChain:
             # Step 2: Text Preprocessing
             logger.info("[2/4] Preprocessing text...")
             raw_text = scraped_data.get('text', '')
-            cleaned_text = self.text_cleaner.run(raw_text)
+            cleaned_text = self.text_cleaner.run({"text": raw_text})
             
             # Extract features
-            features = self.feature_extractor.run(cleaned_text)
+            features = self.feature_extractor.run({"text": cleaned_text})
             
             # Create summary
             paragraphs = scraped_data.get('paragraphs', [])
-            summary = self.summarizer.run(paragraphs)
+            summary = self.summarizer.run({"paragraphs": paragraphs})
             
             # Step 3: Retrieval (if vectorstore available)
             logger.info("[3/4] Retrieving context...")
@@ -108,7 +108,7 @@ class FullPipelineChain:
                 try:
                     from tools.retrieval_tools import VectorSearchTool
                     retriever = VectorSearchTool(vectorstore=self.vectorstore)
-                    retrieved_docs = retriever.run(cleaned_text[:500])
+                    retrieved_docs = retriever.run({"query": cleaned_text[:500]})
                     
                     if retrieved_docs:
                         context = "\n\n".join([
