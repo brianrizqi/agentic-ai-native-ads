@@ -111,11 +111,11 @@ def main():
         load_in_4bit=(args.quantization == '4bit'),  # Use 4-bit or 8-bit
     )
     
-    # 2. Add LoRA adapters
+    # 2. Add LoRA adapters (following Unsloth GPT-OSS recommendations)
     print("[2/5] Adding LoRA adapters...")
     model = FastLanguageModel.get_peft_model(
         model,
-        r=16,  # LoRA rank
+        r=8,  # Unsloth recommends 8 for GPT-OSS (can use 16, 32, 64 for larger models)
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
                        "gate_proj", "up_proj", "down_proj"],
         lora_alpha=16,
@@ -123,6 +123,8 @@ def main():
         bias="none",
         use_gradient_checkpointing="unsloth",  # Unsloth's optimized checkpointing
         random_state=3407,
+        use_rslora=False,  # Rank stabilized LoRA
+        loftq_config=None,  # LoftQ config
     )
     
     # 3. Load and prepare dataset
@@ -151,13 +153,13 @@ def main():
         args=TrainingArguments(
             per_device_train_batch_size=args.batch_size,
             per_device_eval_batch_size=args.batch_size,
-            gradient_accumulation_steps=4,
-            warmup_steps=10,
+            gradient_accumulation_steps=4,  # Unsloth recommendation
+            warmup_steps=5,  # Unsloth uses 5 for GPT-OSS
             num_train_epochs=args.epochs,
             learning_rate=args.learning_rate,
             fp16=not torch.cuda.is_bf16_supported(),
             bf16=torch.cuda.is_bf16_supported(),
-            logging_steps=10,
+            logging_steps=1,  # More frequent logging for monitoring
             optim="adamw_8bit",  # Unsloth's optimized optimizer
             weight_decay=0.01,
             lr_scheduler_type="linear",
@@ -168,6 +170,7 @@ def main():
             save_steps=100,
             save_total_limit=2,
             load_best_model_at_end=True,
+            report_to="none",  # Disable wandb/tensorboard unless needed
         ),
     )
     
