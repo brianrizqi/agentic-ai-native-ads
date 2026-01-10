@@ -9,34 +9,29 @@ from langchain_core.prompts import PromptTemplate, FewShotPromptTemplate
 # Few-shot examples for classification
 CLASSIFICATION_EXAMPLES = [
     {
+        "content": "Stres dan asupan makanan penuhi imunitas, ini tips dari dokter... (Biz Kompas)",
+        "label": "native ads",
+        "reasoning": "Konten mempromosikan tips kesehatan yang berujung pada brand/layanan tertentu, nada positif dan persuasif."
+    },
+    {
+        "content": "Berkontribusi untuk negeri, Itenas buka 30.000 kuota vaksinasi massal... (Biz Kompas)",
+        "label": "native ads",
+        "reasoning": "Mempromosikan citra positif instansi/brand, bersifat satu sudut pandang (public relations)."
+    },
+    {
         "content": "Promo spesial BRI di HUT ke-128, diskon hingga Rp1.28 juta untuk berbagai produk perbankan.",
         "label": "native ads",
-        "reasoning": "Promosi produk bank, diskon, ajakan transaksi."
+        "reasoning": "Promosi produk bank, diskon, ajakan transaksi, satu sudut pandang komersial."
     },
     {
         "content": "Presiden Jokowi menunjuk Ridwan Kamil sebagai kurator infrastruktur IKN pada hari Selasa.",
         "label": "berita murni",
-        "reasoning": "Berita faktual kebijakan pemerintah, tidak ada promosi produk."
+        "reasoning": "Berita faktual kebijakan pemerintah, objektif, tidak ada promosi produk/citra brand."
     },
     {
         "content": "Dapatkan cashback hingga 50% untuk pembelian produk elektronik di Tokopedia hari ini!",
         "label": "native ads",
-        "reasoning": "Ajakan beli dengan cashback, promosi e-commerce."
-    },
-    {
-        "content": "Inflasi Indonesia pada bulan Maret tercatat 4.97%, turun dari bulan sebelumnya menurut BPS.",
-        "label": "berita murni",
-        "reasoning": "Laporan ekonomi faktual dari sumber resmi, tidak ada ajakan beli."
-    },
-    {
-        "content": "Investasi emas Antam kini lebih mudah dengan aplikasi baru, gratis biaya admin bulan ini.",
-        "label": "native ads",
-        "reasoning": "Promosi aplikasi investasi, gratis biaya, ajakan menggunakan produk."
-    },
-    {
-        "content": "Mahkamah Agung menolak kasasi terdakwa kasus korupsi dengan vonis 8 tahun penjara.",
-        "label": "berita murni",
-        "reasoning": "Berita hukum faktual, tidak ada promosi atau ajakan komersial."
+        "reasoning": "Ajakan beli dengan cashback, promosi e-commerce, nada sangat persuasif."
     }
 ]
 
@@ -56,6 +51,12 @@ example_prompt = PromptTemplate(
 
 # Main classification prompt template
 CLASSIFICATION_PROMPT_TEMPLATE = """Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia.
+
+KARAKTERISTIK NATIVE ADS (INDIKATOR UTAMA):
+1. Nada berita bersifat POSITIF atau NETRAL (tidak pernah mengkritik subjek).
+2. Bahasa bersifat PERSUASIF (mengajak atau meyakinkan pembaca).
+3. Mempromosikan PRODUK, LAYANAN, atau CITRA PERUSAHAAN/INSTANSI.
+4. Hanya menyajikan SATU SUDUT PANDANG (one-sided).
 
 INSTRUKSI PENTING:
 - Analisis dengan hati-hati - TIDAK semua konten adalah native ads!
@@ -91,6 +92,12 @@ few_shot_classification_prompt = FewShotPromptTemplate(
     examples=CLASSIFICATION_EXAMPLES,
     example_prompt=example_prompt,
     prefix="""Anda adalah expert classifier untuk mendeteksi native advertising.
+
+KARAKTERISTIK NATIVE ADS (INDIKATOR UTAMA):
+1. Nada berita bersifat POSITIF atau NETRAL.
+2. Bahasa bersifat PERSUASIF (meyakinkan pembaca).
+3. Mempromosikan PRODUK, LAYANAN, atau CITRA BRAND.
+4. Hanya menyajikan SATU SUDUT PANDANG (one-sided).
 
 INSTRUKSI PENTING:
 - Analisis dengan hati-hati - TIDAK semua konten adalah native ads!
