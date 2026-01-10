@@ -123,8 +123,14 @@ Return only the questions, one per line."""
 
 Article: {content[:500]}
 
+Native Ads Characteristics (must combine ALL):
+1. Positive/neutral tone (never criticizes subject)
+2. Persuasive language (convincing readers)
+3. Promotes product/brand/institution
+4. One-sided perspective (not objective)
+
 Provide:
-1. Classification reasoning
+1. Classification reasoning based on the characteristics above
 2. Key indicators found
 3. Specific examples from the text
 4. Confidence level
