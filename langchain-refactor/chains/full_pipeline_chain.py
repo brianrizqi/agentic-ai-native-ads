@@ -62,6 +62,7 @@ class FullPipelineChain:
             self.explainer = None
         
         self.vectorstore = vectorstore
+        self.llm = self.classifier.llm
         
         logger.info("Full Pipeline Chain initialized (with explanation support)")
     
