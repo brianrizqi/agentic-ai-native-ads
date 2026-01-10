@@ -7,7 +7,7 @@ from typing import Dict, Any, Optional
 from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEndpoint
-from langchain.callbacks.manager import CallbackManager
+from langchain_core.callbacks.manager import CallbackManager
 import json
 import logging
 
