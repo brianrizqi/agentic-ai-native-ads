@@ -202,24 +202,54 @@ class ClassificationAgent:
                 
         except Exception as e:
             logger.warning(f"Failed to parse JSON: {e}")
-            logger.debug(f"Raw response: {response[:200]}")
+            logger.info(f"Raw response (first 500 chars): {response[:500]}")
             
-            # Fallback parsing
+            # Improved fallback parsing with keyword analysis
             import re
-            label = 'berita murni'  # Default
-            confidence = 0.7
+            response_lower = response.lower()
             
-            if 'native ads' in response.lower() or 'native advertising' in response.lower():
+            # Count indicators for each class
+            native_ads_indicators = [
+                'native ads', 'native advertising', 'advertorial', 'sponsored',
+                'promosi', 'iklan', 'brand', 'produk', 'layanan',
+                'persuasif', 'mengajak', 'meyakinkan'
+            ]
+            
+            berita_murni_indicators = [
+                'berita murni', 'pure news', 'objektif',
+                'berbagai sudut pandang', 'kritik', 'investigasi'
+            ]
+            
+            native_score = sum(1 for indicator in native_ads_indicators if indicator in response_lower)
+            berita_score = sum(1 for indicator in berita_murni_indicators if indicator in response_lower)
+            
+            logger.info(f"Keyword analysis - Native ads: {native_score}, Berita murni: {berita_score}")
+            
+            # Determine label based on scores
+            if native_score > berita_score:
                 label = 'native ads'
-                confidence = 0.75
-            elif 'berita murni' in response.lower() or 'pure news' in response.lower():
+                confidence = min(0.6 + (native_score * 0.05), 0.85)
+            elif berita_score > native_score:
                 label = 'berita murni'
-                confidence = 0.75
+                confidence = min(0.6 + (berita_score * 0.05), 0.85)
+            else:
+                # If tied, check for explicit mentions
+                if 'native ads' in response_lower or 'advertorial' in response_lower:
+                    label = 'native ads'
+                    confidence = 0.65
+                else:
+                    label = 'berita murni'
+                    confidence = 0.5
             
-            # Try to extract confidence
+            # Try to extract confidence from response
             conf_match = re.search(r'"confidence":\s*(0\.\d+|1\.0)', response)
             if conf_match:
-                confidence = float(conf_match.group(1))
+                try:
+                    confidence = float(conf_match.group(1))
+                except:
+                    pass
+            
+            logger.info(f"Fallback result: {label} (confidence: {confidence:.2f})")
             
             return {
                 'label': label,
