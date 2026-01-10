@@ -49,9 +49,17 @@ class NewsCrawlerTool(BaseTool):
             if not sources:
                 sources = [
                     "https://www.cnnindonesia.com/terkini",
+                    "https://www.cnnindonesia.com/brand-connection", # Native Ads CNN
                     "https://news.detik.com/indeks",
+                    "https://www.detik.com/advertorial", # Native Ads Detik
                     "https://www.viva.co.id/berita/terbaru",
-                    "https://news.kompas.com/indeks"
+                    "https://www.viva.co.id/tag/advertorial", # Native Ads Viva
+                    "https://news.kompas.com/indeks",
+                    "https://biz.kompas.com/", # Native Ads Kompas
+                    "https://www.tempo.co/indeks",
+                    "https://www.tempo.co/info-tempo", # Native Ads Tempo
+                    "https://www.sindonews.com/indeks",
+                    "https://www.sindonews.com/tag/advertorial" # Native Ads Sindonews
                 ]
             
             headers = {
@@ -84,14 +92,19 @@ class NewsCrawlerTool(BaseTool):
                             href = domain + href
                         
                         # PRE-FILTERING (Penting agar tidak mengotori AI context)
-                        # Lewati jika link mengandung tag, indeks, atau hal non-berita lainnya
                         exclude_patterns = [
                             '/tag/', '/indeks/', '/search/', '/author/', 
                             '/topik-pilihan/', '/video/', '/foto/', 
                             '/gallery/', '/category/', '/newsletter/'
                         ]
                         
-                        if any(p in href.lower() for p in exclude_patterns):
+                        # Whitelist keywords for native ads
+                        whitelist_keywords = ['advertorial', 'sponsored', 'brand-connection', 'info-tempo', 'biz']
+                        
+                        is_excluded = any(p in href.lower() for p in exclude_patterns)
+                        is_whitelisted = any(k in href.lower() for k in whitelist_keywords)
+                        
+                        if is_excluded and not is_whitelisted:
                             continue
                             
                         # Pastikan link memiliki panjang minimal (menghindari link kosong/home saja)
