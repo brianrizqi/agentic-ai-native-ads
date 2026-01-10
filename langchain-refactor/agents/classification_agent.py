@@ -47,8 +47,14 @@ class ClassificationAgent:
         # Initialize LLM
         self.llm = self._initialize_llm(api_key)
         
-        # Select prompt
-        prompt = few_shot_classification_prompt if use_few_shot else simple_classification_prompt
+        # Select prompt based on provider
+        if self.provider == "local":
+            # Use simplified prompt for local models
+            from prompts.classification_prompts import simple_local_prompt
+            prompt = simple_local_prompt
+        else:
+            # Use few-shot or simple prompt for API models
+            prompt = few_shot_classification_prompt if use_few_shot else simple_classification_prompt
         
         # Create chain using LCEL (more robust than deprecated LLMChain)
         self.chain = prompt | self.llm | StrOutputParser()
@@ -97,9 +103,12 @@ class ClassificationAgent:
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=512,
+                    max_new_tokens=256,  # Reduced for more focused output
                     temperature=self.temperature,
-                    do_sample=True
+                    do_sample=True,
+                    eos_token_id=tokenizer.eos_token_id,
+                    pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id else tokenizer.eos_token_id,
+                    return_full_text=False  # Only return generated text, not prompt
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
@@ -169,24 +178,31 @@ class ClassificationAgent:
     def _parse_response(self, response: str) -> Dict[str, Any]:
         """Parse LLM response into structured format."""
         try:
+            # Clean up response - remove prompt echo if present
+            if "Klasifikasi:" in response:
+                response = response.split("Klasifikasi:")[-1].strip()
+            if "Output (JSON):" in response:
+                response = response.split("Output (JSON):")[-1].strip()
+            
             # Try to extract JSON
             start = response.find('{')
             end = response.rfind('}') + 1
             
-            if start != -1 and end != -1:
+            if start != -1 and end > start:
                 json_str = response[start:end]
                 result = json.loads(json_str)
                 
                 return {
                     'label': result.get('label', 'unknown'),
                     'confidence': float(result.get('confidence', 0.5)),
-                    'reasoning': result.get('reasoning', str(result))
+                    'reasoning': result.get('reasoning', str(result))[:200]  # Truncate long reasoning
                 }
             else:
                 raise json.JSONDecodeError("No JSON found", response, 0)
                 
         except Exception as e:
             logger.warning(f"Failed to parse JSON: {e}")
+            logger.debug(f"Raw response: {response[:200]}")
             
             # Fallback parsing
             import re
