@@ -11,6 +11,7 @@ from .text_processing_tools import (
     SummarizerTool
 )
 from .retrieval_tools import VectorSearchTool, KeywordSearchTool
+from .crawl_tools import NewsCrawlerTool
 
 __all__ = [
     'WebScraperTool',
@@ -21,4 +22,5 @@ __all__ = [
     'SummarizerTool',
     'VectorSearchTool',
     'KeywordSearchTool',
+    'NewsCrawlerTool',
 ]

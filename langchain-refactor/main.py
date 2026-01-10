@@ -30,6 +30,7 @@ def main():
                        help='LLM provider')
     parser.add_argument('--api-key', type=str, help='API key for LLM provider')
     parser.add_argument('--output', type=str, help='Output JSON file')
+    parser.add_argument('--collect', type=int, help='Collect and build dataset with N articles')
     parser.add_argument('--verbose', action='store_true', help='Verbose output')
     
     args = parser.parse_args()
@@ -61,6 +62,21 @@ def main():
             urls = [line.strip() for line in f if line.strip()]
         
         results = pipeline.run_batch(urls)
+    
+    elif args.collect:
+        # Automated dataset collection
+        logger.info(f"Triggering automated collection for {args.collect} articles...")
+        from dataset_builder import DatasetBuilder
+        builder = DatasetBuilder(
+            model_name=args.model,
+            provider=args.provider,
+            api_key=args.api_key
+        )
+        output_paths = builder.collect_and_build(target_count=args.collect)
+        print(f"\n✅ Dataset collection complete!")
+        for fmt, path in output_paths.items():
+            print(f"   - {fmt.upper()}: {path}")
+        return
     
     else:
         parser.print_help()
