@@ -13,21 +13,30 @@ import re
 
 logger = logging.getLogger(__name__)
 
+from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
+from prompts.classification_prompts import discovery_prompt
+
 class NewsCrawlerInput(BaseModel):
     """Input schema for NewsCrawlerTool."""
     limit: int = Field(default=50, description="Total number of news URLs to collect")
     sources: Optional[List[str]] = Field(default=None, description="List of portal base URLs to crawl")
 
 class NewsCrawlerTool(BaseTool):
-    """Tool for discovering news article URLs from multiple Indonesian portals."""
+    """AI-driven tool for discovering news article URLs from multiple Indonesian portals."""
     
     name: str = "news_crawler"
     description: str = """
-    Crawls multiple news portals to extract article URLs.
-    Supports CNN Indonesia, Detik, Kompas, Viva, Tempo, and Sindonews.
-    Returns a list of unique article URLs.
+    Intelligently identifies news article URLs from portal index pages using AI.
+    Works by fetching all links and letting the LLM decide which ones are news.
     """
     args_schema: Type[BaseModel] = NewsCrawlerInput
+    llm: Any = None
+    
+    def __init__(self, llm=None, **kwargs):
+        super().__init__(**kwargs)
+        self.llm = llm
+        if self.llm:
+            self.discovery_chain = discovery_prompt | self.llm | StrOutputParser()
     
     def _run(
         self,
@@ -35,96 +44,81 @@ class NewsCrawlerTool(BaseTool):
         sources: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> List[str]:
-        """Collect article URLs from various sources."""
+        """Collect article URLs using AI-driven discovery."""
         try:
-            # Default sources if none provided
             if not sources:
                 sources = [
-                    "https://www.cnnindonesia.com/tag/laporan-interaktif",
+                    "https://www.cnnindonesia.com/terkini",
                     "https://news.detik.com/indeks",
-                    "https://www.viva.co.id/terpopuler",
-                    "https://indeks.kompas.com/terpopuler",
-                    "https://www.tempo.co/indeks",
-                    "https://www.sindonews.com/indeks"
+                    "https://www.viva.co.id/berita/terbaru",
+                    "https://news.kompas.com/indeks"
                 ]
             
-            logger.info(f"Crawling {len(sources)} sources for {limit} articles...")
-            
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
             
-            all_urls = []
-            urls_per_source = max(1, limit // len(sources)) + 5
+            all_discovered_urls = []
             
             for source in sources:
-                if len(all_urls) >= limit:
+                if len(all_discovered_urls) >= limit:
                     break
                     
-                logger.info(f"Crawling source: {source}")
+                logger.info(f"AI Discovery on: {source}")
                 try:
                     response = requests.get(source, headers=headers, timeout=10)
                     if response.status_code != 200:
-                        logger.warning(f"Failed to fetch {source}: {response.status_code}")
                         continue
                         
                     soup = BeautifulSoup(response.content, 'html.parser')
-                    source_urls = []
                     
-                    # 1. Domain-specific selectors
-                    if "cnnindonesia.com" in source:
-                        # CNN uses specific link patterns
-                        links = soup.find_all('a', href=re.compile(r'/(nasional|ekonomi|teknologi|internasional|hiburan|gaya-hidup|olahraga|otomotif)/20\d{6}'))
-                    elif "detik.com" in source:
-                        links = soup.select('article a[href*="detik.com/news/"]')
-                    elif "kompas.com" in source:
-                        links = soup.select('.article__list__title a')
-                    elif "viva.co.id" in source:
-                        links = soup.select('.article-list a')
-                    elif "tempo.co" in source:
-                        links = soup.select('.card-box a[href*="tempo.co/read/"]')
-                    elif "sindonews.com" in source:
-                        links = soup.select('.m-link a')
-                    else:
-                        # Fallback for generic portals
-                        links = soup.find_all('a', href=True)
-                    
-                    for link in links:
+                    # 1. Ambil semua link dengan teksnya
+                    potential_links = []
+                    for link in soup.find_all('a', href=True):
                         href = link['href']
+                        text = link.get_text().strip()
                         
                         # Clean relative URLs
                         if href.startswith('/'):
-                            # Try to construct absolute URL
                             domain = re.match(r'(https?://[^/]+)', source).group(1)
                             href = domain + href
-                            
-                        # Basic filtering
-                        if not href.startswith('http'):
-                            continue
                         
-                        # Avoid duplicates and non-article links
-                        if (href not in all_urls and 
-                            href not in source_urls and 
-                            not any(x in href for x in ['/tag/', '/search/', '/video/', '/foto/', '/indeks', '/author/']) and
-                            (len(href.split('/')) > 4 or 'read' in href)):
-                            
-                            source_urls.append(href)
-                            if len(all_urls) + len(source_urls) >= limit or len(source_urls) >= urls_per_source:
-                                break
+                        if href.startswith('http') and len(text) > 10:
+                            potential_links.append(f"{text}: {href}")
                     
-                    all_urls.extend(source_urls)
-                    logger.info(f"Found {len(source_urls)} urls from {source}")
+                    # 2. Limit potential links to avoid context overflow
+                    sample_links = "\n".join(potential_links[:100])
                     
+                    # 3. Use AI to identify news links
+                    if self.llm:
+                        logger.info(f"LLM identifying news from {len(potential_links)} candidates...")
+                        ai_response = self.discovery_chain.invoke({
+                            "source": source,
+                            "links": sample_links,
+                            "limit": max(5, limit // len(sources))
+                        })
+                        
+                        # Parse JSON from AI response (very simple extract)
+                        import json
+                        match = re.search(r'\[.*\]', ai_response, re.DOTALL)
+                        if match:
+                            found_urls = json.loads(match.group(0))
+                            all_discovered_urls.extend(found_urls)
+                            logger.info(f"AI found {len(found_urls)} articles on {source}")
+                        else:
+                            logger.warning("AI response didn't contain a JSON list")
+                    else:
+                        # Fallback to simple regex if no LLM
+                        logger.warning("No LLM provided to NewsCrawlerTool, using regex fallback")
+                        found_urls = [l.split(': ')[1] for l in potential_links if '/read/' in l or '/20' in l]
+                        all_discovered_urls.extend(found_urls[:10])
+                        
                 except Exception as e:
-                    logger.error(f"Error crawling {source}: {e}")
+                    logger.error(f"Error in discovery for {source}: {e}")
                     continue
             
-            # Final unique set and limit
-            final_urls = list(dict.fromkeys(all_urls))[:limit]
-            logger.info(f"Total unique URLs found: {len(final_urls)}")
-            return final_urls
+            return list(dict.fromkeys(all_discovered_urls))[:limit]
             
         except Exception as e:
-            logger.error(f"News crawling master error: {e}")
+            logger.error(f"Master discovery error: {e}")
             return []

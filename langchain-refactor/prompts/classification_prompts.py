@@ -145,3 +145,28 @@ explanation_prompt = PromptTemplate(
     input_variables=["content", "label", "confidence", "reasoning"],
     template=EXPLANATION_PROMPT_TEMPLATE
 )
+
+
+# Link discovery prompt for AI-driven crawling
+DISCOVERY_PROMPT_TEMPLATE = """Anda adalah asisten riset media. Tugas Anda adalah mengidentifikasi link berita asli dari daftar link yang diambil dari portal berita.
+
+Daftar Link dari {source}:
+{links}
+
+TUGAS:
+1. Pilih maksimal {limit} link yang BENAR-BENAR merupakan artikel berita/opini (bukan link navigasi seperti 'About Us', 'Contact', 'Tag', atau 'Video Player').
+2. Berita harus relevan dengan isu umum (nasional, ekonomi, teknologi, dll).
+3. Kembalikan hasilnya dalam format JSON list of strings (URL saja).
+
+CONTOH OUTPUT:
+[
+  "https://news.com/read/2024/berita-a",
+  "https://news.com/nasional/berita-b"
+]
+
+HASIL:"""
+
+discovery_prompt = PromptTemplate(
+    input_variables=["source", "links", "limit"],
+    template=DISCOVERY_PROMPT_TEMPLATE
+)
