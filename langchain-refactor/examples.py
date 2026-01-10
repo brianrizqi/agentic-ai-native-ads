@@ -124,3 +124,26 @@ result = pipeline_with_rag.run("https://example.com/article")
 
 print(f"Classification: {result['classification']['label']}")
 print(f"Has context: {result['metadata']['has_context']}")
+
+
+# Example 6: Using OpenRouter Provider
+print("\n" + "="*80)
+print("Example 6: Using OpenRouter with GPT-4o-mini")
+print("="*80)
+
+from chains.full_pipeline_chain import FullPipelineChain
+
+# Initialize pipeline with OpenRouter
+pipeline_openrouter = FullPipelineChain(
+    model_name="openai/gpt-4o-mini",
+    provider="openrouter",
+    api_key="your-openrouter-api-key"  # Or use environment variable
+)
+
+# Classify content
+result = pipeline_openrouter.run("https://example.com/article")
+
+print(f"Classification: {result['classification']['label']}")
+print(f"Confidence: {result['classification']['confidence']:.2f}")
+print(f"Model: openai/gpt-4o-mini via OpenRouter")
+

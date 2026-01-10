@@ -47,7 +47,28 @@ python main.py \
   --api-key YOUR_HF_TOKEN
 ```
 
-### 4. Programmatic Usage
+### 4. Using OpenRouter (Recommended for Cost-Effective GPT-4)
+
+```bash
+# Using OpenRouter with GPT-4o-mini
+python main.py \
+  --url "https://example.com/article" \
+  --provider openrouter \
+  --model openai/gpt-4o-mini \
+  --api-key YOUR_OPENROUTER_KEY
+
+# Batch processing with OpenRouter
+python main.py \
+  --urls-file urls.txt \
+  --provider openrouter \
+  --model openai/gpt-4o-mini \
+  --output results.json \
+  --api-key YOUR_OPENROUTER_KEY
+```
+
+**Get OpenRouter API Key:** https://openrouter.ai/keys
+
+### 5. Programmatic Usage
 
 ```python
 from chains.full_pipeline_chain import FullPipelineChain
@@ -57,6 +78,13 @@ pipeline = FullPipelineChain(
     model_name="gpt-3.5-turbo",
     provider="openai",
     api_key="your-key"
+)
+
+# Or use OpenRouter
+pipeline_openrouter = FullPipelineChain(
+    model_name="openai/gpt-4o-mini",
+    provider="openrouter",
+    api_key="your-openrouter-key"
 )
 
 # Classify URL
@@ -92,7 +120,7 @@ langchain-refactor/
 ## Features
 
 ✅ Modular architecture with LangChain
-✅ Multiple LLM providers (OpenAI, HuggingFace)
+✅ Multiple LLM providers (OpenAI, OpenRouter, HuggingFace)
 ✅ RAG with FAISS vector store
 ✅ Few-shot learning prompts
 ✅ Batch processing

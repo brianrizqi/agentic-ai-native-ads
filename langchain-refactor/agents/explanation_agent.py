@@ -60,6 +60,17 @@ class ExplanationAgent:
                 temperature=self.temperature,
                 api_key=api_key
             )
+        elif self.provider == "openrouter":
+            return ChatOpenAI(
+                model=self.model_name,
+                temperature=self.temperature,
+                openai_api_key=api_key,
+                openai_api_base="https://openrouter.ai/api/v1",
+                default_headers={
+                    "HTTP-Referer": "https://github.com/brianrizqi/agentic-ai-native-ads",
+                    "X-Title": "Native Ads Detection System"
+                }
+            )
         elif self.provider == "huggingface":
             return HuggingFaceEndpoint(
                 repo_id=self.model_name,
