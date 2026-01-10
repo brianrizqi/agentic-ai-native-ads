@@ -148,20 +148,26 @@ explanation_prompt = PromptTemplate(
 
 
 # Link discovery prompt for AI-driven crawling
-DISCOVERY_PROMPT_TEMPLATE = """Anda adalah asisten riset media. Tugas Anda adalah mengidentifikasi link berita asli dari daftar link yang diambil dari portal berita.
+DISCOVERY_PROMPT_TEMPLATE = """Anda adalah asisten riset media yang sangat teliti. Tugas Anda adalah mengidentifikasi URL berita asli dari daftar link yang diberikan.
 
 Daftar Link dari {source}:
 {links}
 
+KRITERIA SELEKSI (WAJIB):
+1. HANYA pilih link yang merupakan ARTIKEL BERITA spesifik (memiliki judul berita).
+2. JANGAN PILIH link yang mengandung kata '/tag/', '/topik-pilihan/', '/indeks/', '/search/', atau '/category/'.
+3. JANGAN PILIH link utama portal atau subdomain (contoh: https://tekno.kompas.com/, https://viva.co.id/, dll).
+4. JANGAN PILIH link video, gallery foto, atau profil author.
+5. Link berita biasanya memiliki pola tanggal (misal: /2024/01/...) atau ID artikel yang unik.
+
 TUGAS:
-1. Pilih maksimal {limit} link yang BENAR-BENAR merupakan artikel berita/opini (bukan link navigasi seperti 'About Us', 'Contact', 'Tag', atau 'Video Player').
-2. Berita harus relevan dengan isu umum (nasional, ekonomi, teknologi, dll).
-3. Kembalikan hasilnya dalam format JSON list of strings (URL saja).
+- Pilih maksimal {limit} link terbaik yang 100% adalah artikel berita.
+- Kembalikan hasilnya dalam format JSON list of strings (URL saja).
 
 CONTOH OUTPUT:
 [
-  "https://news.com/read/2024/berita-a",
-  "https://news.com/nasional/berita-b"
+  "https://nasional.kompas.com/read/2024/01/10/12345/judul-berita-a",
+  "https://www.cnnindonesia.com/ekonomi/202401100912-32-123456/judul-berita-b"
 ]
 
 HASIL:"""
