@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--model', type=str, default='gpt-3.5-turbo',
                        help='LLM model name')
     parser.add_argument('--provider', type=str, default='openai',
-                       choices=['openai', 'openrouter', 'huggingface'],
+                       choices=['openai', 'openrouter', 'huggingface', 'local'],
                        help='LLM provider')
     parser.add_argument('--api-key', type=str, help='API key for LLM provider')
     parser.add_argument('--output', type=str, help='Output JSON file')

@@ -73,6 +73,32 @@ class ExplanationAgent:
                 temperature=self.temperature,
                 huggingfacehub_api_token=api_key
             )
+        elif self.provider == "local":
+            # Load local fine-tuned model
+            try:
+                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+                
+                logger.info(f"Loading local model from: {self.model_name}")
+                tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                model = AutoModelForCausalLM.from_pretrained(
+                    self.model_name,
+                    device_map="auto",
+                    torch_dtype="auto"
+                )
+                
+                pipe = pipeline(
+                    "text-generation",
+                    model=model,
+                    tokenizer=tokenizer,
+                    max_new_tokens=512,
+                    temperature=self.temperature,
+                    do_sample=True
+                )
+                
+                return HuggingFacePipeline(pipeline=pipe)
+            except Exception as e:
+                logger.error(f"Failed to load local model: {e}")
+                raise ValueError(f"Could not load local model from {self.model_name}: {e}")
         else:
             raise ValueError(f"Unknown provider: {self.provider}")
     
