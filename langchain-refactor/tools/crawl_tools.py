@@ -49,9 +49,9 @@ class NewsCrawlerTool(BaseTool):
             if not sources:
                 sources = [
                     "https://www.cnnindonesia.com/terkini",
-                    "https://www.cnnindonesia.com/brand-connection", # Native Ads CNN
+                    "https://www.cnnindonesia.com/tag/advertorial", # Native Ads CNN
                     "https://news.detik.com/indeks",
-                    "https://www.detik.com/advertorial", # Native Ads Detik
+                    "https://news.detik.com/advertorial", # Native Ads Detik
                     "https://www.viva.co.id/berita/terbaru",
                     "https://www.viva.co.id/tag/advertorial", # Native Ads Viva
                     "https://news.kompas.com/indeks",
@@ -59,7 +59,7 @@ class NewsCrawlerTool(BaseTool):
                     "https://www.tempo.co/indeks",
                     "https://www.tempo.co/info-tempo", # Native Ads Tempo
                     "https://www.sindonews.com/indeks",
-                    "https://www.sindonews.com/tag/advertorial" # Native Ads Sindonews
+                    "https://otomotif.sindonews.com/more/778" # Native Ads Sindonews
                 ]
             
             headers = {
