@@ -1,0 +1,122 @@
+[
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: RI Jadi Presiden Dewan HAM PBB 2026, Pakar Ingatkan Jangan Mudah Terpengaruh\n\nKonten: Indonesia resmi ditetapkan sebagai Presiden Dewan Hak Asasi Manusia (HAM) PBB untuk tahun 2026. Menanggapi itu, Dosen Hubungan Internasional President University, Teuku Rezasyah,mengingatkan Indonesia untuk profesional dan tak mudah terpengaruh ngaruh selama mengemban posisi tersebut. \"Sebagai Presiden Dewan HAM dunia, diharapkan RI mampu berperilaku profesional, dan tidak mudah terpengaruh dengan informasi HAM yang tidak berbasis data sahih,\" kata Rezasyah kepada wartawan, Sabtu (10/1/2026). SC...",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi faktual tentang posisi Indonesia di Dewan HAM PBB, tidak ada elemen promosi atau ajakan untuk membeli produk."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Problem Sampah Tangsel Belum Berhenti Meski Dibuang ke Cileungsi\n\nKonten: Masalah sampah di Tangerang Selatan (Tangsel) belum berhenti meski sudah dibuang ke Cileungsi. Kini muncul lagi tumpukan sampah baru. Dirangkum detikcom, Sabtu (10/1/2026), Pemerintah Kota Tangsel seperti diketahui telah menetapkan status tanggap darurat pengelolaan sampah pada 23 Desember sampai 5 Januari 2026. Status darurat sampah ini berdasarkan Keputusan Wali Kota Nomor 600.1.17.3/Kep.500-Huk/2025. Wali Kota Tangsel Benyamin Davnie menyebut sampah-sampah yang masih menggunung di sejumlah ti...",
+    "output": "Label: berita murni\nAlasan: Konten membahas masalah sampah di Tangsel tanpa adanya promosi atau ajakan untuk membeli produk atau layanan."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Muhammadiyah Anggap Materi 'Mens Rea' Pandji soal Tambang Kritik Membangun\n\nKonten: Lembaga Bantuan Hukum Muhammadiyah dan Advokasi Publik (LBH-AP) menegaskan pelaporan yang dilakukan oleh Aliansi Muda Muhammadiyah terhadap komika Pandji Pragiwaksono bukan sikap resmi persyarikatan. Muhammadiyah menyatakan tidak ada perintah dari Pimpinan Pusat Muhammadiyah untuk melaporkan Pandji ke polisi. \"Terkait dengan pemberitaan yang beredar di media sosial, bahwa Pandji Pragiwaksono dilaporkan ke Polisi oleh gabungan Angkatan Muda NU dan Aliansi Muda Muhammadiyah, kami tegaskan bahwa ha...",
+    "output": "Label: berita murni\nAlasan: Konten membahas pandangan Muhammadiyah mengenai materi 'Mens Rea' dan kritik terhadap tambang, yang merupakan informasi faktual tanpa elemen promosi atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: KPK Tetapkan Yaqut Tersangka Kasus Haji, Eks Penyidik: Bongkar Sindikatnya\n\nKonten: KPK menetapkan mantan Menteri Agama (Menag) Yaqut Cholil Qoumas sebagai tersangka kasus korupsi kuota haji. Mantan penyidik KPK Praswad Nugraha mengatakan KPK harus mampu membongkar sindikat kasus korupsi tersebut. \"Sebagai salah seorang penyidik yang pernah menanggani kasus terkait dengan korupsi haji pada era sebelumnya, saya memandang bahwa pembongkaran perkara korupsi kuota haji secara tuntas menjadi hal yang sangat penting,\" kata Praswad kepada wartawan, Sabtu (10/1/2026). \"Penetapan Yaqut ...",
+    "output": "Label: berita murni\nAlasan: Berita faktual mengenai penetapan tersangka oleh KPK, tidak ada elemen promosi atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Trump Bilang Iran dalam Masalah Besar, Ingatkan Tidak Tembak Demonstran\n\nKonten: Presiden Amerika Serikat Donald Trump mengatakan bahwa \"Iran berada dalam masalah besar\" seiring aksi-aksi protes anti-pemerintah terjadi di negara itu selama beberapa hari berturut-turut. \"Menurut saya, rakyat sedang menguasai beberapa kota yang beberapa minggu lalu tidak pernah terpikirkan sebelumnya,\" kata Trump kepada wartawan di Gedung Putih setelah bertemu dengan para eksekutif perusahaan minyak AS, dilansir Al Arabiya, Sabtu (10/1/2026). Trump pun mengulangi ancaman sebelumnya kepada otor...",
+    "output": "Label: berita murni\nAlasan: Konten berisi pernyataan faktual dari Trump mengenai situasi di Iran, tanpa ada elemen promosi atau ajakan untuk membeli produk."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Biang Kerok Sampah di Pasar Kramat Jati Menggunung\n\nKonten: Warga mengeluhkan bau menyengat dari sampah menggunung di Pasar Induk Kramat Jati, Jakarta Timur (Jaktim). Penumpukan sampah ini terjadi karena truk pengangkut sampah dari Dinas Lingkungan Hidup (DLH) berkurang. Pantauan detikcom di lokasi, Jumat (9/1/2026), pukul 09.30 WIB, gunungan sampah masih tampak di bagian belakang Pasar Induk Kramat Jati. Gunungan sampah itu tampak cukup tinggi hingga setengah tiang lampu jalan. Tembok pembatas antara pasar dengan permukiman warga tampak jebol. Sampah te...",
+    "output": "Label: berita murni\nAlasan: Konten berfokus pada isu lingkungan di Pasar Kramat Jati, tidak ada promosi atau ajakan komersial yang jelas."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Sampah Tangsel Dibuang ke Cileungsi, Walkot Pastikan Dikelola Swasta\n\nKonten: Wali Kota Tangerang Selatan Benyamin Davnie memastikan sampah di wilayahnya tak dibuang ke tempat pembuangan akhir (TPA) milik pemerintah daerah (pemda) Cileungsi, Kabupaten Bogor. Benyamin mengatakan sampah itu akan dikelola oleh perusahaan swasta. \"Iya betul (dikelola pabrik kertas bukan dibuang ke TPA),\" kata Benyamin kepada wartawan, Sabtu (10/1/2026). SCROLL TO CONTINUE WITH CONTENT",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi faktual mengenai pengelolaan sampah oleh pemerintah, tidak ada unsur promosi atau ajakan untuk membeli produk."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Isyarat Rekonsiliasi, Venezuela Bebaskan Tokoh Oposisi\n\nKonten: Venezuela mulai membebaskan sejumlah tokoh oposisi, aktivis, dan jurnalis ternama dalam langkah yang oleh pejabat pemerintah disebut sebagai upaya untuk \"mencari perdamaian.\" Langkah ini dilakukan kurang dari sepekan setelah pasukan Amerika Serikat (AS) menangkap mantan Presiden Nicolas Maduro, yang menghadapi dakwaan terkait perdagangan narkoba. Pemerintahan Pejabat Presiden Sementara Delcy Rodrguez membebaskan beberapa tahanan penting, termasuk Enrique Mrquez, yang menentang Maduro dalam pemil...",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi faktual tentang kebijakan pemerintah Venezuela tanpa adanya promosi produk atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Senada Muhammadiyah-PBNU Tegaskan Pelapor Pandji Bukan Bagiannya\n\nKonten: Bantahan datang dari Pengurus Besar Nahdlatul Ulama (PBNU) dan Pimpinan Pusat Muhammadiyah terkait pelaporan yang dilakukan Angkatan Muda Nahdlatul Ulama (NU) bersama Aliansi Muda Muhammadiyah terhadap komika Pandji Pragiwaksono. Kedua ormas Islam terbesar di Indonesia itu menegaskan pelapor Pandji bukan bagian dari organisasi mereka. Pandji sebelumnya dilaporkan ke Polda Metro Jaya buntut materi stand up comedy dalam 'Mens Rea' yang diduga menista agama. Pandji dilaporkan terkait Pasal 300 dan/...",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi faktual mengenai pernyataan dari Muhammadiyah dan PBNU, tanpa adanya promosi produk atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Yaqut Tersangka Kasus Korupsi Kuota Haji, PBNU: Itu Masalah Pribadi\n\nKonten: KPK menetapkan mantan Menteri Agama (Menag) Yaqut Cholil Qoumas sebagai tersangka kasus korupsi kuota haji. Ketua PBNU Ahmad Fahrur Rozi (Gus Fahrur) mengatakan kasus tersebut merupakan masalah pribadi dan tak terkait dengan PBNU. \"Ini masalah pribadi beliau dan tidak ada kaitannya dengan PBNU secara kelembagaan, tentu beliau akan didampingi oleh pengacara pribadinya yang sudah mendampingi sejak lama,\" kata Gus Fahrur kepada wartawan, Sabtu (10/1/2026). SCROLL TO CONTINUE WITH CONTENT",
+    "output": "Label: berita murni\nAlasan: Berita faktual mengenai kasus korupsi yang melibatkan Yaqut, tidak ada promosi produk atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Pondok Cabe Rasa New York, Ini Asal Usul Patung Liberty di Tangsel\n\nKonten: Patung Liberty di kawasan Pondok Cabe, Tangerang Selatan, Banten viral di media sosial. Patung replika itu ramai karena disebut membuat Pondok Cabe berasa seperti di New York, Amerika Serikat. Pantauan detikcom di lokasi, Jumat (9/1/2026) patung itu berada di Jalan Pala Raya, tak jauh dari Bandara Pondok Cabe. Letaknya cukup tersembunyi karena ada di belakang toko kelontong. Sepintas, patung itu terhalangi oleh toko namun masih terlihat jelas dari jalan raya. Untuk mencapai patung tersebut, haru...",
+    "output": "Label: berita murni\nAlasan: Konten membahas asal usul Patung Liberty di Tangsel tanpa ada elemen promosi atau ajakan untuk membeli produk."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Duduk Perkara Penyelidikan Kasus Kematian Diplomat Arya Daru Dihentikan\n\nKonten: Penyelidikan kasus kematian Arya Daru Pangayunan resmi dihentikan polisi setelah genap enam bulan. Polda Metro Jaya menyatakan tidak ada unsur pidana dalam kematian diplomat muda di Kementerian Luar Negeri (Kemlu) tersebut. Polda Metro Jaya menghentikan penyelidikan kasus karena menilai tidak ada unsur pidana dalam kematian Arya tersebut. Meski demikian, polisi terbuka untuk membuka kembali penyelidikan apabila ditemukan novum. Seperti diketahui, Arya Daru ditemukan meninggal di dalam kamar kosn...",
+    "output": "Label: berita murni\nAlasan: Berita faktual mengenai penyelidikan kasus kematian diplomat, tidak ada elemen promosi atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Terkini Harian Fenomena Alam Terbaru Hari Ini - Kompas.com\n\nKonten: Ada 190 artikel dan\n                            28 video dari tag terkait Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi judul berita terkini tentang fenomena alam, tidak ada elemen promosi atau ajakan untuk membeli produk."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Terkini Harian Kematian Prada Lucky Terbaru Hari Ini - Kompas.com\n\nKonten: Ada 106 artikel dan\n                            39 video dari tag terkait Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Judul dan konten menyebutkan berita terkini mengenai kematian Prada Lucky, yang merupakan informasi faktual tanpa elemen promosi atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Terkini Harian Yaqut Cholil Qoumas Terbaru Hari Ini - Kompas.com\n\nKonten: Ada 675 artikel dan\n                            18 video dari tag terkait Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi tentang berita terkini tanpa adanya promosi produk atau ajakan untuk membeli sesuatu."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Terkini Harian Pemprov Dki Jakarta Terbaru Hari Ini - Kompas.com\n\nKonten: Ada 1984 artikel dan\n                            9 video dari tag terkait Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi berita terkini dari Pemprov DKI Jakarta tanpa adanya promosi produk atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Terkini Harian Kenaikan Pangkat Terbaru Hari Ini - Kompas.com\n\nKonten: Ada 357 artikel dan\n                            18 video dari tag terkait Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Judul dan konten menunjukkan bahwa ini adalah berita terkini mengenai kenaikan pangkat, tanpa adanya promosi produk atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Terkini Harian Pandji Pragiwaksono Terbaru Hari Ini - Kompas.com\n\nKonten: Ada 331 artikel dan\n                            7 video dari tag terkait Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi tentang berita terkini tanpa adanya promosi produk atau ajakan untuk membeli."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Megapolitan Peristiwa Terbaru Hari Ini\n\nKonten: Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi tentang berita terbaru tanpa adanya promosi atau ajakan untuk membeli produk."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Kilas Daerah Terbaru Terkini Hari Ini\n\nKonten: Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi tentang berita daerah terbaru tanpa adanya promosi produk atau ajakan komersial."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Kilas Parlemen Terbaru Terkini Hari Ini\n\nKonten: Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi tentang berita parlemen tanpa adanya promosi produk atau ajakan untuk membeli."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Sorot Politik Terbaru Terkini Hari Ini\n\nKonten: Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten berisi informasi tentang berita politik terbaru tanpa adanya promosi produk atau ajakan untuk membeli."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Kalbe Health Corner\n\nKonten: Copyright 2008 - 2026 PT. Kompas Cyber Media (Kompas Gramedia Digital Group). All Rights Reserved.",
+    "output": "Label: berita murni\nAlasan: Konten tampaknya adalah bagian dari platform berita dengan berbagai kategori, tanpa bukti jelas promosi atau ajakan untuk membeli produk tertentu."
+  },
+  {
+    "instruction": "Klasifikasikan apakah berita berikut adalah 'berita murni' atau 'native ads' (iklan terselubung).",
+    "input": "Judul: Berita Terkini Hari Ini, Kabar Akurat Terpercaya - Kompas.com\n\nKonten: Kamis, 31 Oktober 2024 - 10:40 WIB Kamis, 24 Oktober 2024 - 09:58 WIB IONIQ 5 N mampu mencapai kecepatan maksimum hingga 260 km/jam dan berakselerasi dari 0 ke 100 km/jam dalam waktu 3,4 detik.",
+    "output": "Label: berita murni\nAlasan: Konten ini tampak sebagai pengantar untuk berita dari Kompas.com tanpa adanya promosi produk atau ajakan untuk membeli. Ini lebih mirip dengan deskripsi layanan berita."
+  }
+]
