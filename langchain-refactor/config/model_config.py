@@ -12,11 +12,12 @@ class ModelConfig:
     """Configuration for LLM models."""
     
     # LLM Settings
-    llm_provider: str = "openai"  # 'openai' or 'huggingface'
+    llm_provider: str = "openai"  # 'openai', 'openrouter', or 'huggingface'
     llm_model_name: str = "gpt-3.5-turbo"
     llm_temperature: float = 0.3
     llm_max_tokens: int = 1000
     llm_api_key: Optional[str] = None
+    llm_base_url: Optional[str] = None  # Custom API base URL (for OpenRouter, etc.)
     
     # Embedding Settings
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
@@ -78,6 +79,13 @@ HUGGINGFACE_LLAMA_CONFIG = ModelConfig(
     llm_provider="huggingface",
     llm_model_name="meta-llama/Llama-2-7b-chat-hf",
     llm_temperature=0.3
+)
+
+OPENROUTER_GPT4O_MINI_CONFIG = ModelConfig(
+    llm_provider="openrouter",
+    llm_model_name="openai/gpt-4o-mini",
+    llm_temperature=0.3,
+    llm_base_url="https://openrouter.ai/api/v1"
 )
 
 # Default configuration
