@@ -15,69 +15,116 @@ logger = logging.getLogger(__name__)
 
 class NewsCrawlerInput(BaseModel):
     """Input schema for NewsCrawlerTool."""
-    source_url: str = Field(default="https://www.cnnindonesia.com/terkini", description="The news portal index URL to crawl")
-    limit: int = Field(default=50, description="Number of news URLs to collect")
+    limit: int = Field(default=50, description="Total number of news URLs to collect")
+    sources: Optional[List[str]] = Field(default=None, description="List of portal base URLs to crawl")
 
 class NewsCrawlerTool(BaseTool):
-    """Tool for discovering news article URLs from Indonesia portals."""
+    """Tool for discovering news article URLs from multiple Indonesian portals."""
     
     name: str = "news_crawler"
     description: str = """
-    Crawls a news portal's "latest news" or index page to extract article URLs.
-    Supports Indonesian portals like CNN Indonesia.
+    Crawls multiple news portals to extract article URLs.
+    Supports CNN Indonesia, Detik, Kompas, Viva, Tempo, and Sindonews.
+    Returns a list of unique article URLs.
     """
     args_schema: Type[BaseModel] = NewsCrawlerInput
     
     def _run(
         self,
-        source_url: str = "https://www.cnnindonesia.com/terkini",
         limit: int = 50,
+        sources: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> List[str]:
-        """Collect article URLs."""
+        """Collect article URLs from various sources."""
         try:
-            logger.info(f"Crawling news index: {source_url}")
+            # Default sources if none provided
+            if not sources:
+                sources = [
+                    "https://www.cnnindonesia.com/tag/laporan-interaktif",
+                    "https://news.detik.com/indeks",
+                    "https://www.viva.co.id/terpopuler",
+                    "https://indeks.kompas.com/terpopuler",
+                    "https://www.tempo.co/indeks",
+                    "https://www.sindonews.com/indeks"
+                ]
+            
+            logger.info(f"Crawling {len(sources)} sources for {limit} articles...")
             
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
             }
             
-            urls = []
+            all_urls = []
+            urls_per_source = max(1, limit // len(sources)) + 5
             
-            # Simple crawling logic for CNN Indonesia (example)
-            # CNN Indonesia pagination: /terkini/1, /terkini/2, etc.
-            page = 1
-            while len(urls) < limit:
-                current_url = source_url if page == 1 else f"{source_url}/{page}"
-                logger.debug(f"Fetching page {page}: {current_url}")
-                
-                response = requests.get(current_url, headers=headers, timeout=10)
-                if response.status_code != 200:
+            for source in sources:
+                if len(all_urls) >= limit:
                     break
                     
-                soup = BeautifulSoup(response.content, 'html.parser')
-                
-                # CNN Indonesia specific article links
-                # Usually in <article> tags or links within a specific div
-                links = soup.select('article a[href*="/nasional/"], article a[href*="/ekonomi/"], article a[href*="/teknologi/"]')
-                
-                for link in links:
-                    href = link['href']
-                    if href not in urls and href.startswith('http'):
-                        urls.append(href)
-                        if len(urls) >= limit:
-                            break
-                
-                if not links: # No more links found
-                    break
+                logger.info(f"Crawling source: {source}")
+                try:
+                    response = requests.get(source, headers=headers, timeout=10)
+                    if response.status_code != 200:
+                        logger.warning(f"Failed to fetch {source}: {response.status_code}")
+                        continue
+                        
+                    soup = BeautifulSoup(response.content, 'html.parser')
+                    source_urls = []
                     
-                page += 1
-                if page > 5: # Safety limit
-                    break
+                    # 1. Domain-specific selectors
+                    if "cnnindonesia.com" in source:
+                        # CNN uses specific link patterns
+                        links = soup.find_all('a', href=re.compile(r'/(nasional|ekonomi|teknologi|internasional|hiburan|gaya-hidup|olahraga|otomotif)/20\d{6}'))
+                    elif "detik.com" in source:
+                        links = soup.select('article a[href*="detik.com/news/"]')
+                    elif "kompas.com" in source:
+                        links = soup.select('.article__list__title a')
+                    elif "viva.co.id" in source:
+                        links = soup.select('.article-list a')
+                    elif "tempo.co" in source:
+                        links = soup.select('.card-box a[href*="tempo.co/read/"]')
+                    elif "sindonews.com" in source:
+                        links = soup.select('.m-link a')
+                    else:
+                        # Fallback for generic portals
+                        links = soup.find_all('a', href=True)
+                    
+                    for link in links:
+                        href = link['href']
+                        
+                        # Clean relative URLs
+                        if href.startswith('/'):
+                            # Try to construct absolute URL
+                            domain = re.match(r'(https?://[^/]+)', source).group(1)
+                            href = domain + href
+                            
+                        # Basic filtering
+                        if not href.startswith('http'):
+                            continue
+                        
+                        # Avoid duplicates and non-article links
+                        if (href not in all_urls and 
+                            href not in source_urls and 
+                            not any(x in href for x in ['/tag/', '/search/', '/video/', '/foto/', '/indeks', '/author/']) and
+                            (len(href.split('/')) > 4 or 'read' in href)):
+                            
+                            source_urls.append(href)
+                            if len(all_urls) + len(source_urls) >= limit or len(source_urls) >= urls_per_source:
+                                break
+                    
+                    all_urls.extend(source_urls)
+                    logger.info(f"Found {len(source_urls)} urls from {source}")
+                    
+                except Exception as e:
+                    logger.error(f"Error crawling {source}: {e}")
+                    continue
             
-            logger.info(f"Found {len(urls)} article URLs")
-            return urls[:limit]
+            # Final unique set and limit
+            final_urls = list(dict.fromkeys(all_urls))[:limit]
+            logger.info(f"Total unique URLs found: {len(final_urls)}")
+            return final_urls
             
         except Exception as e:
-            logger.error(f"News crawling error: {e}")
+            logger.error(f"News crawling master error: {e}")
             return []
