@@ -4,8 +4,9 @@ Main Entry Point for LangChain Refactored System
 
 import argparse
 import logging
-import json
+from datetime import datetime
 from pathlib import Path
+import json
 
 from chains.full_pipeline_chain import FullPipelineChain
 
@@ -15,6 +16,62 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+def save_results(url: str, result: dict):
+    """Save classification results to results/ folder with timestamp."""
+    
+    # Create results directory
+    results_dir = Path("../results")
+    results_dir.mkdir(exist_ok=True)
+    
+    # Generate timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Extract domain from URL for filename
+    from urllib.parse import urlparse
+    domain = urlparse(url).netloc.replace('www.', '').replace('.', '_')
+    
+    # Prepare data
+    save_data = {
+        "timestamp": datetime.now().isoformat(),
+        "url": url,
+        "title": result.get('title', 'N/A'),
+        "classification": result.get('classification', {}),
+        "explanation": result.get('explanation', 'N/A'),
+        "metadata": result.get('metadata', {})
+    }
+    
+    # Save as JSON
+    json_file = results_dir / f"{timestamp}_{domain}.json"
+    with open(json_file, 'w', encoding='utf-8') as f:
+        json.dump(save_data, f, ensure_ascii=False, indent=2)
+    
+    # Save as TXT (human-readable)
+    txt_file = results_dir / f"{timestamp}_{domain}.txt"
+    with open(txt_file, 'w', encoding='utf-8') as f:
+        f.write("="*80 + "\n")
+        f.write("NATIVE ADS CLASSIFICATION RESULT\n")
+        f.write("="*80 + "\n\n")
+        f.write(f"Timestamp: {save_data['timestamp']}\n")
+        f.write(f"URL: {url}\n")
+        f.write(f"Title: {save_data['title']}\n\n")
+        
+        classification = save_data['classification']
+        f.write("CLASSIFICATION:\n")
+        f.write(f"  Label: {classification.get('label', 'N/A')}\n")
+        f.write(f"  Confidence: {classification.get('confidence', 0):.2f}\n")
+        f.write(f"  Reasoning: {classification.get('reasoning', 'N/A')}\n\n")
+        
+        if save_data.get('explanation'):
+            f.write("EXPLANATION:\n")
+            f.write(f"{save_data['explanation']}\n\n")
+        
+        f.write("="*80 + "\n")
+    
+    print(f"\n💾 Results saved:")
+    print(f"   JSON: {json_file}")
+    print(f"   TXT:  {txt_file}")
 
 
 def main():
@@ -54,6 +111,10 @@ def main():
         logger.info(f"Processing single URL: {args.url}")
         result = pipeline.run(args.url)
         results.append(result)
+        
+        # Save results automatically
+        if result.get('status') == 'success':
+            save_results(args.url, result)
         
     elif args.urls_file:
         # Multiple URLs from file
