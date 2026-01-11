@@ -119,23 +119,39 @@ Return only the questions, one per line."""
         Generate penjelasan detail mengapa konten diklasifikasikan sebagai label tertentu.
         """
         
-        prompt = f"""Analyze this article and explain in detail (in Indonesian) why it should be classified as "{label}".
+        prompt = f"""Analyze this Indonesian news article and provide detailed classification reasoning in JSON format.
 
-Article: {content[:500]}
+**ARTICLE:**
+{content}
 
-Native Ads Characteristics (must combine ALL):
-1. Positive/neutral tone (never criticizes subject)
-2. Persuasive language (convincing readers)
-3. Promotes product/brand/institution
-4. One-sided perspective (not objective)
+**GROUND TRUTH LABEL:** {label}
 
-Provide:
-1. Classification reasoning based on the characteristics above
-2. Key indicators found
-3. Specific examples from the text
-4. Confidence level
+**TASK:**
+Analyze based on 4 Native Ads characteristics:
+1. **Tone**: Positive/neutral (no criticism) vs Negative/critical
+2. **Persuasive Language**: Words that convince/persuade readers
+3. **Brand Promotion**: Promotes product/brand/institution
+4. **Perspective**: One-sided vs Objective/balanced
 
-Be specific and cite evidence from the text."""
+**OUTPUT FORMAT (JSON):**
+{{
+  "label": "{label}",
+  "confidence": 0.XX,
+  "reasoning": "Detailed analysis in Indonesian covering:
+    1. Tone analysis with examples
+    2. Persuasive words found (quote specific phrases)
+    3. Brand/product mentions and how they're presented
+    4. Perspective analysis (one-sided or balanced?)
+    5. Conclusion with strongest indicators"
+}}
+
+**IMPORTANT:**
+- Reasoning must be in Bahasa Indonesia
+- Include specific quotes/evidence from article
+- Be detailed (200-300 words)
+- Confidence: 0.7-0.95 based on clarity of indicators
+
+Output ONLY valid JSON, no additional text:"""
         
         if self.llm_provider == 'groq':
             response = self.client.chat.completions.create(
@@ -152,6 +168,37 @@ Be specific and cite evidence from the text."""
                 prompt=prompt
             )
             explanation = response['response']
+        
+        elif self.llm_provider == 'openrouter':
+            response = self.client.chat.completions.create(
+                model="openai/gpt-4o-mini",  # Fast and cheap
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,
+                max_tokens=1000
+            )
+            explanation = response.choices[0].message.content
+            
+            # Parse JSON response
+            try:
+                import json
+                import re
+                # Extract JSON
+                json_match = re.search(r'\{[^{}]*"label"[^{}]*\}', explanation, re.DOTALL)
+                if json_match:
+                    result = json.loads(json_match.group())
+                    return result
+                else:
+                    return {
+                        "label": label,
+                        "confidence": 0.75,
+                        "reasoning": explanation[:500]
+                    }
+            except:
+                return {
+                    "label": label,
+                    "confidence": 0.75,
+                    "reasoning": explanation[:500]
+                }
         
         else:
             explanation = self._generate_template_explanation(content, label)
