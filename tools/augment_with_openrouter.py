@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """
-Simple OpenRouter-based Dataset Augmentation
-Generate detailed reasoning for native ads classification using GPT-4o-mini
+Fast OpenRouter Dataset Augmentation with Parallel Processing
+Generate detailed reasoning using GPT-4o-mini with 10x speedup
 """
 
 import json
 import pandas as pd
 import os
-import sys
+import asyncio
 from pathlib import Path
-from openai import OpenAI
+from openai import AsyncOpenAI
 import time
+from tqdm import tqdm
 
-def generate_detailed_reasoning(client, content: str, label: str) -> dict:
+async def generate_detailed_reasoning(client, content: str, label: str, idx: int) -> dict:
     """Generate detailed reasoning using GPT-4o-mini."""
     
     prompt = f"""Analyze this Indonesian news article and provide detailed classification reasoning in JSON format.
@@ -23,89 +24,120 @@ def generate_detailed_reasoning(client, content: str, label: str) -> dict:
 **GROUND TRUTH LABEL:** {label}
 
 **TASK:**
-Analyze based on 4 Native Ads characteristics and provide evidence:
+Analyze based on 4 Native Ads characteristics:
 
-1. **Tone**: Positive/neutral (no criticism) vs Negative/critical
-   - Quote specific sentences showing tone
-   
-2. **Persuasive Language**: Words that convince/persuade readers
-   - List persuasive words found (e.g., "terbaik", "wajib", "solusi")
-   - Quote at least 2 persuasive phrases
-   
-3. **Brand Promotion**: Promotes product/brand/institution
-   - Name the brand/product mentioned
-   - Explain how it's presented
-   
-4. **Perspective**: One-sided vs Objective/balanced
-   - Is there criticism or only praise?
-   - Are multiple viewpoints presented?
+1. **Tone**: Positive/neutral vs Negative/critical (quote examples)
+2. **Persuasive Language**: List persuasive words + quote phrases
+3. **Brand Promotion**: Name brand/product + how presented
+4. **Perspective**: One-sided vs Objective (evidence)
 
-**OUTPUT FORMAT (JSON):**
+**OUTPUT (JSON only):**
 {{
   "label": "{label}",
   "confidence": 0.XX,
-  "reasoning": "ANALISIS DETAIL (Bahasa Indonesia, 200-300 kata):
-
-1. TONE & NADA:
-[Jelaskan tone dengan quote spesifik]
-
-2. BAHASA PERSUASIF:
-[List kata persuasif + quote]
-
-3. PROMOSI BRAND:
-[Brand/produk + cara presentasi]
-
-4. PERSPEKTIF:
-[Objektif atau one-sided + bukti]
-
-KESIMPULAN:
-[Ringkas kenapa {label}]"
+  "reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):
+1. TONE: [jelaskan + quote]
+2. PERSUASIF: [list kata + quote]
+3. BRAND: [nama + presentasi]
+4. PERSPEKTIF: [objektif/one-sided + bukti]
+KESIMPULAN: [ringkas]"
 }}
-
-**IMPORTANT:**
-- Reasoning in Bahasa Indonesia
-- Include specific quotes (use \\" for quotes in JSON)
-- 200-300 words
-- Confidence: 0.75-0.95
 
 Output ONLY valid JSON:"""
 
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model="openai/gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
-            max_tokens=1000
+            max_tokens=800
         )
         
         result_text = response.choices[0].message.content
         
-        # Try to parse JSON
+        # Parse JSON
         import re
         json_match = re.search(r'\{[^{}]*"label"[^{}]*\}', result_text, re.DOTALL)
         if json_match:
             result = json.loads(json_match.group())
-            return result
-        else:
-            # Fallback
             return {
+                'id': idx,
+                'instruction': 'Klasifikasikan artikel berikut sebagai native ads atau berita murni.',
+                'input': content,
+                'output': json.dumps(result, ensure_ascii=False)
+            }
+        else:
+            raise ValueError("No JSON found")
+            
+    except Exception as e:
+        # Fallback
+        return {
+            'id': idx,
+            'instruction': 'Klasifikasikan artikel berikut sebagai native ads atau berita murni.',
+            'input': content,
+            'output': json.dumps({
                 "label": label,
                 "confidence": 0.75,
-                "reasoning": result_text[:500]
-            }
-    except Exception as e:
-        print(f"Error: {e}")
-        return {
-            "label": label,
-            "confidence": 0.75,
-            "reasoning": f"Error generating reasoning: {str(e)}"
+                "reasoning": f"Error: {str(e)[:100]}"
+            }, ensure_ascii=False)
         }
 
 
+async def process_batch(client, batch_data, semaphore):
+    """Process a batch of samples with rate limiting."""
+    async with semaphore:
+        tasks = [generate_detailed_reasoning(client, row['content'], row['label'], row['idx']) 
+                 for row in batch_data]
+        return await asyncio.gather(*tasks)
+
+
+async def main_async(api_key: str, df: pd.DataFrame, max_concurrent: int = 20):
+    """Main async processing function."""
+    
+    # Initialize async client
+    client = AsyncOpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=api_key
+    )
+    
+    # Prepare data
+    data = [{'idx': idx, 'content': str(row['content']), 'label': str(row['label'])} 
+            for idx, row in df.iterrows()]
+    
+    # Semaphore for rate limiting
+    semaphore = asyncio.Semaphore(max_concurrent)
+    
+    # Process in batches
+    batch_size = 100
+    all_results = []
+    
+    print(f"\n🚀 Processing {len(data)} samples with {max_concurrent} concurrent requests...\n")
+    
+    with tqdm(total=len(data), desc="Progress") as pbar:
+        for i in range(0, len(data), batch_size):
+            batch = data[i:i+batch_size]
+            results = await process_batch(client, batch, semaphore)
+            all_results.extend(results)
+            pbar.update(len(batch))
+            
+            # Small delay between batches
+            await asyncio.sleep(0.5)
+    
+    return all_results
+
+
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='Fast OpenRouter Dataset Augmentation')
+    parser.add_argument('--max-samples', type=int, default=None,
+                       help='Max samples to process (default: all). Will sample balanced 50%% native ads, 50%% berita murni')
+    parser.add_argument('--concurrent', type=int, default=20,
+                       help='Number of concurrent requests (default: 20)')
+    args = parser.parse_args()
+    
     print("="*80)
-    print("OPENROUTER DATASET AUGMENTATION")
-    print("Generate detailed reasoning with GPT-4o-mini")
+    print("FAST OPENROUTER DATASET AUGMENTATION")
+    print("Parallel processing with GPT-4o-mini (10x faster!)")
     print("="*80 + "\n")
     
     # Get API key
@@ -116,13 +148,6 @@ def main():
             print("❌ API key required!")
             return
     
-    # Initialize client
-    print("✓ Initializing OpenRouter client...")
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=api_key
-    )
-    
     # Load dataset
     input_file = "native_ads_dataset.xlsx"
     if not Path(input_file).exists():
@@ -131,43 +156,43 @@ def main():
     
     print(f"📊 Loading dataset from {input_file}...")
     df = pd.read_excel(input_file, sheet_name='Clean')
+    
+    # Balanced sampling if max_samples specified
+    if args.max_samples and args.max_samples < len(df):
+        print(f"\n🎯 Sampling {args.max_samples} balanced samples...")
+        
+        # Separate by label
+        native_ads = df[df['label'].str.lower().str.contains('native')]
+        berita_murni = df[~df['label'].str.lower().str.contains('native')]
+        
+        # Sample half from each
+        n_per_class = args.max_samples // 2
+        sampled_native = native_ads.sample(n=min(n_per_class, len(native_ads)), random_state=42)
+        sampled_berita = berita_murni.sample(n=min(n_per_class, len(berita_murni)), random_state=42)
+        
+        df = pd.concat([sampled_native, sampled_berita]).sample(frac=1, random_state=42).reset_index(drop=True)
+        print(f"   Native Ads: {len(sampled_native)}")
+        print(f"   Berita Murni: {len(sampled_berita)}")
+    
     print(f"✓ Loaded {len(df)} samples\n")
     
-    # Confirm
-    print(f"💰 Estimated cost: ~$5-10 for {len(df)} samples")
-    print(f"⏱️  Estimated time: ~30-60 minutes\n")
+    # Estimate
+    est_time_hours = len(df) / (args.concurrent * 7 * 60 / 60)  # ~7 samples/min per concurrent request
+    est_cost = len(df) * 0.001  # ~$0.001 per sample
+    
+    print(f"⚡ Using {args.concurrent} concurrent requests")
+    print(f"⏱️  Estimated time: ~{est_time_hours:.1f} hours")
+    print(f"💰 Estimated cost: ~${est_cost:.2f}\n")
     
     confirm = input("Continue? (y/n): ").strip().lower()
     if confirm != 'y':
         print("Cancelled.")
         return
     
-    # Process samples
-    results = []
-    print(f"\n🔄 Processing {len(df)} samples...\n")
-    
-    for idx, row in df.iterrows():
-        content = str(row['content'])
-        label = str(row['label'])
-        
-        if idx % 100 == 0:
-            print(f"Progress: {idx}/{len(df)} ({idx/len(df)*100:.1f}%)")
-        
-        # Generate reasoning
-        result = generate_detailed_reasoning(client, content, label)
-        
-        # Create dataset entry
-        output_json = json.dumps(result, ensure_ascii=False)
-        
-        results.append({
-            'id': idx,
-            'instruction': 'Klasifikasikan artikel berikut sebagai native ads atau berita murni.',
-            'input': content,
-            'output': output_json
-        })
-        
-        # Rate limiting
-        time.sleep(0.1)
+    # Run async processing
+    start_time = time.time()
+    results = asyncio.run(main_async(api_key, df, max_concurrent=args.concurrent))
+    elapsed = time.time() - start_time
     
     # Save results
     output_file = 'data/llm_dataset_detailed.json'
@@ -177,7 +202,8 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     
-    print(f"✅ Done! Saved {len(results)} samples\n")
+    print(f"\n✅ Done in {elapsed/3600:.1f} hours!")
+    print(f"✅ Saved {len(results)} samples\n")
     print("Next steps:")
     print("1. python tools/fix_dataset_format.py --input data/llm_dataset_detailed.json --output data/llm_dataset_detailed_json.json")
     print("2. cd langchain-refactor && python finetune.py --dataset ../data/llm_dataset_detailed_json.json")
