@@ -76,7 +76,7 @@ class DatasetConverter:
             qna_data.append({
                 "id": f"sample_{idx}",
                 "question": question,
-                "context": content[:1000],  # Limit panjang konten
+                "context": content,  # Full content for training
                 "answer": answer,
                 "label": label
             })
@@ -120,7 +120,7 @@ class DatasetConverter:
             instruction_data.append({
                 "id": f"sample_{idx}",
                 "instruction": instruction,
-                "input": content[:1000],
+                "input": content,  # Full content for training
                 "output": output
             })
         
