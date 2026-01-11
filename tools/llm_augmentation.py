@@ -281,14 +281,16 @@ def main():
     print("Pilih LLM Provider:")
     print("1. Groq (gratis, cepat, perlu API key)")
     print("2. Ollama (local, gratis, perlu install)")
-    print("3. Skip (gunakan template saja)")
+    print("3. OpenRouter (GPT-4o-mini, perlu API key, ~$5-10 untuk 12k samples)")
+    print("4. Skip (gunakan template saja)")
     
-    choice = input("\nPilihan (1/2/3): ").strip()
+    choice = input("\nPilihan (1/2/3/4): ").strip()
     
     provider_map = {
         '1': 'groq',
         '2': 'ollama',
-        '3': 'template'
+        '3': 'openrouter',
+        '4': 'template'
     }
     
     provider = provider_map.get(choice, 'template')
