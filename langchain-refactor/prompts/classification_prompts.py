@@ -134,17 +134,48 @@ simple_classification_prompt = PromptTemplate(
 
 
 # Explanation prompt
-EXPLANATION_PROMPT_TEMPLATE = """Berikan penjelasan detail tentang klasifikasi berikut:
+EXPLANATION_PROMPT_TEMPLATE = """Berikan penjelasan detail tentang klasifikasi berikut berdasarkan 4 karakteristik expert native advertising:
 
-Konten: {content}
-Label: {label}
-Confidence: {confidence}
-Reasoning: {reasoning}
+**ARTIKEL:**
+{content}
 
-Jelaskan dalam Bahasa Indonesia:
-1. Mengapa konten ini diklasifikasikan sebagai "{label}"?
-2. Apa indikator kunci yang mendukung klasifikasi ini?
-3. Apakah ada elemen yang membuat klasifikasi ini ambigu?
+**HASIL KLASIFIKASI:**
+- Label: {label}
+- Confidence: {confidence}
+- Reasoning Awal: {reasoning}
+
+**TUGAS ANDA:**
+Analisis artikel berdasarkan 4 karakteristik Native Ads:
+
+1. **Nada Positif/Netral**: Apakah artikel mengkritik subjek atau hanya positif/netral?
+2. **Bahasa Persuasif**: Apakah ada kata-kata yang mengajak/meyakinkan pembaca?
+3. **Mempromosikan Produk/Brand**: Apakah ada brand/produk yang dipromosikan?
+4. **Satu Sudut Pandang**: Apakah artikel objektif atau hanya satu perspektif?
+
+**FORMAT OUTPUT:**
+
+## Analisis Detail
+
+### 1. Nada & Tone
+[Jelaskan tone artikel: positif/netral/negatif, ada kritik atau tidak]
+
+### 2. Bahasa Persuasif
+[Identifikasi kata-kata persuasif, contoh: "terbaik", "wajib", "solusi", dll]
+[Quote spesifik dari artikel jika ada]
+
+### 3. Promosi Produk/Brand
+[Sebutkan brand/produk yang disebutkan]
+[Jelaskan bagaimana produk dipresentasikan]
+
+### 4. Perspektif
+[Apakah artikel objektif atau one-sided?]
+[Ada berbagai sudut pandang atau hanya satu?]
+
+## Kesimpulan
+[Ringkas kenapa artikel ini diklasifikasikan sebagai "{label}"]
+[Sebutkan karakteristik mana yang paling kuat mendukung klasifikasi ini]
+
+**PENTING**: Berikan evidence konkret dari artikel, jangan hanya pernyataan umum!
 
 Penjelasan:"""
 
