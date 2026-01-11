@@ -103,9 +103,9 @@ class ClassificationAgent:
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=256,  # Reduced for more focused output
-                    temperature=self.temperature,
-                    do_sample=True,
+                    max_new_tokens=150,  # Reduced to prevent duplicates
+                    temperature=0.1,  # Lower temperature for consistency
+                    do_sample=False,  # Greedy decoding to avoid duplicates
                     eos_token_id=tokenizer.eos_token_id,
                     pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id else tokenizer.eos_token_id,
                     return_full_text=False  # Only return generated text, not prompt
@@ -203,6 +203,23 @@ class ClassificationAgent:
         except Exception as e:
             logger.warning(f"Failed to parse JSON: {e}")
             logger.info(f"Raw response (first 500 chars): {response[:500]}")
+            
+            # If multiple JSON objects, extract only the first one
+            if response.count('{') > 1:
+                try:
+                    first_json_start = response.find('{')
+                    first_json_end = response.find('}', first_json_start) + 1
+                    response = response[first_json_start:first_json_end]
+                    # Try parsing again
+                    result = json.loads(response)
+                    logger.info(f"Successfully extracted first JSON from multiple outputs")
+                    return {
+                        'label': result.get('label', 'unknown'),
+                        'confidence': float(result.get('confidence', 0.5)),
+                        'reasoning': result.get('reasoning', str(result))[:200]
+                    }
+                except:
+                    pass
             
             # Improved fallback parsing with keyword analysis
             import re
