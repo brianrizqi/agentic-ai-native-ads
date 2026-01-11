@@ -39,7 +39,7 @@ logs/
 *.log
 
 # Data files (besar)
-# data/llm_dataset_*.json
+data/llm_dataset_*.json
 data/llm_dataset_*.jsonl
 data/batch_results*.json
 data/training_data*.json
