@@ -49,7 +49,7 @@ Berita Murni:
 - Tidak mempromosikan produk/brand
 
 ### Input:
-{sample['input'][:500]}
+{sample['input']}
 
 ### Response:
 {sample['output']}"""
