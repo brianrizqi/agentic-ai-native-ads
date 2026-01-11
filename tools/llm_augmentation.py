@@ -297,11 +297,19 @@ def main():
     
     if provider == 'template':
         print("\nMenggunakan template-based generation (tanpa LLM)")
-        print("Untuk hasil lebih baik, gunakan Groq atau Ollama")
+        print("Untuk hasil lebih baik, gunakan Groq atau OpenRouter")
         return
     
+    # Get API key if needed
+    api_key = None
+    if provider in ['groq', 'openrouter']:
+        api_key = input(f"\nMasukkan {provider.upper()} API key: ").strip()
+        if not api_key:
+            print("❌ API key required!")
+            return
+    
     # Initialize augmenter
-    augmenter = LLMAugmenter(llm_provider=provider)
+    augmenter = LLMAugmenter(llm_provider=provider, api_key=api_key)
     
     if not augmenter.client:
         print("\n❌ Gagal initialize LLM client")
