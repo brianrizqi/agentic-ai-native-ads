@@ -23,9 +23,11 @@ class LLMAugmenter:
         Initialize augmenter.
         
         Args:
-            llm_provider: 'groq', 'ollama', atau 'huggingface'
+            llm_provider: 'groq', 'ollama', 'openrouter'
+            api_key: API key for groq or openrouter (optional)
         """
         self.llm_provider = llm_provider
+        self.api_key = api_key
         self.client = self._initialize_llm()
     
     def _initialize_llm(self):
@@ -34,8 +36,10 @@ class LLMAugmenter:
         if self.llm_provider == 'groq':
             try:
                 from groq import Groq
-                # Groq API key gratis: https://console.groq.com
-                api_key = input("Enter Groq API key (gratis dari console.groq.com): ").strip()
+                api_key = self.api_key or os.getenv('GROQ_API_KEY')
+                if not api_key:
+                    print("❌ Groq API key not provided")
+                    return None
                 client = Groq(api_key=api_key)
                 print("✓ Groq client initialized")
                 return client
