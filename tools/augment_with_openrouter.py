@@ -127,6 +127,14 @@ async def main_async(api_key: str, df: pd.DataFrame, max_concurrent: int = 20):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='Fast OpenRouter Dataset Augmentation')
+    parser.add_argument('--max-samples', type=int, default=None,
+                       help='Max samples to process (default: all). Will sample balanced 50%% native ads, 50%% berita murni')
+    parser.add_argument('--concurrent', type=int, default=20,
+                       help='Number of concurrent requests (default: 20)')
+    args = parser.parse_args()
+    
     print("="*80)
     print("FAST OPENROUTER DATASET AUGMENTATION")
     print("Parallel processing with GPT-4o-mini (10x faster!)")
@@ -148,12 +156,33 @@ def main():
     
     print(f"📊 Loading dataset from {input_file}...")
     df = pd.read_excel(input_file, sheet_name='Clean')
+    
+    # Balanced sampling if max_samples specified
+    if args.max_samples and args.max_samples < len(df):
+        print(f"\n🎯 Sampling {args.max_samples} balanced samples...")
+        
+        # Separate by label
+        native_ads = df[df['label'].str.lower().str.contains('native')]
+        berita_murni = df[~df['label'].str.lower().str.contains('native')]
+        
+        # Sample half from each
+        n_per_class = args.max_samples // 2
+        sampled_native = native_ads.sample(n=min(n_per_class, len(native_ads)), random_state=42)
+        sampled_berita = berita_murni.sample(n=min(n_per_class, len(berita_murni)), random_state=42)
+        
+        df = pd.concat([sampled_native, sampled_berita]).sample(frac=1, random_state=42).reset_index(drop=True)
+        print(f"   Native Ads: {len(sampled_native)}")
+        print(f"   Berita Murni: {len(sampled_berita)}")
+    
     print(f"✓ Loaded {len(df)} samples\n")
     
     # Estimate
-    print(f"⚡ Using 20 concurrent requests")
-    print(f"⏱️  Estimated time: ~2-3 hours (vs 29 hours sequential)")
-    print(f"💰 Estimated cost: ~$5-10\n")
+    est_time_hours = len(df) / (args.concurrent * 7 * 60 / 60)  # ~7 samples/min per concurrent request
+    est_cost = len(df) * 0.001  # ~$0.001 per sample
+    
+    print(f"⚡ Using {args.concurrent} concurrent requests")
+    print(f"⏱️  Estimated time: ~{est_time_hours:.1f} hours")
+    print(f"💰 Estimated cost: ~${est_cost:.2f}\n")
     
     confirm = input("Continue? (y/n): ").strip().lower()
     if confirm != 'y':
@@ -162,7 +191,7 @@ def main():
     
     # Run async processing
     start_time = time.time()
-    results = asyncio.run(main_async(api_key, df, max_concurrent=20))
+    results = asyncio.run(main_async(api_key, df, max_concurrent=args.concurrent))
     elapsed = time.time() - start_time
     
     # Save results
