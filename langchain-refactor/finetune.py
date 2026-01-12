@@ -20,9 +20,54 @@ from transformers import TrainingArguments, TrainerCallback
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime
+import time
 
 # Import prompts from LangChain system
 from prompts.classification_prompts import SIMPLE_LOCAL_PROMPT_TEMPLATE
+
+# Model configurations for multi-model support
+MODEL_CONFIGS = {
+    "qwen": {
+        "name": "unsloth/Qwen2.5-14B-Instruct-bnb-4bit",
+        "max_seq_length": 2048,
+        "lora_r": 8,
+        "lora_alpha": 16,
+        "batch_size": 1,
+        "gradient_accumulation": 4,
+        "learning_rate": 1e-4,
+        "description": "Qwen 2.5 14B - Best multilingual performance"
+    },
+    "gpt-oss": {
+        "name": "unsloth/gpt-oss-20b-bnb-4bit",
+        "max_seq_length": 2048,
+        "lora_r": 8,
+        "lora_alpha": 16,
+        "batch_size": 1,
+        "gradient_accumulation": 4,
+        "learning_rate": 8e-5,
+        "description": "GPT-OSS 20B - Largest model"
+    },
+    "llama": {
+        "name": "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit",
+        "max_seq_length": 2048,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 2,
+        "gradient_accumulation": 2,
+        "learning_rate": 1e-4,
+        "description": "Llama 3.1 8B - Balanced speed/quality"
+    },
+    "gemma": {
+        "name": "unsloth/gemma-2-9b-it-bnb-4bit",
+        "max_seq_length": 2048,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 2,
+        "gradient_accumulation": 2,
+        "learning_rate": 1e-4,
+        "description": "Gemma 2 9B - Google's efficient model"
+    }
+}
 
 
 class TrainingMonitor(TrainerCallback):
@@ -116,39 +161,39 @@ Output (JSON):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Fine-tune model for Native Ads Detection')
-    parser.add_argument('--model', type=str, default='unsloth/Qwen2.5-14B-Instruct-bnb-4bit',
-                       help='''Base model options:
-                       - unsloth/Qwen2.5-14B-Instruct-bnb-4bit (Recommended for Indonesian)
-                       - unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit (Good balance)
-                       - unsloth/gpt-oss-20b (Experimental, slower)
-                       ''')
-    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_json_format.json',
-                       help='Dataset path (use JSON format from fix_dataset_format.py)')
-    parser.add_argument('--output', type=str, default='../models/native-ads-finetuned',
-                       help='Output directory')
+    parser = argparse.ArgumentParser(description='Fine-tune models for Native Ads Detection')
+    parser.add_argument('--model', type=str, default='qwen',
+                       choices=list(MODEL_CONFIGS.keys()),
+                       help='Model to fine-tune (qwen, gpt-oss, llama, gemma)')
+    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_mixed_json.json',
+                       help='Path to training dataset')
+    parser.add_argument('--output', type=str, default=None,
+                       help='Output directory (default: ../models/{model}-native-ads)')
     parser.add_argument('--max-steps', type=int, default=1500,
                        help='Maximum training steps')
-    parser.add_argument('--batch-size', type=int, default=1,
-                       help='Per device batch size')
-    parser.add_argument('--learning-rate', type=float, default=1e-4,
-                       help='Learning rate')
-    parser.add_argument('--eval-steps', type=int, default=100,
-                       help='Evaluation frequency')
-    parser.add_argument('--early-stopping', action='store_true',
-                       help='Enable early stopping based on eval loss')
-    parser.add_argument('--patience', type=int, default=3,
-                       help='Early stopping patience (number of eval steps)')
+    parser.add_argument('--epochs', type=int, default=1,
+                       help='Number of training epochs')
     args = parser.parse_args()
+    
+    # Get model configuration
+    config = MODEL_CONFIGS[args.model]
+    
+    # Set output directory
+    if args.output is None:
+        args.output = f"../models/{args.model}-native-ads"
     
     print("="*80)
     print("NATIVE ADS DETECTION - FINE-TUNING")
     print("="*80)
-    print(f"Base Model: {args.model}")
+    print(f"Model: {args.model}")
+    print(f"Description: {config['description']}")
+    print(f"Base Model: {config['name']}")
     print(f"Dataset: {args.dataset}")
     print(f"Output: {args.output}")
     print(f"Max Steps: {args.max_steps}")
-    print(f"Learning Rate: {args.learning_rate}")
+    print(f"Learning Rate: {config['learning_rate']}")
+    print(f"Batch Size: {config['batch_size']}")
+    print(f"LoRA r: {config['lora_r']}")
     print("="*80 + "\n")
     
     # Check dataset exists
@@ -158,11 +203,11 @@ def main():
         print("Run: python3 ../tools/fix_dataset_format.py first")
         return
     
-    # 1. Load model with Unsloth
-    print("[1/5] Loading model with Unsloth optimization...")
+    # 1. Load base model with Unsloth
+    print("[1/5] Loading base model with Unsloth...")
     model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=args.model,
-        max_seq_length=2048,
+        model_name=config['name'],
+        max_seq_length=config['max_seq_length'],
         dtype=None,
         load_in_4bit=True,
     )
@@ -171,10 +216,10 @@ def main():
     print("[2/5] Adding LoRA adapters...")
     model = FastLanguageModel.get_peft_model(
         model,
-        r=8,
+        r=config['lora_r'],
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
                        "gate_proj", "up_proj", "down_proj"],
-        lora_alpha=16,
+        lora_alpha=config['lora_alpha'],
         lora_dropout=0,
         bias="none",
         use_gradient_checkpointing="unsloth",
@@ -210,13 +255,13 @@ def main():
         dataset_num_proc=2,
         packing=False,
         args=TrainingArguments(
-            per_device_train_batch_size=args.batch_size,
-            per_device_eval_batch_size=args.batch_size,
-            gradient_accumulation_steps=4,
+            per_device_train_batch_size=config['batch_size'],
+            per_device_eval_batch_size=config['batch_size'],
+            gradient_accumulation_steps=config['gradient_accumulation'],
             warmup_steps=5,
-            num_train_epochs=1,
+            num_train_epochs=args.epochs,
             max_steps=args.max_steps,
-            learning_rate=args.learning_rate,
+            learning_rate=config['learning_rate'],
             fp16=not torch.cuda.is_bf16_supported(),
             bf16=torch.cuda.is_bf16_supported(),
             logging_steps=1,
