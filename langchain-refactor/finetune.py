@@ -164,6 +164,8 @@ def main():
                        help='Maximum training steps')
     parser.add_argument('--epochs', type=int, default=1,
                        help='Number of training epochs')
+    parser.add_argument('--eval-steps', type=int, default=100,
+                       help='Evaluation frequency (steps)')
     args = parser.parse_args()
     
     # Get model configuration
