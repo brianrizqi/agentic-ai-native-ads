@@ -1,0 +1,24 @@
+================================================================================
+NATIVE ADS CLASSIFICATION RESULT
+================================================================================
+
+Timestamp: 2026-01-12T10:01:11.909046
+URL: https://tekno.sindonews.com/read/542366/776/begini-cara-mengoptimalkan-fitur-di-oppo-enco-buds-1631779764
+Title: Begini Cara Mengoptimalkan Fitur di OPPO Enco Buds
+
+CLASSIFICATION:
+  Label: berita murni
+  Confidence: 0.90
+  Reasoning: {"label": "berita murni", "confidence": 0.9, "reasoning": "Konten termasuk kategori berita murni karena
+
+EXPLANATION:
+Artikel ini diklasifikasikan sebagai: **BERITA MURNI**
+
+Tingkat Keyakinan: 90%
+
+Alasan:
+{"label": "berita murni", "confidence": 0.9, "reasoning": "Konten termasuk kategori berita murni karena
+
+Catatan: Ini adalah penjelasan otomatis berdasarkan analisis AI.
+
+================================================================================
