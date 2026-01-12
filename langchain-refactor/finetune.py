@@ -141,25 +141,9 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
             # If output is not JSON, use as-is
             expected_output = sample['output']
         
-        # Use the EXACT prompt template from classification_prompts.py
-        text = f"""Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
-1. Nada positif/netral (tidak mengkritik subjek)
-2. Bahasa persuasif (mengajak/meyakinkan)
-3. Mempromosikan produk/brand/instansi
-4. Hanya satu sudut pandang (tidak objektif)
-
-Berita Murni:
-- Bisa positif/netral/negatif
-- Objektif, menyajikan berbagai sudut pandang
-- Tidak mempromosikan produk/brand
-
-Konten:
-{sample['input']}
-
-Output (JSON):
-{expected_output}"""
+        # Use training prompt template from prompts module
+        from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
+        text = TRAINING_PROMPT_TEMPLATE.format(content=sample['input']) + expected_output
         
         formatted_data.append({"text": text})
     

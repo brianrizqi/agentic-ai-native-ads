@@ -60,7 +60,10 @@ def load_and_format_dataset(dataset_path: str):
         except:
             expected_output = sample['output']
         
-        text = SIMPLE_LOCAL_PROMPT_TEMPLATE.format(content=sample['input']) + f"\n{expected_output}"
+        # Use training prompt template from prompts module
+        from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
+        text = TRAINING_PROMPT_TEMPLATE.format(content=sample['input']) + expected_output
+        
         formatted_data.append({"text": text})
     
     dataset = Dataset.from_list(formatted_data)
