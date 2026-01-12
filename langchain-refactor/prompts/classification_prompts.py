@@ -242,3 +242,29 @@ simple_local_prompt = PromptTemplate(
     input_variables=["title", "content"],
     template=SIMPLE_LOCAL_PROMPT_TEMPLATE
 )
+
+
+# Training-specific prompt template (no title required - for fine-tuning)
+TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Konten:
+{content}
+
+Output (JSON):
+"""
+
+training_prompt = PromptTemplate(
+    input_variables=["content"],
+    template=TRAINING_PROMPT_TEMPLATE
+)
