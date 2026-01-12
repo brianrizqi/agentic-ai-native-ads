@@ -16,7 +16,7 @@ from agents.classification_agent import ClassificationAgent
 import time
 from datetime import datetime
 
-# Model paths
+# Model paths (4 models including experimental GPT-OSS)
 MODELS = {
     "Qwen 2.5 14B": "../models/qwen-native-ads_merged_16bit",
     "GPT-OSS 20B": "../models/gpt-oss-native-ads_merged_16bit",
@@ -192,7 +192,7 @@ def create_comparison_plots(all_results: list, output_dir: Path):
     plt.savefig(output_dir / 'inference_speed_comparison.png', dpi=300, bbox_inches='tight')
     plt.close()
     
-    # 4. Confusion Matrices (2x2 grid)
+    # 4. Confusion Matrices (2x2 grid for 4 models)
     fig, axes = plt.subplots(2, 2, figsize=(14, 12))
     axes = axes.flatten()
     

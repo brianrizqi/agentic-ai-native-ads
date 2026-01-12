@@ -93,6 +93,9 @@ train_model "gemma"
 # Model 3: Qwen 2.5 14B (best multilingual)
 train_model "qwen"
 
+# Model 4: GPT-OSS 20B (largest, experimental - may have issues)
+train_model "gpt-oss"
+
 # Summary
 echo "" | tee -a "$LOG_FILE"
 echo "================================================================================" | tee -a "$LOG_FILE"
@@ -110,4 +113,5 @@ echo "Models saved in:" | tee -a "$LOG_FILE"
 echo "  - ../models/llama-native-ads_merged_16bit" | tee -a "$LOG_FILE"
 echo "  - ../models/gemma-native-ads_merged_16bit" | tee -a "$LOG_FILE"
 echo "  - ../models/qwen-native-ads_merged_16bit" | tee -a "$LOG_FILE"
+echo "  - ../models/gpt-oss-native-ads_merged_16bit" | tee -a "$LOG_FILE"
 echo "================================================================================" | tee -a "$LOG_FILE"

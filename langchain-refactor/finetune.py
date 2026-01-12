@@ -26,7 +26,7 @@ import time
 from prompts.classification_prompts import SIMPLE_LOCAL_PROMPT_TEMPLATE
 
 # Model configurations for multi-model support
-# Note: GPT-OSS removed due to Unsloth compatibility issues
+# Note: GPT-OSS may have compatibility issues with some Unsloth versions
 MODEL_CONFIGS = {
     "qwen": {
         "name": "unsloth/Qwen2.5-14B-Instruct-bnb-4bit",
@@ -37,6 +37,16 @@ MODEL_CONFIGS = {
         "gradient_accumulation": 4,
         "learning_rate": 1e-4,
         "description": "Qwen 2.5 14B - Best multilingual performance"
+    },
+    "gpt-oss": {
+        "name": "unsloth/gpt-oss-20b-bnb-4bit",
+        "max_seq_length": 2048,
+        "lora_r": 8,
+        "lora_alpha": 16,
+        "batch_size": 1,
+        "gradient_accumulation": 4,
+        "learning_rate": 8e-5,
+        "description": "GPT-OSS 20B - Largest model (experimental)"
     },
     "llama": {
         "name": "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit",
