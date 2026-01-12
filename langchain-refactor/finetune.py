@@ -38,16 +38,6 @@ MODEL_CONFIGS = {
         "learning_rate": 1e-4,
         "description": "Qwen 2.5 14B - Best multilingual performance"
     },
-    "gpt-oss": {
-        "name": "unsloth/gpt-oss-20b-bnb-4bit",
-        "max_seq_length": 2048,
-        "lora_r": 8,
-        "lora_alpha": 16,
-        "batch_size": 1,
-        "gradient_accumulation": 4,
-        "learning_rate": 8e-5,
-        "description": "GPT-OSS 20B - Largest model (experimental)"
-    },
     "llama": {
         "name": "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit",
         "max_seq_length": 2048,
