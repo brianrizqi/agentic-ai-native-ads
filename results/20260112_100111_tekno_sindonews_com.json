@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-01-12T10:01:11.909046",
+  "url": "https://tekno.sindonews.com/read/542366/776/begini-cara-mengoptimalkan-fitur-di-oppo-enco-buds-1631779764",
+  "title": "Begini Cara Mengoptimalkan Fitur di OPPO Enco Buds",
+  "classification": {
+    "label": "berita murni",
+    "confidence": 0.9,
+    "reasoning": "{\"label\": \"berita murni\", \"confidence\": 0.9, \"reasoning\": \"Konten termasuk kategori berita murni karena",
+    "metadata": {
+      "model": "../models/native-ads-qwen14b-mixed_merged_16bit",
+      "provider": "local",
+      "use_few_shot": true,
+      "input_length": 2000
+    }
+  },
+  "explanation": "Artikel ini diklasifikasikan sebagai: **BERITA MURNI**\n\nTingkat Keyakinan: 90%\n\nAlasan:\n{\"label\": \"berita murni\", \"confidence\": 0.9, \"reasoning\": \"Konten termasuk kategori berita murni karena\n\nCatatan: Ini adalah penjelasan otomatis berdasarkan analisis AI.",
+  "metadata": {
+    "status_code": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "scraping_method": "beautifulsoup",
+    "pipeline_version": "1.0-langchain",
+    "has_context": false,
+    "has_explanation": true
+  }
+}
