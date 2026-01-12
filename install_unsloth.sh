@@ -11,7 +11,12 @@ python_version=$(python3 --version 2>&1 | awk '{print $2}')
 echo "Python version: $python_version"
 echo ""
 
+# Upgrade torchvision first
+echo "📦 Upgrading torchvision for compatibility..."
+pip install --upgrade torchvision
+
 # Install Unsloth
+echo ""
 echo "📦 Installing Unsloth..."
 pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
