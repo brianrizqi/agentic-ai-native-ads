@@ -93,8 +93,20 @@ train_model "gemma"
 # Model 3: Qwen 2.5 14B (best multilingual)
 train_model "qwen"
 
-# Model 4: GPT-OSS 20B (largest, experimental - may have issues)
-train_model "gpt-oss"
+# Model 4: GPT-OSS 20B (largest, experimental - uses dedicated script)
+echo "================================================================================"
+echo "Training: gpt-oss (using dedicated script)"
+echo "Start time: $(date)"
+echo "================================================================================"
+
+python finetune_gpt_oss.py \
+    --dataset "$DATASET" \
+    --max-steps "$MAX_STEPS" \
+    2>&1 | tee -a "$LOG_FILE"
+
+echo ""
+echo "✅ gpt-oss training attempt complete!"
+echo ""
 
 # Summary
 echo "" | tee -a "$LOG_FILE"
