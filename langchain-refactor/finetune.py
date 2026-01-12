@@ -108,12 +108,27 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
     
     print(f"Loaded {len(data)} samples")
     
-    # Check balance
-    native_count = sum(1 for d in data if 'native ads' in d.get('output', '').lower())
-    berita_count = len(data) - native_count
-    print(f"\n📊 Dataset Balance:")
-    print(f"   Native Ads: {native_count} ({native_count/len(data)*100:.1f}%)")
-    print(f"   Berita Murni: {berita_count} ({berita_count/len(data)*100:.1f}%)")
+    # Balance dataset (50-50 split)
+    print("\n📊 Balancing dataset...")
+    native_ads = [d for d in data if 'native ads' in d.get('output', '').lower()]
+    berita_murni = [d for d in data if 'native ads' not in d.get('output', '').lower()]
+    
+    print(f"   Before: Native Ads={len(native_ads)}, Berita Murni={len(berita_murni)}")
+    
+    # Undersample majority class
+    min_count = min(len(native_ads), len(berita_murni))
+    
+    import random
+    random.seed(42)
+    native_ads_balanced = random.sample(native_ads, min_count)
+    berita_murni_balanced = random.sample(berita_murni, min_count)
+    
+    # Combine and shuffle
+    data = native_ads_balanced + berita_murni_balanced
+    random.shuffle(data)
+    
+    print(f"   After:  Native Ads={len(native_ads_balanced)} (50%), Berita Murni={len(berita_murni_balanced)} (50%)")
+    print(f"   Total: {len(data)} balanced samples\n")
     
     # Format with EXACT same prompt as SIMPLE_LOCAL_PROMPT_TEMPLATE
     formatted_data = []
