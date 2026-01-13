@@ -153,13 +153,17 @@ def main():
     
     # Setup trainer
     print("🔄 Setting up trainer...")
+    
+    # Formatting function for newer trl versions
+    def formatting_func(examples):
+        return examples["text"]
+    
     trainer = SFTTrainer(
         model=model,
         train_dataset=split['train'],
         eval_dataset=split['test'],
-        dataset_text_field="text",
+        formatting_func=formatting_func,
         max_seq_length=args.max_seq_length,
-        dataset_num_proc=2,
         packing=False,
         args=TrainingArguments(
             per_device_train_batch_size=1,
