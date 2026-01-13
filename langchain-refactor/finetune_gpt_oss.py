@@ -155,7 +155,6 @@ def main():
     print("🔄 Setting up trainer...")
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
         train_dataset=split['train'],
         eval_dataset=split['test'],
         dataset_text_field="text",
