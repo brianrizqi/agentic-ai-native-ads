@@ -21,6 +21,17 @@ sys.path.append(str(Path(__file__).parent))
 from prompts.classification_prompts import SIMPLE_LOCAL_PROMPT_TEMPLATE
 
 
+# Module-level formatting function to avoid pickle issues
+def formatting_prompts(examples):
+    """Format examples for training - must be at module level for pickling."""
+    return {"text": examples["text"]}
+
+
+def get_text(example):
+    """Simple text extraction function."""
+    return example["text"]
+
+
 def load_and_format_dataset(dataset_path: str):
     """Load and balance dataset."""
     
@@ -153,16 +164,15 @@ def main():
     
     # Setup trainer
     print("🔄 Setting up trainer...")
-    
-    # Formatting function for newer trl versions
-    def formatting_func(examples):
-        return examples["text"]
-    
     trainer = SFTTrainer(
         model=model,
+        tokenizer=tokenizer,
         train_dataset=split['train'],
         eval_dataset=split['test'],
-        formatting_func=formatting_func,
+        dataset_text_field="text",
+        max_seq_length=args.max_seq_length,
+        dataset_num_proc=2,
+        packing=False,
         args=TrainingArguments(
             per_device_train_batch_size=1,
             per_device_eval_batch_size=1,
