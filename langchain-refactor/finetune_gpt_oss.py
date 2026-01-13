@@ -163,8 +163,6 @@ def main():
         train_dataset=split['train'],
         eval_dataset=split['test'],
         formatting_func=formatting_func,
-        max_seq_length=args.max_seq_length,
-        packing=False,
         args=TrainingArguments(
             per_device_train_batch_size=1,
             per_device_eval_batch_size=1,
