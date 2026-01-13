@@ -9,8 +9,7 @@ import json
 import torch
 from pathlib import Path
 from datasets import Dataset
-from transformers import TrainingArguments
-from trl import SFTTrainer
+from transformers import TrainingArguments, Trainer, DataCollatorForLanguageModeling
 from unsloth import FastLanguageModel
 import time
 from datetime import datetime
@@ -32,8 +31,8 @@ def get_text(example):
     return example["text"]
 
 
-def load_and_format_dataset(dataset_path: str):
-    """Load and balance dataset."""
+def load_and_format_dataset(dataset_path: str, tokenizer, max_length: int = 2048):
+    """Load, balance, and tokenize dataset."""
     
     print(f"\nLoading dataset from: {dataset_path}")
     
@@ -63,7 +62,7 @@ def load_and_format_dataset(dataset_path: str):
     print(f"   Total: {len(data)} balanced samples\n")
     
     # Format for training
-    formatted_data = []
+    formatted_texts = []
     for sample in data:
         try:
             output_data = json.loads(sample['output'])
@@ -74,10 +73,24 @@ def load_and_format_dataset(dataset_path: str):
         # Use training prompt template from prompts module
         from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
         text = TRAINING_PROMPT_TEMPLATE.format(content=sample['input']) + expected_output
-        
-        formatted_data.append({"text": text})
+        formatted_texts.append(text)
     
-    dataset = Dataset.from_list(formatted_data)
+    # Tokenize the data
+    print("Tokenizing dataset...")
+    tokenized = tokenizer(
+        formatted_texts,
+        truncation=True,
+        max_length=max_length,
+        padding=False,  # DataCollator will handle padding
+        return_tensors=None,  # Return lists, not tensors
+    )
+    
+    # Create dataset with tokenized data
+    dataset = Dataset.from_dict({
+        'input_ids': tokenized['input_ids'],
+        'attention_mask': tokenized['attention_mask'],
+    })
+    
     split = dataset.train_test_split(test_size=0.1, seed=42)
     
     print(f"✓ Training samples: {len(split['train'])}")
@@ -160,19 +173,20 @@ def main():
     print("✓ LoRA adapters added\n")
     
     # Load dataset
-    split = load_and_format_dataset(args.dataset)
+    split = load_and_format_dataset(args.dataset, tokenizer, args.max_seq_length)
     
     # Setup trainer
     print("🔄 Setting up trainer...")
-    trainer = SFTTrainer(
-        model=model,
+    
+    # Create data collator for language modeling
+    data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer,
-        train_dataset=split['train'],
-        eval_dataset=split['test'],
-        dataset_text_field="text",
-        max_seq_length=args.max_seq_length,
-        dataset_num_proc=2,
-        packing=False,
+        mlm=False,  # We're doing causal LM, not masked LM
+    )
+    
+    # Use standard Trainer instead of SFTTrainer for GPT-OSS compatibility
+    trainer = Trainer(
+        model=model,
         args=TrainingArguments(
             per_device_train_batch_size=1,
             per_device_eval_batch_size=1,
@@ -197,6 +211,9 @@ def main():
             metric_for_best_model="eval_loss",
             report_to="none",
         ),
+        train_dataset=split['train'],
+        eval_dataset=split['test'],
+        data_collator=data_collator,
     )
     print("✓ Trainer configured\n")
     
