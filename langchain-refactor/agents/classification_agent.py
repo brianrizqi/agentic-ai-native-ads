@@ -259,82 +259,96 @@ class ClassificationAgent:
                 'reasoning': result.get('reasoning', str(result))[:200]  # Truncate long reasoning
             }
                 
-        except json.JSONDecodeError as e:
-            # Already logged above, continue to fallback
-            pass
-        except Exception as e:
-            logger.warning(f"Failed to parse JSON: {e}")
-            logger.info(f"Raw response: {response[:500]}")
-            
-            # If multiple JSON objects, extract only the first one
-            if response.count('{') > 1:
-                try:
-                    first_json_start = response.find('{')
-                    first_json_end = response.find('}', first_json_start) + 1
-                    response = response[first_json_start:first_json_end]
-                    # Try parsing again
-                    result = json.loads(response)
-                    logger.info(f"Successfully extracted first JSON from multiple outputs")
-                    return {
-                        'label': result.get('label', 'unknown'),
-                        'confidence': float(result.get('confidence', 0.5)),
-                        'reasoning': result.get('reasoning', str(result))[:200]
-                    }
-                except:
-                    pass
-            
-            # Improved fallback parsing with keyword analysis
-            import re
-            response_lower = response.lower()
-            
-            # Count indicators for each class
-            native_ads_indicators = [
-                'native ads', 'native advertising', 'advertorial', 'sponsored',
-                'promosi', 'iklan', 'brand', 'produk', 'layanan',
-                'persuasif', 'mengajak', 'meyakinkan'
-            ]
-            
-            berita_murni_indicators = [
-                'berita murni', 'pure news', 'objektif',
-                'berbagai sudut pandang', 'kritik', 'investigasi'
-            ]
-            
-            native_score = sum(1 for indicator in native_ads_indicators if indicator in response_lower)
-            berita_score = sum(1 for indicator in berita_murni_indicators if indicator in response_lower)
-            
-            logger.info(f"Keyword analysis - Native ads: {native_score}, Berita murni: {berita_score}")
-            
-            # Determine label based on scores
-            if native_score > berita_score:
-                label = 'native ads'
-                confidence = min(0.6 + (native_score * 0.05), 0.85)
-            elif berita_score > native_score:
-                label = 'berita murni'
-                confidence = min(0.6 + (berita_score * 0.05), 0.85)
+        except (json.JSONDecodeError, Exception) as e:
+            # Log the error and fall through to fallback logic
+            if isinstance(e, json.JSONDecodeError):
+                logger.debug(f"JSON decode error: {e}")
             else:
-                # If tied, check for explicit mentions
-                if 'native ads' in response_lower or 'advertorial' in response_lower:
-                    label = 'native ads'
-                    confidence = 0.65
-                else:
-                    label = 'berita murni'
-                    confidence = 0.5
+                logger.warning(f"Failed to parse JSON: {e}")
             
-            # Try to extract confidence from response
-            conf_match = re.search(r'"confidence":\s*(0\.\d+|1\.0)', response)
-            if conf_match:
-                try:
-                    confidence = float(conf_match.group(1))
-                except:
-                    pass
-            
-            logger.info(f"Fallback result: {label} (confidence: {confidence:.2f})")
-            
-            return {
-                'label': label,
-                'confidence': confidence,
-                'reasoning': response[:200]
-            }
+            logger.info(f"Raw response: {response[:500]}")
+        
+        # Fallback parsing logic
+        import re
+        
+        # Check for repetitive text (model degradation)
+        words = response.split()
+        if len(words) > 10:
+            word_counts = {}
+            for word in words:
+                word_counts[word] = word_counts.get(word, 0) + 1
+            max_repetition = max(word_counts.values()) if word_counts else 0
+            if max_repetition > len(words) * 0.3:  # More than 30% repetition
+                logger.warning(f"Detected repetitive text (max repetition: {max_repetition}/{len(words)})")
+                # Return a low-confidence fallback
+                return {
+                    'label': 'berita murni',
+                    'confidence': 0.5,
+                    'reasoning': 'Model generated repetitive text, using default classification'
+                }
+        
+        # Try to extract partial JSON if braces are unmatched
+        if '{' in response and '"label"' in response:
+            try:
+                # Try to extract label and confidence even from incomplete JSON
+                label_match = re.search(r'"label":\s*"([^"]+)"', response)
+                conf_match = re.search(r'"confidence":\s*(0?\.\d+|1\.0)', response)
+                
+                if label_match:
+                    label = label_match.group(1)
+                    confidence = float(conf_match.group(1)) if conf_match else 0.6
+                    logger.info(f"Extracted partial JSON: {label} (confidence: {confidence})")
+                    return {
+                        'label': label,
+                        'confidence': confidence,
+                        'reasoning': 'Extracted from incomplete JSON'
+                    }
+            except Exception as e:
+                logger.debug(f"Failed to extract partial JSON: {e}")
+        
+        # Keyword-based fallback
+        response_lower = response.lower()
+        
+        # Count indicators for each class
+        native_ads_indicators = [
+            'native ads', 'native advertising', 'advertorial', 'sponsored',
+            'promosi', 'iklan', 'brand', 'produk', 'layanan',
+            'persuasif', 'mengajak', 'meyakinkan'
+        ]
+        
+        berita_murni_indicators = [
+            'berita murni', 'pure news', 'objektif',
+            'berbagai sudut pandang', 'kritik', 'investigasi'
+        ]
+        
+        native_score = sum(1 for indicator in native_ads_indicators if indicator in response_lower)
+        berita_score = sum(1 for indicator in berita_murni_indicators if indicator in response_lower)
+        
+        logger.info(f"Keyword analysis - Native ads: {native_score}, Berita murni: {berita_score}")
+        
+        # Determine label based on scores
+        if native_score > berita_score:
+            label = 'native ads'
+            confidence = min(0.6 + (native_score * 0.05), 0.85)
+        elif berita_score > native_score:
+            label = 'berita murni'
+            confidence = min(0.6 + (berita_score * 0.05), 0.85)
+        else:
+            # If tied, check for explicit mentions
+            if 'native ads' in response_lower or 'advertorial' in response_lower:
+                label = 'native ads'
+                confidence = 0.65
+            else:
+                label = 'berita murni'
+                confidence = 0.5
+        
+        logger.info(f"Fallback result: {label} (confidence: {confidence:.2f})")
+        
+        return {
+            'label': label,
+            'confidence': confidence,
+            'reasoning': response[:200]
+        }
     
     def _get_fallback_classification(self, text: str) -> Dict[str, Any]:
         """Fallback classification using keywords."""
