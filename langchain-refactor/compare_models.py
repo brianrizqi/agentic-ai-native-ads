@@ -51,6 +51,7 @@ def evaluate_model(model_name: str, model_path: str, test_samples: list, verbose
     predictions = []
     ground_truth = []
     inference_times = []
+    error_count = 0
     
     print(f"Running evaluation on {len(test_samples)} samples...")
     
@@ -75,9 +76,13 @@ def evaluate_model(model_name: str, model_path: str, test_samples: list, verbose
             predictions.append(result['label'])
             inference_times.append(time.time() - start_time)
         except Exception as e:
-            print(f"  Error on sample {i}: {e}")
+            if verbose:
+                print(f"  Error on sample {i}: {e}")
+            error_count += 1
             predictions.append("error")
             inference_times.append(0)
+    
+    print(f"  Completed: {len(test_samples)} samples, {error_count} errors")
     
     # Calculate metrics
     accuracy = accuracy_score(ground_truth, predictions)
