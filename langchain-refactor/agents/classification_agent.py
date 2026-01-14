@@ -89,7 +89,8 @@ class ClassificationAgent:
         elif self.provider == "local":
             # Load local fine-tuned model (e.g., Llama with LoRA)
             try:
-                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, StoppingCriteria, StoppingCriteriaList
+                import torch
                 
                 logger.info(f"Loading local model from: {self.model_name}")
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name)
@@ -99,16 +100,40 @@ class ClassificationAgent:
                     torch_dtype="auto"
                 )
                 
+                # Custom stopping criteria to stop after JSON completion
+                class JSONStoppingCriteria(StoppingCriteria):
+                    def __init__(self, tokenizer):
+                        self.tokenizer = tokenizer
+                        self.brace_count = 0
+                        self.started = False
+                    
+                    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+                        # Decode the last generated token
+                        last_token = self.tokenizer.decode(input_ids[0][-1:])
+                        
+                        if '{' in last_token:
+                            self.started = True
+                            self.brace_count += last_token.count('{')
+                        if '}' in last_token and self.started:
+                            self.brace_count -= last_token.count('}')
+                            # Stop if we've closed all braces
+                            if self.brace_count == 0:
+                                return True
+                        return False
+                
+                stopping_criteria = StoppingCriteriaList([JSONStoppingCriteria(tokenizer)])
+                
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=150,  # Reduced to prevent duplicates
+                    max_new_tokens=256,  # Increased to prevent truncation
                     temperature=0.1,  # Lower temperature for consistency
                     do_sample=False,  # Greedy decoding to avoid duplicates
                     eos_token_id=tokenizer.eos_token_id,
                     pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id else tokenizer.eos_token_id,
-                    return_full_text=False  # Only return generated text, not prompt
+                    return_full_text=False,  # Only return generated text, not prompt
+                    stopping_criteria=stopping_criteria
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
@@ -187,6 +212,7 @@ class ClassificationAgent:
             # Find the first complete JSON object
             start = response.find('{')
             if start == -1:
+                logger.warning(f"No JSON found in response: {response[:500]}")
                 raise json.JSONDecodeError("No JSON found", response, 0)
             
             # Parse character by character to find the matching closing brace
@@ -220,6 +246,7 @@ class ClassificationAgent:
                             break
             
             if brace_count != 0:
+                logger.warning(f"Unmatched braces (count={brace_count}) in response: {response[:500]}")
                 raise json.JSONDecodeError("Unmatched braces", response, start)
             
             # Extract only the first complete JSON object
@@ -232,9 +259,12 @@ class ClassificationAgent:
                 'reasoning': result.get('reasoning', str(result))[:200]  # Truncate long reasoning
             }
                 
+        except json.JSONDecodeError as e:
+            # Already logged above, continue to fallback
+            pass
         except Exception as e:
             logger.warning(f"Failed to parse JSON: {e}")
-            logger.info(f"Raw response (first 500 chars): {response[:500]}")
+            logger.info(f"Raw response: {response[:500]}")
             
             # If multiple JSON objects, extract only the first one
             if response.count('{') > 1:
