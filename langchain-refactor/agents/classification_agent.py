@@ -89,7 +89,7 @@ class ClassificationAgent:
         elif self.provider == "local":
             # Load local fine-tuned model (e.g., Llama with LoRA)
             try:
-                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, StoppingCriteria, StoppingCriteriaList
+                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
                 import torch
                 
                 logger.info(f"Loading local model from: {self.model_name}")
@@ -100,40 +100,18 @@ class ClassificationAgent:
                     torch_dtype="auto"
                 )
                 
-                # Custom stopping criteria to stop after JSON completion
-                class JSONStoppingCriteria(StoppingCriteria):
-                    def __init__(self, tokenizer):
-                        self.tokenizer = tokenizer
-                        self.brace_count = 0
-                        self.started = False
-                    
-                    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
-                        # Decode the last generated token
-                        last_token = self.tokenizer.decode(input_ids[0][-1:])
-                        
-                        if '{' in last_token:
-                            self.started = True
-                            self.brace_count += last_token.count('{')
-                        if '}' in last_token and self.started:
-                            self.brace_count -= last_token.count('}')
-                            # Stop if we've closed all braces
-                            if self.brace_count == 0:
-                                return True
-                        return False
-                
-                stopping_criteria = StoppingCriteriaList([JSONStoppingCriteria(tokenizer)])
-                
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=256,  # Increased to prevent truncation
-                    temperature=0.1,  # Lower temperature for consistency
-                    do_sample=False,  # Greedy decoding to avoid duplicates
+                    max_new_tokens=300,  # Increased to allow complete JSON
+                    temperature=0.3,  # Slightly higher for better diversity
+                    do_sample=True,  # Enable sampling for better quality
+                    top_p=0.95,  # Nucleus sampling
+                    repetition_penalty=1.2,  # Penalize repetition
                     eos_token_id=tokenizer.eos_token_id,
                     pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id else tokenizer.eos_token_id,
-                    return_full_text=False,  # Only return generated text, not prompt
-                    stopping_criteria=stopping_criteria
+                    return_full_text=False  # Only return generated text, not prompt
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
@@ -271,6 +249,15 @@ class ClassificationAgent:
         # Fallback parsing logic
         import re
         
+        # Handle empty or very short responses
+        if not response or len(response.strip()) < 5:
+            logger.warning("Empty or very short response, using default classification")
+            return {
+                'label': 'berita murni',
+                'confidence': 0.5,
+                'reasoning': 'Empty or invalid model output'
+            }
+        
         # Check for repetitive text (model degradation)
         words = response.split()
         if len(words) > 10:
@@ -296,13 +283,19 @@ class ClassificationAgent:
                 
                 if label_match:
                     label = label_match.group(1)
-                    confidence = float(conf_match.group(1)) if conf_match else 0.6
-                    logger.info(f"Extracted partial JSON: {label} (confidence: {confidence})")
-                    return {
-                        'label': label,
-                        'confidence': confidence,
-                        'reasoning': 'Extracted from incomplete JSON'
-                    }
+                    
+                    # Handle 'unknown' label - convert to default
+                    if label == 'unknown' or label not in ['native ads', 'berita murni']:
+                        logger.info(f"Invalid label '{label}' detected, using keyword fallback")
+                        # Don't return yet, fall through to keyword analysis
+                    else:
+                        confidence = float(conf_match.group(1)) if conf_match else 0.6
+                        logger.info(f"Extracted partial JSON: {label} (confidence: {confidence})")
+                        return {
+                            'label': label,
+                            'confidence': confidence,
+                            'reasoning': 'Extracted from incomplete JSON'
+                        }
             except Exception as e:
                 logger.debug(f"Failed to extract partial JSON: {e}")
         
