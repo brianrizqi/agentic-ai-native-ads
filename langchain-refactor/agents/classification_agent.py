@@ -184,21 +184,53 @@ class ClassificationAgent:
             if "Output (JSON):" in response:
                 response = response.split("Output (JSON):")[-1].strip()
             
-            # Try to extract JSON
+            # Find the first complete JSON object
             start = response.find('{')
-            end = response.rfind('}') + 1
-            
-            if start != -1 and end > start:
-                json_str = response[start:end]
-                result = json.loads(json_str)
-                
-                return {
-                    'label': result.get('label', 'unknown'),
-                    'confidence': float(result.get('confidence', 0.5)),
-                    'reasoning': result.get('reasoning', str(result))[:200]  # Truncate long reasoning
-                }
-            else:
+            if start == -1:
                 raise json.JSONDecodeError("No JSON found", response, 0)
+            
+            # Parse character by character to find the matching closing brace
+            brace_count = 0
+            in_string = False
+            escape_next = False
+            end = start
+            
+            for i in range(start, len(response)):
+                char = response[i]
+                
+                if escape_next:
+                    escape_next = False
+                    continue
+                
+                if char == '\\':
+                    escape_next = True
+                    continue
+                
+                if char == '"' and not escape_next:
+                    in_string = not in_string
+                    continue
+                
+                if not in_string:
+                    if char == '{':
+                        brace_count += 1
+                    elif char == '}':
+                        brace_count -= 1
+                        if brace_count == 0:
+                            end = i + 1
+                            break
+            
+            if brace_count != 0:
+                raise json.JSONDecodeError("Unmatched braces", response, start)
+            
+            # Extract only the first complete JSON object
+            json_str = response[start:end]
+            result = json.loads(json_str)
+            
+            return {
+                'label': result.get('label', 'unknown'),
+                'confidence': float(result.get('confidence', 0.5)),
+                'reasoning': result.get('reasoning', str(result))[:200]  # Truncate long reasoning
+            }
                 
         except Exception as e:
             logger.warning(f"Failed to parse JSON: {e}")
