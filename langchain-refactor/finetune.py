@@ -130,7 +130,7 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
     print(f"   After:  Native Ads={len(native_ads_balanced)} (50%), Berita Murni={len(berita_murni_balanced)} (50%)")
     print(f"   Total: {len(data)} balanced samples\n")
     
-    # Format with EXACT same prompt as SIMPLE_LOCAL_PROMPT_TEMPLATE
+    # Format with proper chat template for training
     formatted_data = []
     for sample in data:
         # Parse output to get expected JSON format
@@ -143,7 +143,13 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
         
         # Use training prompt template from prompts module
         from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
-        text = TRAINING_PROMPT_TEMPLATE.format(content=sample['input']) + expected_output
+        
+        # Format: prompt + expected_output + EOS token
+        # The prompt already includes "Klasifikasi:" at the end
+        prompt = TRAINING_PROMPT_TEMPLATE.format(content=sample['input'])
+        
+        # Add expected output with proper EOS token
+        text = prompt + expected_output
         
         formatted_data.append({"text": text})
     
