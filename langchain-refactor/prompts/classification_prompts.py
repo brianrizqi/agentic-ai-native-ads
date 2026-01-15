@@ -244,7 +244,7 @@ simple_local_prompt = PromptTemplate(
 )
 
 
-# Training-specific prompt template (no title required - for fine-tuning)
+# Training-specific prompt template (matches inference format exactly)
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
@@ -262,6 +262,9 @@ Konten:
 {content}
 
 Output (JSON):
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
+
+Klasifikasi:
 """
 
 training_prompt = PromptTemplate(

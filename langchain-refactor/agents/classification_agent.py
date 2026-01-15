@@ -104,11 +104,12 @@ class ClassificationAgent:
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=300,  # Increased to allow complete JSON
-                    temperature=0.3,  # Slightly higher for better diversity
-                    do_sample=True,  # Enable sampling for better quality
-                    top_p=0.95,  # Nucleus sampling
-                    repetition_penalty=1.2,  # Penalize repetition
+                    max_new_tokens=512,  # Increased to ensure complete JSON generation
+                    temperature=0.1,  # Lower temperature for more deterministic output
+                    do_sample=True,  # Enable sampling
+                    top_p=0.9,  # Nucleus sampling
+                    top_k=50,  # Top-k sampling for better quality
+                    repetition_penalty=1.15,  # Penalize repetition
                     eos_token_id=tokenizer.eos_token_id,
                     pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id else tokenizer.eos_token_id,
                     return_full_text=False  # Only return generated text, not prompt
@@ -225,6 +226,22 @@ class ClassificationAgent:
             
             if brace_count != 0:
                 logger.warning(f"Unmatched braces (count={brace_count}) in response: {response[:500]}")
+                
+                # Try to complete the JSON by adding missing closing braces
+                if brace_count > 0:
+                    json_str = response[start:end] + ('}' * brace_count)
+                    logger.info(f"Attempting to complete JSON by adding {brace_count} closing brace(s)")
+                    try:
+                        result = json.loads(json_str)
+                        logger.info("Successfully completed incomplete JSON")
+                        return {
+                            'label': result.get('label', 'unknown'),
+                            'confidence': float(result.get('confidence', 0.5)),
+                            'reasoning': result.get('reasoning', str(result))[:200]
+                        }
+                    except json.JSONDecodeError:
+                        logger.warning("Failed to complete JSON, falling back to extraction")
+                
                 raise json.JSONDecodeError("Unmatched braces", response, start)
             
             # Extract only the first complete JSON object
@@ -284,10 +301,10 @@ class ClassificationAgent:
                 if label_match:
                     label = label_match.group(1)
                     
-                    # Handle 'unknown' label - convert to default
+                    # Handle 'unknown' label - convert to default based on content analysis
                     if label == 'unknown' or label not in ['native ads', 'berita murni']:
                         logger.info(f"Invalid label '{label}' detected, using keyword fallback")
-                        # Don't return yet, fall through to keyword analysis
+                        # Fall through to keyword analysis below
                     else:
                         confidence = float(conf_match.group(1)) if conf_match else 0.6
                         logger.info(f"Extracted partial JSON: {label} (confidence: {confidence})")
