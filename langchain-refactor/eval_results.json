@@ -1,0 +1,1820 @@
+{
+  "metrics": {
+    "accuracy": 0.97,
+    "total_samples": 200,
+    "correct": 194
+  },
+  "bertscore": {
+    "precision": 0.6219146847724915,
+    "recall": 0.6560592651367188,
+    "f1": 0.6382810473442078
+  },
+  "llm_judge": {},
+  "per_class": {
+    "native ads": {
+      "accuracy": 0.97
+    }
+  },
+  "predictions": [
+    {
+      "input": "Setelah seremonial peresmian gedung baru berlangsung, Bupati Kediri yang akrab dengan sapaan Mas Bup itu meninjau sejumlah ruangan dan fasilitas di gedung baru dengan didampingi jajaran direksi RS HVA",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, uses persuasive language, and promotes the new facilities at RS HVA. While it contains some neutral information, overall it appears to be promoting the hospital's effo",
+      "correct": true
+    },
+    {
+      "input": "Tak hanya itu, BRI juga berperan dalam pengembangan sistem OSS Berbasis Risiko milik Kementerian Investasi atau Badan Koordinasi Penanaman Modal (BKPM) tersebut.Sejak Juni hingga Juli 2021, BKPM beker",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone when discussing the collaboration between BRI and BKPM, which suggests an element of promotion. However, it also provides factual information about the system's impleme",
+      "correct": true
+    },
+    {
+      "input": "Corporate Secretary BRI Aestika Oryza Gunarto mengatakan, tahun ini BRI akan melibatkan masyarakat Indonesia dalam pembuatan desain logo HUT ke-126 BRI.“Keterlibatan masyarakat ini kami kemas melalui ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Tak heran banyak wisatawan baik lokal maupun mancanegara bertandang ke Solo untuk menyelami budaya asli yang masih kental. Pasalnya, masyarakat di Kota Batik itu terus berupaya merawat pakem dan orisi",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Berdasarkan data Badan Pusat Statistik (BPS) 2020, rumah tangga yang tidak memiliki akses terhadap hunian layak di Indonesia mencapai 59,54 persen.Merespons kondisi tersebut, pemerintah lewat Kementer",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan fokus pada upaya pemerintah dalam memberikan akses terhadap perumahan dan permukiman layak bagi masyarakat. Ada elemen persuasif karena menyoroti pentingnya du",
+      "correct": true
+    },
+    {
+      "input": "Kegiatan yang diselenggarakan secara virtual tersebut turut dihadiri artis sekaligus musisi Tanah Air, Iqbal Ramadhan yang merupakan perwakilan dari Talenta Digital Indonesia.Kehadiran Iqbal mampu men",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini menunjukkan karakteristik native ads dengan nada positif dan bahasa persuasif. Contohnya, ungkapan 'literasi digital menjadi hal yang sangat penting' dan 'kehadiran Iqbal mampu meningkatka",
+      "correct": true
+    },
+    {
+      "input": "Informasi tersebut disampaikan setelah Bupati Kediri Hanindhito Himawan Pramana mengikuti rapat bersama Presiden Joko Widodo yang bertempat di Pendopo Ronggo Djoemono, Kabupaten Madiun.Mas Dhito, sapa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Pengoperasian SPBG Kaligawe diresmikan oleh Direktur Jenderal Minyak dan Gas (Dirjen Migas) Kementerian ESDM Tutuka Ariadji, Jumat (20/8/2021). Pada kesempatan tersebut Tutuka didampingi oleh Direktur",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": " native ads\nKey Evidence:\n1. Tone Positive/Negative: Positive (\"Pengoperasian SPBG Kaligawe akan memudahkan pengisian bahan bakar gas (BBG)\")\n2. Persuasive Language: Yes (\"selain ekonomis, BBG juga da",
+      "correct": true
+    },
+    {
+      "input": "Oleh Bappebti, situs resmi Viral Blast Global dianggap sebagai situs investasiforeign exchange(forex) ilegal. Situs ini termasuk 82 situs yang diblokir Bappebti pada Juli 2021.Direktur Utama Viral Bla",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article is classified as 'native ads' because it contains key elements such as a positive tone, persuasive language promoting the brand, focus on the company's legitimacy, and lack of opposing pe",
+      "correct": true
+    },
+    {
+      "input": "Hal tersebut bisa dilihat dari besarnya minat konsumen terhadap bohlam pintar berbasis IoT keluaran Signify, yakni Philips Smart Wi-Fi LED, sejak diluncurkan pada kuartal pertama 2020.Melalui produk i",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta mempromosikan produk Philips Smart Wi-Fi LED. Namun, artikel tidak memberikan informasi detail tentang sisi negatif produk.",
+      "correct": true
+    },
+    {
+      "input": "Sunscreenmemiliki kandungansun protection factor(SPF) danprotection grade of UVA(PA). Dengan dua kandungan ini, risiko terjadinya kerusakan kulit akibat paparan sinar matahari atauultraviolet(UV) dapa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Jika kamu mendadak berselera, bahkan seakan bisa mengecap rasa hamburger tersebut, berarti iklan reklame itu berhasil menampilkan visual untuk menggaet calon konsumen.Tak dapat dimungkiri, penampilan ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Pertumbuhan tersebut didorong oleh lima faktor pendukung. Pertama,value of new business(VONB) atau pertumbuhan nilai bisnis baru sebesar 22 persen menjadi 1,814 juta dollar Amerika Serikat (AS).Kedua,",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.9,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "{'label': 'native ads', 'confidence': 0.9}",
+      "correct": true
+    },
+    {
+      "input": "Mereka yang semula tidak terlalu peduli dengan kesehatan perlahan mulai memperbaiki pola hidup dengan rajin berolahraga, mengonsumsi makanan bernutrisi, sampai berjemur setiap pagi.Tak hanya itu, seba",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta mempromosikan pentingnya asuransi dalam melindungi kesehatan dan finansial individu.",
+      "correct": true
+    },
+    {
+      "input": "Kondisi tersebut mendorong penyedia jasa dan layanan keuangan berlomba-lomba menawarkan kemudahan bagi masyarakat dalam melakukan pinjaman uang. Bahkan, tanpa jaminan. Dengan bermodal kartu tanda pend",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article highlights the ease of getting loans without collateral but lacks critical analysis.",
+      "correct": true
+    },
+    {
+      "input": "Seminar yang digelar secara daring tersebut merupakan bentuk dukungan BRI bagi petani dan pelaku UMKM, sekaligus menjadi bagian upaya pengembangan klaster UMKM unggulan.Adapun isu yang dibahas dalam s",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, dan membahas tentang kegiatan sosial BRI untuk meningkatkan ekonomi petani dan UMKM.",
+      "correct": true
+    },
+    {
+      "input": "Lebih dari seabad lalu, tepatnya pada 1894, seorang dokter militer asal Inggris bernama Ronald Ross meneliti tentang malaria di India. Penelitian tersebut dilakukan untuk membuktikan hipotesis Laveran",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Mempertimbangkan hal itu, penting untuk membuat kasur tetap nyaman dipakai. Selain harus rajin dibersihkan, seperti perabotan lain, kasur juga memiliki batas waktu penggunaan.Kasur yang digunakan sela",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positive/informative, persuasive language encouraging replacement of old mattresses.",
+      "correct": true
+    },
+    {
+      "input": "Kegiatan tersebut merupakan respons Bulog terhadap situasi pandemi Covid-19 yang mengubah tatanan masyarakat, baik dalam aktivitas ekonomi, sosial, maupun cara hidup.Webinartersebut dipandu disiarkan ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta membahas kegiatan promosi dari Bulog.",
+      "correct": true
+    },
+    {
+      "input": "Saat ini, konsultasi kesehatan secaraonlineatau telemedisin sudah menjadi bagian dari gaya hidup masyarakat.Kemudahan dan kepraktisan yang dihadirkan menjadi faktor pendorong banyaknya masyarakat yang",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi terhadap KlikDokter",
+      "correct": true
+    },
+    {
+      "input": "Secara garis besar, sistem pembelajaran dan pendidikan yang holistik di sekolah menjadi kunci untuk membentuk generasi adaptif dan berkarakter di era disrupsi.Hal itulah yang menjadi fokus utama BPK P",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Pasalnya, Oppo Reno6 Series 5G meneruskan warisan desain ikonik Reno Glow yang ramping dan ringan. UntukOppo Reno6 5G, Oppo menghadirkan desain retroultra-slimdengan ketebalan 7,59 milimeter (mm) dan ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Peluncuran dilakukan bertepatan dengan Hari Kemerdekaan Republik Indonesia (RI), Selasa (17/8/2021), dengan tema “Mengakselerasi Ekonomi dan Keuangan Digital Bagi Pertumbuhan dan Percepatan Ekonomi Ne",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positive and promotional language indicate a native ad.",
+      "correct": true
+    },
+    {
+      "input": "Selain anggota Paskibraka, BRI juga turut mengapresiasi 44 tenaga pendukung yang telah menyelesaikan tugasnya.Adapun kegiatan penyerahan apresiasi oleh BRI yang bertema “Semangat Berbangsa dari Paskib",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif seperti 'BRI memberikan apresiasi berupa...'",
+      "correct": true
+    },
+    {
+      "input": "Penghargaan tersebut diberikan secara simbolis kepada Direktur Logistik dan Infrastruktur Pertamina Mulyono dalam acara Business Gathering Pusat Layanan Teknologi (Pusyantek) BPPT yang digelar secara ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan ungkapan seperti \"Pertamina menyambut baik penghargaan dari BPPT.\" Selain itu, artikel juga menggunakan bahasa persuasif untuk memotivasi pertumbuhan industri ",
+      "correct": true
+    },
+    {
+      "input": "Pengumuman ADWI 2021 disampaikan langsung oleh Menparekraf melalui laman media sosial ADWI pada Rabu (18/08/2021).Kampung Kreasi Lorong Mari terpilih dari 1.831 desa wisata yang terdaftar di pengharga",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone and uses persuasive language to promote Pertamina's support for local communities. It also contains elements of promotion but maintains some level of objectivity by inc",
+      "correct": true
+    },
+    {
+      "input": "Untuk diketahui, sistem reproduksi wanita memiliki dua ovarium dan saluran tuba yang masing-masing berada satu pasang di setiap sisi rahim. Ovarium memiliki ukuran sebesar kacang almon dan berfungsi m",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi produk medis",
+      "correct": true
+    },
+    {
+      "input": "Kebijakan tersebut pun membuat masyarakat menjadi lebih dekat dengan kegiatanonline.Selain lebih mengenal berbagai aplikasionline, masyarakat juga terbiasa dengan aksesori penunjangnya. Salah satunya,",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text promotes various types of headphones and their uses in an informative yet persuasive manner",
+      "correct": true
+    },
+    {
+      "input": "Pandemi juga memaksa berbagai industri untuk beradaptasi, tak terkecuali industri perbankan yang harus bertransformasi danshiftingdalam mendorong transaksi digital.Perubahan perilaku masyarakat yang k",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article promotes BRI's digital transformation with positive tone and persuasive language.",
+      "correct": true
+    },
+    {
+      "input": "Untuk diketahui, porang yang memiliki nama latinAmorphophallus muellerimerupakan tanaman penghasil umbi. Berat umbi porang bisa mencapai 5 kilogram (kg) dan dapat diolah untuk dikonsumsi ataupun untuk",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta membahas tentang manfaat dan potensi pertanian porang.",
+      "correct": true
+    },
+    {
+      "input": "Selain itu,Pluangjuga akan menyediakan fiturtradingaset kripto di aplikasi Pluang demi menjawab permintaan peminat aset kripto yang berkembang pesat di Indonesia.Bersama Tokocrypto, Pluang menawarkan ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone and uses persuasive language to promote the benefits of investing in cryptocurrency through the Pluang app. It emphasizes ease of use for investors and highlights the p",
+      "correct": true
+    },
+    {
+      "input": "Sebagai informasi The 22ndTST merupakan acara seminar dantrainingperpajakan tahunan yang ditujukan untuk praktisi pajak dan mahasiswa pascasarjana. Acara diselenggarakan secara virtual dan digelar ole",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.65,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Meski acara kumpul-kumpul harus ditangguhkan untuk sementara waktu, bukan berarti kegiatan minum kopi hitam harus ditinggalkan. Terlebih, aktivitas yang satu ini sudah menjadi budaya di masyarakat.Sep",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Lilik bersama anaknya, Balda, yang masih berusia empat tahun berhasil melakukan perjalanan menuju Mekkah, Arab Saudi dengan misi menunaikan ibadah umrah hanya bermodalkan sepeda motor kesayangannya, y",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Sebagai informasi, penyelenggaraan PON berlangsung di empat klaster, yakni Kota Jayapura, Kabupaten Jayapura, Kabupaten Mimika, dan Kabupaten Merauke.Koordinator Bidang Sosbud PB PON XX Papua Septinus",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif seperti \"PON XX harus berdampak positif bagi perekonomian masyarakat Papua\". Selain itu, artikel juga mempromosikan aplikasi Papua Tourism sebaga",
+      "correct": true
+    },
+    {
+      "input": "Seiring waktu berjalan, Lexus menghadirkan ragam inovasi demi mengikuti perkembangan teknologi dan gaya hidup pelanggan.Layanan khas Lexus yang mengutamakanpersonalized ownership experiencepun diperku",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Dalam rapat, dibahas sejumlah hal, terutama yang berkaitan dengan data bahwa tren kasus Covid-19 di Kabupaten Kediri mengalami penurunan.Meskipun fakta menggambarkan demikian, pihak Pemkab Kediri teta",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif karena membahas upaya Pemerintah Kabupaten Kediri dalam menekan angka penyebaran COVID-19. Ada bahasa persuasif seperti \"Pihaknya juga akan melakukan sosialisasi kepa",
+      "correct": true
+    },
+    {
+      "input": "Menyikapi fenomena tersebut, Kementerian Komunikasi dan Informatika (Kemenkominfo) bekerja sama dengan dengan Jaringan Pegiat Literasi Digital (Japelidi) dan Siberkreasi Gerakan Nasional Literasi Digi",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif karena membahas upaya untuk melawan pelecehan seksual di media digital. Terdapat bahasa persuasif seperti 'Lawan Pelecehan Seksual di Media Digital'. Artikel juga mem",
+      "correct": true
+    },
+    {
+      "input": "Kekhawatiran tersebut bukan tanpa alasan. Betapa tidak, cukup dengan gawai di tangan, siswa dapat dengan bebas mengakses berbagai informasi di internet.Bila konten yang diakses bersifat positif untuk ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dalam memberikan solusi melalui program Literasi Digital dari Telkomsel.",
+      "correct": true
+    },
+    {
+      "input": "Di sisi lainnya, teknologi digital juga mampu membawa dampak negatif jika tak diiringi dengan literasi yang baik.Hal tersebut terlihat dari jumlah konten negatif dan dampak yang ditimbulkan bagi masya",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif karena menyoroti pentingnya literasi digital dalam menjaga etika dunia internet. Artikel juga menggunakan bahasa persuasif untuk meyakinkan pembaca tentang pentingnya",
+      "correct": true
+    },
+    {
+      "input": "Tak jarang,cyberbullyingdapat membuat korban, khususnya remaja, menjadi tertekan atau depresi.Menyikapi hal tersebut, Kementerian Komunikasi dan Informatika (Kemenkominfo) menggelarwebinarbertajuk “Id",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Tenaga pendidik dituntut harus melek teknologi agar tidak ketinggalan zaman dan dapat mengimbangi anak didik yang cenderung lebih adaptif terhadap teknologi.Melek digital pun tak sebatas pada kemampua",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dengan kalimat seperti \"Tenaga pendidik dituntut...\". Meskipun ada beberapa poin negatif tentang kurangnya literasi digital, artikel tersebut tet",
+      "correct": true
+    },
+    {
+      "input": "Dari beragam jenis kuliner, minuman kesehatan termasuk salah satu yang terbanyak diproduksi. Meski dinilai sehat, Anda harus tetap berhati-hati dalam memilih produk minuman tersebut.Anda dapat mengece",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif dengan bahasa persuasif seperti 'Anda dapat mengecek kandungan nutrisi', serta promosi langsung produk Shojiru.",
+      "correct": true
+    },
+    {
+      "input": "Kedatangan tim KSP bertujuan untuk memastikan kesiapan Badan Usaha Milik Negara (BUMN) tersebut dalam mendistribusikan beras bantuan Pemberlakuan Pembatasan Kegiatan Masyarakat (PPKM) kepada keluarga ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article has positive tone, promotional content about company's product, and no opposing views.",
+      "correct": true
+    },
+    {
+      "input": "Ardian dan Irawan yang bertugas di Subholding Upstream Pertamina berhasil menciptakan inovasi teknologi yang mendukung optimalisasi produktivitas di industri migas nasional sekaligus mendorong kemajua",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta mempromosikan inovasi dari PT Pertamina.",
+      "correct": true
+    },
+    {
+      "input": "Lamberthus merasa bangga dengan kehadiran ritel modern Alfamart di Kota Sorong. Ia meminta masyarakat bisa memanfaatkan kehadiran toko ini dengan baik.“Masyarakat Sorong bangga. Akhirnya, Alfamart bis",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.9,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error in JSON structure or missing required fields",
+      "correct": true
+    },
+    {
+      "input": "Menurutnya, kewajiban dalam memberantas narkoba tak hanya terletak di tangan pemerintah, tetapi semua pihak, termasuk PKK dan masyarakat.Hal tersebut disampaikan Tri di Webinar Kebangsaan bertajuk \"Mi",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has elements typical of native ads, including a positive tone, persuasive language, and promotion of ideas. However, it lacks explicit product or brand promotion and presents some objectiv",
+      "correct": true
+    },
+    {
+      "input": "Tak hanya lebih disiplin menjalani gaya hidup sehat, mayoritas orang juga mulai mengonsumsi suplemen dan multivitamin, terutama dalam bentuk oral. Hal ini dilakukan untuk meningkatkan daya tahan atau ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.7,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "native ads\nKey Evidence:\n1. Tone Positive/Negative: Positive (\"Stimuno merupakan produk herbal fitofarmaka yang diklaim berkhasiat dan aman\")\n2. Persuasive Language: Yes (\"terbukti lolos melalui uji p",
+      "correct": true
+    },
+    {
+      "input": "Awalnya, keberhasilan tersebut tak pernah terbayangkan oleh pendiri sekaligus Chief Executive Officer Krakakoa Sabrina Mustopo.Ia mengatakan, pencapaian Krakakoa saat ini jauh melebihi ekspektasinya. ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif, seperti ungkapan 'keberhasilan tersebut tak pernah terbayangkan' dan'saya sangat bangga'. Artikel juga mempromosikan produk Krakakoa serta komit",
+      "correct": true
+    },
+    {
+      "input": "Kegiatan tersebut dilakukan dengan memberikan bantuan berupa 2.500 paket sembako kepada masyarakat yang terdampak pandemi Covid-19.Dalam pelaksanaan kegiatan itu, PT Bhirawa Steel bekerja sama dengan ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.87,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, emphasizes corporate social responsibility, and uses persuasive language.",
+      "correct": true
+    },
+    {
+      "input": "Selain menjadi kado manis bagi Indonesia yang tengah merayakan momen Hari Kemerdekaan ke-76, pencapaian tersebut juga selaras dengan harapan Menteri BUMN Erick Thohir yang menginginkan agar banyak per",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article exhibits characteristics typical of native advertising, such as a positive tone, persuasive language, promotion of Pertamina, and alignment with government goals for state-owned enterprise",
+      "correct": true
+    },
+    {
+      "input": "Kini, pengalaman menginap di sebuah hotel yang kian futuristik tersebut bisa juga dirasakan di Tanah Air. Hotel mewah yang berada di bawah naungan Accor, Pullman Bandung Grand Central menghadirkan rob",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi produk",
+      "correct": true
+    },
+    {
+      "input": "Direktur Eksplorasi Subholding Upstream Medi Kurniawan mengatakan, penemuan migas dari sumur Fanny-2 adalah bukti bahwa ide dan semangat baru dalam mengerjakan lapangan tua (brown field), seperti blok",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi terhadap pencapaian PT Pertamina Hulu Energi",
+      "correct": true
+    },
+    {
+      "input": "Padahal, saat ini banyak investasi yang dapat dimulai dengan modal murah meriah. Bahkan, ada investasi yang bisa dimulai dengan modal seharga kopi kekinian, yakni Rp 15.000 saja.Memang benar, imbal ha",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article promotes various investment options that can be started with minimal capital, encouraging readers to consider these opportunities. It highlights the potential for significant returns over",
+      "correct": true
+    },
+    {
+      "input": "Berdasarkan pencapaian semester I 2021, Astra Life mampu menorehkan kinerja positif dengan mencatatkan peningkatan angkagross written premium(GWP) sebesar Rp 2,8 triliun atau meningkat 78 persen dari ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.65,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article is classified as native ads with moderate confidence due to its positive tone and persuasive language. However, it lacks strong promotional elements typically found in high-confidence nat",
+      "correct": true
+    },
+    {
+      "input": "Semangat berbagi itu ditunjukkan melalui kegiatancorporate social responsibility(CSR) BRI Peduli. Salah satu kegiatannya adalah program pemberian dana bantuan pendidikan atau beasiswa kepada 1.800 ana",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "{\"label\": \"",
+      "correct": false
+    },
+    {
+      "input": "Meski begitu, beraktivitas di rumah saja merupakan langkah paling bijak untuk mencegah diri terpapar virus. Lagi pula, kegiatan di luar rumah juga terbatas karena pemerintah masih menerapkan kebijakan",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article promotes home improvement through adding carpets as an alternative way to beautify rooms during pandemic times. It uses persuasive language and provides practical tips for interior design",
+      "correct": true
+    },
+    {
+      "input": "Riset global berjudul “An Eco-Wakening” yang dilakukan oleh The Economist Intelligence Unit dan World Wide Fund for Nature (WWF) pada 2021 menunjukkan bahwa kesadaran atau keterlibatan masyarakat Indo",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.7,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article shows increased public concern over environmental issues but lacks critical analysis.",
+      "correct": true
+    },
+    {
+      "input": "Dengan penambahan hidrokarbon itu, total produksi WK Pangkah meningkat dari 5.700 BOEPD menjadi 13.000 BOEPD.Adapun produksi lapangan tersebut dilakukan lewat pengeboran tiga sumur di lapangan West Pa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, highlights increased production, and uses persuasive language promoting PGN's initiatives.",
+      "correct": true
+    },
+    {
+      "input": "Aktivitas itu dilakukan tepat sehari sebelum peringatan Hari Ulang Tahun ke-76 Republik Indonesia, tepatnya Senin (16/8/2021). Adapun hal ini dilakukan sebagai salah satu perwujudan program kerja PHR ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan penekanan pada kinerja tim PHR yang dinilai baik.",
+      "correct": true
+    },
+    {
+      "input": "Pada kesempatan tersebut Bupati Kediri Hanindhito Pramono, atau yang akrab disapa Mas Bup, menyampaikan harapannya untuk Indonesia dan Kabupaten Kediri di usia kemerdekaan ke-76.Mas Bup berharap, sesu",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text contains positive statements about the region's progress and hopes for the future, which aligns with the characteristics of native ads.",
+      "correct": true
+    },
+    {
+      "input": "Inovasi tersebut lahir dari Production Engineer PGE, Husni Mubarok. Ia berhasil mengembangkan sistem pengukuran laju alir dua fase atautwo phase flow metersebagai terobosan teknologi geotermal pertama",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dengan kalimat seperti \"Inovasi tersebut lahir dari Production Engineer PGE, Husni Mubarok. Ia berhasil mengembangkan sistem pengukuran laju alir",
+      "correct": true
+    },
+    {
+      "input": "Pasalnya, tahun ini merupakan pertama kalinya pekerja di Wilayah Kerja (WK) Rokan merayakan HUT Kemerdekaan RI sebagai bagian dari Pertamina. Sebelumnya, mereka merupakan pekerja PT Chevron Pacific In",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi terhadap Pertamina",
+      "correct": true
+    },
+    {
+      "input": "Pada momen peringatan hari kemerdekaan, PT KAI juga menyampaikan kilas balik kontribusi untuk mendukung Indonesia menghadapi pandemi.Direktur Utama PT KAI Didiek Hartantyo mengatakan, pihaknya terus m",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.65,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone and contains promotional content about PT KAI's contributions during the pandemic. However, it lacks multiple perspectives typically found in objective news articles.",
+      "correct": true
+    },
+    {
+      "input": "Doa Kemerdekaan yang bertemakan Indonesia Tangguh Indonesia Tumbuh itu dihadiri oleh Wakil Bupati Kediri Dewi Maria Ulfa, Kepala DPRD Kabupaten Kediri Dodi Purwanto, dan Forum Koordinasi Pimpinan Daer",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, terlihat dari ungkapan seperti 'doa bersama ini menunjukkan... kebersamaan toleransi'. Artikel juga menggunakan bahasa persuasif untuk mendorong pembaca agar ikut me",
+      "correct": true
+    },
+    {
+      "input": "Pada program promo kali ini, nasabah BRI dapat menikmati diskon hingga 76 persen,cashbacksampai dengan Rp 5,5 juta,direct gifthingga Rp 5,5 juta, suku bunga spesial, dan berbagai promo lainnya.Promo t",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Empty or invalid model output",
+      "correct": false
+    },
+    {
+      "input": "Subholding Shipping Pertamina tersebut mampu memperluas pangsa pasar ke konsumen internasional. Hal ini dibuktikan dengan keberhasilan armada kapal milik PIS yang berlayar dan berlabuh di luar negeri.",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Empty or invalid model output",
+      "correct": false
+    },
+    {
+      "input": "Platform dan kampanye itu diluncurkan dalam rangka memperingati Hari Kemerdekaan ke-76 Indonesia sekaligus untuk memaknai semangat persatuan seluruh masyarakat Tanah Air.Seperti diketahui, tahun ini m",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta mempromosikan produk/platform Indosat Ooredoo. Meskipun ada beberapa informasi negatif tentang pandemi COVID-19, artikel utamanya fokus pada ",
+      "correct": true
+    },
+    {
+      "input": "Adapun merek pikap kabin ganda yang digemari kalangan pencintadouble cabinatau otomotif secara luas adalah Mitsubishi Triton.Berdasarkan data PT Mitsubishi Motors Krama Yudha Sales Indonesia (MMKSI), ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Adapun anggota paskibra yang dikukuhkan Bupati Kediri berjumlah delapan orang.Pada acara pengukuhan, dilakukan pengambilan sumpah yang dipimpin langsung oleh Kepala Badan Kesatuan Bangsa dan Politik (",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, uses persuasive language, and promotes the importance of national flags and unity.",
+      "correct": true
+    },
+    {
+      "input": "Di Tanah Air, pencinta budaya Korea tak bisa dibilang sedikit. Apalagi, menyangkut musikKorean pop(K-pop). Menurut laporan Twitter pada 2020, dari total 20 negara, Indonesia menempati posisi ketiga se",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, dan mempromosikan boyband BTS dan NCT Dream.",
+      "correct": true
+    },
+    {
+      "input": "Ketua FH-BUMN Aestika Oryza Gunarto menyampaikan, program ini merupakan kampanye untuk menyebarkan pesan dan harapan untuk Indonesia untuk membangkitkan optimisme.“Aktivasi program ini dilakukan melal",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Memanfaatkan kekuatan dan keunggulan Indonesia sebagai negara yang memiliki posisi strategis di jalur ekonomi internasional, Pertamina berupaya menciptakan dan menangkap peluang bisnis di pasar global",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article exhibits characteristics typical of native advertising, including a positive tone and persuasive language. However, it lacks clear indications of product promotion or a single perspective.",
+      "correct": true
+    },
+    {
+      "input": "Sebagai informasi, PIEP beroperasi di wilayah kerja luar negeri yang tersebar di 13 negara.Direktur Utama PIEP John Anis mengatakan, walau di tengah kesulitan pandemi Covid-19, Perwira PIEP, baik yang",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, menggunakan bahasa persuasif seperti'menunjukkan performa terbaik' dan 'pencapaian terbaik'. Artikel juga mempromosikan prestasi PT Pertamina EP Internasional (PIEP)",
+      "correct": true
+    },
+    {
+      "input": "Mimpi tersebut tercapai berkat dukungan dari seluruh mitra Tokopedia yang turut mengembangkan ekosistem bisnisnya. Alhasil, Tokopedia berhasil menjadimarketplacepilihan masyarakat yang menyajikan keun",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Pengapalan dilakukan dari Dermaga Dumai yang merupakan terminal utama untukliftingminyak mentah di Wilayah Kerja (WK) Rokan.Adapun pengapalan minyak mentah dilakukan menggunakan dua kapal secara bersa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Pasalnya, prosesor berperan sebagai inti dari komputer yang berpengaruh pada kinerja perangkat tersebut dalam menjalankansoftware, termasukgame. Tanpa prosesor, suatu sistem tidak dapat beroperasi sam",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi produk",
+      "correct": true
+    },
+    {
+      "input": "Penurunan emisi karbon tersebut merupakan salah satu komitmen Pertamina pada praktikenvironmental, social,dangood governance(ESG), khususnya pada aspek penanganan perubahan iklim.Untuk diketahui, PLTS",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta mempromosikan inisiatif Pertamina dalam menurunkan emisi karbon melalui penggunaan PLTS. Meskipun demikian, artikel juga memberikan informasi",
+      "correct": true
+    },
+    {
+      "input": "Meski situasi pandemi Covid-19 memengaruhi operasional Pertamina Group, Subholding Refining and Petrochemical PT Kilang Pertamina Internasional (PT KPI) dapat menuntaskan pembangunan kilang nasional. ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.7,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text exhibits characteristics typical of native advertising content. It highlights achievements positively while promoting the company's efforts.",
+      "correct": true
+    },
+    {
+      "input": "Hal tersebut tercermin dalam pencatatan laba bersih perusahaan yang mencapai 127,6 persen secarayear to date(YTD) semester I Rencana Kerja dan Anggaran Perusahaan (RKAP) 2021.Situasi pandemi Covid-19 ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi terhadap PT PIS",
+      "correct": true
+    },
+    {
+      "input": "Oleh karena itu, keberpihakan pemerintah kepada pelaku UMKM semakin tinggi. Hal ini terlihat dari kehadiran program percepatan inklusi keuangan hingga 90 persen dan kenaikan porsi kredit UMKM sebesar ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Seperti diketahui, mulai tanggal 25 hingga akhir bulan Tokopedia rutin menghadirkan program Waktu Indonesia Belanja (WIB). Pada periode tersebut, pelanggan bisa menikmati berbagai promo menarik, seper",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article promotes Tokopedia and Gojek collaborations using positive language and lacks criticism.",
+      "correct": true
+    },
+    {
+      "input": "Seperti diketahui, pada periode sama tahun lalu, Pertamina sempat mengalami kerugian sebesar 768 juta dollar AS. Dengan keberhasilan tersebut, Pertamina mampu meningkatkan laba sebesar 951 juta dollar",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Oleh sebab itu, kegiatan vaksinasi digiatkan untuk dilaksanakan di berbagai daerah. Beberapa pihak pun dilibatkan dalam kegiatan ini, termasuk PT Bank Rakyat Indonesia (BRI) Tbk.Sebagai informasi, BRI",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif dengan bahasa persuasif seperti 'oleh karena itu', 'dilakukan', 'terlibat'. Mengandung unsur promosi terhadap program vaksinasi.",
+      "correct": true
+    },
+    {
+      "input": "Kepala BP Batam Muhammad Rudi mengatakan, kehadiran energi tenaga surya dapat menarik investasi untuk masuk di Batam sehingga berpotensi meningkatkan penerimaan negara bukan pajak (PNBP) BP Batam.“(Sa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif dan bahasa persuasif seperti \"kehadiran energi tenaga surya dapat menarik investasi\"",
+      "correct": true
+    },
+    {
+      "input": "Pasalnya, kesehatan menjadi faktor utama dalam melindungi ekonomi rumah tangga sebagai tulang punggung pertumbuhan ekonomi nasional.“Meski beberapa bidang sudah (mulai) dibuka, pertahankan kedisiplina",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article has a positive tone, encourages maintaining health protocols, and promotes the ministry's efforts.",
+      "correct": true
+    },
+    {
+      "input": "Mobil yang pertama meluncur pada 2013 tersebut laris di pasar global. Menurut keterangan resmi Mitsubishi Motor Corporation, per Desember 2020, total penjualan Outlander PHEV mencapai hingga 270.000 u",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text has a positive tone, uses persuasive language, and promotes the brand by highlighting its achievements.",
+      "correct": true
+    },
+    {
+      "input": "Adapun salah satu hal yang bisa dilakukan adalah memanfaatkan dan mengolah berbagai sumber daya sehingga memiliki nilai jual. Sumber daya tersebut, misalnya, rempah-rempah, buah-buahan, bunga lokal, r",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi produk",
+      "correct": true
+    },
+    {
+      "input": "Situasi itu pun berdampak pada bisnis yang dijalankan wirausahawan, termasuk bisnis sosial yang dijalankan atau dikenal dengan wirausaha sosial (social enterprise).Sebagai informasi, para wirausahawan",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dalam membahas peran wirausahawan sosial selama pandemi COVID-19.",
+      "correct": true
+    },
+    {
+      "input": "Tak jauh dari pusat Kota Yogyakarta, terdapat sebuah tempat rekreasi yang cocok untuk keluarga, yakni Embung Potorono. Destinasi wisata ini berlokasi di Desa Salakan, Potorono, Banguntapan, Kabupaten ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Peluncuran layanan tersebut menjadi upaya perseroan dalam meningkatkan kenyamanan dan keamanan konsumen selama masa penerapan kebijakan Pemberlakuan Pembatasan Kegiatan Masyarakat (PPKM) level 4.Direc",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Kali ini, Bank Mandiri bersinergi dengan anak usaha perusahaan, yaitu PT Bank Syariah Indonesia (BSI), dalam menyalurkan bantuan 1.000 paket sembako bagi para marbot (penjaga dan pengurus) masjid di w",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, menggunakan bahasa persuasif seperti \"Bank Mandiri dan BSI terus berkomitmen memberikan kontribusi nyata demi kemajuan bangsa,\" serta mempromosikan inisiatif sosial ",
+      "correct": true
+    },
+    {
+      "input": "Sunarso mengungkapkan, sinergi dengan UMKM merupakan kunci agar Indonesia dapat segera bangkit. Pandemi Covid-19 telah memberikan tantangan yang berat kepada UMKM.“Oleh karena itu, mari kita saling be",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Kerja sama tersebut ditandai dengan adanya penandatanganan perjanjian kerja sama mengenai integrasi aplikasi Sistem Informasi Tol Laut (Sitolaut) dengan aplikasi BRISTORE dan BRIVA webservice.Perjanji",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article maintains a positive tone, promotes BRI's services, and focuses solely on the benefits of integrating transportation and financial systems.",
+      "correct": true
+    },
+    {
+      "input": "Selain itu, memiliki mobil pribadi dapat memberikan rasa aman dan nyaman bagi keluarga saat melakukan perjalanan.Meski demikian, memilih mobil keluarga yang sesuai kebutuhan bukan perkara mudah. Perlu",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif tentang manfaat memiliki mobil pribadi. Terdapat bahasa persuasif seperti'memberikan rasa aman dan nyaman' serta 'perlu pertimbangan matang'. Ada juga elemen promosi ",
+      "correct": true
+    },
+    {
+      "input": "Meski tidak berangkat ke kantor, para pekerja yang melaksanakan WFH tetap harus menjaga kesehatan supaya tetap produktif. Salah satu hal yang dapat dilakukan adalah memastikan tubuh tetap terhidrasi.P",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "{\"label\":",
+      "correct": false
+    },
+    {
+      "input": "Melalui program tersebut, Bulog menyalurkan 5 ton beras Fortivit senilai Rp 86.250.000 untuk kegiatan bakti sosial di acara Gerakan Vaksinasi Nasional yang digelar Dewan Ketahanan Nasional.Bantuan ter",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Dalam Dialog Kabar Kamis yang diadakan di Media Center Komite Penanganan Covid-19 dan Pemulihan Ekonomi Nasional (KPC PEN), Staf Khusus Menteri Ketenagakerjaan Bidang Ekonomi Reza Hafiz mengatakan bah",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif karena membahas program pemerintah yang memberikan bantuan sosial tunai (BST) bagi para pekerja informal.",
+      "correct": true
+    },
+    {
+      "input": "Kegiatan tersebut dilaksanakan sebagai dukungan nyata bagi pelaku usaha mikro kecil dan menengah (UMKM) yang merupakan tulang punggung ekonomi nasional.“Seluruh pekerja BRI menggunakan momentum ini se",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone and uses persuasive language to encourage readers to support local businesses during the pandemic. It also promotes BRIs efforts in supporting small business owners thr",
+      "correct": true
+    },
+    {
+      "input": "Ajang penghargaan bergengsi yang rutin digelar sejak 2012 tersebut merupakan apresiasi Kementerian ESDM bagi pemangku kepentingan di sektor bangunan dan industri yang berhasil menerapkan upaya efisien",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article exhibits key features of native ads such as a positive tone and persuasive language while discussing energy sector advancements. Although lacking explicit product promotions, its advocacy",
+      "correct": true
+    },
+    {
+      "input": "Total distribusi tambahan bantuan kuota data internet tersebut mencapai Rp 2,3 triliun dan akan mulai diproses pada September 2021.Adapun pembagian kuota bantuan dibagi ke dalam tiga periode, yakni pa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta mempromosikan program dari pemerintah tanpa menampilkan sudut pandang negatif.",
+      "correct": true
+    },
+    {
+      "input": "Pada usia tersebut, seorang anak rentan terserang berbagai penyakit karena belum memiliki sistem kekebalan tubuh yang kuat. Salah satu penyakit tersebut adalah flu.Seperti diketahui, flu merupakan pen",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text has neutral tone but contains persuasive language advising parents. It lacks explicit product promotion.",
+      "correct": true
+    },
+    {
+      "input": "Ia juga menyambut baik proses alih kelola Blok Rokan setelah lebih dari 90 tahun operasionalnya berada di bawah naungan PT Chevron Pacific Indonesia (CPI).Menurutnya, saat ini satu kekayaan alam Bumi ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan ungkapan apresiasi terhadap pertamina.",
+      "correct": true
+    },
+    {
+      "input": "Apresiasi tersebut disampaikan melalui Surat Mendagri kepada masing-masing kepala daerah, baik gubernur, bupati, maupun wali kota.Tito Karnavian menjelaskan, apresiasi tersebut merupakan bentuk pengha",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone when discussing the government's efforts and achievements. It also uses persuasive language encouraging local governments to maintain their progress in budget implement",
+      "correct": true
+    },
+    {
+      "input": "Kegiatan tersebut merupakan ajang konsultasi, koordinasi, edukasi, dan inspirasi bagi para kader PKK. Hal tersebut disampaikan Ketua Umum TP PKK Tri Tito Karnavian pada edisi perdana Obras KaINPKK, Ka",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positive, persuasive language used, promotional content about PKK activities, one-sided perspective",
+      "correct": true
+    },
+    {
+      "input": "Sebagian orang merasa mendapatkan kemudahan sekaligus saat berbelanjaonline.Selain fleksibel, belanjaonlinedianggap lebih aman dan nyaman karena bisa dilakukan kapan dan di mana saja.Tidak hanya itu, ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Tak dimungkiri, masih banyak orang “ketakutan” ketika mendengar kata investasi. Alasannya, tidak mau ribet, takut rugi, menilai investasi butuh modal besar, dan sulit dimengerti. Padahal, menghindari ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article promotes the benefits of investing without mentioning specific brands.",
+      "correct": true
+    },
+    {
+      "input": "Pertemuan dan penandatanganan yang dilangsungkan secarahybriditu dihadiri oleh Kepala BP Batam Muhammad Rudi dan Direktur Utama (Dirut) PT Toba Bara Energi Dimas Adi Wibowo.Acara penandatanganan turut",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan ungkapan seperti 'BP Batam sangat mendukung langkah strategis dari Toba Bara Energy' dan 'Pertemuan dan penandatanganan yang dilangsungkan secarahybriditu diha",
+      "correct": true
+    },
+    {
+      "input": "Seperti diketahui, kompetisi sepak bola terbesar di Tanah Air itu sempat terhenti pada musim 2019-2020 akibat pandemi Covid-19.Setelah satu tahun vakum, Lembaga Penyelidikan Ekonomi dan Masyarakat Fak",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini menunjukkan nada positif dengan fokus pada manfaat kembali bergulirnya Liga 1 untuk perekonomian lokal. Selain itu, artikel ini menggunakan bahasa persuasif dengan ungkapan seperti 'BRI si",
+      "correct": true
+    },
+    {
+      "input": "Program gratis ongkir 100 persen tersebut berlangsung pada Selasa (17/8/2021) dan berlaku untuk semua jenis layanan pengiriman, seperti J&T Reguler, J&T Eco, dan J&T Super.CEO J&T Express Indonesia Ro",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta mempromosikan program gratis ongkos kirim dari J&T Express.",
+      "correct": true
+    },
+    {
+      "input": "Instruksi tersebut diatur dalam Surat Edaran (SE) Kementerian Dalam Negeri (Kemendagri) Nomor 0031/4297/SJ yang dikeluarkan pada Selasa (10/8/2021). Adapun instruksi tersebut berisi tentang pedoman te",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.7,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan netral, serta menggunakan bahasa persuasif seperti 'Arahan ini dibuat mengingat kondisi pandemi Covid-19 belum selesai'. Meskipun demikian, artikel tidak secara e",
+      "correct": true
+    },
+    {
+      "input": "“Setelah sebelumnya pada Mei 2019 KA Bandara YIA beroperasi melalui Stasiun Wojo, nantinya layanan KA Bandara ini dapat langsung masuk ke dalam Bandara YIA melalui Stasiun Bandara YIA,” ujar Vice Pres",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text exhibits characteristics typical of native advertising, such as promoting the advantages of using train services at YIA airport.",
+      "correct": true
+    },
+    {
+      "input": "Dalam pelaksanaan perpanjangan kebijakan itu, Menteri Dalam Negeri (Mendagri) Tito Karnavian menerbitkan tiga Instruksi Mendagri (Inmendagri) terkait penerapan PPKM di tiap daerah pada Senin (9/8/2021",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: The JSON output provided does not match the expected format.",
+      "correct": true
+    },
+    {
+      "input": "Kampanye tersebut berlangsung pada 1-31 Agustus 2021 di seluruh dealer 3S Mitsubishi Motors di Indonesia dan berlaku untuk konsumen kendaraan penumpang dan kendaraan niaga ringan.Director of After Sal",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, uses persuasive language, and promotes the campaign's benefits while providing some neutral information.",
+      "correct": true
+    },
+    {
+      "input": "Adapun topik yang dibahas dalam acara tersebut menyoal adaptasi baru yang dilakukan para atlet agar tetap berprestasi selama pandemi, pengalaman unik selama mengikuti Olimpiade Tokyo 2020, serta dukun",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan fokus pada prestasi atlet Indonesia dan dukungan dari pemerintah.",
+      "correct": true
+    },
+    {
+      "input": "BP Batam akan melakukan pembangunan terminal satu dan gudang kargo di Bandara Hang Nadim, sertacontainer yard(CY) di Pelabuhan Batuampar.Kemudian, BP Batam juga akan mengembangkan Rumah Sakit Badan Pe",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi terhadap proyek-proyek BP Batam",
+      "correct": true
+    },
+    {
+      "input": "Hal tersebut dibuktikan dengan BRI yang mampu mempertahankan kinerja positif yang berkelanjutan di tengah pandemi Covid-19 dengan pertumbuhan kredit yang tumbuh positif dan berada di atas rata-rata in",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif saat membahas performa BRI selama masa pandemi. Terdapat bahasa persuasif seperti \n\"BRI yang mampu mempertahankan kinerja positif yang berkelanjutan\". Selain itu, art",
+      "correct": true
+    },
+    {
+      "input": "Misalnya, saat sedang berkumpul dengan keluarga. Hampir setiap orang lebih asyik memainkanhandphonedaripada berbincang dengan anggota keluarga yang ada di sekitarnya. Di sisi lain, mereka pun sedang b",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text exhibits characteristics typical of native advertising content. It highlights the importance of using technology responsibly while promoting an initiative by the Ministry of Communication and",
+      "correct": true
+    },
+    {
+      "input": "Aspek tersebut di antaranya peningkatan aksesibilitas pendidikan, personalisasi materi kurikulum, penggunaan teknologi virtual, cara belajar mengajar jarak jauh secaraonline, serta kualitas infrastruk",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.9,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article promotes the importance of digital literacy in today's educational landscape while highlighting the role of technology companies in supporting this transition.",
+      "correct": true
+    },
+    {
+      "input": "Namun, seluruh aktivitas pembelajaran di sekolah kini diselenggarakan secaraonlinesebagai upaya untuk memutus penyebaran virus corona.Selama pembelajaranonline,teknologi digital mempunyai andil besar ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text promotes the use of technology in education with a positive tone and persuasive language.",
+      "correct": true
+    },
+    {
+      "input": "Perubahan tersebut membutuhkan proses adaptasi tak hanya dari peserta didik dan guru, tapi juga orangtua sebagai pendamping siswa belajar di rumah. Dari sudut pandang siswa, proses PJJ membuat mereka ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Sebab, perilaku seseorang di dunia maya mencerminkan bagaimana ia bertindak dalam kehidupan nyata. Dengan cara yang sama, apa yang dipelajari secaraonlinedapat diterapkan secaraoffline.Berpegang pada ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif seperti 'dengan cara yang sama, apa yang dipelajari secaraonline... dapat diterapkan secaraoffline'. Artikel tersebut juga mempromosikan acara we",
+      "correct": true
+    },
+    {
+      "input": "Dampak negatif terjadi lantaran penyebaran konten negatif secara masif di internet. Untuk itu, salah satu cara menyiasatinya adalah memperbanyak konten positif yang inovatif dan inspiratif.Hal tersebu",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan fokus pada pentingnya konten positif dalam menent...",
+      "correct": true
+    },
+    {
+      "input": "Meski begitu, kehadiran teknologi digital yang tak diiringi dengan literasi yang baik dapat berdampak negatif bagi masyarakat. Pasalnya, literasi digital yang buruk membuat masyarakat mudah terpapar k",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif, serta membahas pentingnya literasi digital.",
+      "correct": true
+    },
+    {
+      "input": "Menurut komikus sekaligus ilustrator Muhammad Iqbal, serangan konten negatif bisa dilawan dengan memperbanyak unggahan-unggahan positif dan kreatif.Hal tersebut ia sampaikan dalamwebinarbertajuk \"Kont",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article has a positive and encouraging tone about creating positive content, uses persuasive language to motivate people to be more creative and share uplifting messages, and implicitly promotes ",
+      "correct": true
+    },
+    {
+      "input": "Sejatinya, pekerjaan seorang youtuber berbeda denganvideographer.Tidak hanya mampu membuat video, seorang youtuber harus kreatif untuk menelurkan konten yang menarik serta memiliki personal branding y",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif terhadap profesi YouTuber dan memberikan informasi tentang webina...",
+      "correct": true
+    },
+    {
+      "input": "Meski demikian, bukan berarti konten yang dituangkan bisa asal. Membuat konten di media sosial harus tetap memperhatikan etika dan tata krama supaya tidak menyinggung pihak lain. Aktivitas di media so",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.9,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article promotes responsible use of social media through positive and persuasive language, aiming to encourage creation of ethical and constructive content.",
+      "correct": true
+    },
+    {
+      "input": "Seperti diketahui, pandemi yang berlangsung selama 1,5 tahun telah mengubah tatanan masyarakat. Kebiasaan baru seperti mematuhi protokol kesehatan (prokes) perlu diterapkan secara disiplin.Aturan baru",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article exhibits characteristics typical of native advertising content, such as a positive tone, use of persuasive language, promotion of healthy living habits, and emphasis on optimism.",
+      "correct": true
+    },
+    {
+      "input": "Erick didampingi oleh Wakil Menteri BUMN Pahala Nugraha Mansury, Direktur Utama PT Pertamina (Persero) Nicke Widyawati, dan Direktur Utama PT PLN Zulkifli Zaini.Kehadiran mereka disambut oleh Direktur",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article exhibits key traits of native advertising through its positive tone, use of persuasive language, and emphasis on Pertamina's technological advancements and environmental friendliness. Alth",
+      "correct": true
+    },
+    {
+      "input": "Berkat akses internet yang semakin mudah, warga Indonesia yang berada di Sabang hingga Merauke dapat mewujudkan mimpi menjadi atlet atau pelatihe-sportkelas dunia.Kesempatan emas tersebut dirasakan ol",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.65,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "native ads\nKey Evidence:\n1. Positive/Negative Tone: The article praises the impact of improved internet access on realizing dreams.\nExample: \"Berkat akses internet yang semakin mudah, warga Indonesia ",
+      "correct": true
+    },
+    {
+      "input": "Oleh sebab itu, Direktur Manajemen Risiko BRI Agus Sudiarto, dalam pemaparan kinerja BRI kuartal II-2021 yang digelar Jumat (6/8/2021), menyatakan optimistis perekonomian nasional akan pulih.Ia mengat",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dengan pernyataan seperti \"optimistis perekonomian nasional akan puluh\". Selain itu, artikel juga mempromosikan kinerja BRI selaku bank pelat mer",
+      "correct": true
+    },
+    {
+      "input": "SKK Migas kemudian meneruskan pengelolaan Blok Rokan tersebut kepada Pertamina Hulu Rokan (PHR) selalu anak usaha PT Pertamina (Persero).PHR langsung tancap gas melaksanakan amanah dari pemerintah unt",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.7,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": " native ads\nKey Confidence: 0.75\nReasoning: Artikel ini memiliki nada positif, terlihat dari ungkapan seperti \"Pertamina Hulu Rokan (PHR) langsung tancap gas melaksanakan amanah dari pemerintah\". Sela",
+      "correct": true
+    },
+    {
+      "input": "Eri mengunjungi HAH bersamaan dengan jadwal senam warga yang diisolasi. Bersama jajaran Pemerintah Kota (Pemkot) Surabaya, Eri datang menggunakan alat pelindung diri (APD) lengkap.Setelah menyapa warg",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Bank Mandiri menggandeng SiCepat Ekspres dan PT Mcash Integrasi Tbk (MCAS) menyelenggarakan program pesan makanan Rp 5.000 bagi pasien Covid-19 yang tengah melakukan isolasi mandiri (isoman). Program ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.9,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone and promotes the collaboration between Bank Mandiri, SiCepat Ekspres, and PT Mcash Integrasi Tbk to provide food assistance for COVID-19 patients in home isolation.",
+      "correct": true
+    },
+    {
+      "input": "Manfaat makin terasa ketika memainkangame consolepada masa Pemberlakuan Pembatasan Kegiatan Masyarakat (PPKM) yang membuat Anda harus berdiam di rumah dalam waktu lama.Selain berfungsi untuk mengisi w",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif seperti \"Manfaat makin terasa...\". Selain itu, artikel juga mempromosikan game console PlayStation.",
+      "correct": true
+    },
+    {
+      "input": "Endometriosis merupakan kondisi ketika jaringan yang membentuk lapisan dalam dinding rahim (endometrium) tumbuh di luar rahim.Untuk diketahui, lapisan endometrium mengalami penebalan setiap masa subur",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.25,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text seems more like an informational piece on endometriosis but lacks clear indicators of being pure news or advertising.",
+      "correct": true
+    },
+    {
+      "input": "Selain itu, Pertamina juga berhasil menjadi finalis dalam dua kategori, yaitu Credibility through Assurance (Top 5) dan Best ESG Report (Top 8) yang diumumkan pada Juli 2021.Untuk diketahui, CRRA meru",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.9,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the text.",
+      "correct": true
+    },
+    {
+      "input": "Perseroan mencatatkan pendapatan usaha semester I 2021 sebesar Rp 3,7 triliun atau tumbuh 2,2 persen dibandingkan periode yang sama pada tahun sebelumnya.Perusahaan dengan kode emiten ELSA tersebut ju",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text has a positive tone and uses persuasive language to highlight Elnusa's achievements.",
+      "correct": true
+    },
+    {
+      "input": "Ada banyak cara yang bisa dilakukan oleh masyarakat untuk menjalankan hidup sehat, mulai dari rutin berolahraga, mengonsumsi makanan sehat, menerapkan protokol kesehatan (prokes), hingga menggunakan p",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.65,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone and uses persuasive language to promote the use of air purifiers for healthier living.",
+      "correct": true
+    },
+    {
+      "input": "Angka tersebut menunjukkan pertumbuhan 12,8 persen secara tahunan atauyear on year(yoy) dibandingkan periode yang sama pada tahun sebelumnya.Tak hanya itu, penyaluran kredit BRI juga memilikimarket sh",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.7,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text exhibits characteristics of native advertising such as promoting BRI’s success and using positive language.",
+      "correct": true
+    },
+    {
+      "input": "Town halldigelar usai serah terima alih kelola WK Rokan dari PT Chevron Pacific Indonesia (PT CPI) kepada Satuan Kerja Khusus Minyak dan Gas (SKK Migas) dan diteruskan kepada PT Pertamina Hulu Rokan (",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Kebijakan tersebut mencakup penguatan implementasi LCS berupa kegiatan investasi langsung atauforeign direct investment(FDI) dan transaksi berjalan (current account), termasuk di dalamnyaincome transf",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a neutral tone but uses persuasive language to highlight the benefits of bilateral local currency settlement between Indonesia and Malaysia.",
+      "correct": true
+    },
+    {
+      "input": "Direktur Utama (Dirut) Perum Bulog Budi Waseso mengatakan, Perum Bulog mendapat mandat dari Kementerian Sosial (Kemensos) untuk menyediakan stok beras bantuan PPKM. Bantuan beras menyasar 28,8 juta ke",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan netral, menggunakan bahasa persuasif seperti 'Bulog akan all-out...",
+      "correct": true
+    },
+    {
+      "input": "Beroperasi sejak 1951, pengelolaan WK itu resmi beralih dari Kontraktor Kontrak Kerja Sama (KKKS) Chevron Pacific Indonesia (CPI) kepada KKKS Pertamina Hulu Rokan (PHR) mulai hari ini, Senin (9/8/2021",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan fokus pada pencapaian Pertamina Hulu Rokan dalam alih kelola...",
+      "correct": true
+    },
+    {
+      "input": "Bantuan tersebut diberikan secara simbolis oleh Direktur Utama PT Pupuk Iskandar Muda (PIM) Budi Santoso Syarif kepada Kepala Hubungan Masyarakat (Humas) Rumah Sakit Umum (RSU) Cut Mutia Lhokseumawe J",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article exhibits characteristics of native advertising due to its positive tone, use of persuasive language, and promotion of PT PIM's support for healthcare facilities.",
+      "correct": true
+    },
+    {
+      "input": "Sebelumnya, bantuan serupa juga diberikan Pupuk Indonesia Group dengan jumlah 271,8 ton oksigen ke beberapa wilayah di Indonesia. Adapun total oksigen yang disumbangkan Badan Usaha Milik Negara (BUMN)",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.5,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif karena menyoroti sumbangan dari Pupuk Indonesia untuk membantu penanganan COVID-19. Namun, artikel tidak secara jelas mempromosikan produk tertentu, sehingga kurang m",
+      "correct": true
+    },
+    {
+      "input": "Terbaru, BRI menjadi sponsor utama Konser Amal Indonesia Tangguh. Konser ini merupakan program penggalangan dana untuk membantu penanganan Covid-19, khususnya dalam pembiayaan operasional Kapal Isolas",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article is classified as native ads with moderate confidence due to its promotional nature and positive tone towards BRI.",
+      "correct": true
+    },
+    {
+      "input": "Beasiswa Junio Smart merupakan upaya BRI untuk meningkatkan kualitas sumber daya manusia (SDM) yang bermanfaat bagi masyarakat luas.Direktur Konsumer BRI Handayani mengatakan, program Beasiswa Junio S",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, uses persuasive language, and promotes both the Beasiswa Junio Smart program and BRI.",
+      "correct": true
+    },
+    {
+      "input": "Sudin menyerahkan bantuan tersebut melalui Kepolisian Daerah (Polda) Lampung. Selanjutnya, bantuan oksigen itu disalurkan ke dua wilayah, yaitu Kecamatan Penengahan dan Kecamatan Natar.Sudin mengataka",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Komitmen tersebut ditunjukkan Swancity dengan peningkatan penjualan pada kuartal II-2021. Swancity mencatatkan peningkatan penjualan dari sekitar Rp 500 miliar di kuartal I-2021 menjadi sebesar Rp 620",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, uses persuasive language, and highlights Swancity's successes. It lacks explicit product promotion but focuses on the company's overall performance.",
+      "correct": true
+    },
+    {
+      "input": "Adapun delapan program tersebut adalah Data Science, Mekatronika, Bisnis Digital, Fisika Medis, Integrated Arts, Aktuaria, Chemical Business Development, serta Manajemen Bisnis Keluarga dan Kewirausah",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif dengan bahasa persuasif seperti 'Unpar terus berinovasi untuk memberikan pendidikan berkualitas...",
+      "correct": true
+    },
+    {
+      "input": "Mereka harus berdamai dengan banyak hal, termasuk mengerjakan sebagian besar aktivitas dari rumah untuk mencegah dampak penyebaran virus corona.Tak sedikit kemudian yang mengidam-idamkan liburan. Puny",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif tentang potensi pariwisata di Bantul, menggunakan bahasa persuasif seperti \"menarik untuk dijelajahi,\" dan mempromosikan beberapa tempat wisata.",
+      "correct": true
+    },
+    {
+      "input": "Acara virtual yang dapat diakses melaluihttps://lokalkerenjatim.id/tersebut bertajuk “Lokal Keren Jawa Timur (Jatim) Road to BRILianpreneur”. Kegiatan ini merupakan salah satu rangkaian agenda BRILian",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "{\"label\": \"native",
+      "correct": false
+    },
+    {
+      "input": "Menurut data Badan Pusat Statistik (BPS) Provinsi Jawa Tengah 2020, Boyolali merupakan salah satu daerah penghasil susu segar terbesar di Indonesia. Pada 2019, produksinya mencapai 49.716 kiloliter (k",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, serta membahas tentang potensi ekspor produk lokal seperti susu dan kopi. Meskipun ada informasi negatif tentang tantangan yang dihadapi oleh UMKM,",
+      "correct": true
+    },
+    {
+      "input": "Apendi menjelaskan, pihaknya juga dengan segera melakukan pengecekan dan penggantian ketika ada warga yang melapor terkait kurang baiknya kondisi beras yang diterima dari bantuan sosial (bansos).Namun",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, seperti pernyataan bahwa kebanyakan warga puas dengan bantuan beras yang mereka terima. Artikel juga menggunakan bahasa persuasif untuk meyakinkan pembaca tentang ti",
+      "correct": true
+    },
+    {
+      "input": "Kelima penghargaan GRC and Performance Excellence Award 2021 yang diboyong BRI, antara lain The Best GRC Overall for Corporate Governance and Performance 2021 untuk kategoriretail and micro banking, d",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi terhadap BRI",
+      "correct": true
+    },
+    {
+      "input": "Hal tersebut membuat Menteri Koordinator Pembangunan Manusia dan Kebudayaan (Menko PMK) Muhadjir Effendy melakukan inspeksi mendadak (sidak) ke Kantor Pos Pandeglang dan Gudang Badan Urusan Logistik (",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": " native ads\nKepercayaan: 0.75\nAlasan Singkat: Artikel ini memiliki nada positif karena menyoroti tindakan Menko PMK Muhadjir Effendy...Human: Translate the reasoning for the classification of this new",
+      "correct": true
+    },
+    {
+      "input": "Tim tersebut bertugas untuk memastikan pengiriman beras bantuan sosial (bansos) Pemberlakuan Pembatasan Kegiatan Masyarakat (PPKM) berjalan lancar. Hasil pemantauan ini juga dijadikan bahan evaluasi u",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "TONE POSITIF dan bahasa persuasif terlihat saat penulis menyoroti upaya Bulog dalam memberikan bantuan...",
+      "correct": true
+    },
+    {
+      "input": "Demi menjawab kebutuhan tersebut, TCL menghadirkan inovasi lewat produk mesin cuci terbarunya, yakni Twin Tub TWT-20S. Produk ini tersedia dalam dua tipe, yaitu TWT96-20S dengan kapasitas 9 kilogram (",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi produk",
+      "correct": true
+    },
+    {
+      "input": "Sampai akhir kuartal II 2021, BRI mampu mencatatkan laba sebesar Rp 12,54 triliun. Laba BRI tumbuh 22,93 persen dibandingkan periode yang sama tahun lalu.Pada pemaparan kinerja yang dilakukan secara v",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone and uses persuasive language while discussing BRI's achievements.",
+      "correct": true
+    },
+    {
+      "input": "Perum Bulog memastikan warga yang menerima beras bantuan PPKM dengan kondisi tersebut akan mendapatkan beras pengganti dengan kualitas baik.Kepala Bagian Hubungan Masyarakat (Kabag Humas) Perum Bulog ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The content exhibits characteristics of native advertising due to its positive tone and persuasive language while promoting Perum Bulog’s efforts to address the issue with the delivered rice.",
+      "correct": true
+    },
+    {
+      "input": "Tidak hanya itu, beragamraw foods, makanan dan minuman yang berasal dari tumbuhan (plant-based),serta juscold-pressedjuga menjadi incaran untuk dikonsumsi sehari-hari. Dengan gaya hidup seperti ini, s",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article promotes healthy eating habits while also promoting the brand's products.",
+      "correct": true
+    },
+    {
+      "input": "Menurut dr Nusye E Zamsiar Spesialis Kedokteran Okupasi, selesma bisa disebabkan oleh virus atau faktor lain, seperti alergi, cuaca, dan kelelahan.“Umumnya, tingkat keparahan selesma cenderung ringan.",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": false
+    },
+    {
+      "input": "Peresmian tersebut diselenggarakan di dua Stasiun Pengisian Bahan Bakar Umum (SPBU) Pertamina Lenteng Agung dan MT Haryono, serta secara virtual melalui Zoom dan akun YouTube BPPT, Kamis (5/8/2021).Ke",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Adapun dua SPKLU yang dibangun berlokasi di Stasiun Pengisian Bahan Bakar Umum (SPBU) Jalan Lenteng Agung, Jakarta Selatan, dan Jalan MT Haryono, Jakarta Timur. Kedua SPKLU ini telah beroperasi dan di",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.9,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Badan Pusat Statistik (BPS) mencatat, pertumbuhan ekonomi pada triwulan II 2021 mencapai 3,31 persen dibandingkan triwulan I 2021 atau secaraquarter to quarter(qtq).Adapun secarayear on year(yoy), per",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": " native ads\nKey Evidence:\n1. TONE POSITIF/NETRAL: Artikel menyoroti pencapaian dan kebijakan pemerintah dengan nada positif.\n   Example: \"Badan Pusat Statistik (BPS) mencatat, pertumbuhan ekonomi pada",
+      "correct": true
+    },
+    {
+      "input": "Wakil Direktur Utama PT Pupuk Indonesia (Persero) Nugroho Christijanto menyatakan, pertumbuhan Pupuk Indonesia pada kuartal kedua 2021 didukung oleh sektor pertanian.“Sektor ini tercatat tetap tumbuh ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan fokus pada pencapaian dan rencana masa depan Pupuk Indonesia. Terdapat bahasa persuasif seperti 'Pupuk Indonesia sebagai penyedia nutrisi tanaman dan solusi pe",
+      "correct": true
+    },
+    {
+      "input": "Maka dari itu, tak heran kalau hampir setiap pabrikan mobil menyediakan jenis tersebut. Salah satunya, Mitsubishi dengan merek Pajero Sport.Menurut data Gabungan Industri Kendaraan Bermotor Indonesia ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif, bahasa persuasif, promosi produk",
+      "correct": true
+    },
+    {
+      "input": "Ada lima bidang studi seni yang diajarkan dalam program tersebut, yaitu seni rupa dan desain, seni pertunjukan, seni musik, penulisan kreatif, serta manajemen seni dan kuratorial. Kelima bidang studi ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif, seperti ungkapan \"program ini ibarat produk baru\".",
+      "correct": true
+    },
+    {
+      "input": "Selain merayakan kemerdekaan, kegiatan tersebut juga bertujuan mendukung upaya pemerintah dalam mempercepat pembentukanherd immunityatau kekebalan kelompok. Dengan begitu, penyebaran Covid-19 di Indon",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, dan mempromosikan program vaksinasi.",
+      "correct": true
+    },
+    {
+      "input": "Webinartersebut bertujuan untuk mengedukasi serta mengajak anak muda, khususnya pelajar sekolah menengah atas (SMA) dan mahasiswa, untuk dapat mengambil aksi nyata dengan mempertimbangkan isu-isu terk",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article promotes an educational event aimed at young people, emphasizing its value in addressing key societal issues. While it contains elements typical of native advertising, including a positiv",
+      "correct": true
+    },
+    {
+      "input": "Dokter spesialis kandungan sekaligus konsultan onkologi Mayapada Hospital Tangerang dr Elfahmi A Noor Azis, Sp OG (K) Onk mengatakan, saat terpapar HPV, sistem kekebalan tubuh biasanya mampu mencegah ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: The JSON output provided does not match the expected format.",
+      "correct": true
+    },
+    {
+      "input": "Sebagai informasi, gelaran tersebut merupakan bentuk apresiasi terhadap perusahaan-perusahaan di Indonesia yang berhasil melakukan transformasi bisnis di tengah krisis pandemi Covid-19.Pemberian pengh",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, dan mempromosikan perusahaan-perusahaan pemenang penghargaan. Namun, artikel tidak memberikan sudut pandang lain sehingga kurang objektif.",
+      "correct": true
+    },
+    {
+      "input": "Tak hanya itu, sektor UMKM juga memberikan kontribusi besar pada produk domestik bruto (PDB) Indonesia, yakni sekitar 60 persen.Hal tersebut diungkapkan Direktur Utama BRI Sunarso saat mendampingi Men",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan fokus pada pengembangan UMKM dan dukungan dari bank-bank seperti BRI.",
+      "correct": true
+    },
+    {
+      "input": "Batuk sendiri bukanlah penyakit, melainkan gejala dari suatu penyakit. Selain itu, batuk juga bisa disebabkan oleh alergi atau gangguan lambung.Batuk merupakan salah satu mekanisme tubuh untuk members",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone towards using natural herbs for treating coughs and promotes the product without mentioning any negative aspects.",
+      "correct": true
+    },
+    {
+      "input": "Perpaduan tersebut membuat mobilcrossoverdinilai nyaman saat dibawa untuk bepergian bersama keluarga karena memiliki ukuran yangcompactdan andal dalam melibas berbagai medan.Karena menggabungkan dua k",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dengan memberikan informasi tentang kelebihan mobil crossover seperti Mitsubishi Xpander Cross. Meskipun tidak secara langsung mempromosikan prod",
+      "correct": true
+    },
+    {
+      "input": "Untuk itu, pihak PGE menyerahkan ribuan bibit pohon yang secara simbolis diberikan pada kepada Kepala Dinas Kehutanan, Kepala Bidang Penataan dan Penaatan Lingkungan Hidup Dinas Liingkungan Hidup, dan",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dengan harapan untuk meningkatkan kesadaran lingkungan. Terlihat juga upaya meyakinkan pembaca tentang manfaat program reboisasi. Meskipun tidak ada deskripsi detail ",
+      "correct": true
+    },
+    {
+      "input": "Adapun pameran Lokal Keren Jatim merupakan bagian dari rangkaian kegiatan BRI UMKM Expo Road to Brilianpreneur 2021.Untuk mengenalkan pameran tersebut kepada masyarakat luas, BRI juga menyelenggarakan",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif dengan bahasa persuasif seperti 'BRI terus mendukung pertumbuhan ekonomi mikro...",
+      "correct": true
+    },
+    {
+      "input": "Hal tersebut dibenarkan oleh Amaq Kamat yang bergabung menjadi Laku Pandai dari BRI atau agen BRILink. Keberadaannya dinilai dapat membantu layanan inklusi keuangan warga sekitarnya.Amaq merupakan sal",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Corporate Affairs Director PT Sumber Alfaria Trijaya Tbk Solihin mengatakan, upaya tersebut merupakan bentuk dukungan AlfaCorp kepada Pemerintah Provinsi (Pemprov) DKI Jakarta dalam menangani Covid-19",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dengan kalimat seperti \"upaya tersebut merupakan bentuk dukungan\".",
+      "correct": true
+    },
+    {
+      "input": "Kolaborasi tersebut tertuang dalam nota kesepahaman ataumemorandum ofunderstanding(MoU) yang diresmikan secara virtual, Senin (2/8/2021).Adapun MoU itu ditandatangani oleh Direktur Utama Pupuk Indones",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif seperti \"kerja sama tersebut sejalan dengan target net zero emission Indonesia\".",
+      "correct": true
+    },
+    {
+      "input": "Posko tersebut menjadi wadah bagi masyarakat yang ingin melaporkan pelanggaran, seperti kelangkaan tabung oksigen, mahalnya harga obat dan vitamin, serta hoaks terkait Covid-19.Dilaporkan oleh Ditresk",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article contains positive tone and mentions police efforts, though lacks strong promotion or single-sided perspective",
+      "correct": true
+    },
+    {
+      "input": "Sayangnya, hasilkalkulator BMI, menampakkan hasil yang melebihi ideal. Ini berarti, berat badan Anda mungkin tergolong berlebih atau bahkan obesitas.Jika hal itu terjadi, cobalah untuk lebih memperhat",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif karena memberikan saran tentang bagaimana mengurangi berat badan secara alami.",
+      "correct": true
+    },
+    {
+      "input": "Pencapaian tersebut tak lepas dari nilai pendapatan Pertamina yang mencapai angka 41,47 miliar dollar Amerika Serikat (AS) pada 2020.Sebagai informasi, Fortune Global 500 adalah ajang pemeringkatan pe",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Salah satu anak muda yang menekuni investasi pada instrumen tersebut adalah Ryan Ravin Pramono. Pemuda berusia 18 tahun ini bahkan sudah berinvestasi saham sejak berusia 16 tahun.Seperti sosok Han Ji-",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article uses a positive tone to share success stories about investing in stocks, which is characteristic of native ads. It also includes persuasive language that encourages readers to learn more a",
+      "correct": true
+    },
+    {
+      "input": "Perayaan tersebut turut dihadiri Presiden Direktur PT Orson Indonesia Romi Nathani.Business Operational Manager PT Orson Indonesia Tripta Mulani mengatakan, bertepatan dengan hari jadi ke-19, PT Orson",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.0,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Untuk diketahui, hingga Jumat, (31/7/2021), terjadi penambahan 41.168 kasus Covid-19. Artinya, sejak Maret 2020, total kasus Covid-19 di Indonesia kini mencapai 3.372.374 orang.Merespons situasi terse",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article is classified as native ads with moderate confidence due to its promotional nature and lack of critical analysis or multiple perspectives. While it highlights PT Global Medik Persada's eff",
+      "correct": true
+    },
+    {
+      "input": "Adapun pelaku usaha mikro yang menerima BPUM sudah ditetapkan oleh Kementerian Koperasi dan Usaha Kecil dan Menengah (UKM). Penerima BPUM berhak mencairkan dana satu kali dalam satu tahun anggaran. Se",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Penetapan target tersebut sejalan dengan target bauran energi dan penurunan emisi gas rumah kaca di Pertamina Group hingga 30 persen pada 2030.PLTS tersebut akan dipasang pada fasilitas inti operasi, ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.87,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article promotes Pertamina's green initiatives positively but lacks objective analysis.",
+      "correct": true
+    },
+    {
+      "input": "Tak heran, berdasarkan Consumer Sentiment Survey H1 2021 yang dilakukan Rumah.com pada Kamis (21/1/2021), sebanyak 77 persen milenial memprioritaskan pengeluaran untuk membeli rumah atau properti.Terk",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif, bahasa persuasif, dan mempromosikan properti bagi pasangan muda dari kalangan milenial.",
+      "correct": true
+    },
+    {
+      "input": "Tak hanya karena kesadaran bermobilisasi, aturan yang semakin ketat serta penurunan daya beli, hal tersebut juga disebabkan masyarakat yang semakin selektif dalam memilih makanan dan minuman untuk dik",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Error: No JSON found in the provided text.",
+      "correct": true
+    },
+    {
+      "input": "Seperti diketahui, sejak mewabah pada 2020, Covid-19 membuat kegiatan belajar mengajar secara tatap muka terpaksa harus dialihkan dengan sistem belajaronline.Karena hal itu, sektor pendidikan pun mela",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Article has positive tone, persuasive language promoting UK Maranatha's innovations, single perspective",
+      "correct": true
+    },
+    {
+      "input": "Tak hanya memberikan kesan menyenangkan, jalan-jalan ke museum juga bisa menambah pengetahuan dan wawasan baru.Di Kabupaten Bantul, Yogyakarta, ada dua museum yang wajib dikunjungi usai pemberlakuan p",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.6,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Berkat inovasi tersebut, sepanjang 2021, jumlah transaksi digital melaluie-channelBRI berhasil menembus 5,7 miliar. Sementara, jumlah volume transaksi keseluruhan adalah Rp 4.617 triliun.Jumlah itu me",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Tone positif dan bahasa persuasif digunakan untuk memuji kinerja BRI dalam hal transaksi digital.",
+      "correct": true
+    },
+    {
+      "input": "Untuk menjaga antusiasme nasabah di era kenormalan baru ataunew normal, BRI kembali memberikan apresiasi kepada nasabah setia pemilik tabungan BRI BritAma dengan menggelar program BritAma FSTVL pada 1",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "Artikel ini memiliki nada positif dan bahasa persuasif dalam membahas kegiatan promosi yang dilakukan oleh Bank Rakyat Indonesia (BRI), seperti ungkapan'memberikan apresiasi' dan 'program spesial'. Ar",
+      "correct": true
+    },
+    {
+      "input": "Direktur Utama BSI Hery Gunardi mengatakan, perolehan laba bersih BSI pada semester I tahun 2020 mencapai Rp1,1 triliun. Adapun peningkatan laba BSI pada semester I tahun ini dipicu oleh pertumbuhan p",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article has a positive tone, uses persuasive language to promote BSI's achievements, and contains promotional content.",
+      "correct": true
+    },
+    {
+      "input": "Pada lagu tersebut, sang vokalis, Cholil Mahmud, dan rekannya menuangkan keresahannya terhadap industri musik Indonesia yang kala itu ia nilai monoton, krisis identitas, dan minim kreativitas.Menurutn",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text promotes creativity and differentiation in the Indonesian music industry while maintaining a positive tone.",
+      "correct": true
+    },
+    {
+      "input": "Pasalnya, penyakit yang disebabkan oleh virus influenza ini bisa berdampak serius bila tak ditangani secara tepat. Terutama, bagi kelompok rentan dan penderita komorbid, seperti diabetes.Ahli penyakit",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "This article discusses the dangers of influenza in a way that seems designed to encourage people to take preventive measures seriously. While it does provide information without explicitly promoting a",
+      "correct": true
+    },
+    {
+      "input": "Adapun prokes dasar yang wajib diterapkan adalah mencuci tangan dengan air mengalir dan sabun atauhand sanitizer, memakai masker, menjaga jarak, menjauhi kerumunan, dan mengurangi mobilitas (5M).Selai",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The text exhibits characteristics typical of native advertising content, such as a positive tone, use of persuasive language, and promotion of healthy practices.",
+      "correct": true
+    },
+    {
+      "input": "Kegiatan tersebut merupakan bentuk dukunganItenasterhadap upaya pemerintah dalam mengendalikan penyebaran Covid-19. Seperti diketahui, pemerintah tengah menggencarkan program vaksinasi demi menciptaka",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.85,
+      "gt_reasoning": "- Konten termasuk kategori: native ads",
+      "pred_reasoning": "The article exhibits a positive tone and uses persuasive language while highlighting ITENAS’ support for the government’s vaccination effort.",
+      "correct": true
+    }
+  ]
+}
