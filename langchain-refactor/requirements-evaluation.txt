@@ -10,6 +10,7 @@ bert-score>=0.3.13
 
 # For LLM-as-a-Judge (optional)
 # langchain-openai (already in main requirements)
+langchain-huggingface>=0.0.1
 
 # For statistical analysis
 scipy>=1.11.0
