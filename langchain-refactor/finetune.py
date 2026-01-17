@@ -1,6 +1,6 @@
 """
 Fine-Tuning Module for Native Ads Detection
-Integrated with LangChain system - uses same prompts and format
+Standalone script - no langchain dependency needed for training
 """
 
 import json
@@ -22,8 +22,28 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Import prompts from LangChain system
-from prompts.classification_prompts import SIMPLE_LOCAL_PROMPT_TEMPLATE
+# Training prompt template (standalone - no langchain import needed)
+TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
+
+Klasifikasi:
+"""
 
 # Model configurations for multi-model support
 # Note: GPT-OSS may have compatibility issues with some Unsloth versions
@@ -149,10 +169,8 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
             # If output is not JSON, use as-is
             expected_output = sample['output']
         
-        # Use training prompt template from prompts module
-        from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
-        
         # Format: prompt + expected_output
+        # Use standalone TRAINING_PROMPT_TEMPLATE defined at top of file
         # Use title if available, otherwise extract from input
         if has_title:
             title = sample.get('title', '')
