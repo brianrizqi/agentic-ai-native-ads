@@ -30,32 +30,32 @@ from prompts.classification_prompts import SIMPLE_LOCAL_PROMPT_TEMPLATE
 MODEL_CONFIGS = {
     "qwen": {
         "name": "unsloth/Qwen2.5-14B-Instruct-bnb-4bit",
-        "max_seq_length": 2048,
-        "lora_r": 8,
-        "lora_alpha": 16,
+        "max_seq_length": 1024,  # Reduced from 2048 for better focus
+        "lora_r": 16,  # Increased from 8 for better capacity
+        "lora_alpha": 32,  # Increased from 16
         "batch_size": 1,
         "gradient_accumulation": 4,
-        "learning_rate": 1e-4,
+        "learning_rate": 2e-5,  # Lower LR for stability (was 1e-4)
         "description": "Qwen 2.5 14B - Best multilingual performance"
     },
     "llama": {
         "name": "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit",
-        "max_seq_length": 2048,
+        "max_seq_length": 1024,  # Reduced from 2048
         "lora_r": 16,
         "lora_alpha": 32,
         "batch_size": 2,
         "gradient_accumulation": 2,
-        "learning_rate": 1e-4,
+        "learning_rate": 2e-5,  # Lower LR for stability
         "description": "Llama 3.1 8B - Balanced speed/quality"
     },
     "gemma": {
         "name": "unsloth/gemma-2-9b-it-bnb-4bit",
-        "max_seq_length": 2048,
+        "max_seq_length": 1024,  # Reduced from 2048
         "lora_r": 16,
         "lora_alpha": 32,
         "batch_size": 2,
         "gradient_accumulation": 2,
-        "learning_rate": 1e-4,
+        "learning_rate": 2e-5,  # Lower LR for stability
         "description": "Gemma 2 9B - Google's efficient model"
     }
 }
@@ -108,6 +108,9 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
     
     print(f"Loaded {len(data)} samples")
     
+    # Check if dataset is already preprocessed (has 'title' field)
+    has_title = 'title' in data[0] if data else False
+    
     # Balance dataset (50-50 split)
     print("\n📊 Balancing dataset...")
     native_ads = [d for d in data if 'native ads' in d.get('output', '').lower()]
@@ -130,6 +133,11 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
     print(f"   After:  Native Ads={len(native_ads_balanced)} (50%), Berita Murni={len(berita_murni_balanced)} (50%)")
     print(f"   Total: {len(data)} balanced samples\n")
     
+    if not has_title:
+        print("⚠️  WARNING: Dataset does not have 'title' field!")
+        print("   Please run: python tools/prepare_finetuning_dataset.py first")
+        print("   Continuing with input-only format (not recommended)\n")
+    
     # Format with proper chat template for training
     formatted_data = []
     for sample in data:
@@ -144,11 +152,22 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
         # Use training prompt template from prompts module
         from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
         
-        # Format: prompt + expected_output + EOS token
-        # The prompt already includes "Klasifikasi:" at the end
-        prompt = TRAINING_PROMPT_TEMPLATE.format(content=sample['input'])
+        # Format: prompt + expected_output
+        # Use title if available, otherwise extract from input
+        if has_title:
+            title = sample.get('title', '')
+        else:
+            # Fallback: extract first sentence as title
+            import re
+            sentences = re.split(r'[.!?]\s+', sample['input'])
+            title = sentences[0][:100] if sentences else sample['input'][:100]
         
-        # Add expected output with proper EOS token
+        prompt = TRAINING_PROMPT_TEMPLATE.format(
+            title=title,
+            content=sample['input'][:800]  # Limit content length
+        )
+        
+        # Add expected output
         text = prompt + expected_output
         
         formatted_data.append({"text": text})
@@ -161,8 +180,8 @@ def main():
     parser.add_argument('--model', type=str, default='qwen',
                        choices=list(MODEL_CONFIGS.keys()),
                        help='Model to fine-tune (qwen, gpt-oss, llama, gemma)')
-    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_mixed_json.json',
-                       help='Path to training dataset')
+    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_finetuning_optimized.json',
+                       help='Path to training dataset (use preprocessed version for best results)')
     parser.add_argument('--output', type=str, default=None,
                        help='Output directory (default: ../models/{model}-native-ads)')
     parser.add_argument('--max-steps', type=int, default=1500,

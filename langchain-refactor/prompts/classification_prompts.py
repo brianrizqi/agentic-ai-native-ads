@@ -258,16 +258,16 @@ Berita Murni:
 - Objektif, menyajikan berbagai sudut pandang
 - Tidak mempromosikan produk/brand
 
-Konten:
-{content}
+Judul: {title}
+Konten: {content}
 
 Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
 
 Klasifikasi:
 """
 
 training_prompt = PromptTemplate(
-    input_variables=["content"],
+    input_variables=["title", "content"],
     template=TRAINING_PROMPT_TEMPLATE
 )
