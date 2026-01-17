@@ -353,17 +353,39 @@ def main():
     parser = argparse.ArgumentParser(description='Comprehensive Model Evaluation')
     parser.add_argument('--model', type=str, required=True,
                        help='Path to fine-tuned model')
-    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_json_format.json',
+    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_finetuning_optimized.json',
                        help='Dataset path')
     parser.add_argument('--num-samples', type=int, default=100,
                        help='Number of test samples')
-    parser.add_argument('--output', type=str, default='eval_results.json',
-                       help='Output file for results')
+    parser.add_argument('--output-dir', type=str, default='eval_results',
+                       help='Output directory for results')
     parser.add_argument('--use-judge', action='store_true',
                        help='Use LLM-as-a-Judge (requires OPENROUTER_API_KEY)')
     parser.add_argument('--api-key', type=str, default=None,
                        help='API key for LLM judge')
     args = parser.parse_args()
+    
+    # Extract model name from path
+    model_path = Path(args.model)
+    model_name = model_path.name.replace('_merged_16bit', '').replace('-', '_')
+    
+    # Create timestamped output filename
+    from datetime import datetime
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_filename = f'eval_{model_name}_{timestamp}'
+    
+    # Create output directory
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    print(f"\n{'='*80}")
+    print(f"Model Evaluation")
+    print(f"{'='*80}")
+    print(f"Model: {args.model}")
+    print(f"Dataset: {args.dataset}")
+    print(f"Samples: {args.num_samples}")
+    print(f"Output: {output_dir / output_filename}")
+    print(f"{'='*80}\n")
     
     # Load test set
     test_data = load_test_set(args.dataset, args.num_samples)
@@ -380,13 +402,19 @@ def main():
         judge_results = llm_as_judge(results, args.api_key)
     
     # Plot confusion matrix
-    cm = plot_confusion_matrix(results, 'confusion_matrix.png')
+    cm_path = output_dir / f'{output_filename}_confusion_matrix.png'
+    cm = plot_confusion_matrix(results, str(cm_path))
     
     # Print results
     print_results(results, bertscore_results, judge_results, cm)
     
     # Save results
     output_data = {
+        'model': args.model,
+        'model_name': model_name,
+        'timestamp': timestamp,
+        'dataset': args.dataset,
+        'num_samples': args.num_samples,
         'metrics': {
             'accuracy': results['correct'] / results['total'],
             'total_samples': results['total'],
@@ -399,10 +427,39 @@ def main():
         'predictions': results['predictions']
     }
     
-    with open(args.output, 'w', encoding='utf-8') as f:
+    # Save JSON results
+    json_path = output_dir / f'{output_filename}.json'
+    with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
     
-    print(f"\n✅ Results saved to: {args.output}")
+    # Save summary text file
+    summary_path = output_dir / f'{output_filename}_summary.txt'
+    with open(summary_path, 'w', encoding='utf-8') as f:
+        f.write(f"{'='*80}\n")
+        f.write(f"EVALUATION SUMMARY\n")
+        f.write(f"{'='*80}\n\n")
+        f.write(f"Model: {args.model}\n")
+        f.write(f"Timestamp: {timestamp}\n")
+        f.write(f"Dataset: {args.dataset}\n")
+        f.write(f"Samples: {args.num_samples}\n\n")
+        f.write(f"Overall Metrics:\n")
+        f.write(f"  Accuracy: {output_data['metrics']['accuracy']*100:.2f}%\n")
+        f.write(f"  Correct: {output_data['metrics']['correct']}/{output_data['metrics']['total_samples']}\n\n")
+        if bertscore_results:
+            f.write(f"BERTScore:\n")
+            f.write(f"  Precision: {bertscore_results['precision']:.3f}\n")
+            f.write(f"  Recall: {bertscore_results['recall']:.3f}\n")
+            f.write(f"  F1: {bertscore_results['f1']:.3f}\n\n")
+        f.write(f"Per-Class Accuracy:\n")
+        for label, stats in output_data['per_class'].items():
+            f.write(f"  {label}: {stats['accuracy']*100:.2f}%\n")
+    
+    print(f"\n{'='*80}")
+    print(f"✅ Results saved to:")
+    print(f"  📄 JSON: {json_path}")
+    print(f"  📝 Summary: {summary_path}")
+    print(f"  📊 Confusion Matrix: {cm_path}")
+    print(f"{'='*80}\n")
 
 
 if __name__ == "__main__":
