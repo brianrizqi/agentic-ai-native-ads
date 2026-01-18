@@ -70,9 +70,37 @@ def load_and_format_dataset(dataset_path: str, tokenizer, max_length: int = 2048
         except:
             expected_output = sample['output']
         
-        # Use training prompt template from prompts module
-        from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
-        text = TRAINING_PROMPT_TEMPLATE.format(content=sample['input']) + expected_output
+        # Extract title
+        title = sample.get('title', '')
+        if not title:
+            # Fallback: extract from input
+            import re
+            sentences = re.split(r'[.!?]\s+', sample['input'])
+            title = sentences[0][:100] if sentences else sample['input'][:100]
+        
+        # Use standalone prompt (avoid import issues)
+        prompt = f"""Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
+Konten: {sample['input'][:800]}
+
+Output (JSON):
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
+
+Klasifikasi:
+"""
+        text = prompt + expected_output
         formatted_texts.append(text)
     
     # Tokenize the data
@@ -107,7 +135,7 @@ def main():
                        help='Output directory')
     parser.add_argument('--max-steps', type=int, default=1500,
                        help='Maximum training steps')
-    parser.add_argument('--max-seq-length', type=int, default=1024,
+    parser.add_argument('--max-seq-length', type=int, default=2048,
                        help='Maximum sequence length')
     
     args = parser.parse_args()
