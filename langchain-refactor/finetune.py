@@ -39,8 +39,8 @@ Berita Murni:
 Judul: {title}
 Konten: {content}
 
-Output (JSON) - GUNAKAN BAHASA INDONESIA untuk reasoning:
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat dalam Bahasa Indonesia (max 150 karakter)"}}
+Output (JSON):
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
 
 Klasifikasi:
 """

@@ -1,149 +1,296 @@
-# LangChain Refactor - Quick Start Guide
+# Native Ads Detection - LangChain Refactor
 
-## Installation
+Sistem deteksi native ads menggunakan LangChain dengan multiple agents dan fine-tuned local models.
 
-```bash
-cd langchain-refactor
-pip install -r requirements.txt
-```
+---
 
-## Setup Vector Store (for RAG)
+## 🎯 Overview
 
-```bash
-# Create vector store from training dataset
-python setup_vectorstore.py \
-  --dataset ../data/llm_dataset_instruction.json \
-  --output-dir data/vectorstore
-```
+Project ini mengklasifikasikan artikel berita sebagai **native ads** atau **berita murni** menggunakan:
+- **Multi-agent orchestration** (Scraping, Preprocessing, Retrieval, Classification, Reasoning)
+- **Fine-tuned local LLMs** (Qwen, Llama, Gemma)
+- **RAG pipeline** untuk context-aware classification
 
-## Usage
+**Hasil Terbaik:** 97% accuracy dengan Qwen 2.5 14B fine-tuned model
 
-### 1. Single URL Classification
+---
 
-```bash
-python main.py \
-  --url "https://example.com/article" \
-  --model gpt-3.5-turbo \
-  --api-key YOUR_OPENAI_KEY
-```
-
-### 2. Batch Processing
-
-```bash
-# Create urls.txt with one URL per line
-python main.py \
-  --urls-file urls.txt \
-  --output results.json \
-  --api-key YOUR_OPENAI_KEY
-```
-
-### 3. Using HuggingFace Models
-
-```bash
-python main.py \
-  --url "https://example.com" \
-  --provider huggingface \
-  --model mistralai/Mistral-7B-Instruct-v0.2 \
-  --api-key YOUR_HF_TOKEN
-```
-
-### 4. Using OpenRouter (Recommended for Cost-Effective GPT-4)
-
-```bash
-# Using OpenRouter with GPT-4o-mini
-python main.py \
-  --url "https://example.com/article" \
-  --provider openrouter \
-  --model openai/gpt-4o-mini \
-  --api-key YOUR_OPENROUTER_KEY
-
-# Batch processing with OpenRouter
-python main.py \
-  --urls-file urls.txt \
-  --provider openrouter \
-  --model openai/gpt-4o-mini \
-  --output results.json \
-  --api-key YOUR_OPENROUTER_KEY
-```
-
-**Get OpenRouter API Key:** https://openrouter.ai/keys
-
-### 5. Programmatic Usage
-
-```python
-from chains.full_pipeline_chain import FullPipelineChain
-
-# Initialize pipeline
-pipeline = FullPipelineChain(
-    model_name="gpt-3.5-turbo",
-    provider="openai",
-    api_key="your-key"
-)
-
-# Or use OpenRouter
-pipeline_openrouter = FullPipelineChain(
-    model_name="openai/gpt-4o-mini",
-    provider="openrouter",
-    api_key="your-openrouter-key"
-)
-
-# Classify URL
-result = pipeline.run("https://example.com/article")
-
-print(f"Label: {result['classification']['label']}")
-print(f"Confidence: {result['classification']['confidence']:.2f}")
-```
-
-## Configuration
-
-Edit `config/model_config.py` to customize:
-- LLM model and provider
-- Embedding model
-- Vector store settings
-- RAG parameters
-
-### 5. Automated Dataset Collection
-
-You can now automatically collect news articles, classify them, and save them as a dataset:
-
-```bash
-python main.py --collect 50 --provider openrouter --model openai/gpt-4o-mini
-```
-
-This will:
-1. Crawl latest news from Indonesian portals.
-2. Clean, summarize, and classify each article.
-3. Save the results to `data/news_dataset.csv` and `data/news_dataset_llm_ready.json`.
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 langchain-refactor/
-├── agents/          # LangChain agents
-├── chains/          # Workflow chains
-├── tools/           # Individual tools
-├── prompts/         # Prompt templates
-├── vector_stores/   # FAISS vector store
-├── config/          # Configuration
-├── utils/           # Utilities
-├── main.py          # CLI entry point
-└── examples.py      # Usage examples
+├── agents/                      # Agent implementations
+│   ├── classification_agent.py  # Main classification logic
+│   ├── orchestrator_agent.py    # Multi-agent coordinator
+│   ├── scraping_agent.py        # Web scraping
+│   ├── preprocessing_agent.py   # Text preprocessing
+│   ├── retrieval_agent.py       # RAG retrieval
+│   └── reasoning_agent.py       # Explanation generation
+├── prompts/                     # Prompt templates
+│   └── classification_prompts.py
+├── tools/                       # Utility scripts
+│   ├── prepare_finetuning_dataset.py
+│   └── clean_dataset.py
+├── eval_results/                # Evaluation outputs
+├── finetune.py                  # Main fine-tuning script
+├── evaluate_model.py            # Model evaluation
+├── chatbot.py                   # Interactive CLI
+├── main.py                      # Single URL classification
+└── compare_models.py            # Multi-model comparison
 ```
 
-## Features
+---
 
-✅ Modular architecture with LangChain
-✅ Multiple LLM providers (OpenAI, OpenRouter, HuggingFace)
-✅ RAG with FAISS vector store
-✅ Few-shot learning prompts
-✅ Batch processing
-✅ CLI and programmatic interfaces
-✅ Comprehensive logging
+## 🚀 Quick Start
 
-## Next Steps
+### 1. Installation
 
-1. Setup vector store: `python setup_vectorstore.py`
-2. Test with example: `python examples.py`
-3. Run on your URLs: `python main.py --url YOUR_URL`
+```bash
+# Clone repository
+cd langchain-refactor
 
-See `examples.py` for more usage patterns!
+# Install dependencies
+pip install -r requirements.txt
+
+# For fine-tuning (GPU required)
+pip install -r requirements-finetuning.txt
+
+# For evaluation
+pip install -r requirements-evaluation.txt
+```
+
+### 2. Basic Usage
+
+**Classify a single URL:**
+```bash
+python3 main.py --url "https://example.com/article"
+```
+
+**Interactive chatbot:**
+```bash
+python3 chatbot.py
+```
+
+**With local fine-tuned model:**
+```bash
+python3 chatbot.py \
+  --provider local \
+  --model ../models/qwen-native-ads-v2_merged_16bit
+```
+
+---
+
+## 🤖 Fine-Tuning
+
+### Prerequisites
+- GPU with 24GB+ VRAM (A100 recommended)
+- CUDA 11.8+ or 12.1+
+- 50GB+ free disk space
+
+### Step 1: Preprocess Dataset
+
+```bash
+python3 tools/prepare_finetuning_dataset.py \
+  --input ../data/llm_dataset_detailed.json \
+  --output ../data/llm_dataset_finetuning_optimized.json \
+  --max-reasoning 150
+```
+
+### Step 2: Clean Dataset (Optional but Recommended)
+
+```bash
+python3 tools/clean_dataset.py \
+  --input ../data/llm_dataset_finetuning_optimized.json \
+  --output ../data/llm_dataset_clean.json
+```
+
+### Step 3: Fine-Tune
+
+**Qwen 2.5 14B (Recommended):**
+```bash
+python3 finetune.py \
+  --model qwen \
+  --dataset ../data/llm_dataset_clean.json \
+  --output ../models/qwen-native-ads-v4 \
+  --max-steps 1500
+```
+
+**Llama 3.1 8B (Faster):**
+```bash
+python3 finetune.py \
+  --model llama \
+  --dataset ../data/llm_dataset_clean.json \
+  --output ../models/llama-native-ads-v4 \
+  --max-steps 1500
+```
+
+**Gemma 2 9B:**
+```bash
+python3 finetune.py \
+  --model gemma \
+  --dataset ../data/llm_dataset_clean.json \
+  --output ../models/gemma-native-ads-v4 \
+  --max-steps 1500
+```
+
+**Training time:** ~4-6 hours on A100 (1500 steps)
+
+---
+
+## 📊 Evaluation
+
+### Basic Evaluation
+
+```bash
+python3 evaluate_model.py \
+  --model ../models/qwen-native-ads-v4_merged_16bit \
+  --num-samples 200
+```
+
+**Output:**
+```
+eval_results/
+├── eval_qwen_native_ads_v4_20260118_120000.json
+├── eval_qwen_native_ads_v4_20260118_120000_summary.txt
+└── eval_qwen_native_ads_v4_20260118_120000_confusion_matrix.png
+```
+
+### Compare Multiple Models
+
+```bash
+python3 compare_models.py \
+  --dataset ../data/llm_dataset_clean.json \
+  --num-samples 200
+```
+
+---
+
+## 📈 Performance
+
+| Model | Accuracy | F1-Score | JSON Parse | Training Time |
+|-------|----------|----------|------------|---------------|
+| **Qwen 2.5 14B V2** | **97.0%** | **~0.97** | **92.5%** | ~5 hours |
+| Llama 3.1 8B V3 | 66.0% | ~0.66 | ~85% | ~3 hours |
+| Gemma 2 9B | TBD | TBD | TBD | ~3 hours |
+
+**Best Model:** Qwen 2.5 14B V2 - Use for production!
+
+---
+
+## 🛠️ Available Models
+
+### Supported Base Models
+
+1. **Qwen 2.5 14B** (Recommended)
+   - Best multilingual performance
+   - Excellent Bahasa Indonesia support
+   - 97% accuracy achieved
+
+2. **Llama 3.1 8B**
+   - Faster training/inference
+   - Good for development/testing
+   - 66% accuracy (needs improvement)
+
+3. **Gemma 2 9B**
+   - Google's efficient model
+   - Alternative option
+   - Not yet fully tested
+
+### Model Configurations
+
+All models use optimized LoRA settings:
+- `max_seq_length`: 1024
+- `lora_r`: 16
+- `lora_alpha`: 32
+- `learning_rate`: 2e-5
+- Batch size: 1-2 with gradient accumulation
+
+---
+
+## 📚 Documentation
+
+- **[FINETUNING.md](FINETUNING.md)** - Complete fine-tuning guide
+- **[FINETUNING_QUICKSTART.md](FINETUNING_QUICKSTART.md)** - Quick reference
+- **[EVALUATION_RESULTS.md](EVALUATION_RESULTS.md)** - Evaluation organization
+- **[CHATBOT.md](CHATBOT.md)** - Chatbot usage guide
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+# OpenAI API (optional)
+export OPENAI_API_KEY="your-key"
+
+# OpenRouter API (optional)
+export OPENROUTER_API_KEY="your-key"
+
+# For LLM-as-a-Judge evaluation
+export OPENROUTER_API_KEY="your-key"
+```
+
+### Model Paths
+
+Fine-tuned models are saved in:
+```
+../models/
+├── qwen-native-ads-v2/              # LoRA adapters
+├── qwen-native-ads-v2_merged_16bit/ # Production model (use this!)
+├── llama-native-ads-v3/
+└── llama-native-ads-v3_merged_16bit/
+```
+
+**Always use `_merged_16bit` models for inference!**
+
+---
+
+## 🐛 Troubleshooting
+
+### CUDA Out of Memory
+```bash
+# Use smaller model
+python3 finetune.py --model llama
+
+# Or reduce batch size (edit finetune.py)
+```
+
+### Low Accuracy (<80%)
+- Ensure dataset is clean (use `clean_dataset.py`)
+- Increase training steps to 2000-2500
+- Check training curves for overfitting
+
+### JSON Parsing Errors
+- Increase `max_new_tokens` in `classification_agent.py`
+- Ensure reasoning is truncated in training data
+- Use V2 prompt format (simpler is better)
+
+---
+
+## 🎓 Key Learnings
+
+1. **Prompt Consistency** - Training and inference must use identical prompts
+2. **Output Length** - Truncate reasoning to 100-150 chars for best results
+3. **Clean Data** - Remove error samples before training
+4. **Simple Prompts** - Extra instructions can confuse the model
+
+---
+
+## 📞 Support
+
+For issues or questions:
+1. Check [FINETUNING.md](FINETUNING.md) troubleshooting section
+2. Review evaluation results in `eval_results/`
+3. Compare with baseline performance (97% accuracy target)
+
+---
+
+## 📝 License
+
+[Your License Here]
+
+---
+
+**Last Updated:** 2026-01-18  
+**Version:** 4.0 (with clean dataset and V2 prompt)
