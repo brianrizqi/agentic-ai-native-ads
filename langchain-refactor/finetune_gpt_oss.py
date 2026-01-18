@@ -101,13 +101,13 @@ def load_and_format_dataset(dataset_path: str, tokenizer, max_length: int = 2048
 
 def main():
     parser = argparse.ArgumentParser(description='Fine-tune GPT-OSS for Native Ads Detection')
-    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_mixed_json.json',
+    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_finetuning_optimized.json',
                        help='Path to training dataset')
     parser.add_argument('--output', type=str, default='../models/gpt-oss-native-ads',
                        help='Output directory')
     parser.add_argument('--max-steps', type=int, default=1500,
                        help='Maximum training steps')
-    parser.add_argument('--max-seq-length', type=int, default=2048,
+    parser.add_argument('--max-seq-length', type=int, default=1024,
                        help='Maximum sequence length')
     
     args = parser.parse_args()

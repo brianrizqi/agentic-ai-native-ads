@@ -133,6 +133,14 @@ python3 finetune.py \
   --max-steps 1500
 ```
 
+**GPT OSS:**
+```bash
+python3 finetune_gpt_oss.py \
+  --dataset ../data/llm_dataset_clean.json \
+  --output ../models/gpt-oss-native-ads-v4 \
+  --max-steps 1500
+```
+
 **Training time:** ~4-6 hours on A100 (1500 steps)
 
 ---
