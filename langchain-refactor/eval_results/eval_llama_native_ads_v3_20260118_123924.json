@@ -1,0 +1,1828 @@
+{
+  "model": "../models/llama-native-ads-v3_merged_16bit",
+  "model_name": "llama_native_ads_v3",
+  "timestamp": "20260118_123924",
+  "dataset": "../data/llm_dataset_finetuning_optimized.json",
+  "num_samples": 200,
+  "metrics": {
+    "accuracy": 0.66,
+    "total_samples": 200,
+    "correct": 132
+  },
+  "bertscore": {
+    "precision": 0.7000225186347961,
+    "recall": 0.6756366491317749,
+    "f1": 0.6871210336685181
+  },
+  "llm_judge": {},
+  "per_class": {
+    "berita murni": {
+      "accuracy": 0.9519230769230769
+    },
+    "native ads": {
+      "accuracy": 0.34375
+    }
+  },
+  "predictions": [
+    {
+      "input": "JAKARTA, KOMPAS.com - Refuse Derived Fuel (RDF) merupakan salah satu teknologi pengelolaan sampah yang cocok dan akan dibangun di Tempat Pembuangan Akhir (TPA) Burangkeng, Kabupaten Bekasi. Teknologi ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Artikel ini memiliki ciri-ciri berita murni karena memiliki nada netral, menyampaikan informasi faktual, dan objektiv...",
+      "correct": true
+    },
+    {
+      "input": "Programbanking rewardsUOB Indonesia, Kejutan Simpanan 2.0, baru saja berakhir dengan diserahkannya hadiah utama sebuah mobil listrik Tesla model 3. Hadiah diberikan kepada Bapak YC, nasabah dengan ken",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Gubernur Jawa Tengah Ganjar Pranowo menyatakan siap untuk menjadi calon presiden (capres) pada Pemilihan Presiden (Pilpres) 2024. Ganjar mengaku siap demi kepentingan bangsa dan negara saat ini. Hal i",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki tone yang netral. Meskipun ada pernyataan positif dari Ganjar Pranowo...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Tim bulu tangkis putri Indonesia akan kembali berlaga di ajang Piala Uber 2022 pada Kamis, 12 Mei 2022. Mereka akan bertanding menghadapi Cina di babak perempat final di Impact Are",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": ", DataCovid19 di Jakarta hari ini menunjukkan ada 100 orang positif Covid19. Kepala Bidang Pencegahan dan Pengendalian Penyakit Dinas Kesehatan DKI Jakarta Dwi Oktavia menyatakan hasil itu didapati se",
+      "ground_truth": "berita murni",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun menyampaikan data positif mengenai tingkat...",
+      "pred_reasoning": "berita murni\n\nAlasan:\nArtikel ini merupakan berita murni tentang peningkatan kasus COVID-19 di Jakarta. Artikel ini memiliki ciri-ciri berita murni, yaitu:\n\n* Mengandung informasi faktual tentang peni",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Halaman belakang atau taman yang rimbun menjadi salah satu tempat menyenangkan untuk bersantai, duduk, dan berkumpul sambil menikmati pemandangan. Namun, tanpa pencahayaan luar r",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.7,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif dan informatif. Contohnya, frasa \"taman yang rimbun menjadi...",
+      "pred_reasoning": "berita murni Alasan: Error: No error message provided. Penjelasan: Artikel ini dapat diklasifikasikan sebagai “berita murni” karena memiliki ciri-ciri berikut: * Berisi informasi tentang topik tertent",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Rumah Produksi Satria Dewa Studio berkolaborasi dengan Warner Music Indonesia telah mempercayakan grupband Kotakuntuk mengisisoundtrackfilmSatria Dewa Gatotkaca. Dari beberapa lagu yang ada, lag",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan kebanggaan vokalis Kotak, Tantri, yang...",
+      "pred_reasoning": "Anonim - Artikel ini memiliki ciri-ciri berita murni karena memberikan informasi tentang kolaborasi antara dua entitas tanpa nada yang negatif dan menggunakan bahasa yang netral.",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Gegar otak seperti yang dialami pebalap MotoGP Marc Marquez adalah jenis cedera otak traumatis yang paling umum dan paling ringan. Melansir Webmd, kata tersebut berasal dari bahasa",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki ciri-ciri berita murni, yaitu objektivitas, penyampaian informasi yang komprehensif, serta tidak ada elemen promosi.",
+      "correct": true
+    },
+    {
+      "input": "Beberapa orang sudah membuktikan bahwa diet intermittent fasting ampuh menurunkan berat badan. Tapi saat menjalani diet ini, apakah masih boleh minum kopi? Diet intermittent fasting punya pola khusus ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti manfaat diet intermittent fasting dan konsumsi kopi.",
+      "pred_reasoning": "Teks ini memiliki beberapa ciri native ads, tetapi juga ada elemen-elemen berita murni.",
+      "correct": true
+    },
+    {
+      "input": "Presiden Joko Widodo (Jokowi) akan mengunjungi Uni Emirat Arab (UEA) untuk membahas investasi dan kerja sama dalam bidang ekonomi.Kunjungan ke UEA akan dilakukan Jokowi setelah menghadiri KTT G7 di Je",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim tidak ditemukan, bahasa netral, dan ada kritik tersembunyi",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA - Menpora Zainudin Amali menjadi narasumber di acara Webinar Keolahragaan dengan tema PON dan Prestasi Olahraga di Era Pandemi Covid- 19, secara virtual yang dilakukan di Situation Room Lantai",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terutama ketika Menpora Zainudin Amali berbicara tentang upaya...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "VIVA – Perusahaan teknologi Olike meluncurkan dua perangkat audio true wireless stereo (TWS) seri Hero, yaitu T7 Pro dan T9, yang sudah menggunakan teknologi Bluetooth terbaru yaitu BLE (Bluetooth Low",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menonjolkan keunggulan produk dengan kalimat seperti \"produk...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Usai memberikan bantuan bagi korban bencana tanahlongsordi Kabupaten Solok Selatan, Menteri Sosial Tri Rismaharini dijadwalkan menuju Kabupaten Tapanuli Selatan, Sumatera Utara, dengan menumpang",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti kepedulian pemerintah terhadap korban bencana.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Selain meluncurkan dua ponsel baru, Realme juga meluncurkan dua perangkat AIoT. Ada earbuds wireless Realme Buds Q2s dan perangkat TV pintar Realme Smart TV Stick. Realme Buds Q2s merupakan true-wirel",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menonjolkan keunggulan produk yang diluncurkan.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Sebagai upaya pemenuhan kebutuhanvaksinasinasional, Indonesia kembali kedatanganvaksinpada Kamis (2/12/2021) yakni dalam tahap ke-144 dan 145. Vaksin tersebut berasal dari dua merk yang berbeda,",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Kegiatan yang diselenggarakan secara virtual tersebut turut dihadiri artis sekaligus musisi Tanah Air, Iqbal Ramadhan yang merupakan perwakilan dari Talenta Digital Indonesia.Kehadiran Iqbal mampu men",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Iqbal Ramadhan yang menginspirasi...",
+      "pred_reasoning": "Anonim, netral, dan informatif",
+      "correct": false
+    },
+    {
+      "input": "Meski tergolong laptopgaming mid-range,Acer Nitro 5 terbaru sudah dibekali prosesor kelas atas selayaknya laptopgaming flagshippada seri Acer Predator.Hal tersebut membuat Acer Nitro 5 AN515-57-98VC d",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA - Perjalanan dengan keluarga tentu sangat menyenangkan. Apalagi selama ini kita disibukkan dengan urusan pekerjaan ataupun kantor, yang membuat intensitas kebersamaan kita dengan keluarga berk",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menekankan pengalaman menyenangkan saat berkendara dengan...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Chief Executive Officer Zenius Education Rohan Monga mengungkapkan, kedua layanan itu hadir untuk mendukung perkembangan berlangsungnya pembelajaran jarak jauh (PJJ).Menurutnya, Zenius menemukan bahwa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- Penelitian yang dilakukan University of Bath menyimpulkan bahwa banyak orang justru tidak kebelet ingin punya jumlah harta yang sama seperti CEO Tesla Elon Musk . Lewat penelitian bertajuk \"Bukti da",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral, menyajikan hasil penelitian tanpa menunjukkan sikap...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "“Sejalan dengan diumumkannya vaksinasi ketiga atauboosteroleh Presiden Republik Indonesia mulai 12 Januari 2022, (maka) upaya mendorong masyarakat mendapatkan akses vaksin ketiga perlu dipermudah,\" uj",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan seperti \"kami berharap dapat...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Rider Aprilia Aleix Espargaro kembali naik podium setelah finis ketiga di MotoGP Spanyol 2022. Espargaro diuntungkan dengan kesalahan Jack Miller dan Marc Marquez. Espargaro start dari grid ketiga pad",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Aleix Espargaro yang menyatakan, \"Aku...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Ganda putra Indonesia, Mohammad Ahsan / Kevin Sanjaya Sukamuljo (Ahsan / Kevin) harus menelan kekalahan di tangan wakil Korea, Kang Minhyuk / Seo Seungjae, pada penyisihan grup A P",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, tidak menunjukkan emosi positif atau negatif yang kuat.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Sukses mendorong pemulihan ekonomi ibu kota Jawa Tengah, Wali Kota Semarang Hendrar Prihadi kini optimistis mencanangkan tahun 2023 sebagai tahun pertumbuhan ekonomi bagi wilayahnya. Hal ini ia tegask",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "native ads\n\nAlasan:\n Artikel ini memiliki beberapa ciri dari native ads, seperti:\n\n* Tonal negatif/netral: Artikel ini memiliki nada yang positif, menyoroti keberhasilan Wali Kota Semarang dalam menin",
+      "correct": true
+    },
+    {
+      "input": "Gelaran keduaeventkolaborasi terbesar di Indonesia tersebut akan menghadirkan ratusanbrandlokal, 20 kolaborator, dan 150 produk kolaborasi.Selain itu, terdapat pula sejumlah produk kolaborasi eksklusi",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Indonesia sendiri telah menetapkan target NZE tercapai pada 2060 atau dapat lebih cepat dengan dukungan dari negara lain. Target tersebut akan diwujudkan melalui tiga pilar utama yang ditetapkan secar",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menekankan pencapaian dan kolaborasi internasional yang...",
+      "pred_reasoning": "Artikel ini memiliki banyak ciri-ciri native ads, tetapi juga masih memiliki elemen-elemen berita murni.",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Rafael Nadal menjuarai French Open 2022 dengan mengalahkan Casper Ruud dari Norwegia dengan skor 6-3, 6-3, 6-0. Petenis Spanyol itu merebut gelar dengan kondisi kaki yang belum pul",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang positif, terutama dalam menggambarkan keberhasilan Rafael Nadal...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA - Epidemiologis dari NTT, Ewaldus Wera mengapresiasi upaya Kementerian Pertanian (Kementan) dalam menangani penularan dan pencegahan penyakit mulut dan kuku (PMK). Salah satunya dengan mengatu",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari apresiasi Ewaldus Wera terhadap upaya...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "KOMPAS.com - Dalam upaya menjaga persatuan dan kesatuan bangsa diperlukan suatu integrasi nasional.  Secara umum, integrasi nasional mencerminkan proses persatuan orang-orang dari berbagai wilayah yan",
+      "ground_truth": "berita murni",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": " \n\nLabel: berita murni\nConfidence: 0.95\nReasoning: Artikel ini merupakan contoh berita murni karena:\n\n* Mengandung berbagai sudut pandang tentang konsep integrasi nasional.\n* Menyampaikan definisi int",
+      "correct": false
+    },
+    {
+      "input": "Tampaknya, beberapa orang tak bisa membedakan hal-hal yang harus jadi privasi dan yang mana yang bisa dibagikan ke publik. Seperti tenaga kesehatan atau nakes yang satu ini. Baru-baru ini beredar di s",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada negatif dan kritis, terlihat dari reaksi netizen yang marah terhadap...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Halaman komik langka yang diterbitkan Marvel maupun DC Comics sampai sekarang tetap diburu kolektor. Tapi bagaimana kalau, salinan yang dijual bukan berbentuk satu halaman namun hanya potongan kecil s",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.65,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti nilai dan ketertarikan kolektor terhadap komik...",
+      "pred_reasoning": "<span class=\"label label-primary\">berita murni</span></p>\n    <p>Alasan: Error: No JSON found</p>\n</div>",
+      "correct": true
+    },
+    {
+      "input": "CIAMIS - Telah terjadi kecelakaan lalu lintas antara dua kendaraan roda dua datang dari arah utara (Padaherang) menuju arah selatan (Kalipucang) sesampainya di tempat kejadian (Pangandaran) menabrak p",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim",
+      "correct": false
+    },
+    {
+      "input": "Setidaknya lima orang tewas imbas gempa bumi dengan magnitudo 4,3 di Afghanistan timur, Paktika, pada Jumat (24/6). Pusat gempa hari ini berdekatan dengan lokasi gempa dahsyat magnitudo 6,1 yang mengg",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, menyampaikan fakta tentang gempa bumi dan dampaknya tanpa...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Amerika Serikat beserta sekutu dekatnya, Korea Selatan dan Jepang, kembali menjatuhkan sanksi untuk Korea Utara usai Pyongyang meluncurkan rudal, termasuk rudal antar benua (ICBM).Kementerian Keuangan",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang lebih negatif dan kritis terhadap Korea Utara.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Link live streaming Serbia vs Swiss di Piala Dunia 2022 bisa diketahui dari artikel berikut ini.Serbia akan melawan Swiss di pertandingan terakhir Grup G di Stadion 974, Qatar, Sabtu (3/12) dini hari ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Tidak ada ungkapan yang menunjukkan emosi negatif atau kritik.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– KementerianPertanian(Kementan) melalui Direktorat Jenderal Perkebunan mendorong pembentukankorporasipetanikopiguna meningkatkan nilai tambah dan daya saing pengembangan kawasan perkebunan kopi n",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Kerja sama tersebut ditandai dengan penandatanganan perjanjian kerja sama (PKS) yang dilakukan oleh Direktur Utama BPJAMSOSTEK Anggoro Eko Cahyo dan Ketua Umum Kadin Indonesia Arsjad Rasjid dalam Rapa",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- Era digital seperti sekarang ini ada banyak peluang untuk dapat menghasilkan uang. Salah satunya lewat aplikasi video pendek asal Negeri Tirai Bambu, TikTok. TikTok sendiri merupakan salah satu apli",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari kalimat-kalimat yang mendorong pembaca untuk...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- Harga iPhone terbaru penting diketahui mereka yang ingin bersiap untuk mengganti ponsel ataupun upgrade ke iPhone 13. Apalagi, iPhone 13 warna hijau akan tersedia di Indonesia mulai 8 Maret 2022 men",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang positif dan informatif. Contohnya, frasa \"iPhone 13 warna hijau...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- Gempa hari ini bisa Anda ketahui langsung lewat notifikasi di aplikasi BMKG . Alhasil, Anda tidak akan ketinggalan informasi jika terjadi gempa. BMKG memang membagikan informasi gempa dengan cepat. ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari kalimat seperti \"Aplikasi ini secara default...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- Di luar gonjang ganjing kenaikan harga dan kelangkaan minyak goreng, pengusaha minyak sawit tahun-tahun ini tersenyum lebar. Bayangkan, gara-gara kenaikan harga minyak sawit (CPO) dunia dari USD715 ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki ciri-ciri berita murni seperti objektivitas, fakta, dan penyampaian informasi tanpa penilaian.",
+      "correct": true
+    },
+    {
+      "input": "VIVA Bola – Juventus dijadwalkan menghadapi Inter Milan malam nanti, Minggu 6 November 2022. Laga sarat gengsi bagi kedua.Bagi Juventus yang menjadi tuan rumah, kemenangan bakal menjadi arti penting. ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.85,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun ada penekanan pada pentingnya kemenangan bagi...",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Ketua KPK Firli Bahuri angkat bicara soal pembuatan mars dan himne KPK oleh sang istri, Ardina Safitri, yang sempat menjadi polemik. Firli mengatakan hal itu merupakan hak setiap warga negara yang ing",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonimous",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Tim bulu tangkis Indonesia bisa memperkecil ketertinggalan dari Korea Selatan dalam laga lanjutan Grup A Piala Thomas 2022 di Impact Arena, Bangkok, Thailand pada Rabu, 11 Mei 2022",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, meskipun ada beberapa momen positif yang diangkat.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Sebagai bentuk kepedulian kepada golongan lanjut usia (lansia) sekaligus mempercepat tercapainya herd immunity, Dinas Kesehatan Kota Banda Aceh beserta UNICEF, KPCPEN, dan Kemkominfo dengan duku",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menekankan kepedulian terhadap lansia dan pentingnya vaksinasi.",
+      "pred_reasoning": "Anonim - Artikel ini memiliki struktur yang menunjukkan ciri-ciri berita murni, seperti adanya fakta-fakta tentang acara gebyar vaksinasi lansia, pernyataan dari pejabat pemerintahan, serta informasi ",
+      "correct": false
+    },
+    {
+      "input": "Sejumlah kota di China melonggarkan pembatasan Covid-19 pada Jumat (2/12) usai protes terhadap pemerintahan Xi Jinping mencuat di beberapa wilayah di Negara Tirai Bambu itu.Beberapa kota itu di antara",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Perusahaan mobil Toyota menarik mobil listrik pertama buatan mereka, yakni SUV listrik bZ4X, yang telah laku di pasaran sekitar 260 unit di Amerika Serikat.Semua mobil yang telah digunakan pelanggan i",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Terlebih, bagi pebisnis di bidang retail. Penggunaan teknologi terkini sangat dibutuhkan untuk menopang operasional usaha.Adapun salah satu teknologi yang bisa dimanfaatkan para pelaku usaha bidang re",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti manfaat aplikasi kasir online untuk pebisnis retail.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": ", Calon pemain naturalisasi pesepak bola tim nasional atau timnas Indonesia Sandy Walsh mengalami cedera patah tulang selangka atau klavikula. Mengutip GVA, pesepak bola yang saat ini bermain untuk po",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Meskipun membahas cedera yang dialami oleh Sandy Walsh, tidak...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Hepatitis atau peradangan hati yang tersebab infeksi virus atau gaya hidup tak sehat. Belakangan di Indonesia ramai dibicarakan penemuan kasus hepatitis akut.Juru Bicara Kementeria",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Meskipun membahas kasus hepatitis akut yang serius, penyampaian...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Google menghadirkan fitur baru untuk aplikasi Android-nya yang memungkinkan pengguna dapat menghapus secara otomatis history atau riwayat pencarian mereka pada 15 menit terakhir. \"Kami saat ini melunc",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang positif dan informatif. Contohnya, pernyataan juru bicara Google,...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Kementerian Kesehatan (Kemenkes) mengumumkan vaksinasi inactivated polio vaccine (IPV) pada bayi menjadi dua kali mulai 2023. Mulanya, pemberian suntikan IPV diberikan pada bayi hanya di usia 4 bulan.",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif dan informatif. Contohnya, pernyataan Siti Nadia Tarmizi yang...",
+      "pred_reasoning": "Anonimous",
+      "correct": true
+    },
+    {
+      "input": "KOMPAS.com - Kesuksesan Non Fungible Token (NFT) Ghozali membuat banyak orang beramai-ramai menawarkan aset digital berupa foto. Tren ini muncul setelah akun OpenSea Ghozali Everyday sukses menjual fo",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang lebih kritis terhadap tren NFT, terutama dalam konteks keamanan...",
+      "pred_reasoning": "Anonim menggunakan bahasa netral dan memberikan informasi faktual tanpa elemen persuasif.",
+      "correct": true
+    },
+    {
+      "input": "- Seleb TikTok Chandrika Chika bakal kembali dipanggil polisi sebagai saksi terkait kasus dugaan pengeroyokan yang menyeret Putra Siregar dan Rico Valentino masuk penjara. Hal ini disampaikan Kasat Re",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Tidak ada kata-kata yang menunjukkan sikap positif atau negatif...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Aplikasi perbankan milik PT Bank Nasional Indonesia Tbk tersebut menduduki posisi teratas dalam kategori “10 Performa Terbaik Mobile Banking 10 Bank Tahun 2020-2021”.Penghargaan tersebut didapat karen",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Selama ini sampah dan air limbah domestik dikenal sebagai hal yang menjijikan karena kotor dan bau. Namun melalui program Sanitasi Berbasis Masyarakat (Sanimas) dan Tempat Pengelolaan SampahReduce Reu",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti manfaat dari program Sanimas dan TPS3R.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Saat ini, Monash Indonesia membuka kesempatan untuk bergabung sebagai tim akademisi.Dengan bergabung sebagai tim akademisi Monash Indonesia, Anda berkesempatan berkontribusi untuk menyejahterakan masy",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menekankan kesempatan untuk berkontribusi dan berinovasi dalam...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Sukses menjadi juara SEA Games 2021 di nomor pertandingan PUBG Mobile Team, atlet timnas kasih tips kuasai senjata di game battle royale besutan Tencent ini. Salah satunya yaitu UMP45 atau biasa disin",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan seperti \"senjata ini tidak sulit...",
+      "pred_reasoning": "Klasifikasi hasil dilakukan menggunakan model machine learning. Hasil klasifikasi dapat berbeda-beda tergantung pada data latih dan algoritma yang digunakan. Dalam kasus ini, output JSON tidak tersedi",
+      "correct": true
+    },
+    {
+      "input": "Menteri Pendidikan dan Kebudayaan, Nadiem Anwar Makarim mengumumkan kebijakan pembelajaran tatap muka akan mulai berlaku pada Januari 2021. Hal tersebut diatur dalam Surat Keputusan Bersama (SKB) tent",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki nada netral, objektivitas tinggi, dan tidak menunjukkan tanda-tanda promosi.",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Total kasus konfirmasi baru yang dilaporkan dari Pulau Jawa dan Bali sebanyak 24.801, menurun dari 25.271 kasus di hari sebelumnya. Jumlah testing yang dilaporkan dari Pulau Jawa-Bali pada 6 Jul",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang lebih netral, meskipun menyampaikan informasi yang cukup serius...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "- Direktur Center of Economic and Law Studie (Celios), Bhima Yudhistira merespons dan menentang soal wacana kenaikan harga gas LPG 3 kilogram (Kg). Sebelumnya, sinyal kenaikan harga tabung gas LPG 3 K",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang negatif dan kritis terhadap wacana kenaikan harga LPG 3 kg.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Bahkan, berkat kredit modal kerja tersebut, Ernawati ikut memberdayakan sejumlah perempuan di sekitar lingkungannya. Dengan demikian, mereka bisa mandiri serta dapat menambah pemasukan untuk keluarga.",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti keberhasilan Ernawati dan dampak positif dari kredit...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Pada kunjungan tersebut, Erick ditemani oleh Regional Chief Executive Officer (CEO) PT Bank Rakyat Indonesia (Persero) Tbk atau BRI Bandar Lampung Hari Purnomo dan BRILink Network Division Head Kicky ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Badan Pengawas Obat dan Makanan (BPOM) memberikan Persetujuan Pelaksanaan Uji Klinik (PPUK)Ivermectinuntuk penggunaan sebagai obat COVID-19. Ini sesuai rekomendasi Organisasi Kesehatan Dunia (WH",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Kepala BPOM, Penny Lukito, yang...",
+      "pred_reasoning": "Anonim - Artikel ini memiliki ciri-ciri berita murni, yaitu: 1. Netral: Artikel ini tidak memiliki nada negatif.",
+      "correct": false
+    },
+    {
+      "input": "KOMPAS.com - Menteri Pendayagunaan Aparatur Negara dan Reformasi Birokrasi (Menpan-RB) Tjahjo Kumolo meninggal dunia pada Jumat (1/7/2022) pukul 11.00 WIB. Informasi soal wafatnya mantan Sekretaris Je",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, menyampaikan berita tentang kematian Tjahjo Kumolo tanpa emosi...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Penyakit tersebut terjadi akibat kerusakan sel pada beberapa daerah di otak, khususnya substansia-nigra yang bertanggung jawab atas produksi dopamin.Untuk diketahui, dopamin adalah senyawa kimia di da",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks asli dari artikel berbahasa Indonesia.",
+      "correct": false
+    },
+    {
+      "input": "Sambil menunggu pintu pelaksanaan umrah bagi Indonesia kembali dibuka, calon jemaah bisa melakukan persiapan dan perencanaan. Tak ada salahnya juga mencari tahu persyaratan apa saja yang dibutuhkan, u",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": ", Ketua Umum Partai Demokrasi Indonesia (PDI) Perjuangan, Megawati Soekarnoputri menghadiri upacara pelantikan Presiden Korea Selatan yang baru, Yoon Sukyeol, pada Selasa pagi, waktu setempat. Dalam a",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif dan netral. Contohnya, saat menyebutkan kehadiran Megawati...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Segudang prestasi milik legenda sepak bola dunia Ronaldinho diwarnai beberapa momen kelam dalam hidupnya. Berikut lima kontroversi Ronaldinho.Sebagai ikon sepak bola, Ronaldinho otomatis hidup dalam s",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral, meskipun menyentuh beberapa kontroversi dalam hidup...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Kementerian Hukum dan Hak Asasi Manusia (Kemenkumham) meluncurkan IP Market Place dan Logo Baru Indikasi Geografis pada Puncak PeringatanHari Kekayaan IntelektualSedunia Tahun 2022 yang digelar ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti peluncuran program baru yang dianggap bermanfaat...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- Di momen libur Lebaran 2022 , pergerakan kendaraan antar kota masih tetap tinggi. Banyak pemudik yang berkunjung ke sanak saudara atau bersama keluarga besar pergi liburan. Selama perjalanan, masih ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral, memberikan informasi tentang bahaya overloading kendaraan...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Dalam rangka memaparkan aksi hijau workshop lingkungan yang merupakan agenda rutin yang telah dilaksanakan Astra selama 12 Tahun melalui kunjungan ke kampung Desa Sejahtera Astra. Pada tahun ini, Astr",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Setelah dinobatkan sebagai makanan paling enak di dunia, kini rendang akan diperkenalkan di Eropa. Pabrik rendang rencananya dibangun di Bulgaria. Olahan khas Minang ini siap memanjakan lidah warga Er",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Menteri Pariwisata Sandiaga Uno yang...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "SEMARANG - Matahari sudah sepenggalah naiknya. Tapi Sri Gunawan masih saja menyiangi rumput di sawah. Dia tidak ingin rumput-rumput liar tumbuh di sekitaran padi Pariwulung yang dia tanam dengan tekni",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan semangat dan kebanggaan Sri Gunawan...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Kabupaten Garut, Jawa Barat diguncang gempa berkekuatan magnitudo 6,4 pada Sabtu (3/12) pukul 16.49 WIB. Getaran gempa Garut ternyata turut dirasakan oleh warga Cianjur, yang pada 21 November lalu jug",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Meskipun menggambarkan situasi yang menegangkan akibat gempa,...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- WhatsApp menjadi aplikasi perpesanan populer saat ini. Berdasarkan data Statista, aplikasi perpesanan yang bernaung di bawah raksasa teknologi Meta ini memiliki 200 miliar pengguna aktif bulanan. Wh",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti popularitas dan fitur unggulan WhatsApp.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Ayah Vanessa Angel, Doddy Sudrajat kini tengah menghadapi dua persidangan dalam waktu yang bersamaan. Ia harus menjadi tergugat dalam sidang hak perwalian Gala Sky dan sidang cerai dengan Puput. Melih",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang cenderung positif dan netral.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA Bola – Manchester United bertandang ke markas Aston Villa pada laga lanjutan Premier League di Villa Park, Minggu 6 November 2022.Setan Merah dipimpin oleh Cristiano Ronaldo yang dipercaya menjad",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Meskipun menyampaikan hasil pertandingan yang tidak...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Ekonom beranggapan fenomena cash is the king berpotensi membuat ekonomi Indonesia melemah. Hal itu sejalan dengan pernyataan Bank Indonesia (BI) yang memasukkan fenomena ini sebagai ancaman.Gubernur B",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang cenderung negatif/kriminal, terutama dalam konteks dampak fenomena...",
+      "pred_reasoning": "Teks artikel memiliki ciri-ciri berita murni, yaitu: 1. Netral/Tidak mengkritik - Artikel ini tidak menunjukkan nada negatif terhadap fenomena cash is the king. Sebaliknya, penulis memberikan analisis",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Menteri Pertanian Syahrul Yasin Limpo (SYL) menyampaikan, ketersediaan ternakhewan kurbantahun 2022 dalam kondisi aman meskipun tengah merebaknya Penyakit Mulut dan Kuku (PMK) di beberapa wilaya",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Menteri Pertanian Syahrul Yasin Limpo...",
+      "pred_reasoning": "Anonim - Artikel ini tidak menunjukkan tanda-tanda native ads, seperti nada positif/netral, bahasa persuasif, dan promosi produk/brand.",
+      "correct": false
+    },
+    {
+      "input": "- Biasanya informasi beasiswa yang tersedia itu adalah untuk jenjang pendidikan tinggi. Namun bagi kalian yang berminat melanjutkan pendidikan jenjang SMP dan SMA ke Singapura wajib simak informasi ya",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.65,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti manfaat dan peluang yang ditawarkan oleh beasiswa...",
+      "pred_reasoning": "berita murni\n\nPenjelasan (Bahasa Indonesia):\nError: No JSON found\n\nKlasifikasi (Bahasa Indonesia):\n\nOutput (Bahasa Indonesia",
+      "correct": true
+    },
+    {
+      "input": "Pelatih Timnas Australia, Graham Arnold mewanti-wanti anak asuhnya jelang bentrokan dengan Argentina di Babak 16 Besar Piala Dunia, Minggu (4/12) dini hari WIB.Arnold meminta semua pemain tetap memper",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang positif dan netral. Pelatih Graham Arnold mengungkapkan...",
+      "pred_reasoning": "Teks ini memiliki nada netral dan memberikan informasi faktual tanpa elemen promosi. Meski ada ungkapan pujian untuk Lionel Messi, tujuan utama teks ini adalah untuk memberikan penjelasan tentang stra",
+      "correct": true
+    },
+    {
+      "input": "Seiring dengan kondisi tersebut, minat pelajar di Tanah Air untuk mendapatkan pengalamaninternational exposurejuga semakin tinggi.Pasalnya, pendidikan berkualitas dinilai penting untuk meningkatkan ku",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "native ads\n\nPenjelasan:\nArtikel ini dapat diklasifikasikan sebagai native ads karena memiliki ciri-ciri yang sesuai dengan definisi native ads. Artikel ini memiliki nada positif dan netral, menggunaka",
+      "correct": true
+    },
+    {
+      "input": "Tampil dengan nama New BIONS, platform tersebut dihadirkan untuk memudahkan dan meningkatkan kenyamanan nasabah setia BNIS dalam berinvestasi di pasar modal.UX/UI pada New BIONS dirancang lebih mudah ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti kemudahan dan kenyamanan yang ditawarkan oleh...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Perwakilan keluarga Kartika Damayanti, Edi Prasetyo mengatakan telah mengingatkan Kartika untuk tak melanggar hukum lagi. KD pun disebut berjanji tak akan mengulangi perbuatannya seperti mencemarkan n",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Tidak ada penilaian emosional yang kuat, dan fokusnya adalah...",
+      "pred_reasoning": "Teks ini memiliki nada netral dan memberikan informasi faktual tentang keputusan pengadilan terhadap Kartika Damayanti.",
+      "correct": true
+    },
+    {
+      "input": "KOMPAS.com - Nasi kebuli adalah hidangan nasi kaya rempah dari Timur Tengah. Hidangan ini biasanya memakai beras basmati dan dimasak bersama daging kambing. Nasi kebuli cukup populer di Indonesia. Beb",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menggambarkan nasi kebuli sebagai hidangan yang kaya rempah...",
+      "pred_reasoning": "berita murni\n\nPenyebab:\n\n* Artikel ini merupakan contoh berita murni karena menyampaikan informasi tentang resep masakan tanpa elemen promosi.\n* Artikel ini memiliki nada netral, memberikan penjelasan",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Teaser trailer dan gambar terbaru untuk film Avatar: The Way of Water akhirnya telah dirilis oleh 20th Century Studios setelah penantian selama 13 tahun. Kelanjutan dari film terla",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.65,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari penggunaan frasa seperti \"akhirnya telah...",
+      "pred_reasoning": "berita murni\n\nPenjelasan (Bahasa Indonesia):\n\nOutput JSON yang diperoleh memiliki label \"berita",
+      "correct": true
+    },
+    {
+      "input": "Menteri Dalam Negeri (Mendagri) Tito Karnavian memastikan tak sembarangan membuka moratorium pemekaran daerah. Sebelumnya, Presiden ke-5 RI Megawati Soekarnoputri menyentil Tito tentang hal tersebut.T",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun ada kritik dari Megawati Soekarnoputri terhadap...",
+      "pred_reasoning": "Anonim - Tidak ada alasan spesifik",
+      "correct": true
+    },
+    {
+      "input": ", PT Hutama Karya (Persero) mencatat sebanyak 2.690.458 kendaraan melintas di seluruh ruas Jalan Tol Trans Sumatera (JTTS) selama periode mudik Lebaran 2022. Meski masih banyak pemudik di Sumatra yang",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan bahwa \"seluruh pelayanan mudik...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA Showbiz – Ribuan penggemar EXO memadati area Mall Central Park pada Minggu, 6 November 2022. Mereka berbondong-bondong memadati Mall Central Park untuk menghadiri acara jumpa fans bersama anggota",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Presiden Joko Widodo mengunjungi keluarga korban tenggelam KRINanggala 402di Surabaya. Dalam kunjungan yang didampingi Menteri Sosial Tri Rismaharini tersebut, Presiden menyampaikan duka mendala",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, mengekspresikan rasa duka dan penghargaan terhadap prajurit...",
+      "pred_reasoning": "Anonim - Artikel ini memiliki ciri-ciri berita murni, yaitu: 1. Netral: Artikel ini tidak memiliki nada negatif.",
+      "correct": false
+    },
+    {
+      "input": "Ferdinand Marcos Jr (64) dilantik sebagai presiden ke17 Filipina pada Kamis (30/6/2022) tengah hari waktu setempat, menandai kembalinya dinasti politik yang pernah berkuasa 36 tahun lalu. Setelah dila",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki beberapa ciri native ads seperti nada positif dan bahasa persuasif, tetapi juga ada elemen kritik terhadap pemerintahan sebelumnya.",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Pemerintah berencana memberikanvaksinModerna sebagai dosis ke-3 untuk tenaga kesehatan. Hal ini bertujuan untuk lebih melindungi tenaga kesehatan di tengah semakin tingginya penularan COVID-19. ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Prof.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Penambahan kasus harian Covid-19 mengalami tren kenaikan selama dua pekan belakangan. Kementerian Kesehatan (Kemenkes) mencatat kasus Covid-19 konsisten bertambah di atas 1.000 kasus per hari sejak 15",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Meskipun ada informasi tentang peningkatan kasus Covid-19,...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Food Estate berbasis hortikultura yang berada di Desa Ria-Ria, Pollung, Humbang Hasundutan, Sumatera Utama beberapa area bawang merahnya sudah siap untuk panen di Februari. Saat ini terdapat 215 hekta",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim - Artikel ini memiliki ciri-ciri berita murni, yaitu: 1. Netral: Artikel ini tidak menunjukkan nada yang negatif.",
+      "correct": false
+    },
+    {
+      "input": "Rusia terancam mengalami gagal bayar utang luar negerinya untuk pertama kalinya sejak Revolusi Bolshevik yang terjadi pada lebih dari satu abad yang lalu.Gagal bayar tersebut terjadi berkaitan dengan ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral, meskipun menyampaikan informasi tentang potensi gagal...",
+      "pred_reasoning": "Anonim tidak ditemukan, bahasa netral, dan menyampaikan informasi faktual tanpa promosi",
+      "correct": true
+    },
+    {
+      "input": "Jurnalis mode Samuel Mulia meninggal dunia pada Sabtu (26/6).\"Iya [Samuel Mulia meninggal dunia], saya juga baru dengar,\" ujar desainer sekaligus jurnalis mode Ai Syarif saat dikonfirmasi, Sabtu (26/6",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral dan sedikit positif.",
+      "pred_reasoning": "Artikel ini merupakan berita murni karena:\n\n* Mengandung informasi tentang kejadian nyata (kematian Samuel Mulia).\n* Menyampaikan berita tersebut secara objektif tanpa memberikan opini yang bersifat n",
+      "correct": true
+    },
+    {
+      "input": "Selain via medsos, hoaks juga kerap beredar di grup aplikasichatting, seperti WhatsApp, Messenger, dan Telegram.Fenomena tersebut tak bisa dianggap sepele. Pasalnya, hoaks berpotensi menimbulkan kegad",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, berfokus pada upaya untuk meningkatkan literasi digital dan...",
+      "pred_reasoning": "Anonim",
+      "correct": false
+    },
+    {
+      "input": "Sebagai langkah nyata mewujudkan UMKMgo global, BRI mendorong produk lokal hasil karya anak bangsa untuk menembus pangsa pasar yang lebih luas sekaligus meningkatkan volume ekspor nasional.Salah satu ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "{'label': 'native ads', 'confidence': 0.75}",
+      "correct": true
+    },
+    {
+      "input": "Nyempil' di gang, rumah makan sate di Bogor ini begitu tersohor. Ialah Rumah Sate Pak Rebing yang ada di belakang RS Umi, Empang, Bogor.",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, karena menggambarkan Rumah Sate Pak Rebing sebagai tempat yang...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "- Twitter menyatakan telah membatasi konten yang dikeluarkan oleh akun-akun pemerintah Rusia, termasuk akun milik Presiden Vladimir Putin. Diketahui kalau saat ini ada sekitar 300 akun Twitter resmi m",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun ada kritik terhadap tindakan pemerintah Rusia,...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "The humanitarian assistance provided 270 packages each for food and medicine.HI also provided incentives to 50 health workers at As Syifa Hospital, Gaza.HI Palestine Program Project Manager expressed ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan syukur yang diungkapkan oleh Aldi, \"HI...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Selain berpuasa dan tarawih, mengaji juga menjadi ibadah yang kerap dilakukan saat Ramadhan. Bahkan, tidak sedikit orang bahkan menargetkan khatam Al Quran saat bulan puasa.Namun, mengkhatamkan Al Qur",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, mendorong pembaca untuk mengkhatamkan Al Quran selama bulan...",
+      "pred_reasoning": "Tidak ada indikasi native ads dalam artikel ini.",
+      "correct": false
+    },
+    {
+      "input": "- Razia gepeng (gelandangan dan pengemis) di Denpasar, Bali, heboh. Polisi mengamankan dua pengamen yang membawa motor NMax, HP android dan uang sebesar Rp7,8 juta. Kedua pengamen tajir itu adalah Har",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Meskipun terdapat kejadian yang mengejutkan, seperti penemuan...",
+      "pred_reasoning": "{'label': 'berita murni', 'confidence': 1.0}",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Dukung pemulihan ekonomi nasional,Bea Cukaigencar memberikan pelayananeksporbagi para pelaku usaha dalam negeri. Dalam menjalankan perannya di bidangasistensiindutrsi dan fasilitator perdagangan",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "{'label': 'berita murni', 'confidence': 1.0}",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Sadio Mane menanggapi ihwal rumor yang menyebut ada dua klub Eropa yang tengah mengincarnya. Dua klub yang disebut-sebut tertarik mendatangkan pemain asal Senegal itu ialah Bayern ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Sadio Mane yang menyatakan, \"Ya pasti...",
+      "pred_reasoning": "Tone of the article is neutral and objective, providing a quote from Sadio Mane without any promotional language.",
+      "correct": true
+    },
+    {
+      "input": "VIVA– PT Bank Rakyat Indonesia (Persero) Tbk atauBRIterus mendorong pengembangan talenta para pekerjanya, termasuk digital talent yang semakin dibutuhkan untuk menghadapi tantangan era digitalisasi. O",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari kalimat seperti \"pencapaian ini menjadi...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Pandemi COVID-19 belum juga berakhir, tercatat sejak Maret 2020 hingga sekarang terdapat 581,550 kasus terkonfirmasi positif. Belum lagi Gubernur DKI Jakarta Anies Baswedan serta Wakil Gubernur DKI Ja",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "<b>native ads</b>\n\nKonfiden: 0.75\n\nAlasan: Artikel ini memiliki banyak ciri-ciri native ads, termasuk nada positif, bahasa persuasif, dan promosi brand. Meskipun ada beberapa elemen yang menunjukkan o",
+      "correct": true
+    },
+    {
+      "input": "Dalam hal berbelanja, misalnya, Anda tak perlu repot untuk selalu datang kesupermarketataupun pasar guna memenuhi kebutuhan.Begitu pula dengan aktivitas membayar tagihan listrik atautop-uppulsa. Semua",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti kemudahan dan keamanan penggunaan aplikasi mobile...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Sebagai tempat memulai dan mengakhiri hari, kamar mandi adalah bagian fungsional serta penting dari setiap rumah. Untuk itu, mendesain kamar mandi semenarik mungkin akan memberik",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.65,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti pentingnya desain kamar mandi yang menarik dan...",
+      "pred_reasoning": "Berita Murni Alasan: Artikel ini memiliki ciri-ciri berita murni karena: * Mengandung informasi faktual tentang renov",
+      "correct": true
+    },
+    {
+      "input": "Kunjungan tersebut bertujuan untuk menindaklanjutiletters of interest(LoI) atau penyampaian minat berinvestasi dari Thumbay Group.Adapun kehadiran Rudi dan jajaran di Thumbay Group disambut langsung o",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "KOMPAS.com - Selain memperpanjang proses pembersihan, atap bocor juga dapat menambah pengeluaran untuk perbaikan. Oleh karena itu, ketika membangun rumah, gedung atau memperbaiki atap, Anda harus mema",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.6,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, menjelaskan fakta tentang membran waterproofing tanpa...",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": true
+    },
+    {
+      "input": "Oleh karena itu, dibutuhkan kerja sama semua pihak dan kesadaran kolektif masyarakat untuk menekan risiko penularan Covid-19 di tempat pengungsian.Dalam dialog dari Media Center Forum Merdeka Barat (F",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Manfaat tersebut kerap dirasakan dari kehadiran konten digital yang mampu memberikan edukasi, hiburan, dan informasi terkait banyak hal.Hal tersebut pula yang mendorong hadirnyacontent creatordi jagat",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Berdasarkan data Bank Indonesia (BI), jumlah uang elektronik yang beredar mencapai 594,17 juta unit pada Februari 2022. Dari angka ini, sebanyak 512,98 juta unit (86,34 persen) merupakan uang elektron",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Dalam pelaksanaan perpanjangan kebijakan itu, Menteri Dalam Negeri (Mendagri) Tito Karnavian menerbitkan tiga Instruksi Mendagri (Inmendagri) terkait penerapan PPKM di tiap daerah pada Senin (9/8/2021",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "VIVA – Aktris cilik Anantya Kirana, kembali menampilkan kemampuan aktingnya dalam film terbaru berjudul Tuhan Minta Duit. Dalam film itu, Anantya  beradu akting dengan aktris ternama Putri Ayudia.Pada",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan Anantya Kirana yang menyatakan, \"Nanda...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Gaji tinggi dan karir moncer, tak menjamin seseorang untuk betah bertahan di tempat kerja. Seorang pria bernama Michael Lin memutuskan berhenti bekerja dari Netflix di tengah karir",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang lebih netral, meskipun ada elemen positif dalam perjalanan Michael...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Kapolri Jenderal Listyo Sigit Prabowo membuka kegiatan lomba menembak bersama TNI-Polridan insan media di Mako Brimob, Kelapa Dua, Depok, Jawa Barat, Sabtu (11/6). Acara ini merupakan salah satu",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Jenderal Listyo Sigit Prabowo yang...",
+      "pred_reasoning": "Anonimous",
+      "correct": false
+    },
+    {
+      "input": "Merujuk pada Undang-Undang (UU) Pasar Modal Nomor 8 Tahun 1995, reksa dana adalah wadah yang dipergunakan untuk menghimpun dana dari masyarakat untuk selanjutnya diinvestasikan dalam portofolio efek o",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "BIMA - Guna meningkatkan kesejahteraan petani, Kementerian Pertanian (Kementan) merealisasikan program Jalan Usaha Tani (JUT) untuk Kelompok Tani Sakolo di Desa Simpasai, Kecamatan Lambu, Kabupaten Bi",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim, 2022. Berisi tentang upaya pemerintah dalam membantu petani.",
+      "correct": false
+    },
+    {
+      "input": "Saat ini, Bank BJB tengah mengembangkan produk-produk digital melalui layanan-layanan “fintech like”. Dengan demikian, nasabah dapat mengakses layanan perbankan melalui gadget di mana dan kapan saja t",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.65,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti perkembangan dan inovasi yang dilakukan oleh Bank...",
+      "pred_reasoning": "native ads\n\nAlasan:\n Artikel ini memiliki sedikit ciri-ciri native ads, yaitu:\n\n* Memiliki nada netral, meskipun ada",
+      "correct": true
+    },
+    {
+      "input": "Menteri Kesehatan RI Budi Gunadi Sadikin bakal mewajibkan vaksinhuman papillomavirus HPV, salah satunya untuk mencegah kanker serviks pada wanita Indonesia. Ia memastikan vaksin yang masuk dalam progr",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Menteri Kesehatan yang menegaskan...",
+      "pred_reasoning": "Anonim - Artikel ini memiliki ciri-ciri berita murni karena memberikan informasi faktual tanpa menunjukkan nada yang bersifat persuasif.",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Dampak dari Siklon Tropis Seroja telah mengakibatkan kerusakan berat dan kerugian material maupun immaterial yang luar biasa bagi masyarakat di sekitar Provinsi Nusa Tenggara Timur (NTT) dan Nus",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif dan mengajak, terlihat dari pernyataan Menteri Sosial Tri...",
+      "pred_reasoning": "Empty or invalid model output",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Pergantian warna dasar Tanda Nomor Kendaraan Bermotor (TNKB) atau pelat nomor kendaraan bakalan diganti.  Semula pelat nomor memiliki warna dasar hitam, akan diganti dengan tulis",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Tidak ada ungkapan yang menunjukkan kritik atau negatif...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "GIF termasuk salah satu media yang paling banyak dibagikan oleh pengguna Twitter. Jika biasanya GIF di Twitter hanya berisi meme atau momen dari serial TV dan film, kini pengguna bisa membuat GIF-nya ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, mencerminkan antusiasme terhadap fitur baru yang diperkenalkan...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Dalam lingkup bisnis, berbagi dalam bentuk materi maupun nonmateri jamak dilakukan perusahaan. Selain bertujuan untuk membangun citra korporat, aksi tersebut juga menjadi bentuk sumbangsih bagi masyar",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan seperti \"berbagi agar dapat bahagia...",
+      "pred_reasoning": "Artikel ini memiliki beberapa ciri Native Ads, seperti nada positif dan bahasa persuasif. Namun, artikel ini tidak sepenuhnya mempromosikan produk/brand, karena membahas tentang kontribusi sosial peru",
+      "correct": true
+    },
+    {
+      "input": "- Populasi merpati kura-kura sekarang hanya ada 2.100 pasangan yang berkembang biak di Inggris. Merpati kura-kura yang dikenal dalam mitologi kuno, adalah spesies burung yang paling cepat menurun di I",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang lebih netral, meskipun ada elemen positif mengenai upaya...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA – Sebanyak 15 lembaga kemahasiswaan di Universitas Indonesia (UI) bersama Ikatan Alumni Universitas Indonesia (ILUNI UI) membagikan 2.700 paket sembako, dilakukan dalam dua tahap.\n \n Ketua ILUNI ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif. Contohnya, pernyataan Ketua ILUNI UI, Andre Rahadian, yang...",
+      "pred_reasoning": "Anonim",
+      "correct": true
+    },
+    {
+      "input": "VIVA – Kepala Kajian Ekonomi Lingkungan Lembaga Penyelidikan Ekonomi dan Masyarakat Universitas Indonesia (LPEM UI) Alin Halimatussadiah mengatakan, untuk memperbaiki lingkungan sekaligus juga ekonomi",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim",
+      "correct": true
+    },
+    {
+      "input": "PALEMBANG - Kapolri Jenderal Listyo Sigit Prabowo meresmikan Gedung Utama Presisi Polda Sumatera Selatan (Sumsel) dan Rumah Sakit (RS) Bhayangkara M. Hasan di Palembang, Jumat (1/4/2022). Mewakili ang",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim",
+      "correct": false
+    },
+    {
+      "input": "KOMPAS.com - Kekalahan 0-1 Timnas Indonesia U23 dari Thailand di laga semifinal SEA Games menjadi kekecewaan seluruh masyarakat Indonesia, tidak terkecuali Evan Dimas Darmono. Evan Dimas ikut memberik",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang lebih netral, meskipun terdapat elemen kekecewaan.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Indonesia bahkan mempunyai beberapa wanita yang tercatat sebagai wanita paling berpengaruh di dunia, seperti Menteri Keuangan RI Sri Mulyani.Bahkan belakangan dia diberi gelar Best Minister Award in t",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti pencapaian wanita Indonesia yang berpengaruh seperti...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": ", Hyundai Motor Companymembangun pabrik mobillistrik di Georgia, Amerika Serikat. Pabrik baru tersebut nantinyamemproduksi merek Hyundai dan Kia. Belum diketahui jumlah investasi yang digelontorkan be",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan seperti \"proyek ini diklaim mampu...",
+      "pred_reasoning": "Artikel ini merupakan berita murni karena memiliki ciri-ciri berikut:\n1. Objektif: Artikel ini memberikan informasi tentang kebijakan pemerintah AS tanpa menunjukkan sikap yang bias.",
+      "correct": true
+    },
+    {
+      "input": "Hal itu tertuang dalam laporan keterbukaan informasi yang disampaikan KB Bukopin melalui laman resmi Bursa Efek Indonesia (BEI), pada Rabu (19/5/2021).Corporate Secretary Meliawati mengatakan, pengund",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki beberapa ciri native ads seperti nada positif dan bahasa persuasif, tetapi juga menampilkan fakta-fakta yang netral.",
+      "correct": false
+    },
+    {
+      "input": "Rusia berencana buka penerbangan MoskwaBali. Hal ini disampaikan Presiden Rusia Vladimir Putin saat bertemu Presiden RI Joko Widodo (Jokowi) di Istana Kremlin pada Kamis (30/6/2022). Dikutip dari situ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Presiden Putin yang menyebutkan,...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Gerard Pique sudah memutuskan pensiun. Dia gantung sepatu ketika kompetisi masih berjalan dan terikat kontrak dengan Barcelona. Keputusan yang mengejutkan da tentunya membuat Barcelona agak kelimpunga",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki ciri-ciri berita murni, seperti objektivitas, penyampaian informasi yang lengkap, serta tidak ada elemen promosi.",
+      "correct": true
+    },
+    {
+      "input": "Ketua DPP PDIP Puan Maharani mengaku masih menunggu keputusan Ketua Umum PDIP Megawati Soekarnoputri terkait wacana duet dengan Gubernur Jawa Tengah, yang juga kader 'Banteng', Ganjar Pranowo di Pilpr",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Puan Maharani menyatakan, \"Kita tunggu saja nanti perhitungan,...",
+      "pred_reasoning": "Analisanya sebagai berikut: 1. TONE: Artikel ini memiliki nada netral. Meskipun ada beberapa kalimat yang menunjukkan sikap positif terhadap pemerintahan Presiden Joko Widodo, seperti \"Presiden Jokowi",
+      "correct": true
+    },
+    {
+      "input": "Tak hanya memberikan kesan menyenangkan, jalan-jalan ke museum juga bisa menambah pengetahuan dan wawasan baru.Di Kabupaten Bantul, Yogyakarta, ada dua museum yang wajib dikunjungi usai pemberlakuan p",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Tren peningkatan kasus COVID-19 dalam beberapa minggu terakhir juga meningkatkan keterisian tempat tidur rumah sakit di berbagai daerah. Karena itu, Koordinator Tim Pakar dan Juru Bicara Satgas ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim - Artikel ini memiliki ciri-ciri berita murni, yaitu: 1. Netral/Tidak menunjukkan emosi negatif; 2. Objektif/Menyajikan berbagai sudut pandang; 3. Tidak mempromosikan produk/brand.",
+      "correct": false
+    },
+    {
+      "input": "Pemerintah akan membatasi pembelian minyak goreng curah kemasan sederhana di semua toko, termasuk ritel modern sebanyak 10 liter per hari.\"Jatuhnya kan sekarang (minyak goreng curah) dibatasi naik jad",
+      "ground_truth": "berita murni",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": " \n\nGUNAKAN BAHASA INDONESIA untuk menulis reasoning.\n\nLabel: native ads\nConfidence: 0.75\nReasoning: Artikel ini dapat diklasifikasikan sebagai native ads karena memiliki beberapa karakteristik berikut",
+      "correct": false
+    },
+    {
+      "input": "Kementerian Kelautan dan Perikanan (KKP) melalui Direktorat Perizinan dan Kenelayanan, Direktorat Jenderal Perikanan Tangkap menggelar program pemberdayaan nelayan. Pemberdayaan ini dilakukan melalui ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA - Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi (Kemendikbudristek) menyelenggarakan upacara bendera dalam rangka memperingati Hari Pendidikan Nasional (Hardiknas) pada 2022 secara ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Extracted from incomplete JSON",
+      "correct": false
+    },
+    {
+      "input": "- Deddy Corbuzier terus menjadi sorotan warganet usai mengundang pasangan sejenis (LGBT), Ragil Mahardika dan Frederik Vollert ke Podcastnya. Imbasnya, warganet ramai-ramai menyerukan untuk tidak lagi",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada negatif dan kritis terhadap Deddy Corbuzier dan konten podcastnya.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Kondisi tersebut diperburuk oleh kenyataan bahwa tidak ada yang tahu kapan krisis akan berakhir. Dalam konteks itulah, ketahanan bisnis menjadi sangat penting, yakni bagaimana bisnis dapat beradaptasi",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": " \n\nGUNAKAN BAHASA INDONESIA untuk menulis reasoning.\n\nLabel: native ads\nConfidence: 0.75\nReasoning: Artikel ini memiliki beberapa ciri dari native ads, seperti nada positif dan bahasa persuasif. Namun",
+      "correct": true
+    },
+    {
+      "input": "Pemerintah ingin mengurangi ketergantungan terhadap produk impor. Salah satu caranya dengan mengoptimalkan peran dari usaha mikro, kecil dan Menengah (UMKM). Menurut Menteri Koperasi dan Usaha Kecil M",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Menteri Koperasi dan Usaha Kecil...",
+      "pred_reasoning": "Anonim, Tanggal Unknown - Artikel ini merupakan berita murni karena membahas tentang isu sosial ekonomi terkait pemerataan ekonomi di Indonesia.",
+      "correct": true
+    },
+    {
+      "input": "Jakarta - Setelah diduga menjadi afiliator, Vincent Raditya seakan menghilang. Berbeda dengan Novita Condro, mantan istrinya, yang tampak bahagia dengan hidupnya kini.",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun menyebutkan bahwa Vincent Raditya \"seakan...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Wakil Gubernur DKI Jakarta Ahmad Riza Patria mengatakan pencabutan izin 12 outlet Holywings di Jakarta bermula dari iklan promo minuman alkohol untuk pembeli yang bernama 'Muhammad dan Maria'.Riza men",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun ada penegasan tentang pelanggaran yang dilakukan...",
+      "pred_reasoning": "Anonim, Tanggal Unknown",
+      "correct": true
+    },
+    {
+      "input": "Salah satunya, BNI mengoptimalkan program Keluarga Migran Indonesia (KAMI) dengan mengalokasikan danacorporate social responsibility(CSR) senilai Rp 5 miliar.Dana tersebut akan digunakan untuk program",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Jenazah Menteri Pendayagunaan Aparatur Negara dan Reformasi Birokrasi (Menpan-RB) Tjahjo Kumolo tiba di Taman Makam Pahlawan (TMP) Kalibata, Jakarta Selatan, Jumat (1/7/2022) sore. Tjahjo meninggal du",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "{'label': 'berita murni', 'confidence': 1.0}",
+      "correct": true
+    },
+    {
+      "input": "Jakarta - Kecantikan Wonyoung IVE menyihir penggemar dan netizen Korea saat buka masker. Inilah momen kecantikan Wonyoung di pertandingan baseball jadi viral.",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari kalimat \"Kecantikan Wonyoung IVE menyihir...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Kementerian Sosial RI berkomitmen mendukung kebijakan pemerintah terkait Rancangan Undang-UndangPenanggulangan Bencana(RUU PB) yang sudah masuk diKomisi VIII DPR RI. “Kami sudah membahas tentang",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Empty or invalid model output",
+      "correct": false
+    },
+    {
+      "input": "- Presiden baru Korea Selatan (Korsel), Yoon Suk-yeol akan dilantik pada Selasa (10/5/2022). Ia diprediksi akan bersikap keras terhadap Korea Utara (Korut), sikap yang berbeda dengan yang diterapkan o",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.5,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang cenderung netral, meskipun ada beberapa elemen yang menunjukkan...",
+      "pred_reasoning": "{\"label",
+      "correct": true
+    },
+    {
+      "input": "Upaya tersebut dilakukan beriringan dengan vaksinasi dan penguatan protokol kesehatan (prokes) juga tetap digencarkan.Juru Bicara Vaksinasi Kementerian Kesehatan (Kemenkes) Siti Nadia Tarmizi mengatak",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "{'label': 'native ads', 'confidence': 0.75}",
+      "correct": true
+    },
+    {
+      "input": "Guna membantu menjembatani akses informasi broadband melalui konektivitas berkecepatan tinggi bagi jutaan penduduk Indonesia, termasuk wilayah pedesaan paling terpencil, PT Thales Indonesia bekerja sa",
+      "ground_truth": "berita murni",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, dengan fokus pada manfaat dari proyek satelit Satria-1 bagi...",
+      "pred_reasoning": "Teks asli tidak ditemukan",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Fisura ani bisa muncul saat kekurangan serat. Fisura ani atau fisura anus adalah robekan kecil pada jaringan tipis dan lembab (mukosa) yang melapisi anus. Fisura anus dapat terjadi",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Tidak ada bahasa yang menunjukkan penilaian positif atau...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Seorang anggota Brimob Polda Kepulauan Riau meninggal karena terbawa arus sungai saat bertugas dalam Operasi Madago Raya 2022 di Sungai Salubanga, Kabupaten Parigi Moutong Sulawesi Tengah.\"Iya benar B",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun membahas kejadian tragis, penulis menyampaikan...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Recovery atas Pandemi Covid – 19 menunjukkan perkembangan melegakan, ditunjukkan oleh jumlah kasus positif baru yang jauh menurun dengan tingkat kematian sangat rendah dibandingkan level puncak ",
+      "ground_truth": "native ads",
+      "prediction": "unknown",
+      "confidence": 0.5,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "{}",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Jadwal Aston Villa vs Liverpool akan hadir dalam lanjutan Liga Inggris di Stadion Villa Park, Rabu dinihari, 11 Mei 2022. Laga tunda pekan ke-33 ini akan berlangsung mulai 02.00 WI",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun ada beberapa kalimat yang menunjukkan optimisme...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Obat apa pun dapat menyebabkan efek samping, termasuk obat penurun hipertensi pun tidak terkecuali yang biasa dikonsumsi rutin bagi penderitanya.Hipertensi disebut akar banyak peny",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, menjelaskan efek samping dari obat penurun hipertensi tanpa...",
+      "pred_reasoning": "Error: No error message provided.",
+      "correct": true
+    },
+    {
+      "input": "Ikigai adalah sebuah konsep yang menjelaskan tentangpurposeatau tujuan hidup. Namun, definisi dari Ikigai bisa sangat luas.Ikigai, yang berartithe purpose of lifeatau tujuan hidup, adalah prinsip yang",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "{'label': 'berita murni', 'confidence': 1.0}",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Asupan makanan dan minuman memengaruhi segala aktivitas manusia. Mengutip WebMD, hal utama yang harus diperhatikan saat mengonsumsi makanan dan minuman terkait kandungannya.Tak han",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang cenderung netral. Meskipun menyampaikan informasi tentang dampak...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Human Initiativewould liketothankthedonors who have mandated their qurbani through the InshaAllah Qurban 2020 program.Theseries of InshaAllah Qurban programs ended with a closing ceremony at 18.00 WIB",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Laporan Langsung Jurnalis Kompas.com, M. Hafidz Imaduddin, dari Vietnam NAM DINH, KOMPAS.com - Pelatih timnas U23 Indonesia, Shin Tae-yong, menilai salah satu penyebab anak asuhnya takluk dari Thailan",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun terdapat kritik terhadap mental bertanding timnas...",
+      "pred_reasoning": "Error: No error message provided.",
+      "correct": true
+    },
+    {
+      "input": "Pameran Indonesia International Motor Show atau IMOS 2022 saat ini masih digelar di JCC Senayan, Jakarta. Beragam produk canggih dihadirkan, termasuk motor yang digunakan untuk pengawalan di acara KTT",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti keunggulan dan inovasi dari motor Energica...",
+      "pred_reasoning": "{'label': 'berita murni', 'confidence': 0.75}",
+      "correct": false
+    },
+    {
+      "input": "KOMPAS.com - Honeymoon cystitis berisiko dialami oleh pasangan pengantin baru. Mengutip Flo Health, honeymoon cystitis adalah istilah untuk infeksi saluran kemih berulang atau sistitis akut, terkait a",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, memberikan informasi tentang honeymoon cystitis tanpa...",
+      "pred_reasoning": "Anonim, tidak ada elemen native ads",
+      "correct": true
+    },
+    {
+      "input": "Hari raya Idul Fitri tinggal menghitung hari. Pemerintah saat ini juga telah memberikan kelonggaran untuk masyarakat yang ingin mudik. Namun jadwal operasional bank selalu menjadi yang paling dicari o",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.8,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti kelonggaran yang diberikan pemerintah dan layanan...",
+      "pred_reasoning": " \n\nLabel: native ads\nConfidence: 0.75\nReasoning: Artikel ini memiliki ciri-ciri native ads karena:\n\n* Memiliki nada positif, menyoroti kemudahan akses layanan bank selama libur Lebaran.\n* Menggunakan ",
+      "correct": true
+    },
+    {
+      "input": "Anak Menteri BUMN Erick Thohir Mahendra Agakhan ditetapkan sebagai komisaris utama PT Mahaka Media Tbk.Mengutip laporan idx.co.id, Senin (27/6), PT Mahaka Media Tbk berubah nama dan struktur organisas",
+      "ground_truth": "berita murni",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang positif dan informatif. Contohnya, kalimat \"Mahaka X akan fokus...",
+      "pred_reasoning": "GUNAKAN BAHASA INDONESIA untuk menulis reasoning.\n\nError: No JSON found\n\nKarena tidak ada output JSON, maka kita akan melakukan klasifikasi secara manual berdasarkan karakteristik native ads dan berit",
+      "correct": false
+    },
+    {
+      "input": "Billie Eilish mengungkapkan kekecewaan dirinya atas keputusan Mahkamah Agung Amerika Serikat yang membatalkan hak aborsi atau yang dikenal sebagai Roe v Wade.\"Hari ini adalah hari yang kelam bagi pere",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Sekretaris Jenderal (Sekjen) Partai Demokrasi Indonesia Perjuangan (PDIP) Hasto Kristiyanto menyebut Ketua Umum Megawati Soekarnoputri selalu memantau kondisi Tjahjo Kumolo setiap hari.Menteri Pendaya",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang positif dan netral. Contohnya, Hasto Kristiyanto menyatakan, \"Kita...",
+      "pred_reasoning": "Teks artikel memiliki ciri-ciri berita murni, seperti objektivitas, penyampaian berbagai sudut pandang, serta tidak ada elemen promosi.",
+      "correct": true
+    },
+    {
+      "input": "Forum yang diselenggarakan sepanjang 2021 tersebut bertujuan membangun optimisme pelaku usaha dan masyarakat selama pandemi Covid-19.Kali ini, Forum Indonesia Bangkit mengusung tema “Optimisme Pemulih",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menekankan optimisme dan harapan untuk pemulihan ekonomi di...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Kemudahan akses perbankan memang sangat dibutuhkan oleh masyarakat, terutama pada libur Lebaran yang secara historis terdapat peningkatan jumlah transaksi. Tidak hanya layanan digital banking ya",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menekankan kemudahan akses perbankan yang diberikan oleh BRI...",
+      "pred_reasoning": "Artikel ini memiliki beberapa ciri dari native ads, seperti bahasa yang positif dan netral, penggunaan bahasa persuasif, serta promosi produk/brand. Namun, artikel ini juga memiliki beberapa elemen ya",
+      "correct": true
+    },
+    {
+      "input": "Sekretaris Jenderal Partai Demokrasi Indonesia Perjuangan (PDIP) Hasto Kristiyanto mengomentari pertemuan Agus Harimurti Yudhoyono (AHY) dengan Gubernur Jawa Tengah Ganjar Pranowo. Hasto mengatakan pe",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral, tidak menunjukkan sikap positif atau negatif terhadap individu...",
+      "pred_reasoning": "Anonimous",
+      "correct": true
+    },
+    {
+      "input": "Kariernya sebagaisportcastertidak main-main. Ia sempat didapuk menjadisportcasterdalam siaran langsung gelaran Piala Dunia 2020 di salah satu stasiun TV swasta.Passionterhadap olahraga mengantarkannya",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Polisi menyebut mantan Menteri Agraria dan Tata Ruang Ferry Mursyidan Baldan sempat menghadiri acara bersama mantan wakil presiden Jusuf Kalla di Hotel Bidakara.Setelah itu, Ferry ditemukan meninggal ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Meskipun membahas peristiwa tragis, penggunaan kata-kata...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Perjalanan perdana tersebut diresmikan oleh Direktur Utama KAI Didiek Hartantyo bersama Direktur Utama PT Pelabuhan Indonesia (Pelindo) III Boy Robyanto dan Direktur Utama PT Terminal Petikemas Suraba",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menekankan kolaborasi dan kemajuan dalam sektor logistik.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Vice President (VP) Public Relations KAI Joni Martinus mengatakan, saat ini, KAI masih menunggu detail penerapan aturan dari Kementerian Perhubungan (Kemenhub).\"KAI siap mengikuti aturan dan kebijakan",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Kedua varian kompor kaca tersebut memiliki tampilan memukau, mewah, serta elegan. Bahkan, nyala api pada kedua kompor dapat merata di semua sisi atau yang disebut sebagai api tornado.Head of Marketing",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menonjolkan keunggulan produk.",
+      "pred_reasoning": "{'label': 'native ads', 'confidence': 0.75}",
+      "correct": true
+    },
+    {
+      "input": "- Komisi Perlindungan Anak Indonesia ( KPAI ) meminta kebijakan pembelajaran tatap muka (PTM) terbaru yang membolehkan kantin sekolah dibuka kembali harus dievaluasi. Hal ini untuk mengantisipasi kasu",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral dan informatif. KPAI meminta evaluasi kebijakan tanpa...",
+      "pred_reasoning": "Anonim",
+      "correct": true
+    },
+    {
+      "input": "UNGARAN - Pemerintah Provinsi Jawa Tengah kembali memberikan hibah bidang pendidikan keagamaan pada 2022. Total dana hibah yang diberikan senilai Rp 107,1 miliar untuk 2.201 lembaga pendidikan keagama",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Gubernur Ganjar Pranowo yang...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Wali Kota Semarang Hendrar Prihadi serius menjalani targetnya untuk melindungi wilayah pesisir ibu kota Provinsi Jawa Tengah dengan tanggul laut. Ada tiga proyek di antaranya pembangunan jalan tol Sem",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Di Indonesia, mitos mengenai naga cukup unik. Jika dunia mengenal naga yang mengeluarkan api, justru naga versi kita adalah naga air. Beberapa kali simbol naga pun muncul di relief candi Indonesia, me",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada netral. Tidak ada ungkapan yang menunjukkan sikap negatif atau kritis...",
+      "pred_reasoning": "Teks ini memiliki ciri-ciri berita murni, seperti penyampaian informasi faktual tanpa emosi negatif, objektivitas dalam menyajikan berbagai sudut pandang, dan tidak ada elemen promosi.",
+      "correct": true
+    },
+    {
+      "input": "KOMPAS.com - Kegiatan presentasi sudah tak asing lagi dilakukan terutama saat belajar maupun bekerja. Presentasi merupakan kegiatan berbicara mengenai sebuah topik atau materi tertentu di hadapan audi",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari penggunaan frasa seperti \"Kegiatan presentasi...",
+      "pred_reasoning": "Error: No error message provided.",
+      "correct": true
+    },
+    {
+      "input": "Ratusan mahasiswa dan aktivis di Semarang, Jawa Tengah, turun ke jalan memprotes Rancangan Kitab Undang-Undang Hukum Pidana (RKUHP).Aksi demonstrasi itu digelar massa aktivis dan mahasiswa di depan ka",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang negatif dan kritis terhadap pemerintah dan DPR.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "VIVA Kehadiran pasukan Tentara Nasional Indonesia di tanah Papua, enggak melulu harus dikaitkan dengan adanya aktivitas kelompok teroris separatis OPM Papua. Sebab pada dasarnya prajurit TNI dikerahka",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menyoroti kontribusi positif Tentara Nasional Indonesia (TNI)...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Menurut ahli gizi dari Thomson Health Malaysia Lian Hooi San, darah membantu mengedarkan oksigen dan nutrien sambil mengangkat karbon dioksida dan zat buangan dari organ dalam tubuh manusia. Jadi, ket",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki ciri-ciri berita murni, yaitu objektivitas, penyampaian informasi yang komprehensif, serta tidak ada elemen promosi.",
+      "correct": false
+    },
+    {
+      "input": "- Makanan untuk penderita tuberkulosis (TBC) diharuskan gizi seimbang dan memenuhi kebutuhan nutrisi harian penderita. Hal tersebut bertujuan agar bisa membantu mempercepat kesembuhan penderita TBC. M",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif dan informatif. Misalnya, frasa \"TBC dapat disembuhkan dan...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Bersamaan dengan program tersebut, pemerintah juga terus menggencarkan program vaksinasi bagi kelompok usia lain guna mencapai target vaksinasi 70 persen dari total populasi pada 2021.Dalam Siaran Per",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Menteri Kesehatan Budi Gunadi Sadikin memprediksi puncak gelombang Covid-19 subvarian Omicron BA.4 dan BA.5 terjadi pada pekan kedua atau ketiga Juli 2022.Prediksi itu, kata dia, didasari atas pengama",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral. Meskipun ada prediksi mengenai puncak gelombang Covid-19,...",
+      "pred_reasoning": "{'label': 'berita murni', 'confidence': 0.95}",
+      "correct": true
+    },
+    {
+      "input": "- Majelis Wali Amanat Universitas Indonesia ( MWA UI ) melaksanakan sidang paripurna terbuka MWA dengan agenda tunggal yaitu pidato laporan pertanggungjawaban Rektor UI tahun 2021, Kamis (12/5/2022). ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan syukur dan rasa kekeluargaan yang...",
+      "pred_reasoning": "Anonimous",
+      "correct": true
+    },
+    {
+      "input": "Untuk klinik anak, rumah sakit yang terletak di Batam, Kepulauan Riau (Kepri), tersebut telah meningkatkan fasilitas ruangan yang lebih privat, nyaman, dan ramah bagi pasien anak. Pihak RSBP Batam jug",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Anonim - Artikel ini memiliki ciri-ciri berita murni, seperti memberikan informasi faktual tanpa emosi negatif, serta menyajikan berbagai sudut pandang.",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Badan PenyelenggaraJaminan Sosial Ketenagakerjaan(BPJAMSOSTEK) bersama dengan Menteri Ketenagakerjaan mengajak seluruhpekerja senidi Indonesia untuk terlindungi jaminan sosial ketenagakerjaan. H",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari pernyataan Menteri Ketenagakerjaan yang mengajak...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Pasalnya, Oppo Reno6 Series 5G meneruskan warisan desain ikonik Reno Glow yang ramping dan ringan. UntukOppo Reno6 5G, Oppo menghadirkan desain retroultra-slimdengan ketebalan 7,59 milimeter (mm) dan ",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, menonjolkan keunggulan produk Oppo Reno6 Series 5G.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Tak hanya itu, BRI juga berperan dalam pengembangan sistem OSS Berbasis Risiko milik Kementerian Investasi atau Badan Koordinasi Penanaman Modal (BKPM) tersebut.Sejak Juni hingga Juli 2021, BKPM beker",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan seperti \"para pelaku UMKM mengaku...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "Rafael van der Vaart menyebut bek Jerman 'dirasuki' Harry Maguire di Piala Dunia 2022. Menurutnya hal itu menjadi salah satu penyebab Jerman tersingkir dari Piala Dunia 2022.Die Mannschaft gugur dari ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Teks ini memiliki beberapa ciri native ads, tetapi lebih banyak bersifat berita murni. Misalnya, ada kritik terhadap pemain dan tim nasional Jerman, serta analisis tentang alasan mereka gagal.",
+      "correct": true
+    },
+    {
+      "input": "VIVA Nasional - Tim Penyidik Direktorat Tindak Pidana Ekonomi Khusus Bareskrim Polri telah menyita sejumlah aset milik Reza Paten sebagai barang bukti kasus dugaan penipuan dan penggelapan robot tradi",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada yang netral dan informatif. Meskipun membahas kasus penipuan,...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": ", Layanan menonton film premium, menghadirkan filmfilm yang hadir di Festival Film Cannes2021. Filmfilm itu di antaranya adalahSouad, The Innocents, dan Just To Be Sure, yang tayang pada bulan ini di ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, terlihat dari ungkapan seperti \"Klik Film selalu konsisten...",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "Berbagai cara dilakukan untuk mendapatkan imun tubuh yang kuat, seperti memperbaiki pola makan, mengonsumsi vitamin, hingga berjemur di bawah sinar matahari. Hal tersebut menjadi kebiasaan sehat baru ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 1.0,
+      "gt_reasoning": "ANALISIS (Bahasa Indonesia, 200-300 kata):\n1. TONE: Artikel ini memiliki nada positif, mendorong pembaca untuk mengadopsi kebiasaan sehat.",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Komitmen PTPertaminadalam implementasi Environmental, Social and Governance (ESG) secara terintegrasi membuahkan apresiasi dan penghargaan dari Majalah Investor yang berada di bawah Naungan Beri",
+      "ground_truth": "native ads",
+      "prediction": "native ads",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": true
+    },
+    {
+      "input": "SKK Migas kemudian meneruskan pengelolaan Blok Rokan tersebut kepada Pertamina Hulu Rokan (PHR) selalu anak usaha PT Pertamina (Persero).PHR langsung tancap gas melaksanakan amanah dari pemerintah unt",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.75,
+      "gt_reasoning": "Error: No JSON found",
+      "pred_reasoning": "Error: No JSON found",
+      "correct": false
+    }
+  ]
+}
