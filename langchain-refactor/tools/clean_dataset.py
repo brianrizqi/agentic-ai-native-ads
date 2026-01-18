@@ -1,40 +1,11 @@
 #!/usr/bin/env python3
 """
-Clean Training Dataset
-Filters out samples with error reasoning for better training quality
+Clean Training Dataset - Simple Version
+Only filters out actual error samples
 """
 
 import json
 import argparse
-from pathlib import Path
-
-def is_valid_sample(sample):
-    """Check if sample has valid reasoning (no errors)."""
-    try:
-        output = json.loads(sample['output'])
-        reasoning = output.get('reasoning', '')
-        
-        # Skip samples with error indicators
-        error_indicators = [
-            'Error:',
-            'No JSON found',
-            'invalid',
-            'ANALISIS (Bahasa Indonesia',  # Too long format
-            'Extracted from incomplete',
-            'Empty or invalid'
-        ]
-        
-        for indicator in error_indicators:
-            if indicator in reasoning:
-                return False
-        
-        # Check if reasoning is too short (likely error)
-        if len(reasoning.strip()) < 10:
-            return False
-        
-        return True
-    except:
-        return False
 
 def clean_dataset(input_path, output_path):
     """Remove samples with error reasoning."""
@@ -44,8 +15,24 @@ def clean_dataset(input_path, output_path):
     
     print(f"Total samples: {len(data)}")
     
-    # Filter valid samples
-    clean_data = [s for s in data if is_valid_sample(s)]
+    # Filter valid samples - only remove actual errors
+    clean_data = []
+    for sample in data:
+        try:
+            output = json.loads(sample['output'])
+            reasoning = output.get('reasoning', '')
+            
+            # Skip only if it's an actual error
+            if 'Error:' in reasoning or 'No JSON found' in reasoning:
+                continue
+            
+            # Skip if too short
+            if len(reasoning.strip()) < 10:
+                continue
+            
+            clean_data.append(sample)
+        except:
+            continue
     
     skipped = len(data) - len(clean_data)
     print(f"Valid samples: {len(clean_data)}")
@@ -67,15 +54,10 @@ def clean_dataset(input_path, output_path):
         json.dump(clean_data, f, ensure_ascii=False, indent=2)
     
     print(f"\n✅ Clean dataset saved to: {output_path}")
-    
-    return {
-        'total': len(data),
-        'clean': len(clean_data),
-        'skipped': skipped,
-        'labels': labels
-    }
+    print(f"\n🚀 Next step:")
+    print(f"   python3 finetune.py --dataset {output_path} --output ../models/qwen-native-ads-v4")
 
-def main():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Clean training dataset')
     parser.add_argument('--input', type=str,
                        default='../data/llm_dataset_finetuning_optimized.json',
@@ -85,11 +67,4 @@ def main():
                        help='Output clean dataset')
     
     args = parser.parse_args()
-    
-    stats = clean_dataset(args.input, args.output)
-    
-    print(f"\n🚀 Next step:")
-    print(f"   python3 finetune.py --dataset {args.output} --output ../models/qwen-native-ads-v4")
-
-if __name__ == "__main__":
-    main()
+    clean_dataset(args.input, args.output)
