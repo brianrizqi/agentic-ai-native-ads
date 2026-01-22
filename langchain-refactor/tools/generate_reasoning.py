@@ -60,7 +60,7 @@ Keep it under 200 characters."""
                 "Content-Type": "application/json"
             },
             json={
-                "model": "openai/gpt-4o",
+                "model": "openai/gpt-5-mini",
                 "messages": [
                     {"role": "user", "content": prompt}
                 ],
