@@ -1,0 +1,21 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/llama-native-ads-v5_merged_16bit/
+Timestamp: 20260122_195450
+Dataset: ../data/llm_dataset_finetuning_optimized.json
+Samples: 200
+
+Overall Metrics:
+  Accuracy: 71.00%
+  Correct: 142/200
+
+BERTScore:
+  Precision: 0.697
+  Recall: 0.642
+  F1: 0.667
+
+Per-Class Accuracy:
+  berita murni: 83.65%
+  native ads: 57.29%
