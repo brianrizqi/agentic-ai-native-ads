@@ -46,13 +46,29 @@ except ImportError:
 
 
 def load_test_set(dataset_path: str, num_samples: int = 100) -> List[Dict]:
-    """Load test samples from dataset."""
+    """Load test samples from dataset. Shuffles with seed to ensure diversity."""
     
     with open(dataset_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    # Take last N samples as test set (not used in training)
-    test_data = data[-num_samples:]
+    # Shuffle with fixed seed to be reproducible but diverse
+    import random
+    random.seed(42)
+    random.shuffle(data)
+    
+    # Take samples
+    test_data = data[:num_samples]
+    
+    # Print distribution
+    from collections import Counter
+    dist = Counter()
+    for item in test_data:
+        try:
+            output = json.loads(item['output'])
+            dist[output['label']] += 1
+        except:
+            pass
+    print(f"📊 Test set distribution: {dict(dist)}")
     
     return test_data
 
