@@ -68,7 +68,7 @@ pip install -r requirements-finetuning.txt
 
 ### Step 1: Preprocess Dataset
 
-**WAJIB dilakukan sebelum training!**
+Ekstrak judul dan potong reasoning yang terlalu panjang.
 
 ```bash
 cd langchain-refactor
@@ -79,16 +79,24 @@ python3 tools/prepare_finetuning_dataset.py \
   --max-reasoning 150
 ```
 
-**Output:**
-```
-✅ 3000 samples processed
-✅ Titles extracted: 3000
-✅ Reasoning truncated: 1921 (64.0%)
-   Original avg: 882 chars → New avg: 101 chars
-✅ Dataset saved to: ../data/llm_dataset_finetuning_optimized.json
+### Step 2: Refine & Clean Dataset
+
+**CRITICAL:** Gunakan script ini untuk menghapus input kosong dan memperbaiki reasoning pada "Hard Negatives" (berita murni yang menyebutkan brand).
+
+```bash
+python3 tools/refine_dataset.py \
+  --input ../data/llm_dataset_12k_simple.json \
+  --output ../data/llm_dataset_12k_refined.json
 ```
 
-### Step 2: Validate Dataset
+**Output:**
+```
+✅ Refined 1516 samples (Hard Negatives updated)
+✅ Removed 1412 samples with empty input
+✅ Saved refined dataset to: ../data/llm_dataset_12k_refined.json
+```
+
+### Step 3: Validate Dataset
 
 ```bash
 python3 -c "
@@ -161,8 +169,8 @@ cd langchain-refactor
 # Qwen 2.5 14B (Recommended)
 python3 finetune.py \
   --model qwen \
-  --dataset ../data/llm_dataset_finetuning_optimized.json \
-  --output ../models/qwen-native-ads-v3 \
+  --dataset ../data/llm_dataset_12k_refined.json \
+  --output ../models/qwen-native-ads-v6 \
   --max-steps 1500
 ```
 
@@ -224,16 +232,27 @@ models/
 cd langchain-refactor
 
 python3 evaluate_model.py \
-  --model ../models/qwen-native-ads-v3_merged_16bit \
+  --model ../models/qwen-native-ads-v6_merged_16bit \
   --num-samples 200
 ```
 
-**Output:**
+### Advanced Evaluation (LLM-as-a-Judge)
+
+Gunakan model yang lebih cerdas (GPT-4o via OpenRouter) untuk menilai kualitas reasoning model lokal Anda. API Key **wajib** dikirim via command line.
+
+```bash
+python3 evaluate_model.py \
+  --model ../models/qwen-native-ads-v6_merged_16bit \
+  --use-judge \
+  --judge-provider openrouter \
+  --judge-model openai/gpt-4o \
+  --api-key YOUR_OPENROUTER_KEY
 ```
-eval_results/
-├── eval_qwen_native_ads_v3_20260118_065500.json
-├── eval_qwen_native_ads_v3_20260118_065500_summary.txt
-└── eval_qwen_native_ads_v3_20260118_065500_confusion_matrix.png
+
+**Output akan menghasilkan:**
+- `eval_results/*.json`: Data lengkap prediksi & judge.
+- `eval_results/*_summary.txt`: Ringkasan akurasi & skor Judge (1-5).
+- `eval_results/*_confusion_matrix.png`: Visualisasi performa.
 ```
 
 ### Compare Multiple Models
@@ -316,5 +335,5 @@ python3 finetune.py --model qwen --output ../models/qwen-native-ads-v3
 
 ---
 
-**Last Updated:** 2026-01-18  
-**Version:** 3.0 (with Indonesian reasoning fix)
+**Last Updated:** 2026-01-28  
+**Version:** 4.0 (Enhanced with Hard Negatives Refinement & OpenRouter Judge)

@@ -25,16 +25,16 @@ import time
 # Training prompt template (standalone - no langchain import needed)
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
-1. Nada positif/netral (tidak mengkritik subjek)
-2. Bahasa persuasif (mengajak/meyakinkan)
-3. Mempromosikan produk/brand/instansi
-4. Hanya satu sudut pandang (tidak objektif)
+Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI, dengan ciri:
+1. Nada sangat positif terhadap brand/produk/instansi tertentu.
+2. Menggunakan bahasa yang mengajak (persuasif) untuk menggunakan layanan atau membeli produk.
+3. Fokus pada satu sudut pandang yang menguntungkan subjek tanpa kritik.
+4. Seringkali berupa soft-selling yang dibungkus seperti artikel berita.
 
-Berita Murni:
-- Bisa positif/netral/negatif
-- Objektif, menyajikan berbagai sudut pandang
-- Tidak mempromosikan produk/brand
+Berita Murni adalah konten INFORMITIF yang objektif, dengan ciri:
+1. Menyajikan fakta secara netral, meskipun subjeknya adalah perusahaan atau brand.
+2. Menyajikan berbagai sudut pandang (objektif) jika ada isu atau perkembangan terbaru.
+3. Corporate News/Press Release (seperti laporan laba, CSR, atau kegiatan resmi instansi) dikategorikan sebagai Berita Murni jika tujuannya adalah memberikan informasi kepada publik, bukan menjual produk secara langsung.
 
 Judul: {title}
 Konten: {content}

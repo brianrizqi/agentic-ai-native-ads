@@ -8,6 +8,7 @@ Comprehensive Model Evaluation Script
 
 import json
 import argparse
+import os
 from pathlib import Path
 import sys
 from typing import Dict, List, Tuple
@@ -177,70 +178,106 @@ def compute_bertscore(results: Dict) -> Dict:
     }
 
 
-def llm_as_judge(results: Dict, api_key: str = None) -> Dict:
-    """Use LLM to judge prediction quality."""
+def llm_as_judge(results: Dict, api_key: str = None, provider: str = "openai", model: str = "gpt-4o-mini") -> Dict:
+    """Use an LLM (OpenAI or OpenRouter) to judge prediction quality, prioritizing errors."""
     
-    if not HAS_OPENAI or not api_key:
+    if not api_key:
+        print(f"⚠️  Skipping LLM-as-a-Judge: API Key missing. Please provide via --api-key.")
         return {}
     
-    print("\n🤖 Running LLM-as-a-Judge evaluation...")
+    final_api_key = api_key
     
-    llm = ChatOpenAI(
-        model="gpt-4o-mini",
-        openai_api_key=api_key,
-        temperature=0
-    )
+    print(f"\n🤖 Running LLM-as-a-Judge evaluation (Provider: {provider}, Model: {model})...")
+    
+    if provider == "openrouter":
+        llm = ChatOpenAI(
+            model=model,
+            openai_api_key=final_api_key,
+            openai_api_base="https://openrouter.ai/api/v1",
+            temperature=0,
+            default_headers={
+                "HTTP-Referer": "https://github.com/brianrizqi/agentic-ai-native-ads",
+                "X-Title": "Agentic Native Ads Evaluation"
+            }
+        )
+    else:
+        llm = ChatOpenAI(
+            model=model,
+            openai_api_key=final_api_key,
+            temperature=0
+        )
     
     judge_prompt = PromptTemplate(
-        template="""Evaluate the quality of this native ads classification:
+        template="""You are an expert editor evaluating a Native Ads vs Pure News classifier.
+            
+ARTICLE CONTENT:
+{input_text}
 
-Input Text: {input_text}
+CLASSIFICATION DETAILS:
+- Ground Truth: {ground_truth}
+- Model Prediction: {prediction}
+- Model's Reasoning: {reasoning}
 
-Ground Truth: {ground_truth}
-Model Prediction: {prediction}
-Model Confidence: {confidence}
-Model Reasoning: {reasoning}
+EVALUATION CRITERIA:
+1. Label Accuracy: Is the prediction correct according to ground truth?
+2. Reasoning Quality: Does the reasoning logically support the label? (Is it objective for news? Is it identifying promotional tone for ads?)
+3. Hard Negative Check: If this is news mentioning brands/money, did the model correctly identify it as "Berita Murni" instead of "Native Ads"?
 
-Rate the prediction on a scale of 1-5:
-1 = Completely wrong
-2 = Mostly wrong
-3 = Partially correct
-4 = Mostly correct
-5 = Perfect
-
-Provide:
-1. Rating (1-5)
-2. Brief justification
+Rate the classification on a scale of 1-5:
+1 = Completely wrong (Wrong label, nonsense reasoning)
+2 = Mostly wrong (Wrong label, shallow reasoning)
+3 = Partially correct (Correct label, but weak/generic reasoning)
+4 = Mostly correct (Correct label, logical reasoning)
+5 = Perfect (Correct label, deep and accurate reasoning)
 
 Output JSON:
-{{"rating": X, "justification": "..."}}""",
-        input_variables=["input_text", "ground_truth", "prediction", "confidence", "reasoning"]
+{{"rating": X, "justification": "short explanation"}}""",
+        input_variables=["input_text", "ground_truth", "prediction", "reasoning"]
     )
     
-    ratings = []
-    sample_size = min(20, len(results['predictions']))  # Judge 20 samples
+    all_predictions = results['predictions']
+    # Prioritize judging incorrect classifications
+    incorrect = [p for p in all_predictions if not p.get('correct')]
+    correct = [p for p in all_predictions if p.get('correct')]
     
-    for pred in results['predictions'][:sample_size]:
+    sample_size = min(20, len(all_predictions))
+    # Mix: up to 15 incorrect, 5 correct
+    judge_samples = (incorrect[:15] + correct)[:sample_size]
+    
+    ratings = []
+    details = []
+    
+    for i, pred in enumerate(judge_samples):
+        print(f"   Judging sample {i+1}/{len(judge_samples)}...", end='\r')
         try:
             response = llm.invoke(
                 judge_prompt.format(
-                    input_text=pred['input'],
+                    input_text=pred['input'][:2000],
                     ground_truth=pred['ground_truth'],
                     prediction=pred['prediction'],
-                    confidence=pred['confidence'],
-                    reasoning=pred['pred_reasoning']
+                    reasoning=pred.get('pred_reasoning', '')
                 )
             )
             
             judge_result = json.loads(response.content)
             ratings.append(judge_result['rating'])
+            details.append({
+                'input_preview': pred['input'][:100] + "...",
+                'gt': pred['ground_truth'],
+                'pred': pred['prediction'],
+                'judge_rating': judge_result['rating'],
+                'judge_justification': judge_result['justification']
+            })
         except Exception as e:
-            print(f"Judge error: {e}")
+            print(f"\n   Judge error on sample {i}: {e}")
             continue
+    
+    print(f"\n✅ Finished judging {len(ratings)} samples.")
     
     return {
         'average_rating': np.mean(ratings) if ratings else 0,
-        'num_samples_judged': len(ratings)
+        'num_samples_judged': len(ratings),
+        'judge_details': details
     }
 
 
@@ -376,9 +413,14 @@ def main():
     parser.add_argument('--output-dir', type=str, default='eval_results',
                        help='Output directory for results')
     parser.add_argument('--use-judge', action='store_true',
-                       help='Use LLM-as-a-Judge (requires OPENROUTER_API_KEY)')
+                       help='Use LLM-as-a-Judge')
+    parser.add_argument('--judge-provider', type=str, default='openai',
+                       choices=['openai', 'openrouter'],
+                       help='Provider for LLM judge (openai, openrouter)')
+    parser.add_argument('--judge-model', type=str, default='gpt-4o-mini',
+                       help='Model for LLM judge (e.g., openai/gpt-4o for openrouter)')
     parser.add_argument('--api-key', type=str, default=None,
-                       help='API key for LLM judge')
+                       help='API key for LLM judge (REQUIRED if --use-judge is set)')
     args = parser.parse_args()
     
     # Extract model name from path
@@ -415,7 +457,7 @@ def main():
     # LLM-as-a-Judge
     judge_results = {}
     if args.use_judge:
-        judge_results = llm_as_judge(results, args.api_key)
+        judge_results = llm_as_judge(results, args.api_key, args.judge_provider, args.judge_model)
     
     # Plot confusion matrix
     cm_path = output_dir / f'{output_filename}_confusion_matrix.png'
