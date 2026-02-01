@@ -309,9 +309,6 @@ def main():
             eval_steps=args.eval_steps,
             save_steps=args.eval_steps * 2,
             save_total_limit=3,
-            load_best_model_at_end=True,
-            metric_for_best_model="eval_loss",
-            greater_is_better=False,
             report_to="none",
         ),
         callbacks=[monitor]

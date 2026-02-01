@@ -105,12 +105,25 @@ def evaluate_model(model_path: str, test_data: List[Dict]) -> Dict:
         # Get prediction
         try:
             pred = agent.classify(sample['input'])
-            pred_label = pred['label']
+            pred_label = pred.get('label', 'unknown')
             pred_reasoning = pred.get('reasoning', '')
+            
+            # Ensure reasoning is a string (could be a list from model output)
+            if isinstance(pred_reasoning, list):
+                pred_reasoning = " ".join([str(i) for i in pred_reasoning])
+            else:
+                pred_reasoning = str(pred_reasoning)
+                
         except Exception as e:
             print(f"Error on sample {i}: {e}")
             continue
         
+        # Ensure gt_reasoning is also a string
+        if isinstance(gt_reasoning, list):
+            gt_reasoning = " ".join([str(i) for i in gt_reasoning])
+        else:
+            gt_reasoning = str(gt_reasoning)
+            
         # Update metrics
         results['total'] += 1
         results['by_class'][gt_label]['total'] += 1
@@ -168,6 +181,10 @@ def compute_bertscore(results: Dict) -> Dict:
         return {}
     
     gt_texts, pred_texts = zip(*valid_pairs)
+    
+    # Final safety check: ensure all are strings
+    gt_texts = [str(t) for t in gt_texts]
+    pred_texts = [str(t) for t in pred_texts]
     
     P, R, F1 = bert_score(pred_texts, gt_texts, lang='id', verbose=False)
     

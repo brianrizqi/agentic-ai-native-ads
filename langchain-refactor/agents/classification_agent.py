@@ -234,10 +234,16 @@ class ClassificationAgent:
                     try:
                         result = json.loads(json_str)
                         logger.info("Successfully completed incomplete JSON")
+                        reasoning = result.get('reasoning', str(result))
+                        if isinstance(reasoning, list):
+                            reasoning = " ".join([str(i) for i in reasoning])
+                        else:
+                            reasoning = str(reasoning)
+                            
                         return {
                             'label': result.get('label', 'unknown'),
                             'confidence': float(result.get('confidence', 0.5)),
-                            'reasoning': result.get('reasoning', str(result))[:200]
+                            'reasoning': reasoning[:200]
                         }
                     except json.JSONDecodeError:
                         logger.warning("Failed to complete JSON, falling back to extraction")
@@ -248,10 +254,16 @@ class ClassificationAgent:
             json_str = response[start:end]
             result = json.loads(json_str)
             
+            reasoning = result.get('reasoning', str(result))
+            if isinstance(reasoning, list):
+                reasoning = " ".join([str(i) for i in reasoning])
+            else:
+                reasoning = str(reasoning)
+                
             return {
                 'label': result.get('label', 'unknown'),
                 'confidence': float(result.get('confidence', 0.5)),
-                'reasoning': result.get('reasoning', str(result))[:200]  # Truncate long reasoning
+                'reasoning': reasoning[:200]  # Truncate long reasoning
             }
                 
         except (json.JSONDecodeError, Exception) as e:

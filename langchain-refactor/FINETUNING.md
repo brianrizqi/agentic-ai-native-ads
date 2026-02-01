@@ -170,8 +170,8 @@ cd langchain-refactor
 python3 finetune.py \
   --model qwen \
   --dataset ../data/llm_dataset_12k_refined.json \
-  --output ../models/qwen-native-ads-v6 \
-  --max-steps 1500
+  --output ../models/qwen-native-ads-v7 \
+  --max-steps 3000
 ```
 
 ### Advanced Options
@@ -232,7 +232,7 @@ models/
 cd langchain-refactor
 
 python3 evaluate_model.py \
-  --model ../models/qwen-native-ads-v6_merged_16bit \
+  --model ../models/qwen-native-ads-v7_merged_16bit \
   --num-samples 200
 ```
 
@@ -242,7 +242,7 @@ Gunakan model yang lebih cerdas (GPT-4o via OpenRouter) untuk menilai kualitas r
 
 ```bash
 python3 evaluate_model.py \
-  --model ../models/qwen-native-ads-v6_merged_16bit \
+  --model ../models/qwen-native-ads-v7_merged_16bit \
   --use-judge \
   --judge-provider openrouter \
   --judge-model openai/gpt-4o \
