@@ -1,0 +1,21 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/qwen-native-ads-v7_merged_16bit
+Timestamp: 20260130_051907
+Dataset: ../data/llm_dataset_finetuning_optimized.json
+Samples: 100
+
+Overall Metrics:
+  Accuracy: 76.00%
+  Correct: 76/100
+
+BERTScore:
+  Precision: 0.665
+  Recall: 0.639
+  F1: 0.651
+
+Per-Class Accuracy:
+  berita murni: 51.06%
+  native ads: 98.11%
