@@ -12,6 +12,7 @@ Project ini mengklasifikasikan artikel berita sebagai **native ads** atau **beri
 - **RAG pipeline** untuk context-aware classification
 
 **Hasil Terbaik:** 97% accuracy dengan Qwen 2.5 14B fine-tuned model
+- **Advanced Insights:** Brand detection, Techniques, Sentiment, and CTA via Instructor Mode.
 
 ---
 
@@ -21,6 +22,7 @@ Project ini mengklasifikasikan artikel berita sebagai **native ads** atau **beri
 langchain-refactor/
 ├── agents/                      # Agent implementations
 │   ├── classification_agent.py  # Main classification logic
+│   ├── instructor_classification_agent.py # Advanced analysis with Instructor
 │   ├── orchestrator_agent.py    # Multi-agent coordinator
 │   ├── scraping_agent.py        # Web scraping
 │   ├── preprocessing_agent.py   # Text preprocessing
@@ -57,6 +59,9 @@ pip install -r requirements-finetuning.txt
 
 # For evaluation
 pip install -r requirements-evaluation.txt
+
+# For Instructor Mode (Advanced Analysis)
+pip install instructor pydantic
 ```
 
 ### 2. Basic Usage
@@ -76,7 +81,12 @@ python3 chatbot.py
 python3 chatbot.py \
   --provider local \
   --model ../models/qwen-native-ads-v2_merged_16bit
+
+# Advanced Analysis (Instructor Mode)
+python3 chatbot.py --use-instructor
 ```
+
+*Gunakan mode ini untuk mendapatkan Brand, Teknik Persuasi, Sentiment, dan CTA.*
 
 ---
 
@@ -212,6 +222,51 @@ All models use optimized LoRA settings:
 - `lora_alpha`: 32
 - `learning_rate`: 2e-5
 - Batch size: 1-2 with gradient accumulation
+
+---
+
+## 🧠 Instructor Mode (Advanced Analysis)
+
+Instructor Mode meningkatkan agent klasifikasi standar dengan kemampuan ekstraksi entitas terstruktur.
+
+### Extra Features:
+- **🏷️ Target Brand:** Menemukan merk/instansi yang dipromosikan.
+- **🎯 Techniques:** Mendeteksi teknik (Testimoni, Emotional Language, dll).
+- **🎭 Sentiment:** Menganalisis nada (Positif, Negatif, Netral).
+- ** CTA Text:** Menangkap ajakan bertindak (Daftar sekarang, Beli, dll).
+
+### Full Usage Example:
+1. **Install Dependencies:**
+   ```bash
+   pip install instructor pydantic
+   ```
+
+2. **Run with Local Fine-Tuned Model:**
+   ```bash
+   python3 chatbot.py \
+     --use-instructor \
+     --provider local \
+     --model ../models/qwen-native-ads-v2_merged_16bit
+   ```
+
+3. **Sample Command & Output:**
+   *Input:* `jelaskan https://travel.detik.com/...`
+   
+   *Output:*
+   ```text
+   ✅ Analisis lengkap selesai
+      📝 Summary: Pesawat AirAsia melakukan pendaratan darurat...
+      🏷️ Label: berita murni
+      💯 Confidence: 95.00%
+      💭 Reasoning: Artikel menyajikan fakta secara netral tanpa promosi.
+      🎯 Techniques: bahasa emosional
+      🎭 Sentiment: netral
+   
+   Analisis Pakar:
+   Artikel dikategorikan berita murni karena nada bicaranya objektif, 
+   tidak menyebutkan brand tertentu selain maskapai dalam konteks insiden, 
+   dan menyajikan fakta seimbang dari sisi kronologi pendaratan darurat.
+   ```
 
 ---
 
