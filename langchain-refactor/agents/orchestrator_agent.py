@@ -136,9 +136,25 @@ class OrchestratorAgent:
         self.max_memory = 5
         
         # Context from previous operations
-        self.context = {}
+        self.context = {
+            'last_scraped_url': '',
+            'last_scraped_content': '',
+            'last_scraped_title': '',
+            'last_scraped_paragraphs': [],
+            'last_classification': None,
+            'last_explanation': ''
+        }
         
         logger.info("Orchestrator Agent initialized with all agents")
+    
+    def _clear_context(self):
+        """Reset temporary context for a fresh analysis."""
+        self.context['last_classification'] = None
+        self.context['last_explanation'] = ''
+        self.context['last_scraped_content'] = ''
+        self.context['last_scraped_title'] = ''
+        self.context['last_scraped_paragraphs'] = []
+        logger.info("Context cleared for new analysis")
     
     def process(self, user_input: str) -> Dict[str, Any]:
         """
@@ -234,8 +250,13 @@ class OrchestratorAgent:
                 'message': f"Gagal scraping: {result['error']}"
             }
         
-        # Store in context
-        self.context['last_scraped_url'] = url
+        if url != self.context.get('last_scraped_url'):
+            self._clear_context()
+            self.context['last_scraped_url'] = url
+        # Clear previous state to ensure consistency
+        self.context['last_classification'] = None
+        self.context['last_explanation'] = None
+        
         self.context['last_scraped_content'] = result.get('text', '')
         self.context['last_scraped_title'] = result.get('title', '')
         self.context['last_scraped_paragraphs'] = result.get('paragraphs', [])
@@ -350,15 +371,21 @@ class OrchestratorAgent:
                 context=rag_context
             )
         
-        # Standardize result format if using instructor
-        if self.use_instructor and hasattr(result, 'label'):
-            # Convert Pydantic model to dict for compatibility
-            result_dict = {
-                'label': result.label,
-                'confidence': result.confidence,
-                'reasoning': result.reasoning
+        # Standardize result format if using instructor (ensure it's a dict for uniform access)
+        if self.use_instructor and hasattr(result, 'model_dump'):
+            result = result.model_dump()
+        elif self.use_instructor and not isinstance(result, dict):
+            # Fallback for older pydantic or other objects
+            result = {
+                'label': getattr(result, 'label', 'berita murni'),
+                'confidence': getattr(result, 'confidence', 0.5),
+                'reasoning': getattr(result, 'reasoning', ''),
+                'target_brand': getattr(result, 'target_brand', None),
+                'techniques': getattr(result, 'techniques', []),
+                'sentiment': getattr(result, 'sentiment', 'netral'),
+                'has_cta': getattr(result, 'has_cta', False),
+                'cta_text': getattr(result, 'cta_text', None)
             }
-            result = result_dict
         
         # Store in context
         self.context['last_classification'] = result
@@ -378,17 +405,17 @@ class OrchestratorAgent:
         
         return {
             'status': 'success',
-            'message': f"✅ Klasifikasi: **{result.label.upper()}**",
+            'message': f"✅ Klasifikasi: **{result.get('label', 'N/A').upper()}**",
             'data': {
-                'label': result.label,
-                'confidence': result.confidence,
-                'reasoning': result.reasoning,
+                'label': result.get('label'),
+                'confidence': result.get('confidence'),
+                'reasoning': result.get('reasoning'),
                 'explanation': explanation,
-                'target_brand': getattr(result, 'target_brand', None),
-                'techniques': getattr(result, 'techniques', []),
-                'sentiment': getattr(result, 'sentiment', 'N/A'),
-                'has_cta': getattr(result, 'has_cta', False),
-                'cta_text': getattr(result, 'cta_text', None)
+                'target_brand': result.get('target_brand'),
+                'techniques': result.get('techniques', []),
+                'sentiment': result.get('sentiment', 'N/A'),
+                'has_cta': result.get('has_cta', False),
+                'cta_text': result.get('cta_text')
             }
         }
     
@@ -427,6 +454,11 @@ class OrchestratorAgent:
                 'status': 'error',
                 'message': "URL tidak ditemukan untuk analisis lengkap."
             }
+        
+        # Clear context if it's a new URL
+        if url != self.context.get('last_scraped_url'):
+            self._clear_context()
+            self.context['last_scraped_url'] = url
         
         logger.info(f"🚀 Running full pipeline: {url}")
         result = self.full_pipeline.run(url)

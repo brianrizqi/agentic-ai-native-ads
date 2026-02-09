@@ -41,7 +41,7 @@ class IntentDetector:
                 'priority': 5
             },
             'full_pipeline': {
-                'keywords': ['analisis lengkap', 'analyze', 'full', 'complete', 'semua', 'all', 'seluruh'],
+                'keywords': ['analisis lengkap', 'analyze', 'full', 'complete', 'semua', 'all', 'seluruh', 'lengkap', 'pipa', 'pipeline'],
                 'requires_url': True,
                 'priority': 1
             },
@@ -51,7 +51,7 @@ class IntentDetector:
                 'priority': 6
             },
             'classify': {
-                'keywords': ['klasifikasi', 'classify', 'deteksi', 'detect', 'cek', 'check', 'native ads', 'berita'],
+                'keywords': ['klasifikasi', 'classify', 'deteksi', 'detect', 'cek', 'check', 'native ads', 'berita', 'klasifikasikan', 'klasifiaksikan'],
                 'requires_url': False,
                 'priority': 2
             },
@@ -61,12 +61,12 @@ class IntentDetector:
                 'priority': 7
             },
             'explain': {
-                'keywords': ['jelaskan', 'explain', 'kenapa', 'why', 'reasoning', 'alasan', 'detail', 'maksudnya'],
+                'keywords': ['jelaskan', 'explain', 'kenapa', 'why', 'reasoning', 'alasan', 'detail', 'maksudnya', 'jelasin'],
                 'requires_url': False,
                 'priority': 3
             },
             'show': {
-                'keywords': ['tampilkan', 'lihat', 'mana', 'show', 'view', 'read', 'baca', 'liat'],
+                'keywords': ['tampilkan', 'lihat', 'mana', 'show', 'view', 'read', 'baca', 'liat', 'tunjukkan'],
                 'requires_url': False,
                 'priority': 4
             }
@@ -90,6 +90,11 @@ class IntentDetector:
         user_lower = user_input.lower()
         url = self._extract_url(user_input)
         
+        # Remove URL from keyword search to avoid collisions (e.g., 'ambil' in URL slug)
+        search_text = user_lower
+        if url:
+            search_text = user_lower.replace(url.lower(), "")
+        
         # Score each intent
         intent_scores = {}
         for intent, pattern in self.intent_patterns.items():
@@ -97,9 +102,13 @@ class IntentDetector:
             
             # Check keywords
             for keyword in pattern['keywords']:
-                if keyword in user_lower:
+                # Use word boundaries for better accuracy
+                if re.search(r'\b' + re.escape(keyword) + r'\b', search_text):
                     # Multi-word keywords get higher score
                     score += len(keyword.split())
+                elif keyword in search_text and len(keyword) > 4:
+                    # Fallback for substrings only if long enough (e.g. 'klasifikasi' in 'klasifikasikan')
+                    score += 1
             
             # Boost score if URL is present and required
             if pattern['requires_url'] and url:
@@ -132,13 +141,23 @@ class IntentDetector:
         
         # Calculate confidence based on score
         confidence = min(0.5 + (best_score * 0.1), 0.95)
-        
+
+        # Heuristic: If we have a URL and we're asking to classify or explain, 
+        # it should probably be a full_pipeline instead of just scrape or individual components
+        if url and best_intent == 'scrape':
+            if any(k in user_lower for k in self.intent_patterns['classify']['keywords']):
+                logger.info("URL + Classify keywords detected. Upgrading intent to full_pipeline.")
+                best_intent = 'full_pipeline'
+            elif any(k in user_lower for k in self.intent_patterns['explain']['keywords']):
+                logger.info("URL + Explain keywords detected. Upgrading intent to full_pipeline.")
+                best_intent = 'full_pipeline'
+
         # Extract entities based on intent
         result = {
             'intent': best_intent,
             'url': url,
             'content': '',
-            'query': '',
+            'query': user_lower,  # Pass the query for downstream logic
             'confidence': confidence
         }
         
