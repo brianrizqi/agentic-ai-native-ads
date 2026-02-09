@@ -27,7 +27,8 @@ class FullPipelineChain:
         vectorstore: Optional[Any] = None,
         generate_explanation: bool = True,
         use_instructor: bool = False,
-        model_path: Optional[str] = None
+        model_path: Optional[str] = None,
+        llm: Optional[Any] = None
     ):
         """
         Initialize full pipeline.
@@ -85,13 +86,14 @@ class FullPipelineChain:
             self.explainer = ExplanationAgent(
                 model_name=model_name,
                 provider=provider,
-                api_key=api_key
+                api_key=api_key,
+                llm=llm
             )
         else:
             self.explainer = None
         
         self.vectorstore = vectorstore
-        self.llm = self.classifier.llm
+        self.llm = llm if llm else self.classifier.llm
         
         logger.info("Full Pipeline Chain initialized (with explanation support)")
     
