@@ -205,6 +205,9 @@ class OrchestratorAgent:
         elif intent == 'chat':
             return self._handle_chat(intent_result)
         
+        elif intent == 'show':
+            return self._handle_show(intent_result)
+        
         else:
             return {
                 'status': 'error',
@@ -314,6 +317,15 @@ class OrchestratorAgent:
     def _handle_classify(self, intent_result: Dict[str, Any]) -> Dict[str, Any]:
         """Handle classification request."""
         content = intent_result.get('content') or self.context.get('last_scraped_content', '')
+        url = intent_result.get('url')
+        
+        # If a URL is provided but not yet scraped, scrape it first
+        if url and url != self.context.get('last_scraped_url'):
+            logger.info(f"URL provided for classification, scraping first: {url}")
+            scrape_res = self._handle_scrape({'url': url})
+            if scrape_res['status'] == 'error':
+                return scrape_res
+            content = self.context.get('last_scraped_content', '')
         
         if not content:
             return {
@@ -354,13 +366,23 @@ class OrchestratorAgent:
         # Store in context
         self.context['last_classification'] = result
         
+        # Proactively get explanation if using a powerful model or specifically requested
+        explanation = ""
+        if self.use_instructor or self.provider == 'openai':
+            logger.info("Proactively generating explanation...")
+            explanation = self.explainer.explain(
+                content=content,
+                classification_result=result
+            )
+        
         return {
             'status': 'success',
             'message': f"✅ Klasifikasi: **{result['label'].upper()}**",
             'data': {
                 'label': result['label'],
                 'confidence': result['confidence'],
-                'reasoning': result.get('reasoning', '')
+                'reasoning': result.get('reasoning', ''),
+                'explanation': explanation
             }
         }
     
@@ -461,6 +483,26 @@ Contoh: "analisis url https://example.com" """
         return {
             'status': 'success',
             'message': f"Saya tidak yakin bagaimana menjawab itu. Ketik 'help' untuk melihat apa yang bisa saya lakukan!"
+        }
+    
+    def _handle_show(self, intent_result: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle request to show content."""
+        content = self.context.get('last_scraped_content', '')
+        title = self.context.get('last_scraped_title', 'No Title')
+        
+        if not content:
+            return {
+                'status': 'error',
+                'message': "Tidak ada konten yang sedang dimuat. Ambil konten dulu pakai URL!"
+            }
+        
+        return {
+            'status': 'success',
+            'message': f"📄 **Konten Saat Ini:**\n\n**Judul:** {title}\n\n{content[:500]}...",
+            'data': {
+                'title': title,
+                'content_snippet': content[:500]
+            }
         }
     
     def _add_to_memory(self, role: str, content: str):
