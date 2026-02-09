@@ -36,34 +36,39 @@ class IntentDetector:
         # Intent patterns (keyword-based)
         self.intent_patterns = {
             'scrape': {
-                'keywords': ['ambil', 'scrape', 'extract', 'get', 'download', 'fetch', 'grab'],
+                'keywords': ['ambil', 'scrape', 'extract', 'get', 'download', 'fetch', 'grab', 'unduh'],
+                'requires_url': True,
+                'priority': 5
+            },
+            'full_pipeline': {
+                'keywords': ['analisis lengkap', 'analyze', 'full', 'complete', 'semua', 'all', 'seluruh'],
                 'requires_url': True,
                 'priority': 1
             },
-            'full_pipeline': {
-                'keywords': ['analisis lengkap', 'analyze', 'full', 'complete', 'semua', 'all'],
-                'requires_url': True,
-                'priority': 2
-            },
             'preprocess': {
-                'keywords': ['bersihkan', 'clean', 'preprocess', 'fitur', 'feature', 'ringkas', 'summarize'],
+                'keywords': ['bersihkan', 'clean', 'preprocess', 'fitur', 'feature', 'karakteristik'],
                 'requires_url': False,
-                'priority': 3
+                'priority': 6
             },
             'classify': {
                 'keywords': ['klasifikasi', 'classify', 'deteksi', 'detect', 'cek', 'check', 'native ads', 'berita'],
                 'requires_url': False,
-                'priority': 4
+                'priority': 2
             },
             'retrieve': {
                 'keywords': ['cari', 'search', 'contoh', 'example', 'find', 'lookup'],
                 'requires_url': False,
-                'priority': 5
+                'priority': 7
             },
             'explain': {
-                'keywords': ['jelaskan', 'explain', 'kenapa', 'why', 'reasoning', 'alasan', 'detail'],
+                'keywords': ['jelaskan', 'explain', 'kenapa', 'why', 'reasoning', 'alasan', 'detail', 'maksudnya'],
                 'requires_url': False,
-                'priority': 6
+                'priority': 3
+            },
+            'show': {
+                'keywords': ['tampilkan', 'lihat', 'mana', 'show', 'view', 'read', 'baca', 'liat'],
+                'requires_url': False,
+                'priority': 4
             }
         }
         
@@ -106,9 +111,14 @@ class IntentDetector:
             
             intent_scores[intent] = score
         
-        # Get best intent
-        best_intent = max(intent_scores, key=intent_scores.get)
-        best_score = intent_scores[best_intent]
+        # Get best intent (sort by score, then by priority for tie-breaks)
+        sorted_intents = sorted(
+            intent_scores.items(), 
+            key=lambda x: (x[1], -self.intent_patterns[x[0]]['priority']), 
+            reverse=True
+        )
+        
+        best_intent, best_score = sorted_intents[0]
         
         # If no clear winner, default to chat
         if best_score <= 0:
