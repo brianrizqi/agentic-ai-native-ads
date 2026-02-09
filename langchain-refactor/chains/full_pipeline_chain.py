@@ -25,7 +25,9 @@ class FullPipelineChain:
         provider: str = "openai",
         api_key: Optional[str] = None,
         vectorstore: Optional[Any] = None,
-        generate_explanation: bool = True
+        generate_explanation: bool = True,
+        use_instructor: bool = False,
+        model_path: Optional[str] = None
     ):
         """
         Initialize full pipeline.
@@ -44,11 +46,30 @@ class FullPipelineChain:
         self.summarizer = SummarizerTool()
         
         # Initialize classification agent
-        self.classifier = ClassificationAgent(
-            model_name=model_name,
-            provider=provider,
-            api_key=api_key
-        )
+        self.use_instructor = use_instructor
+        if use_instructor:
+            try:
+                from agents.instructor_classification_agent import InstructorClassificationAgent
+                logger.info(f"Using InstructorClassificationAgent in pipeline with model: {model_path or model_name}")
+                self.classifier = InstructorClassificationAgent(
+                    model_path=model_path or model_name,
+                    use_instructor=True
+                )
+            except ImportError as e:
+                logger.error(f"Instructor dependencies not found: {e}")
+                logger.warning("Falling back to standard ClassificationAgent in pipeline")
+                self.use_instructor = False
+                self.classifier = ClassificationAgent(
+                    model_name=model_name,
+                    provider=provider,
+                    api_key=api_key
+                )
+        else:
+            self.classifier = ClassificationAgent(
+                model_name=model_name,
+                provider=provider,
+                api_key=api_key
+            )
         
         # Initialize explanation agent (optional)
         self.generate_explanation = generate_explanation
@@ -121,12 +142,28 @@ class FullPipelineChain:
             
             # Step 4: Classification
             logger.info("[4/5] Classifying content...")
-            classification = self.classifier.classify(
-                content=cleaned_text,
-                title=scraped_data.get('title', ''),
-                summary=summary,
-                context=context
-            )
+            
+            if self.use_instructor:
+                classification = self.classifier.classify(
+                    title=scraped_data.get('title', ''),
+                    content=cleaned_text
+                )
+            else:
+                classification = self.classifier.classify(
+                    content=cleaned_text,
+                    title=scraped_data.get('title', ''),
+                    summary=summary,
+                    context=context
+                )
+            
+            # Standardize result format if using instructor
+            if self.use_instructor and hasattr(classification, 'label'):
+                classification_dict = {
+                    'label': classification.label,
+                    'confidence': classification.confidence,
+                    'reasoning': classification.reasoning
+                }
+                classification = classification_dict
             
             # Step 5: Generate Explanation (if enabled)
             explanation = ""

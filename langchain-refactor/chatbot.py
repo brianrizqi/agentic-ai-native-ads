@@ -142,6 +142,10 @@ def main():
                        help='API key (optional - only for classification/explanation)')
     parser.add_argument('--no-vectorstore', action='store_true',
                        help='Disable vector store (retrieval will not work)')
+    parser.add_argument('--use-instructor', action='store_true',
+                       help='Use Instructor-based classification with Gemma v7')
+    parser.add_argument('--model-path', type=str, default='../models/gemma-native-ads-v7_merged_16bit',
+                       help='Path to the model (for local/instructor mode)')
     
     args = parser.parse_args()
     
@@ -170,7 +174,9 @@ def main():
         model_name=args.model,
         provider=args.provider,
         api_key=args.api_key,
-        vectorstore=vectorstore
+        vectorstore=vectorstore,
+        use_instructor=args.use_instructor,
+        model_path=args.model_path if args.use_instructor or args.provider == 'local' else None
     )
     
     # Print welcome message
