@@ -180,8 +180,21 @@ Analisis artikel berdasarkan 4 karakteristik Native Ads:
 Penjelasan:"""
 
 explanation_prompt = PromptTemplate(
-    input_variables=["content", "label", "confidence", "reasoning"],
-    template=EXPLANATION_PROMPT_TEMPLATE
+    input_variables=["content", "label", "confidence", "reasoning", "title"],
+    template="""Jelaskan secara detail klasifikasi untuk artikel berikut:
+
+**JUDUL:** {title}
+
+**ARTIKEL:**
+{content}
+
+**ANALISIS KLASIFIKASI:**
+- Hasil: {label}
+- Keyakinan: {confidence}
+- Alasan: {reasoning}
+
+Berdasarkan data di atas, berikan penjelasan terstruktur (Nada Positif, Bahasa Persuasif, Promosi Produk, Cakupan Satu Sisi). **PASTIKAN PENJELASAN ANDA SESUAI DENGAN JUDUL DAN ISI ARTIKEL DI ATAS!** Jangan menyebutkan brand lain yang tidak ada di teks.
+"""
 )
 
 

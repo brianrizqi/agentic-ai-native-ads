@@ -181,7 +181,8 @@ class FullPipelineChain:
                 logger.info("[5/5] Generating explanation...")
                 explanation = self.explainer.explain(
                     content=cleaned_text,
-                    classification_result=classification
+                    classification_result=classification,
+                    title=scraped_data.get('title', '')
                 )
             
             # Combine results
