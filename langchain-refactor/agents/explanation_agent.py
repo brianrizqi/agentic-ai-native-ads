@@ -25,7 +25,8 @@ class ExplanationAgent:
         model_name: str = "gpt-3.5-turbo",
         provider: str = "openai",
         api_key: Optional[str] = None,
-        temperature: float = 0.5
+        temperature: float = 0.5,
+        llm: Optional[Any] = None
     ):
         """
         Initialize Explanation Agent.
@@ -40,8 +41,12 @@ class ExplanationAgent:
         self.provider = provider
         self.temperature = temperature
         
-        # Initialize LLM
-        self.llm = self._initialize_llm(api_key)
+        # Use provided LLM or initialize new one
+        if llm:
+            self.llm = llm
+            logger.info(f"Explanation Agent using provided LLM instance")
+        else:
+            self.llm = self._initialize_llm(api_key)
         
         # Create chain using LCEL
         self.chain = explanation_prompt | self.llm | StrOutputParser()

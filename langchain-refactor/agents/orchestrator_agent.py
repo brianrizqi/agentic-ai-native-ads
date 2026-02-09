@@ -56,6 +56,9 @@ class OrchestratorAgent:
         self.preprocessor = PreprocessingAgent()
         self.retriever = RetrievalAgent(vectorstore=vectorstore)
         
+        # Shared LLM for local models to save memory
+        shared_local_llm = None
+        
         if use_instructor:
             try:
                 from agents.instructor_classification_agent import InstructorClassificationAgent
@@ -64,6 +67,28 @@ class OrchestratorAgent:
                     model_path=model_path or model_name,
                     use_instructor=True
                 )
+                
+                # If provider is local, wrap the loaded model for LangChain agents to share memory
+                if provider == "local":
+                    try:
+                        from langchain_huggingface import HuggingFacePipeline
+                        from transformers import pipeline
+                        
+                        logger.info("Wrapping local model for LangChain agents to share memory")
+                        pipe = pipeline(
+                            "text-generation",
+                            model=self.classifier.model,
+                            tokenizer=self.classifier.tokenizer,
+                            max_new_tokens=512,
+                            temperature=0.3,
+                            do_sample=True,
+                            repetition_penalty=1.15,
+                            return_full_text=False
+                        )
+                        shared_local_llm = HuggingFacePipeline(pipeline=pipe)
+                    except Exception as e:
+                        logger.warning(f"Could not wrap local model for sharing: {e}")
+                
             except ImportError as e:
                 logger.error(f"Instructor dependencies not found: {e}")
                 
@@ -91,7 +116,8 @@ class OrchestratorAgent:
         self.explainer = ExplanationAgent(
             model_name=model_name,
             provider=provider,
-            api_key=api_key
+            api_key=api_key,
+            llm=shared_local_llm
         )
         self.full_pipeline = FullPipelineChain(
             model_name=model_name,
@@ -99,7 +125,8 @@ class OrchestratorAgent:
             api_key=api_key,
             vectorstore=vectorstore,
             use_instructor=use_instructor,
-            model_path=model_path
+            model_path=model_path,
+            llm=shared_local_llm
         )
         # Note: FullPipelineChain now supports instructor mode
         
