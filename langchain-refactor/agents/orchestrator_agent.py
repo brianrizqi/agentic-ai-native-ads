@@ -179,8 +179,8 @@ class OrchestratorAgent:
             # Route to appropriate agent
             response = self._route_to_agent(intent, intent_result)
             
-            # Add response to memory
-            self._add_to_memory("assistant", str(response.get('message', '')))
+            # Add response to memory with its structured data
+            self._add_to_memory("assistant", response.get('message', ''), data=response.get('data'))
             
             # Update context
             self._update_context(intent, response)
@@ -474,7 +474,8 @@ class OrchestratorAgent:
             }
         
         # Store in context
-        self.context['last_classification'] = result.get('classification', {})
+        classification_data = result.get('classification') or {}
+        self.context['last_classification'] = classification_data
         
         return {
             'status': 'success',
@@ -556,9 +557,13 @@ Contoh: "analisis url https://example.com" """
             }
         }
     
-    def _add_to_memory(self, role: str, content: str):
-        """Add message to conversation memory."""
-        self.memory.append({"role": role, "content": content})
+    def _add_to_memory(self, role: str, content: str, data: Optional[Dict[str, Any]] = None):
+        """Add message to conversation memory with optional structured data."""
+        self.memory.append({
+            "role": role, 
+            "content": content,
+            "data": data
+        })
         
         # Keep only last N messages
         if len(self.memory) > self.max_memory * 2:  # *2 for user+assistant pairs
