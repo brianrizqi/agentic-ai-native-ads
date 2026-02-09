@@ -149,6 +149,11 @@ def main():
     
     args = parser.parse_args()
     
+    # Auto-set local provider if using instructor and no provider specified
+    if args.use_instructor and args.provider == 'openai' and not os.getenv("OPENAI_API_KEY"):
+        print("💡 Instructor mode requested but no OpenAI key found. Defaulting to local provider...")
+        args.provider = 'local'
+    
     # Note: Intent detection is always local (no API needed)
     logger.info("Using local keyword-based intent detection (no API required)")
     
