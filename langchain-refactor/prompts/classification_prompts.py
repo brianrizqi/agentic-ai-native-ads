@@ -181,19 +181,24 @@ Penjelasan:"""
 
 explanation_prompt = PromptTemplate(
     input_variables=["content", "label", "confidence", "reasoning", "title"],
-    template="""Jelaskan secara detail klasifikasi untuk artikel berikut:
+    template="""Jawablah sebagai seorang pakar komunikasi media yang sedang berdiskusi santai namun profesional.
 
-**JUDUL:** {title}
+ANALISIS UNTUK ARTIKEL:
+Judul: {title}
+Isi: {content}
 
-**ARTIKEL:**
-{content}
+HASIL DETEKSI:
+- Kategori: {label}
+- Alasan Utama: {reasoning}
 
-**ANALISIS KLASIFIKASI:**
-- Hasil: {label}
-- Keyakinan: {confidence}
-- Alasan: {reasoning}
+TUGAS ANDA:
+Berikan narasi penjelasan kenapa artikel ini dikategorikan sebagai {label}. 
+Gunakan poin-poin sederhana (Nada, Produk yang disebut, dan Sudut Pandang).
 
-Berdasarkan data di atas, berikan penjelasan terstruktur (Nada Positif, Bahasa Persuasif, Promosi Produk, Cakupan Satu Sisi). **PASTIKAN PENJELASAN ANDA SESUAI DENGAN JUDUL DAN ISI ARTIKEL DI ATAS!** Jangan menyebutkan brand lain yang tidak ada di teks.
+PENTING:
+- DILARANG KERAS mengeluarkan format JSON.
+- DILARANG KERAS mengulangi instruksi sistem seperti "Output JSON" atau "Klasifikasi:".
+- Langsung berikan analisis Anda dalam Bahasa Indonesia yang baik.
 """
 )
 
