@@ -142,8 +142,32 @@ class ExplanationAgent:
             
             # Run chain using LCEL invoke
             explanation = self.chain.invoke(input_data)
+            # AGGRESSIVE CLEANING: Strip variety of possible training leaks
+            # 1. Remove JSON blocks or system-like headers
+            leak_markers = [
+                "Output JSON", "Output (JSON)", "Format JSON", "Klasifikasi Output", 
+                "Klasifikasi:", "Penjelasan:", "Native Ads adalah", "Ciri-ciri Native Ads", 
+                "Output JSON:", "Result:", "Label:", "Confidence:"
+            ]
+            for marker in leak_markers:
+                if marker in explanation:
+                    # Keep text BEFORE the marker if it's long enough, otherwise keep text AFTER if it contains analysis
+                    parts = explanation.split(marker)
+                    if len(parts[0].strip()) > 50:
+                        explanation = parts[0].strip()
+                    else:
+                        explanation = " ".join(parts[1:]).strip()
             
-            logger.info("Explanation generated successfully")
+            # 2. Remove actual JSON structures using regex
+            import re
+            explanation = re.sub(r'\{.*\}', '', explanation, flags=re.DOTALL).strip()
+            explanation = re.sub(r'```json.*```', '', explanation, flags=re.DOTALL).strip()
+            explanation = re.sub(r'```.*```', '', explanation, flags=re.DOTALL).strip()
+            
+            # 3. Final cleanup of trailing colons or partial headers
+            explanation = re.sub(r'(Klasifikasi|Penjelasan|Output)\s*:\s*$', '', explanation, flags=re.IGNORECASE).strip()
+            
+            logger.info("Explanation generated and aggressively cleaned")
             return explanation.strip()
             
         except Exception as e:

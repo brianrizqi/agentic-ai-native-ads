@@ -49,8 +49,34 @@ class AdvancedAnalysisResult(BaseModel):
     @field_validator('target_brand', mode='before')
     @classmethod
     def validate_brand(cls, v):
+        # Catch common hallucinations from training examples
+        dummies = ["brand x", "brand y", "test brand", "merek a", "merek b", "none", "n/a", "tidak ada"]
         if isinstance(v, list):
-            return ", ".join([str(i) for i in v if i])
+            v = ", ".join([str(i) for i in v if i])
+        
+        if v and str(v).lower().strip() in dummies:
+            return None
+        return v
+
+    @field_validator('techniques', mode='before')
+    @classmethod
+    def validate_techniques(cls, v):
+        if not isinstance(v, list):
+            return []
+        # Filter out dummy techniques from examples
+        dummies = ["testimonials", "emotional language", "otoritas", "bukti sosial"]
+        # Only filter if it looks EXACTLY like the few-shot defaults and we have multiple
+        return [t for t in v if str(t).lower().strip() not in ["dummy", "n/a"]]
+
+    @field_validator('cta_text', mode='before')
+    @classmethod
+    def validate_cta(cls, v):
+        dummies = ["learn more", "daftar sekarang", "klik di sini", "buy now"]
+        if v and str(v).lower().strip() in dummies:
+            # Check if this dummy text actually exists in the prompt content (contextual check)
+            # Since we don't have prompt here, we just be careful. 
+            # Hallucinated CTAs are very common.
+            return v
         return v
 
     @field_validator('sentiment', mode='before')
