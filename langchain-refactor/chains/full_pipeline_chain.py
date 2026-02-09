@@ -57,6 +57,14 @@ class FullPipelineChain:
                 )
             except ImportError as e:
                 logger.error(f"Instructor dependencies not found: {e}")
+                
+                 # Check if we can even fall back
+                if not api_key and provider in ['openai', 'openrouter']:
+                    error_msg = f"Dependency error in pipeline: {e}. Cannot fall back to cloud model because API key is missing. " \
+                                "Please install dependencies: pip install -r requirements-instructor.txt"
+                    logger.error(error_msg)
+                    raise ImportError(error_msg)
+                
                 logger.warning("Falling back to standard ClassificationAgent in pipeline")
                 self.use_instructor = False
                 self.classifier = ClassificationAgent(

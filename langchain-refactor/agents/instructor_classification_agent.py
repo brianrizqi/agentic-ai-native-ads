@@ -4,11 +4,8 @@ Uses Instructor library for structured output with Pydantic models
 Optimized for Gemma v7 model
 """
 
-from typing import Optional, Literal
+from typing import Optional, Literal, Any
 from pydantic import BaseModel, Field
-import instructor
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
 import logging
 
 logger = logging.getLogger(__name__)
@@ -79,6 +76,14 @@ class InstructorClassificationAgent:
         
         logger.info(f"Loading model from: {model_path}")
         
+        # Load heavy dependencies lazily
+        try:
+            import torch
+            from transformers import AutoTokenizer, AutoModelForCausalLM
+        except ImportError as e:
+            logger.error(f"Required dependencies for InstructorClassificationAgent missing: {e}")
+            raise
+        
         # Load tokenizer and model
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -95,12 +100,18 @@ class InstructorClassificationAgent:
         
         # Wrap with instructor if enabled
         if self.use_instructor:
-            self.client = instructor.from_transformers(
-                self.model,
-                tokenizer=self.tokenizer,
-                mode=instructor.Mode.JSON
-            )
-            logger.info("Instructor wrapper enabled for structured output")
+            try:
+                import instructor
+                self.client = instructor.from_transformers(
+                    self.model,
+                    tokenizer=self.tokenizer,
+                    mode=instructor.Mode.JSON
+                )
+                logger.info("Instructor wrapper enabled for structured output")
+            except ImportError as e:
+                logger.error(f"Instructor module not found: {e}")
+                self.use_instructor = False
+                self.client = None
         else:
             self.client = None
             logger.info("Using standard generation without instructor")
@@ -180,6 +191,7 @@ Klasifikasi:"""
             else:
                 # Fallback to standard generation
                 logger.info("Generating classification with standard generation...")
+                import torch
                 inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048)
                 inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
                 
