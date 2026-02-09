@@ -67,9 +67,14 @@ def print_response(response: dict):
             print(f"   📝 Summary: {data['summary']}")
         
         if 'label' in data:
-            print(f"   🏷️  Label: {data['label']}")
-            if 'confidence' in data:
-                print(f"   💯 Confidence: {data['confidence']:.2%}")
+            label = data.get('label', 'unknown')
+            print(f"   🏷️  Label: {label}")
+            if 'confidence' in data and data['confidence'] is not None:
+                try:
+                    conf = float(data['confidence'])
+                    print(f"   💯 Confidence: {conf:.2%}")
+                except (ValueError, TypeError):
+                    pass
             if 'reasoning' in data:
                 print(f"   💭 Reasoning: {data['reasoning']}")
         
@@ -121,7 +126,26 @@ def save_conversation(orchestrator: OrchestratorAgent, output_dir: str = "../res
             for msg in memory:
                 role = msg['role'].upper()
                 content = msg['content']
-                f.write(f"{role}: {content}\n\n")
+                data = msg.get('data')
+                
+                f.write(f"{role}: {content}\n")
+                
+                # Write detailed analysis if present
+                if data and role == 'ASSISTANT':
+                    if data.get('label'):
+                        f.write(f"   - Label: {data['label']}\n")
+                    if data.get('confidence'):
+                        f.write(f"   - Confidence: {data['confidence']}\n")
+                    if data.get('target_brand'):
+                        f.write(f"   - Brand: {data['target_brand']}\n")
+                    if data.get('techniques'):
+                        f.write(f"   - Techniques: {', '.join(data['techniques'])}\n")
+                    if data.get('sentiment'):
+                        f.write(f"   - Sentiment: {data['sentiment']}\n")
+                    if data.get('explanation'):
+                        f.write(f"\n   EXPLANATION:\n   {data['explanation']}\n")
+                
+                f.write("\n")
             
             f.write("="*80 + "\n")
         
