@@ -167,7 +167,10 @@ class FullPipelineChain:
                 )
             
             # Standardize result format if using instructor
-            if self.use_instructor and hasattr(classification, 'label'):
+            if self.use_instructor and hasattr(classification, 'model_dump'):
+                classification = classification.model_dump()
+            elif self.use_instructor and hasattr(classification, 'label'):
+                # Fallback for older Pydantic or if model_dump is not available
                 classification_dict = {
                     'label': classification.label,
                     'confidence': classification.confidence,
