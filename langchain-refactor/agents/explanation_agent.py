@@ -110,7 +110,8 @@ class ExplanationAgent:
     def explain(
         self,
         content: str,
-        classification_result: Dict[str, Any]
+        classification_result: Dict[str, Any],
+        title: str = ""
     ) -> str:
         """
         Generate detailed explanation for classification.
@@ -132,10 +133,11 @@ class ExplanationAgent:
             
             # Prepare input
             input_data = {
-                'content': content[:500],  # Limit length
+                'content': content[:1500],  # Increased length for more context
                 'label': label,
                 'confidence': f"{confidence:.2f}",
-                'reasoning': reasoning
+                'reasoning': reasoning,
+                'title': title or "Tanpa Judul"
             }
             
             # Run chain using LCEL invoke

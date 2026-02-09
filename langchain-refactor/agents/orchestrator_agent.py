@@ -242,12 +242,8 @@ class OrchestratorAgent:
         
         return {
             'status': 'success',
-            'message': f"✅ Konten berhasil diambil dari {url}",
-            'data': {
-                'title': result.get('title', 'N/A'),
-                'word_count': len(result.get('text', '').split()),
-                'paragraph_count': len(result.get('paragraphs', []))
-            }
+            'message': f"✅ **Konten Berhasil Diambil:**\n\n{result.get('text', '')[:1000]}...",
+            'data': {}
         }
     
     def _handle_preprocess(self, intent_result: Dict[str, Any]) -> Dict[str, Any]:
@@ -367,23 +363,32 @@ class OrchestratorAgent:
         # Store in context
         self.context['last_classification'] = result
         
-        # Proactively get explanation if using a powerful model or specifically requested
+        # Only get explanation if explicitly requested (e.g., 'jelaskan', 'kenapa', 'alasan')
         explanation = ""
-        if self.use_instructor or self.provider == 'openai':
-            logger.info("Proactively generating explanation...")
+        user_query = intent_result.get('query', '').lower()
+        should_explain = any(k in user_query for k in ['jelas', 'kenapa', 'alasan', 'why', 'reason'])
+        
+        if should_explain:
+            logger.info("Explanation requested, generating...")
             explanation = self.explainer.explain(
                 content=content,
-                classification_result=result
+                classification_result=result,
+                title=self.context.get('last_scraped_title', '')
             )
         
         return {
             'status': 'success',
-            'message': f"✅ Klasifikasi: **{result['label'].upper()}**",
+            'message': f"✅ Klasifikasi: **{result.label.upper()}**",
             'data': {
-                'label': result['label'],
-                'confidence': result['confidence'],
-                'reasoning': result.get('reasoning', ''),
-                'explanation': explanation
+                'label': result.label,
+                'confidence': result.confidence,
+                'reasoning': result.reasoning,
+                'explanation': explanation,
+                'target_brand': getattr(result, 'target_brand', None),
+                'techniques': getattr(result, 'techniques', []),
+                'sentiment': getattr(result, 'sentiment', 'N/A'),
+                'has_cta': getattr(result, 'has_cta', False),
+                'cta_text': getattr(result, 'cta_text', None)
             }
         }
     
@@ -401,7 +406,8 @@ class OrchestratorAgent:
         logger.info("📝 Generating explanation...")
         explanation = self.explainer.explain(
             content=content,
-            classification_result=classification
+            classification_result=classification,
+            title=self.context.get('last_scraped_title', '')
         )
         
         return {
@@ -439,9 +445,12 @@ class OrchestratorAgent:
             'message': "✅ Analisis lengkap selesai",
             'data': {
                 'title': result.get('title', ''),
-                'classification': result.get('classification', {}),
+                'label': result.get('classification', {}).get('label', ''),
+                'confidence': result.get('classification', {}).get('confidence', 0),
+                'reasoning': result.get('classification', {}).get('reasoning', ''),
                 'explanation': result.get('explanation', ''),
-                'features': result.get('features', {})
+                'features': result.get('features', {}),
+                'summary': result.get('summary', '')
             }
         }
     

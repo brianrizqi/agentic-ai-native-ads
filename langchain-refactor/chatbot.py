@@ -61,21 +61,7 @@ def print_response(response: dict):
     
     # Print data if available
     if data and status == 'success':
-        if 'title' in data:
-            print(f"   📄 Title: {data['title']}")
-        
-        if 'word_count' in data:
-            print(f"   📊 Word count: {data['word_count']}")
-        
-        if 'features' in data and data['features']:
-            features = data['features']
-            print(f"   📈 Features:")
-            if 'word_count' in features:
-                print(f"      - Words: {features['word_count']}")
-            if 'sentence_count' in features:
-                print(f"      - Sentences: {features['sentence_count']}")
-            if 'lexical_diversity' in features:
-                print(f"      - Lexical diversity: {features['lexical_diversity']:.2f}")
+        # Metadata and statistics are suppressed per user request
         
         if 'summary' in data and data['summary']:
             print(f"   📝 Summary: {data['summary']}")
@@ -87,7 +73,22 @@ def print_response(response: dict):
             if 'reasoning' in data:
                 print(f"   💭 Reasoning: {data['reasoning']}")
         
-        if 'explanation' in data:
+        # Advanced Analysis Display
+        if data.get('target_brand'):
+            print(f"   � Target Brand: {data['target_brand']}")
+        
+        if data.get('techniques'):
+            techs = ", ".join(data['techniques'])
+            print(f"   🎯 Techniques: {techs}")
+            
+        if data.get('sentiment'):
+            print(f"   🎭 Sentiment: {data['sentiment']}")
+            
+        if data.get('has_cta'):
+            cta_info = f" ({data['cta_text']})" if data.get('cta_text') else ""
+            print(f"   � CTA Detected: Yes{cta_info}")
+
+        if 'explanation' in data and data['explanation']:
             print(f"\n{data['explanation']}")
         
         if 'results' in data:

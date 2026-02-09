@@ -11,37 +11,34 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ClassificationResult(BaseModel):
-    """Structured output model for classification results."""
+class AdvancedAnalysisResult(BaseModel):
+    """Expanded structured output for deeper content analysis."""
     
     label: Literal["native ads", "berita murni"] = Field(
-        description="Classification label: 'native ads' for promotional content, 'berita murni' for pure news"
+        description="Klasifikasi utama: 'native ads' atau 'berita murni'"
     )
     confidence: float = Field(
-        ge=0.0, 
-        le=1.0,
-        description="Confidence score between 0.0 and 1.0"
+        ge=0.0, le=1.0, description="Skor keyakinan (0.0 - 1.0)"
+    )
+    target_brand: Optional[str] = Field(
+        description="Merek, produk, atau instansi yang dipromosikan (jika ada)"
+    )
+    techniques: list[str] = Field(
+        default_factory=list,
+        description="Teknik persuasi yang digunakan (misal: 'otoritas', 'emosi', 'bukti sosial')"
+    )
+    sentiment: Literal["positif", "netral", "negatif"] = Field(
+        description="Nada atau sentimen utama artikel"
+    )
+    has_cta: bool = Field(
+        description="Apakah ada ajakan bertindak (Call to Action)?"
+    )
+    cta_text: Optional[str] = Field(
+        description="Teks ajakan bertindak (misal: 'Klik di sini', 'Daftar sekarang')"
     )
     reasoning: str = Field(
-        max_length=200,
-        description="Brief explanation in Indonesian (max 200 characters)"
+        description="Alasan singkat klasifikasi dalam Bahasa Indonesia"
     )
-    
-    class Config:
-        json_schema_extra = {
-            "examples": [
-                {
-                    "label": "native ads",
-                    "confidence": 0.85,
-                    "reasoning": "Artikel mempromosikan produk dengan bahasa persuasif dan hanya satu sudut pandang positif"
-                },
-                {
-                    "label": "berita murni",
-                    "confidence": 0.92,
-                    "reasoning": "Berita objektif tanpa promosi, menyajikan berbagai sudut pandang"
-                }
-            ]
-        }
 
 
 class InstructorClassificationAgent:
@@ -132,26 +129,20 @@ class InstructorClassificationAgent:
         # Truncate content to avoid context overflow
         content_truncated = content[:800] if len(content) > 800 else content
         
-        prompt = f"""Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
-1. Nada positif/netral (tidak mengkritik subjek)
-2. Bahasa persuasif (mengajak/meyakinkan)
-3. Mempromosikan produk/brand/instansi
-4. Hanya satu sudut pandang (tidak objektif)
-
-Berita Murni:
-- Bisa positif/netral/negatif
-- Objektif, menyajikan berbagai sudut pandang
-- Tidak mempromosikan produk/brand
+        prompt = f"""Lakukan analisis mendalam terhadap berita berikut.
+Instruksi:
+1. Tentukan apakah ini "native ads" atau "berita murni".
+2. Identifikasi brand/produk/instansi yang dipromosikan (jika ada).
+3. Deteksi teknik persuasi (misal: penggunaan testimoni, bahasa emosional, klaim sepihak).
+4. Cek apakah ada Call to Action (CTA) seperti ajakan membeli atau mendaftar.
+5. Tentukan sentimen atau nada berita.
 
 Judul: {title}
 Konten: {content_truncated}
 
-Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
+Output dalam format JSON dengan field: label, confidence, target_brand, techniques (list), sentiment, has_cta, cta_text, reasoning.
 
-Klasifikasi:"""
+Klasifikasi Mendasar:"""
         
         return prompt
     
@@ -160,7 +151,7 @@ Klasifikasi:"""
         title: str,
         content: str,
         return_raw: bool = False
-    ) -> ClassificationResult:
+    ) -> AdvancedAnalysisResult:
         """
         Classify content as native ads or pure news.
         
@@ -182,11 +173,11 @@ Klasifikasi:"""
                     messages=[
                         {"role": "user", "content": prompt}
                     ],
-                    response_model=ClassificationResult,
+                    response_model=AdvancedAnalysisResult,
                     max_tokens=self.max_new_tokens,
                     temperature=self.temperature,
                 )
-                logger.info(f"Classification: {result.label} (confidence: {result.confidence:.2f})")
+                logger.info(f"Advanced Classification: {result.label} for {result.target_brand or 'No Brand'}")
                 return result
             else:
                 # Fallback to standard generation
@@ -219,30 +210,33 @@ Klasifikasi:"""
                 if json_match:
                     json_str = json_match.group(0)
                     result_dict = json.loads(json_str)
-                    result = ClassificationResult(**result_dict)
-                    logger.info(f"Classification: {result.label} (confidence: {result.confidence:.2f})")
+                    result = AdvancedAnalysisResult(**result_dict)
                     return result
                 else:
                     logger.warning("No JSON found in output, using fallback")
-                    return ClassificationResult(
+                    return AdvancedAnalysisResult(
                         label="berita murni",
                         confidence=0.5,
+                        sentiment="netral",
+                        has_cta=False,
                         reasoning="Failed to parse model output"
                     )
                     
         except Exception as e:
             logger.error(f"Classification error: {e}")
-            return ClassificationResult(
+            return AdvancedAnalysisResult(
                 label="berita murni",
                 confidence=0.5,
-                reasoning=f"Error during classification: {str(e)[:100]}"
+                sentiment="netral",
+                has_cta=False,
+                reasoning=f"Error: {str(e)[:50]}"
             )
     
     def classify_batch(
         self,
         articles: list[dict[str, str]],
         show_progress: bool = True
-    ) -> list[ClassificationResult]:
+    ) -> list[AdvancedAnalysisResult]:
         """
         Classify multiple articles in batch.
         
