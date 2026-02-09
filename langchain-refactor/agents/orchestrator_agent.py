@@ -28,7 +28,9 @@ class OrchestratorAgent:
         model_name: str = "gpt-3.5-turbo",
         provider: str = "openai",
         api_key: Optional[str] = None,
-        vectorstore: Optional[Any] = None
+        vectorstore: Optional[Any] = None,
+        use_instructor: bool = False,
+        model_path: Optional[str] = None
     ):
         """
         Initialize orchestrator with all agents.
@@ -43,6 +45,8 @@ class OrchestratorAgent:
         self.provider = provider
         self.api_key = api_key
         self.vectorstore = vectorstore
+        self.use_instructor = use_instructor
+        self.model_path = model_path
         
         # Initialize intent detector (local, no API needed)
         self.intent_detector = IntentDetector()
@@ -51,11 +55,31 @@ class OrchestratorAgent:
         self.scraper = WebScraperTool()
         self.preprocessor = PreprocessingAgent()
         self.retriever = RetrievalAgent(vectorstore=vectorstore)
-        self.classifier = ClassificationAgent(
-            model_name=model_name,
-            provider=provider,
-            api_key=api_key
-        )
+        
+        if use_instructor:
+            try:
+                from agents.instructor_classification_agent import InstructorClassificationAgent
+                logger.info(f"Using InstructorClassificationAgent with model: {model_path or model_name}")
+                self.classifier = InstructorClassificationAgent(
+                    model_path=model_path or model_name,
+                    use_instructor=True
+                )
+            except ImportError as e:
+                logger.error(f"Instructor dependencies not found: {e}")
+                logger.warning("Falling back to standard ClassificationAgent")
+                self.use_instructor = False
+                self.classifier = ClassificationAgent(
+                    model_name=model_name,
+                    provider=provider,
+                    api_key=api_key
+                )
+        else:
+            self.classifier = ClassificationAgent(
+                model_name=model_name,
+                provider=provider,
+                api_key=api_key
+            )
+            
         self.explainer = ExplanationAgent(
             model_name=model_name,
             provider=provider,
@@ -65,8 +89,11 @@ class OrchestratorAgent:
             model_name=model_name,
             provider=provider,
             api_key=api_key,
-            vectorstore=vectorstore
+            vectorstore=vectorstore,
+            use_instructor=use_instructor,
+            model_path=model_path
         )
+        # Note: FullPipelineChain now supports instructor mode
         
         # Conversation memory (last 5 messages)
         self.memory: List[Dict[str, str]] = []
@@ -265,12 +292,29 @@ class OrchestratorAgent:
         
         # Classify
         logger.info("🤖 Classifying content...")
-        result = self.classifier.classify(
-            content=content,
-            title=self.context.get('last_scraped_title', ''),
-            summary=self.context.get('last_preprocessed', {}).get('summary', ''),
-            context=rag_context
-        )
+        
+        if self.use_instructor:
+            result = self.classifier.classify(
+                title=self.context.get('last_scraped_title', ''),
+                content=content
+            )
+        else:
+            result = self.classifier.classify(
+                content=content,
+                title=self.context.get('last_scraped_title', ''),
+                summary=self.context.get('last_preprocessed', {}).get('summary', ''),
+                context=rag_context
+            )
+        
+        # Standardize result format if using instructor
+        if self.use_instructor and hasattr(result, 'label'):
+            # Convert Pydantic model to dict for compatibility
+            result_dict = {
+                'label': result.label,
+                'confidence': result.confidence,
+                'reasoning': result.reasoning
+            }
+            result = result_dict
         
         # Store in context
         self.context['last_classification'] = result

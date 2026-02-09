@@ -1,0 +1,19 @@
+# Requirements for Instructor-based Classification Agent
+# Install with: pip install -r requirements-instructor.txt
+
+# Core dependencies
+instructor>=1.0.0
+pydantic>=2.0.0
+transformers>=4.35.0
+torch>=2.0.0
+accelerate>=0.20.0
+
+# Optional but recommended
+tqdm>=4.65.0  # For progress bars in batch processing
+sentencepiece>=0.1.99  # For tokenization (if needed by model)
+protobuf>=3.20.0  # For model serialization
+
+# Existing dependencies (if not already installed)
+langchain>=0.1.0
+langchain-core>=0.1.0
+python-dotenv>=1.0.0
