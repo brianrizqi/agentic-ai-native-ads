@@ -68,8 +68,9 @@ class OrchestratorAgent:
                     use_instructor=True
                 )
                 
-                # If provider is local, wrap the loaded model for LangChain agents to share memory
-                if provider == "local":
+                # If using a local model via instructor, always try to wrap it for LangChain agents 
+                # to save memory and avoid needing an OpenAI API key for explanations.
+                if provider == "local" or use_instructor:
                     try:
                         from langchain_huggingface import HuggingFacePipeline
                         from transformers import pipeline
