@@ -4,8 +4,8 @@ Uses Instructor library for structured output with Pydantic models
 Optimized for Gemma v7 model
 """
 
-from typing import Optional, Literal, Any
-from pydantic import BaseModel, Field
+from typing import Optional, Literal, Any, Union
+from pydantic import BaseModel, Field, field_validator
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,30 +15,61 @@ class AdvancedAnalysisResult(BaseModel):
     """Expanded structured output for deeper content analysis."""
     
     label: Literal["native ads", "berita murni"] = Field(
+        default="berita murni",
         description="Klasifikasi utama: 'native ads' atau 'berita murni'"
     )
     confidence: float = Field(
-        ge=0.0, le=1.0, description="Skor keyakinan (0.0 - 1.0)"
+        default=0.0, ge=0.0, le=1.0, description="Skor keyakinan (0.0 - 1.0)"
     )
-    target_brand: Optional[str] = Field(
-        description="Merek, produk, atau instansi yang dipromosikan (jika ada)"
+    target_brand: Optional[Union[str, list[str]]] = Field(
+        default=None,
+        description="Merek, produk, atau instansi yang dipromosikan"
     )
     techniques: list[str] = Field(
         default_factory=list,
-        description="Teknik persuasi yang digunakan (misal: 'otoritas', 'emosi', 'bukti sosial')"
+        description="Teknik persuasi yang digunakan"
     )
-    sentiment: Literal["positif", "netral", "negatif"] = Field(
-        description="Nada atau sentimen utama artikel"
+    sentiment: str = Field(
+        default="netral",
+        description="Nada atau sentimen utama"
     )
     has_cta: bool = Field(
-        description="Apakah ada ajakan bertindak (Call to Action)?"
+        default=False,
+        description="Apakah ada ajakan bertindak?"
     )
     cta_text: Optional[str] = Field(
-        description="Teks ajakan bertindak (misal: 'Klik di sini', 'Daftar sekarang')"
+        default=None,
+        description="Teks ajakan bertindak"
     )
     reasoning: str = Field(
-        description="Alasan singkat klasifikasi dalam Bahasa Indonesia"
+        default="",
+        description="Alasan singkat klasifikasi"
     )
+
+    @field_validator('target_brand', mode='before')
+    @classmethod
+    def validate_brand(cls, v):
+        if isinstance(v, list):
+            return ", ".join([str(i) for i in v if i])
+        return v
+
+    @field_validator('sentiment', mode='before')
+    @classmethod
+    def validate_sentiment(cls, v):
+        if not v: return "netral"
+        v = str(v).lower()
+        if "positive" in v or "positif" in v: return "positif"
+        if "negative" in v or "negatif" in v: return "negatif"
+        return "netral"
+
+    @field_validator('label', mode='before')
+    @classmethod
+    def validate_label(cls, v):
+        if not v: return "berita murni"
+        v = str(v).lower()
+        if "news" in v or "murni" in v: return "berita murni"
+        if "ads" in v or "native" in v: return "native ads"
+        return "berita murni"
 
 
 class InstructorClassificationAgent:
@@ -99,12 +130,30 @@ class InstructorClassificationAgent:
         if self.use_instructor:
             try:
                 import instructor
-                self.client = instructor.from_transformers(
-                    self.model,
-                    tokenizer=self.tokenizer,
-                    mode=instructor.Mode.JSON
-                )
-                logger.info("Instructor wrapper enabled for structured output")
+                # Try standard attribute first
+                if hasattr(instructor, "from_transformers"):
+                    self.client = instructor.from_transformers(
+                        self.model,
+                        tokenizer=self.tokenizer,
+                        mode=instructor.Mode.JSON
+                    )
+                else:
+                    # Fallback to direct import if attribute is missing
+                    logger.warning("instructor.from_transformers not found in main namespace. Attempting direct import...")
+                    try:
+                        from instructor.client_transformers import from_transformers
+                        self.client = from_transformers(
+                            self.model,
+                            tokenizer=self.tokenizer,
+                            mode=instructor.Mode.JSON
+                        )
+                    except (ImportError, AttributeError) as e:
+                        logger.error(f"Failed to initialize instructor for transformers: {e}")
+                        self.use_instructor = False
+                        self.client = None
+                
+                if self.use_instructor:
+                    logger.info("Instructor wrapper enabled for structured output")
             except ImportError as e:
                 logger.error(f"Instructor module not found: {e}")
                 self.use_instructor = False

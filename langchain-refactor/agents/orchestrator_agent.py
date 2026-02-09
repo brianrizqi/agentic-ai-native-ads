@@ -450,7 +450,12 @@ class OrchestratorAgent:
                 'reasoning': result.get('classification', {}).get('reasoning', ''),
                 'explanation': result.get('explanation', ''),
                 'features': result.get('features', {}),
-                'summary': result.get('summary', '')
+                'summary': result.get('summary', ''),
+                'target_brand': result.get('classification', {}).get('target_brand'),
+                'techniques': result.get('classification', {}).get('techniques', []),
+                'sentiment': result.get('classification', {}).get('sentiment', 'N/A'),
+                'has_cta': result.get('classification', {}).get('has_cta', False),
+                'cta_text': result.get('classification', {}).get('cta_text')
             }
         }
     
