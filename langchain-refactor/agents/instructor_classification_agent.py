@@ -252,6 +252,23 @@ Klasifikasi Mendasar:"""
                     max_tokens=self.max_new_tokens,
                     temperature=self.temperature,
                 )
+                
+                # CLEANING: Strip training leaks and hallucinations
+                import re
+                if result.reasoning:
+                    # Remove training constraints like "- Minimal 50 karakter" or "- Garis pemisah"
+                    result.reasoning = re.sub(r'[-\n ]*(Minimal|Garis pemisah|Minimal 50 karakter).*', '', result.reasoning).strip()
+                    # Remove common system tags
+                    tags = ["Output JSON:", "Klasifikasi Output:", "Penjelasan:"]
+                    for tag in tags:
+                        if tag in result.reasoning:
+                            result.reasoning = result.reasoning.split(tag)[0].strip()
+                
+                # Catch generic hallucinations in target_brand
+                # If model says 'Corporate News' or 'Press Release' when it's not a brand
+                if result.target_brand and result.target_brand.lower() in ["corporate news", "press release", "none", "n/a", "tidak ada"]:
+                    result.target_brand = None
+
                 logger.info(f"Advanced Classification: {result.label} for {result.target_brand or 'No Brand'}")
                 return result
             else:

@@ -97,16 +97,20 @@ class FullPipelineChain:
         
         logger.info("Full Pipeline Chain initialized (with explanation support)")
     
-    def run(self, url: str) -> Dict[str, Any]:
+    def run(self, url: str, include_explanation: Optional[bool] = None) -> Dict[str, Any]:
         """
         Run complete pipeline on a URL.
         
         Args:
             url: URL to analyze
+            include_explanation: Whether to include detailed explanation (overrides default)
             
         Returns:
             Complete analysis result
         """
+        if include_explanation is None:
+            include_explanation = self.generate_explanation
+            
         try:
             logger.info(f"Starting pipeline for: {url}")
             
@@ -180,7 +184,7 @@ class FullPipelineChain:
             
             # Step 5: Generate Explanation (if enabled)
             explanation = ""
-            if self.generate_explanation and self.explainer:
+            if include_explanation and self.explainer:
                 logger.info("[5/5] Generating explanation...")
                 explanation = self.explainer.explain(
                     content=cleaned_text,

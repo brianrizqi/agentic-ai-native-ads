@@ -460,8 +460,12 @@ class OrchestratorAgent:
             self._clear_context()
             self.context['last_scraped_url'] = url
         
-        logger.info(f"🚀 Running full pipeline: {url}")
-        result = self.full_pipeline.run(url)
+        # Determine if explanation is needed
+        user_query = intent_result.get('query', '').lower()
+        should_explain = any(k in user_query for k in ['jelas', 'kenapa', 'alasan', 'why', 'reason', 'maksud'])
+        
+        logger.info(f"🚀 Running full pipeline: {url} (Explain: {should_explain})")
+        result = self.full_pipeline.run(url, include_explanation=should_explain)
         
         if result.get('status') == 'failed':
             return {
