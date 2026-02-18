@@ -39,8 +39,8 @@ class RetrieverAgent:
         """Load embedding model."""
         try:
             from sentence_transformers import SentenceTransformer
-            model = SentenceTransformer(self.embedding_model_name)
-            logger.info("Embedding model loaded successfully")
+            model = SentenceTransformer(self.embedding_model_name, device='cpu')
+            logger.info("Embedding model loaded successfully (CPU mode)")
             return model
         except ImportError:
             logger.warning("sentence-transformers not installed (pip install sentence-transformers)")
