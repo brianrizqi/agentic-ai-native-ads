@@ -46,8 +46,8 @@ class EvaluationFramework:
         # Initialize BERTScore
         try:
             from bert_score import BERTScorer
-            self.bert_scorer = BERTScorer(lang="id", rescale_with_baseline=True)
-            print("[OK] BERTScore initialized")
+            self.bert_scorer = BERTScorer(lang="id", rescale_with_baseline=True, device="cpu")
+            print("[OK] BERTScore initialized (CPU mode)")
         except ImportError:
             print("[WARNING] bert-score not installed. Run: pip install bert-score")
             self.bert_scorer = None
@@ -72,11 +72,12 @@ class EvaluationFramework:
             lora_path=lora_path
         )
         
-        # Initialize judge (separate instance)
-        print(f"[INFO] Initializing LLM Judge: {judge_model}")
+        # Initialize judge (separate instance) - Force CPU to avoid CUDA conflicts
+        print(f"[INFO] Initializing LLM Judge (CPU): {judge_model}")
         self.judge_agent = LLMClassifierAgent(
             provider='huggingface',
-            model_name=judge_model
+            model_name=judge_model,
+            device='cpu' # Force CPU for judge
         )
     
     def evaluate_sample(self, content: str, ground_truth_label: str) -> Dict[str, Any]:

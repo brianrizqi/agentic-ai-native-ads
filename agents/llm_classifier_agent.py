@@ -18,7 +18,8 @@ class LLMClassifierAgent:
     
     def __init__(self, api_key: str = '', model_name: str = 'openai/gpt-oss-20b', 
                  provider: str = 'huggingface', temperature: float = 0.3, 
-                 max_tokens: int = 1000, lora_path: Optional[str] = None):
+                 max_tokens: int = 1000, lora_path: Optional[str] = None,
+                 device: Optional[str] = None):
         """
         Initialize LLM Classifier Agent.
         
@@ -29,6 +30,7 @@ class LLMClassifierAgent:
             temperature: Sampling temperature
             max_tokens: Maximum tokens in response
             lora_path: Path to LoRA adapters (optional)
+            device: Device to use (e.g. 'cpu', 'cuda', 'auto')
         """
         self.api_key = api_key
         self.model_name = model_name
@@ -36,6 +38,7 @@ class LLMClassifierAgent:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.lora_path = lora_path
+        self.device = device or 'auto'
         self.client = self._initialize_client()
         logger.info(f"LLM Classifier initialized with {model_name} ({provider})")
     
@@ -65,26 +68,35 @@ class LLMClassifierAgent:
                     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
                     from peft import PeftModel
                     
-                    bnb_config = BitsAndBytesConfig(
-                        load_in_4bit=True,
-                        bnb_4bit_quant_type="nf4",
-                        bnb_4bit_compute_dtype=torch.float16,
-                    )
+                    # BNB only works on CUDA
+                    if self.device != 'cpu':
+                        bnb_config = BitsAndBytesConfig(
+                            load_in_4bit=True,
+                            bnb_4bit_quant_type="nf4",
+                            bnb_4bit_compute_dtype=torch.float16,
+                        )
+                    else:
+                        bnb_config = None
                     
                     tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=self.api_key)
                     base_model = AutoModelForCausalLM.from_pretrained(
                         self.model_name,
                         quantization_config=bnb_config,
-                        device_map="auto",
+                        device_map=self.device if self.device != 'cpu' else None,
+                        torch_dtype=torch.float16 if self.device != 'cpu' else torch.float32,
                         token=self.api_key
                     )
+                    if self.device == 'cpu':
+                        base_model = base_model.to('cpu')
+                        
                     model = PeftModel.from_pretrained(base_model, self.lora_path)
                     
                     generator = pipeline(
                         "text-generation",
                         model=model,
                         tokenizer=tokenizer,
-                        framework="pt"
+                        framework="pt",
+                        device='cpu' if self.device == 'cpu' else None
                     )
                 else:
                     # Use device_map="auto" for MIG compatibility (no sudo needed)
@@ -92,12 +104,13 @@ class LLMClassifierAgent:
                     generator = pipeline(
                         "text-generation", 
                         model=self.model_name, 
-                        device_map="auto",  # Auto handle MIG and multi-GPU
-                        torch_dtype=torch.float16,  # Use FP16 for efficiency
+                        device_map=self.device if self.device != 'cpu' else None,
+                        device=0 if self.device == 'cuda' else (-1 if self.device == 'cpu' else None),
+                        torch_dtype=torch.float16 if self.device != 'cpu' else torch.float32,
                         framework="pt",  # Force PyTorch (avoid TensorFlow/Keras)
                         token=self.api_key
                     )
-                print(f"   [SUCCESS] Model loaded successfully!")
+                print(f"   [SUCCESS] Model loaded successfully on {self.device}!")
                 return generator
             except ImportError as e:
                 print(f"   [ERROR] Missing dependencies: {e}")
