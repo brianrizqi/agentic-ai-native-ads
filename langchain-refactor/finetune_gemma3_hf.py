@@ -7,6 +7,7 @@ import os
 import json
 import torch
 import argparse
+from pathlib import Path
 from datasets import Dataset
 from transformers import (
     AutoModelForCausalLM,
