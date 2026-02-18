@@ -30,13 +30,15 @@ class EvaluationFramework:
     """
     
     def __init__(self, model_name: str = 'mistralai/Mistral-7B-Instruct-v0.2',
-                 judge_model: str = 'mistralai/Mistral-7B-Instruct-v0.2'):
+                 judge_model: str = 'mistralai/Mistral-7B-Instruct-v0.2',
+                 lora_path: str = None):
         """
         Initialize evaluation framework.
         
         Args:
             model_name: Model to evaluate
             judge_model: Model to use as judge
+            lora_path: Path to LoRA adapters (optional)
         """
         self.model_name = model_name
         self.judge_model = judge_model
@@ -66,7 +68,8 @@ class EvaluationFramework:
         
         self.classifier_agent = LLMClassifierAgent(
             provider='huggingface',
-            model_name=model_name
+            model_name=model_name,
+            lora_path=lora_path
         )
         
         # Initialize judge (separate instance)
@@ -350,6 +353,8 @@ def main():
                        help='Model to evaluate')
     parser.add_argument('--judge-model', type=str, default='mistralai/Mistral-7B-Instruct-v0.2',
                        help='Model to use as judge')
+    parser.add_argument('--lora-path', type=str, default=None,
+                       help='Path to LoRA adapters (optional)')
     parser.add_argument('--dataset', type=str, default='data/llm_dataset_instruction.json',
                        help='Dataset path')
     parser.add_argument('--num-samples', type=int, default=100,
@@ -367,7 +372,8 @@ def main():
     # Initialize evaluator
     evaluator = EvaluationFramework(
         model_name=args.model,
-        judge_model=args.judge_model
+        judge_model=args.judge_model,
+        lora_path=args.lora_path
     )
     
     # Run evaluation

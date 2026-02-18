@@ -25,7 +25,8 @@ from agents.llm_classifier_agent import LLMClassifierAgent
 class ComprehensiveEvaluator:
     """Evaluasi komprehensif untuk paper penelitian."""
     
-    def __init__(self, model_name: str = 'mistralai/Mistral-7B-Instruct-v0.2'):
+    def __init__(self, model_name: str = 'mistralai/Mistral-7B-Instruct-v0.2', 
+                 lora_path: str = None):
         self.model_name = model_name
         
         # Initialize agents
@@ -42,7 +43,8 @@ class ComprehensiveEvaluator:
         
         self.classifier_agent = LLMClassifierAgent(
             provider='huggingface',
-            model_name=model_name
+            model_name=model_name,
+            lora_path=lora_path
         )
     
     def evaluate_sample(self, content: str, ground_truth: str) -> Dict[str, Any]:
@@ -242,6 +244,7 @@ class ComprehensiveEvaluator:
 def main():
     parser = argparse.ArgumentParser(description='Comprehensive Evaluation')
     parser.add_argument('--model', type=str, default='mistralai/Mistral-7B-Instruct-v0.2')
+    parser.add_argument('--lora-path', type=str, default=None)
     parser.add_argument('--dataset', type=str, default='data/llm_dataset_instruction.json')
     parser.add_argument('--num-samples', type=int, default=500)
     parser.add_argument('--output', type=str, default='data/comprehensive_evaluation.json')
@@ -253,7 +256,10 @@ def main():
         return
     
     # Initialize evaluator
-    evaluator = ComprehensiveEvaluator(model_name=args.model)
+    evaluator = ComprehensiveEvaluator(
+        model_name=args.model,
+        lora_path=args.lora_path
+    )
     
     # Run evaluation
     results = evaluator.evaluate_dataset(

@@ -18,7 +18,7 @@ class LLMClassifierAgent:
     
     def __init__(self, api_key: str = '', model_name: str = 'openai/gpt-oss-20b', 
                  provider: str = 'huggingface', temperature: float = 0.3, 
-                 max_tokens: int = 1000):
+                 max_tokens: int = 1000, lora_path: Optional[str] = None):
         """
         Initialize LLM Classifier Agent.
         
@@ -28,12 +28,14 @@ class LLMClassifierAgent:
             provider: 'openai', 'ollama', or 'huggingface'
             temperature: Sampling temperature
             max_tokens: Maximum tokens in response
+            lora_path: Path to LoRA adapters (optional)
         """
         self.api_key = api_key
         self.model_name = model_name
         self.provider = provider
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.lora_path = lora_path
         self.client = self._initialize_client()
         logger.info(f"LLM Classifier initialized with {model_name} ({provider})")
     
@@ -58,16 +60,43 @@ class LLMClassifierAgent:
                 print(f"   [INFO] Loading HuggingFace model: {self.model_name}...")
                 print(f"   [INFO] Using device_map='auto' for MIG compatibility...")
                 
-                # Use device_map="auto" for MIG compatibility (no sudo needed)
-                # Force framework='pt' to avoid Keras 3 issue
-                generator = pipeline(
-                    "text-generation", 
-                    model=self.model_name, 
-                    device_map="auto",  # Auto handle MIG and multi-GPU
-                    torch_dtype=torch.float16,  # Use FP16 for efficiency
-                    framework="pt",  # Force PyTorch (avoid TensorFlow/Keras)
-                    token=self.api_key
-                )
+                if self.lora_path:
+                    print(f"   [INFO] Loading LoRA adapters from: {self.lora_path}...")
+                    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+                    from peft import PeftModel
+                    
+                    bnb_config = BitsAndBytesConfig(
+                        load_in_4bit=True,
+                        bnb_4bit_quant_type="nf4",
+                        bnb_4bit_compute_dtype=torch.float16,
+                    )
+                    
+                    tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=self.api_key)
+                    base_model = AutoModelForCausalLM.from_pretrained(
+                        self.model_name,
+                        quantization_config=bnb_config,
+                        device_map="auto",
+                        token=self.api_key
+                    )
+                    model = PeftModel.from_pretrained(base_model, self.lora_path)
+                    
+                    generator = pipeline(
+                        "text-generation",
+                        model=model,
+                        tokenizer=tokenizer,
+                        framework="pt"
+                    )
+                else:
+                    # Use device_map="auto" for MIG compatibility (no sudo needed)
+                    # Force framework='pt' to avoid Keras 3 issue
+                    generator = pipeline(
+                        "text-generation", 
+                        model=self.model_name, 
+                        device_map="auto",  # Auto handle MIG and multi-GPU
+                        torch_dtype=torch.float16,  # Use FP16 for efficiency
+                        framework="pt",  # Force PyTorch (avoid TensorFlow/Keras)
+                        token=self.api_key
+                    )
                 print(f"   [SUCCESS] Model loaded successfully!")
                 return generator
             except ImportError as e:
