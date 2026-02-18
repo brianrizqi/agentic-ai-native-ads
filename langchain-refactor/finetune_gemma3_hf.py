@@ -35,8 +35,22 @@ Klasifikasi:
 """
 
 def load_and_format_dataset(dataset_path: str) -> Dataset:
-    print(f"Loading dataset from: {dataset_path}")
-    with open(dataset_path, 'r', encoding='utf-8') as f:
+    # Try different path resolutions
+    path = Path(dataset_path)
+    if not path.exists():
+        # Try relative to script location
+        script_dir = Path(__file__).parent
+        path = script_dir / dataset_path
+    
+    if not path.exists():
+        # Try relative to script's parent (project root)
+        path = Path(__file__).parent.parent / "data" / Path(dataset_path).name
+
+    if not path.exists():
+        raise FileNotFoundError(f"Could not find dataset at {dataset_path} or related locations.")
+
+    print(f"Loading dataset from: {path}")
+    with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     print(f"Loaded {len(data)} samples")
     
