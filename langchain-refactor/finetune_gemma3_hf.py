@@ -24,7 +24,7 @@ from trl import SFTTrainer
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI.
-Berita Murni adalah konten INFORMITIF yang objektif.
+Berita Murni adalah konten INFORMATIF yang objektif.
 
 Judul: {title}
 Konten: {content}
@@ -117,24 +117,28 @@ def main():
     dataset = load_and_format_dataset(args.dataset)
     
     # 6. Trainer
+    from trl import SFTConfig
+    
+    config = SFTConfig(
+        output_dir=args.output_dir,
+        max_seq_length=1024,
+        dataset_text_field="text",
+        per_device_train_batch_size=args.batch_size,
+        gradient_accumulation_steps=4,
+        warmup_steps=10,
+        num_train_epochs=args.epochs,
+        learning_rate=2e-4,
+        fp16=True,
+        logging_steps=10,
+        optim="paged_adamw_32bit",
+        report_to="none",
+    )
+    
     trainer = SFTTrainer(
         model=model,
         train_dataset=dataset,
-        dataset_text_field="text",
-        max_seq_length=1024,
+        args=config,
         tokenizer=tokenizer,
-        args=TrainingArguments(
-            per_device_train_batch_size=args.batch_size,
-            gradient_accumulation_steps=4,
-            warmup_steps=10,
-            num_train_epochs=args.epochs,
-            learning_rate=2e-4,
-            fp16=True,
-            logging_steps=10,
-            output_dir=args.output_dir,
-            optim="paged_adamw_32bit",
-            report_to="none",
-        ),
     )
     
     print("⏳ Starting Training...")
