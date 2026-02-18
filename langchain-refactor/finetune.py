@@ -208,7 +208,7 @@ def main():
     parser.add_argument('--model', type=str, default='qwen',
                        choices=list(MODEL_CONFIGS.keys()),
                        help='Model to fine-tune (qwen, gpt-oss, llama, gemma)')
-    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_finetuning_optimized.json',
+    parser.add_argument('--dataset', type=str, default='../data/llm_dataset_12k_refined.json',
                        help='Path to training dataset (use preprocessed version for best results)')
     parser.add_argument('--output', type=str, default=None,
                        help='Output directory (default: ../models/{model}-native-ads)')
