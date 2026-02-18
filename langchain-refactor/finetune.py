@@ -77,6 +77,16 @@ MODEL_CONFIGS = {
         "gradient_accumulation": 2,
         "learning_rate": 2e-5,  # Lower LR for stability
         "description": "Gemma 2 9B - Google's efficient model"
+    },
+    "gemma3": {
+        "name": "google/gemma-3-270m",
+        "max_seq_length": 2048,
+        "lora_r": 32,
+        "lora_alpha": 64,
+        "batch_size": 4,
+        "gradient_accumulation": 4,
+        "learning_rate": 5e-5,
+        "description": "Gemma 3 270M - Latest ultra-efficient model from Google (Hugging Face)"
     }
 }
 
@@ -240,11 +250,19 @@ def main():
     
     # 1. Load base model with Unsloth
     print("[1/5] Loading base model with Unsloth...")
+    
+    # Handle Hugging Face Token
+    import os
+    hf_token = os.environ.get("HF_TOKEN")
+    if not hf_token:
+        print("⚠️  Warning: HF_TOKEN not found in environment. Model download might fail if it's restricted.")
+    
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=config['name'],
         max_seq_length=config['max_seq_length'],
         dtype=None,
         load_in_4bit=True,
+        token=hf_token, # Use token if provided
     )
     
     # 2. Add LoRA adapters
