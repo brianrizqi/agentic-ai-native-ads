@@ -138,7 +138,7 @@ def main():
         model=model,
         train_dataset=dataset,
         args=config,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
     )
     
     print("⏳ Starting Training...")
