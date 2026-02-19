@@ -21,7 +21,7 @@ from peft import PeftModel
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI.
-Berita Murni adalah konten INFORMITIF yang objektif.
+Berita Murni adalah konten INFORMATIF yang objektif.
 
 Judul: {title}
 Konten: {content}

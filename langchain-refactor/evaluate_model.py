@@ -74,11 +74,18 @@ def load_test_set(dataset_path: str, num_samples: int = 100) -> List[Dict]:
     return test_data
 
 
-def evaluate_model(model_path: str, test_data: List[Dict]) -> Dict:
+def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[str] = None) -> Dict:
     """Evaluate model on test set with comprehensive metrics."""
     
     print(f"Initializing model from: {model_path}")
-    agent = ClassificationAgent(provider='local', model_name=model_path)
+    if lora_path:
+        print(f"Using LoRA adapters from: {lora_path}")
+    
+    agent = ClassificationAgent(
+        provider='local', 
+        model_name=model_path,
+        lora_path=lora_path
+    )
     
     results = {
         'correct': 0,
@@ -429,6 +436,8 @@ def main():
                        help='Number of test samples')
     parser.add_argument('--output-dir', type=str, default='eval_results',
                        help='Output directory for results')
+    parser.add_argument('--lora-path', type=str, default=None,
+                       help='Path to LoRA adapters (optional)')
     parser.add_argument('--use-judge', action='store_true',
                        help='Use LLM-as-a-Judge')
     parser.add_argument('--judge-provider', type=str, default='openai',
@@ -466,7 +475,7 @@ def main():
     test_data = load_test_set(args.dataset, args.num_samples)
     
     # Evaluate
-    results = evaluate_model(args.model, test_data)
+    results = evaluate_model(args.model, test_data, lora_path=args.lora_path)
     
     # Compute BERTScore
     bertscore_results = compute_bertscore(results)

@@ -217,6 +217,23 @@ class LLMClassifierAgent:
     def _build_classification_prompt(self, text: str, title: str, 
                                      summary: str, context: str) -> str:
         """Build classification prompt with BALANCED examples."""
+        
+        # Use simplified prompt for Gemma 3 models
+        if "gemma-3" in self.model_name.lower():
+            return f"""Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI.
+Berita Murni adalah konten INFORMATIF yang objektif.
+
+Judul: {title}
+Konten: {text[:800]}
+
+Output (JSON):
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
+
+Klasifikasi:
+"""
+
         prompt = f"""[INST] You are an expert classifier for detecting native advertising in Indonesian news.
 
 CRITICAL INSTRUCTIONS:

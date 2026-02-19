@@ -28,7 +28,8 @@ class FullPipelineChain:
         generate_explanation: bool = True,
         use_instructor: bool = False,
         model_path: Optional[str] = None,
-        llm: Optional[Any] = None
+        llm: Optional[Any] = None,
+        lora_path: Optional[str] = None
     ):
         """
         Initialize full pipeline.
@@ -77,7 +78,8 @@ class FullPipelineChain:
             self.classifier = ClassificationAgent(
                 model_name=model_name,
                 provider=provider,
-                api_key=api_key
+                api_key=api_key,
+                lora_path=lora_path
             )
         
         # Initialize explanation agent (optional)
