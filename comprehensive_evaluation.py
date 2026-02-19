@@ -95,34 +95,44 @@ class ComprehensiveEvaluator:
         confidences = []
         
         for sample in tqdm(dataset, desc="Evaluating"):
-            # Get content and label
-            if 'input' in sample:
-                content = sample['input']
-                # Extract label from output
-                output = sample.get('output', '')
-                if 'native ads' in output.lower():
+            try:
+                # Get content and label
+                if 'input' in sample:
+                    content = sample['input']
+                    # Extract label from output
+                    output = sample.get('output', '')
+                    if 'native ads' in output.lower():
+                        label = 'native ads'
+                    else:
+                        label = 'berita murni'
+                elif 'context' in sample:
+                    content = sample['context']
+                    label = sample.get('label', 'berita murni')
+                else:
+                    continue
+                
+                # Truncate content 
+                max_chars = 6000
+                if len(content) > max_chars:
+                    content = content[:max_chars] + "..."
+                
+                # Normalize label
+                if 'native' in label.lower():
                     label = 'native ads'
                 else:
                     label = 'berita murni'
-            elif 'context' in sample:
-                content = sample['context']
-                label = sample.get('label', 'berita murni')
-            else:
+                
+                # Evaluate
+                result = self.evaluate_sample(content, label)
+                results.append(result)
+                
+                y_true.append(result['ground_truth'])
+                y_pred.append(result['predicted'])
+                confidences.append(result['confidence'])
+                
+            except Exception as e:
+                print(f"\n[ERROR] Failed to evaluate sample: {e}")
                 continue
-            
-            # Normalize label
-            if 'native' in label.lower():
-                label = 'native ads'
-            else:
-                label = 'berita murni'
-            
-            # Evaluate
-            result = self.evaluate_sample(content, label)
-            results.append(result)
-            
-            y_true.append(result['ground_truth'])
-            y_pred.append(result['predicted'])
-            confidences.append(result['confidence'])
         
         # Compute metrics
         metrics = self._compute_metrics(y_true, y_pred, confidences)
