@@ -11,7 +11,7 @@ import argparse
 import os
 from pathlib import Path
 import sys
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
 import numpy as np
 
