@@ -139,7 +139,7 @@ def main():
     y_pred = []
     
     print(f"🧪 Evaluating {len(test_samples)} samples...")
-    for sample in tqdm(test_samples):
+    for i, sample in enumerate(tqdm(test_samples)):
         title = sample.get('title', sample.get('input', '')[:100])
         content = sample.get('input', '')[:800]
         
