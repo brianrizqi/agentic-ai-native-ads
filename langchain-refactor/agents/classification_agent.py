@@ -10,6 +10,7 @@ from langchain_core.callbacks.manager import CallbackManager
 from langchain_core.output_parsers import StrOutputParser
 import json
 import logging
+import os
 
 from prompts.classification_prompts import few_shot_classification_prompt, simple_classification_prompt
 
