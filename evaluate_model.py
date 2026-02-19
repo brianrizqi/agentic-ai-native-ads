@@ -46,8 +46,9 @@ class EvaluationFramework:
         # Initialize BERTScore
         try:
             from bert_score import BERTScorer
-            self.bert_scorer = BERTScorer(lang="id", rescale_with_baseline=True, device="cpu")
-            print("[OK] BERTScore initialized (CPU mode)")
+            # Disable rescale_with_baseline to avoid missing baseline error for 'id'
+            self.bert_scorer = BERTScorer(lang="id", rescale_with_baseline=False, device="cpu")
+            print("[OK] BERTScore initialized (CPU mode, no rescaling)")
         except ImportError:
             print("[WARNING] bert-score not installed. Run: pip install bert-score")
             self.bert_scorer = None
@@ -267,27 +268,38 @@ Provide output in JSON format:
         judge_scores = []
         
         for sample in tqdm(dataset, desc="Evaluating"):
-            # Get content and label
-            if 'input' in sample:
-                content = sample['input']
-                label = sample.get('output', '').split('\n')[0].replace('**Klasifikasi**: ', '')
-            elif 'context' in sample:
-                content = sample['context']
-                label = sample.get('label', 'unknown')
-            else:
+            try:
+                # Get content and label
+                if 'input' in sample:
+                    content = sample['input']
+                    label = sample.get('output', '').split('\n')[0].replace('**Klasifikasi**: ', '')
+                elif 'context' in sample:
+                    content = sample['context']
+                    label = sample.get('label', 'unknown')
+                else:
+                    continue
+                
+                # Truncate content to avoid CUDA out-of-bounds/memory issues for very long text
+                # 6000 chars is usually safe for ~1024-2048 tokens
+                max_chars = 6000
+                if len(content) > max_chars:
+                    content = content[:max_chars] + "..."
+                
+                # Evaluate
+                result = self.evaluate_sample(content, label)
+                results.append(result)
+                
+                # For BERTScore
+                predictions_text.append(result['reasoning'])
+                references_text.append(f"This is {label}")
+                
+                # LLM as Judge
+                judge_result = self.llm_as_judge(result['classification'], label)
+                judge_scores.append(judge_result)
+                
+            except Exception as e:
+                print(f"\n[ERROR] Failed to evaluate sample: {e}")
                 continue
-            
-            # Evaluate
-            result = self.evaluate_sample(content, label)
-            results.append(result)
-            
-            # For BERTScore
-            predictions_text.append(result['reasoning'])
-            references_text.append(f"This is {label}")
-            
-            # LLM as Judge
-            judge_result = self.llm_as_judge(result['classification'], label)
-            judge_scores.append(judge_result)
         
         # Compute metrics
         accuracy = sum(r['correct'] for r in results) / len(results)
