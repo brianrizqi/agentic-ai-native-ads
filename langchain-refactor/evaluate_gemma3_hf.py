@@ -20,14 +20,22 @@ from peft import PeftModel
 # Training prompt template (Must match training!)
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI.
-Berita Murni adalah konten INFORMATIF yang objektif.
+Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI, dengan ciri:
+1. Nada sangat positif terhadap brand/produk/instansi tertentu.
+2. Menggunakan bahasa yang mengajak (persuasif) untuk menggunakan layanan atau membeli produk.
+3. Fokus pada satu sudut pandang yang menguntungkan subjek tanpa kritik.
+4. Seringkali berupa soft-selling yang dibungkus seperti artikel berita.
+
+Berita Murni adalah konten INFORMITIF yang objektif, dengan ciri:
+1. Menyajikan fakta secara netral, meskipun subjeknya adalah perusahaan atau brand.
+2. Menyajikan berbagai sudut pandang (objektif) jika ada isu atau perkembangan terbaru.
+3. Corporate News/Press Release (seperti laporan laba, CSR, atau kegiatan resmi instansi) dikategorikan sebagai Berita Murni jika tujuannya adalah memberikan informasi kepada publik, bukan menjual produk secara langsung.
 
 Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
 
 Klasifikasi:
 """
@@ -53,9 +61,10 @@ def parse_model_output(output_text: str):
         pass
     
     # Fallback keyword matching
-    if 'native ads' in output_text.lower():
+    clean_text = output_text.lower()
+    if 'native ads' in clean_text or '"label": "native ads"' in clean_text:
         return 'native ads'
-    elif 'berita murni' in output_text.lower():
+    elif 'berita murni' in clean_text or '"label": "berita murni"' in clean_text:
         return 'berita murni'
     return 'unknown'
 
@@ -150,6 +159,14 @@ def main():
         response = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
         pred_label = parse_model_output(response)
         
+        if (i < 5):
+            print(f"\n--- Debug Sample {i+1} ---")
+            print(f"Prompt preview: {prompt[:100]}...")
+            print(f"Raw Response: |{response}|")
+            print(f"Parsed Label: {pred_label}")
+            print(f"Ground Truth: {gt_label}")
+            print("-" * 20)
+
         y_true.append(gt_label)
         y_pred.append(pred_label)
 
