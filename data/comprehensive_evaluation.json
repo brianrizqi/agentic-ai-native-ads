@@ -1,0 +1,1238 @@
+{
+  "model": "google/gemma-3-270m",
+  "num_samples": 200,
+  "metrics": {
+    "accuracy": 0.51,
+    "macro_avg": {
+      "precision": 0.47690217391304346,
+      "recall": 0.49318910256410253,
+      "f1_score": 0.3923611111111111
+    },
+    "native_ads": {
+      "precision": 0.4375,
+      "recall": 0.07291666666666667,
+      "f1_score": 0.125,
+      "support": 96.0
+    },
+    "berita_murni": {
+      "precision": 0.5163043478260869,
+      "recall": 0.9134615384615384,
+      "f1_score": 0.6597222222222222,
+      "support": 104.0
+    },
+    "confusion_matrix": [
+      [
+        7,
+        89
+      ],
+      [
+        9,
+        95
+      ]
+    ],
+    "avg_confidence": 0.6039999999999999,
+    "confidence_std": 0.01356465996625055
+  },
+  "detailed_results": [
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 3 istilah promosi"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 3 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 3 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 3 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "berita murni",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 3 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "native ads",
+      "ground_truth": "native ads",
+      "confidence": 0.65,
+      "reasoning": "Berbasis kata kunci: terdeteksi 2 istilah promosi"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "berita murni",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    },
+    {
+      "predicted": "berita murni",
+      "ground_truth": "native ads",
+      "confidence": 0.6,
+      "reasoning": "Berbasis kata kunci: tampak seperti konten berita murni"
+    }
+  ]
+}
