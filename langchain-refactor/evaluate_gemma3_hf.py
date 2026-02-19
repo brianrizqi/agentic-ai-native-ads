@@ -81,24 +81,44 @@ def main():
 
     hf_token = os.environ.get("HF_TOKEN")
     
-    print(f"🚀 Loading Base Model: {args.base_model}...")
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16,
-    )
+    model_path = Path(args.model_path)
+    is_merged = not (model_path / "adapter_config.json").exists()
     
-    tokenizer = AutoTokenizer.from_pretrained(args.base_model, token=hf_token)
-    base_model = AutoModelForCausalLM.from_pretrained(
-        args.base_model,
-        quantization_config=bnb_config,
-        device_map="auto",
-        token=hf_token
-    )
-    
-    print(f"🚀 Loading LoRA Adapters: {args.model_path}...")
-    model = PeftModel.from_pretrained(base_model, args.model_path)
+    if is_merged:
+        # Merged model — load directly without base model + LoRA
+        print(f"🚀 Loading merged model directly from: {args.model_path}...")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.float16,
+        )
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path, token=hf_token)
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_path,
+            quantization_config=bnb_config,
+            device_map="auto",
+            token=hf_token
+        )
+    else:
+        # LoRA adapter — load base model first, then apply LoRA
+        print(f"🚀 Loading Base Model: {args.base_model}...")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.float16,
+        )
+        tokenizer = AutoTokenizer.from_pretrained(args.base_model, token=hf_token)
+        base_model = AutoModelForCausalLM.from_pretrained(
+            args.base_model,
+            quantization_config=bnb_config,
+            device_map="auto",
+            token=hf_token
+        )
+        print(f"🚀 Loading LoRA Adapters: {args.model_path}...")
+        model = PeftModel.from_pretrained(base_model, args.model_path)
+
     model.eval()
+
 
     # Load dataset
     data = load_dataset(args.dataset)
