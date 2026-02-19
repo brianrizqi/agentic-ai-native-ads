@@ -175,7 +175,7 @@ def compute_bertscore(results: Dict) -> Dict:
     if not HAS_BERTSCORE:
         return {}
     
-    print("\n📊 Computing BERTScore for reasoning quality...")
+    print("\n📊 Computing BERTScore for reasoning quality (CPU mode)...")
     
     gt_reasoning = results['reasoning_texts']['ground_truth']
     pred_reasoning = results['reasoning_texts']['predicted']
@@ -193,13 +193,24 @@ def compute_bertscore(results: Dict) -> Dict:
     gt_texts = [str(t) for t in gt_texts]
     pred_texts = [str(t) for t in pred_texts]
     
-    P, R, F1 = bert_score(pred_texts, gt_texts, lang='id', verbose=False)
+    # Clear GPU cache before running BERTScore to avoid CUDA conflicts
+    # Force BERTScore to run on CPU to avoid conflicts with classification model on GPU
+    import torch
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    try:
+        P, R, F1 = bert_score(pred_texts, gt_texts, lang='id', verbose=False, device='cpu')
+    except Exception as e:
+        print(f"⚠️  BERTScore failed: {e}")
+        return {}
     
     return {
         'precision': float(P.mean()),
         'recall': float(R.mean()),
         'f1': float(F1.mean())
     }
+
 
 
 def llm_as_judge(results: Dict, api_key: str = None, provider: str = "openai", model: str = "gpt-4o-mini") -> Dict:
