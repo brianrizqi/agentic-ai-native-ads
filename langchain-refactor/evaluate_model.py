@@ -193,17 +193,14 @@ def compute_bertscore(results: Dict) -> Dict:
     gt_texts = [str(t) for t in gt_texts]
     pred_texts = [str(t) for t in pred_texts]
     
-    # Clear GPU cache before running BERTScore to avoid CUDA conflicts
-    # Force BERTScore to run on CPU to avoid conflicts with classification model on GPU
-    import torch
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    
+    # Run BERTScore on CPU to avoid conflicts with classification model on GPU
+    # Do NOT call torch.cuda.empty_cache() here - GPU may be in error state
     try:
         P, R, F1 = bert_score(pred_texts, gt_texts, lang='id', verbose=False, device='cpu')
     except Exception as e:
         print(f"⚠️  BERTScore failed: {e}")
         return {}
+
     
     return {
         'precision': float(P.mean()),
