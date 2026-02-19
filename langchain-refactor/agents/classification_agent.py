@@ -27,7 +27,8 @@ class ClassificationAgent:
         provider: str = "openai",
         api_key: Optional[str] = None,
         temperature: float = 0.3,
-        use_few_shot: bool = True
+        use_few_shot: bool = True,
+        lora_path: Optional[str] = None
     ):
         """
         Initialize Classification Agent.
@@ -38,17 +39,37 @@ class ClassificationAgent:
             api_key: API key for the provider
             temperature: Sampling temperature
             use_few_shot: Whether to use few-shot learning
+            lora_path: Path to LoRA adapters (optional)
         """
         self.model_name = model_name
         self.provider = provider
         self.temperature = temperature
         self.use_few_shot = use_few_shot
+        self.lora_path = lora_path
         
         # Initialize LLM
         self.llm = self._initialize_llm(api_key)
         
-        # Select prompt based on provider
-        if self.provider == "local":
+        # Select prompt based on model/provider
+        if "gemma-3" in self.model_name.lower():
+            # Use EXACT same prompt as fine-tuning for Gemma 3
+            from langchain_core.prompts import PromptTemplate
+            prompt = PromptTemplate.from_template(
+                """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI.
+Berita Murni adalah konten INFORMATIF yang objektif.
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
+
+Klasifikasi:
+"""
+            )
+        elif self.provider == "local":
             # Use simplified prompt for local models
             from prompts.classification_prompts import simple_local_prompt
             prompt = simple_local_prompt
@@ -94,25 +115,47 @@ class ClassificationAgent:
                 
                 logger.info(f"Loading local model from: {self.model_name}")
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                model = AutoModelForCausalLM.from_pretrained(
+                
+                # Setup quantization for local loading
+                bnb_config = None
+                if torch.cuda.is_available():
+                    from transformers import BitsAndBytesConfig
+                    bnb_config = BitsAndBytesConfig(
+                        load_in_4bit=True,
+                        bnb_4bit_quant_type="nf4",
+                        bnb_4bit_compute_dtype=torch.float16,
+                        bnb_4bit_use_double_quant=True,
+                    )
+
+                base_model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
+                    quantization_config=bnb_config,
                     device_map="auto",
-                    torch_dtype="auto"
+                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    trust_remote_code=True
                 )
+                
+                # Apply LoRA if provided
+                if self.lora_path:
+                    logger.info(f"Applying LoRA adapters from: {self.lora_path}")
+                    from peft import PeftModel
+                    model = PeftModel.from_pretrained(base_model, self.lora_path)
+                else:
+                    model = base_model
                 
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=512,  # Increased to ensure complete JSON generation
-                    temperature=0.1,  # Lower temperature for more deterministic output
-                    do_sample=True,  # Enable sampling
-                    top_p=0.9,  # Nucleus sampling
-                    top_k=50,  # Top-k sampling for better quality
-                    repetition_penalty=1.15,  # Penalize repetition
+                    max_new_tokens=512,
+                    temperature=0.1,
+                    do_sample=True,
+                    top_p=0.9,
+                    top_k=50,
+                    repetition_penalty=1.15,
                     eos_token_id=tokenizer.eos_token_id,
                     pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id else tokenizer.eos_token_id,
-                    return_full_text=False  # Only return generated text, not prompt
+                    return_full_text=False
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)

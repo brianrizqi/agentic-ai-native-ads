@@ -88,6 +88,7 @@ def main():
     parser.add_argument('--api-key', type=str, help='API key for LLM provider')
     parser.add_argument('--output', type=str, help='Output JSON file')
     parser.add_argument('--collect', type=int, help='Collect and build dataset with N articles')
+    parser.add_argument('--lora-path', type=str, help='Path to LoRA adapters (optional)')
     parser.add_argument('--verbose', action='store_true', help='Verbose output')
     
     args = parser.parse_args()
@@ -100,7 +101,8 @@ def main():
     pipeline = FullPipelineChain(
         model_name=args.model,
         provider=args.provider,
-        api_key=args.api_key
+        api_key=args.api_key,
+        lora_path=args.lora_path
     )
     
     # Process URLs
