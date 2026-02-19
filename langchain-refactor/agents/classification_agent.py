@@ -114,7 +114,14 @@ Klasifikasi:
                 import torch
                 
                 logger.info(f"Loading local model from: {self.model_name}")
-                tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                
+                # Use api_key as Hugging Face token if provided
+                hf_token = api_key or os.environ.get("HF_TOKEN")
+                
+                tokenizer = AutoTokenizer.from_pretrained(
+                    self.model_name,
+                    token=hf_token
+                )
                 
                 # Setup quantization for local loading
                 bnb_config = None
@@ -132,7 +139,8 @@ Klasifikasi:
                     quantization_config=bnb_config,
                     device_map="auto",
                     torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                    trust_remote_code=True
+                    trust_remote_code=True,
+                    token=hf_token
                 )
                 
                 # Apply LoRA if provided
