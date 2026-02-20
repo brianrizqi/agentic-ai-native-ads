@@ -94,33 +94,23 @@ def main():
     is_merged = not (model_path / "adapter_config.json").exists()
     
     if is_merged:
-        # Merged model — load directly without base model + LoRA
-        print(f"🚀 Loading merged model directly from: {args.model_path}...")
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16,
-        )
+        # Merged model — load directly in bfloat16
+        print(f"🚀 Loading merged model in bfloat16 from: {args.model_path}...")
         tokenizer = AutoTokenizer.from_pretrained(args.model_path, token=hf_token)
         model = AutoModelForCausalLM.from_pretrained(
             args.model_path,
-            quantization_config=bnb_config,
             device_map="auto",
+            torch_dtype=torch.bfloat16,
             token=hf_token
         )
     else:
-        # LoRA adapter — load base model first, then apply LoRA
-        print(f"🚀 Loading Base Model: {args.base_model}...")
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16,
-        )
+        # LoRA adapter — load base model in bfloat16
+        print(f"🚀 Loading Base Model in bfloat16: {args.base_model}...")
         tokenizer = AutoTokenizer.from_pretrained(args.base_model, token=hf_token)
         base_model = AutoModelForCausalLM.from_pretrained(
             args.base_model,
-            quantization_config=bnb_config,
             device_map="auto",
+            torch_dtype=torch.bfloat16,
             token=hf_token
         )
         print(f"🚀 Loading LoRA Adapters: {args.model_path}...")
@@ -157,8 +147,7 @@ def main():
             outputs = model.generate(
                 **inputs, 
                 max_new_tokens=150, 
-                temperature=0.1,
-                do_sample=True,
+                do_sample=False, # Use greedy decoding for stability
                 pad_token_id=tokenizer.eos_token_id
             )
         
