@@ -1,0 +1,16 @@
+No;Rentang Minggu;Ringkasan Aktivitas Penelitian
+1;10 Nov - 16 Nov 2025;Inisiasi penelitian, studi literatur komprehensif terkait mekanisme deteksi advertorial, dan pengumpulan dataset awal.
+2;17 Nov - 23 Nov 2025;Eksperimen awal menggunakan GPT-4o sebagai baseline (Ground Truth) untuk klasifikasi native ads pada media digital Indonesia.
+3;24 Nov - 30 Nov 2025;Eksplorasi model bahasa Open-Source (OSS) melalui OpenRouter untuk melakukan studi komparatif performa model komersial vs terbuka.
+4;01 Des - 07 Des 2025;Perancangan arsitektur awal sistem deteksi deteksi konten menggunakan kerangka kerja LangChain untuk orkestrasi agen.
+5;08 Des - 14 Des 2025;Pengujian kapabilitas inferensi model Llama-3 dalam memahami nuansa bahasa persuasif pada korpus berita lokal.
+6;15 Des - 21 Des 2025;Implementasi integrasi API OpenAI dan OpenRouter ke dalam backend klasifikasi untuk monitoring biaya dan efisiensi token.
+7;22 Des - 28 Des 2025;Pengembangan pipeline standarisasi datasets untuk persiapan fase fine-tuning model bahasa lokal.
+8;29 Des - 04 Jan 2026;Konfigurasi environment penelitian pada server GPU (A100) dan penyiapan dependensi komputasi tingkat lanjut.
+9;05 Jan - 11 Jan 2026;Analisis performa model Llama berbasis instruksi dalam tugas tagging entitas dan kategorisasi konten berita.
+10;12 Jan - 18 Jan 2026;Inisiasi riset efisiensi VRAM melalui pengujian library Unsloth untuk akselerasi proses pelatihan model.
+11;19 Jan - 25 Jan 2026;Eksperimen awal teknik Parameter-Efficient Fine-Tuning (PEFT) menggunakan LoRA/QLoRA pada model Llama.
+12;26 Jan - 01 Feb 2026;Transisi fokus optimasi pada model ultra-mini Gemma 3 270M untuk skenario deployment pada perangkat dengan resource minim.
+13;02 Feb - 08 Feb 2026;Refaktorisasi masif basis kode ke struktur modular 'langchain-refactor' guna meningkatkan skalabilitas sistem.
+14;09 Feb - 15 Feb 2026;Eksekusi fine-tuning sistematis pada model Gemma 3 270M dan penanganan kendala teknis terkait kompilator Triton/NVCC.
+15;16 Feb - 20 Feb 2026;Resolusi kritis terhadap degradasi komputasi (CUDA device-side assert) dan optimasi akurasi metrik melalui perancangan ulang Instruct-template.
