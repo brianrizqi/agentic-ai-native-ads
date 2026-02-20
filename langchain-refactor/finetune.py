@@ -22,25 +22,11 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Training prompt template (standalone - no langchain import needed)
-TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+# Optimized prompt for small models (Gemma 3 270M)
+SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni', 'reasoning': '...'}"
 
-Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI, dengan ciri:
-1. Nada sangat positif terhadap brand/produk/instansi tertentu.
-2. Menggunakan bahasa yang mengajak (persuasif) untuk menggunakan layanan atau membeli produk.
-3. Fokus pada satu sudut pandang yang menguntungkan subjek tanpa kritik.
-4. Seringkali berupa soft-selling yang dibungkus seperti artikel berita.
-
-Berita Murni adalah konten INFORMITIF yang objektif, dengan ciri:
-1. Menyajikan fakta secara netral, meskipun subjeknya adalah perusahaan atau brand.
-2. Menyajikan berbagai sudut pandang (objektif) jika ada isu atau perkembangan terbaru.
-3. Corporate News/Press Release (seperti laporan laba, CSR, atau kegiatan resmi instansi) dikategorikan sebagai Berita Murni jika tujuannya adalah memberikan informasi kepada publik, bukan menjual produk secara langsung.
-
-Judul: {title}
+TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
-
-Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
 
 Klasifikasi:
 """
@@ -79,14 +65,14 @@ MODEL_CONFIGS = {
         "description": "Gemma 2 9B - Google's efficient model"
     },
     "gemma3": {
-        "name": "google/gemma-3-270m",
+        "name": "unsloth/gemma-3-270m-it-bnb-4bit",
         "max_seq_length": 2048,
         "lora_r": 32,
         "lora_alpha": 64,
         "batch_size": 4,
         "gradient_accumulation": 4,
-        "learning_rate": 5e-5,
-        "description": "Gemma 3 270M - Latest ultra-efficient model from Google (Hugging Face)"
+        "learning_rate": 2e-5, # Lower LR for better stability in small models
+        "description": "Gemma 3 270M Instruct - Optimized for small-scale instruction following"
     }
 }
 
@@ -128,8 +114,8 @@ class TrainingMonitor(TrainerCallback):
         print(f"\n📈 Training curves saved to: {output_path}")
 
 
-def load_and_format_dataset(dataset_path: str) -> Dataset:
-    """Load dataset and format using EXACT same prompt as inference."""
+def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
+    """Load dataset and format using chat templates for better instruction following."""
     
     print(f"Loading dataset from: {dataset_path}")
     
@@ -190,13 +176,24 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
             sentences = re.split(r'[.!?]\s+', sample['input'])
             title = sentences[0][:100] if sentences else sample['input'][:100]
         
-        prompt = TRAINING_PROMPT_TEMPLATE.format(
+        user_text = TRAINING_PROMPT_TEMPLATE.format(
             title=title,
-            content=sample['input'][:800]  # Limit content length
+            content=sample['input'][:1000]
         )
         
-        # Add expected output
-        text = prompt + expected_output
+        # Use chat template if tokenizer is provided (Standard for Instruct models)
+        if tokenizer is not None:
+            messages = [
+                {"role": "user", "content": SYSTEM_PROMPT + "\n\n" + user_text},
+                {"role": "assistant", "content": expected_output}
+            ]
+            text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
+            # Ensure EOS
+            if not text.endswith(tokenizer.eos_token):
+                text += tokenizer.eos_token
+        else:
+            # Fallback for base models
+            text = SYSTEM_PROMPT + "\n\n" + user_text + expected_output
         
         formatted_data.append({"text": text})
     
@@ -283,7 +280,7 @@ def main():
     
     # 3. Load and prepare dataset
     print("[3/5] Loading and formatting dataset...")
-    dataset = load_and_format_dataset(args.dataset)
+    dataset = load_and_format_dataset(args.dataset, tokenizer=tokenizer)
     
     # Split train/eval
     split = dataset.train_test_split(test_size=0.1, seed=42)
