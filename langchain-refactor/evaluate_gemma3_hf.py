@@ -17,25 +17,11 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Training prompt template (Must match training!)
-TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+# Optimized prompt for small models (Gemma 3 270M)
+SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni', 'reasoning': '...'}"
 
-Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI, dengan ciri:
-1. Nada sangat positif terhadap brand/produk/instansi tertentu.
-2. Menggunakan bahasa yang mengajak (persuasif) untuk menggunakan layanan atau membeli produk.
-3. Fokus pada satu sudut pandang yang menguntungkan subjek tanpa kritik.
-4. Seringkali berupa soft-selling yang dibungkus seperti artikel berita.
-
-Berita Murni adalah konten INFORMITIF yang objektif, dengan ciri:
-1. Menyajikan fakta secara netral, meskipun subjeknya adalah perusahaan atau brand.
-2. Menyajikan berbagai sudut pandang (objektif) jika ada isu atau perkembangan terbaru.
-3. Corporate News/Press Release (seperti laporan laba, CSR, atau kegiatan resmi instansi) dikategorikan sebagai Berita Murni jika tujuannya adalah memberikan informasi kepada publik, bukan menjual produk secara langsung.
-
-Judul: {title}
+TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
-
-Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
 
 Klasifikasi:
 """
@@ -131,7 +117,7 @@ def main():
     print(f"🧪 Evaluating {len(test_samples)} samples...")
     for i, sample in enumerate(tqdm(test_samples)):
         title = sample.get('title', sample.get('input', '')[:100])
-        content = sample.get('input', '')[:800]
+        content = sample.get('input', '')[:1000]
         
         # Determine ground truth (standardize to 'native ads' or 'berita murni')
         gt_raw = sample.get('output', '').lower()
@@ -140,7 +126,14 @@ def main():
         else:
             gt_label = 'berita murni'
         
-        prompt = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
+        user_text = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
+        
+        # Apply chat template for evaluation
+        messages = [
+            {"role": "user", "content": SYSTEM_PROMPT + "\n\n" + user_text},
+        ]
+        prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        
         inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
         
         with torch.no_grad():
