@@ -154,15 +154,23 @@ def main():
         inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
         
         with torch.no_grad():
-            outputs = model.generate(**inputs, max_new_tokens=100, temperature=0.1)
+            outputs = model.generate(
+                **inputs, 
+                max_new_tokens=150, 
+                temperature=0.1,
+                do_sample=True,
+                pad_token_id=tokenizer.eos_token_id
+            )
         
         response = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
         pred_label = parse_model_output(response)
         
         if (i < 5):
             print(f"\n--- Debug Sample {i+1} ---")
-            print(f"Prompt preview: {prompt[:100]}...")
-            print(f"Raw Response: |{response}|")
+            print(f"Prompt length (tokens): {inputs.input_ids.shape[1]}")
+            print(f"Output shape: {outputs.shape}")
+            print(f"Full Decoded Response: |{tokenizer.decode(outputs[0], skip_special_tokens=True)}|")
+            print(f"Raw New Tokens Only: |{response}|")
             print(f"Parsed Label: {pred_label}")
             print(f"Ground Truth: {gt_label}")
             print("-" * 20)
