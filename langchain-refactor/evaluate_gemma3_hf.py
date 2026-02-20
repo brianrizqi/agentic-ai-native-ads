@@ -17,8 +17,8 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Optimized prompt for small models (Gemma 3 270M)
-SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni', 'reasoning': '...'}"
+# Optimized prompt for small models (Gemma 3 270M) - Phase 3 (Simple Label Only)
+SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni'}"
 
 TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}

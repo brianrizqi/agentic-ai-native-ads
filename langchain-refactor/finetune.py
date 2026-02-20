@@ -22,8 +22,8 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Optimized prompt for small models (Gemma 3 270M)
-SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni', 'reasoning': '...'}"
+# Optimized prompt for small models (Gemma 3 270M) - Phase 3 (Simple Label Only)
+SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni'}"
 
 TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
@@ -157,13 +157,18 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
     # Format with proper chat template for training
     formatted_data = []
     for sample in data:
-        # Parse output to get expected JSON format
+        # Parse output to get expected JSON format (Simplified for Phase 3)
         try:
             output_data = json.loads(sample['output'])
-            expected_output = json.dumps(output_data, ensure_ascii=False)
+            # Strip reasoning/confidence to prevent overfitting on repetitive patterns
+            simplified_output = {"label": output_data.get("label", "berita murni")}
+            expected_output = json.dumps(simplified_output, ensure_ascii=False)
         except:
-            # If output is not JSON, use as-is
-            expected_output = sample['output']
+            # Fallback if not JSON
+            if 'native ads' in sample['output'].lower():
+                expected_output = json.dumps({"label": "native ads"})
+            else:
+                expected_output = json.dumps({"label": "berita murni"})
         
         # Format: prompt + expected_output
         # Use standalone TRAINING_PROMPT_TEMPLATE defined at top of file
