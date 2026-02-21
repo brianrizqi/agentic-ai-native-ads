@@ -17,10 +17,10 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Optimized prompt for small models (Gemma 3 270M) - Phase 3 (Simple Label Only)
-SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni'}"
+# Extreme Simplification for Phase 4 (Raw Labels Only)
+TRAINING_PROMPT_TEMPLATE = """Klasifikasikan artikel berikut sebagai: native ads ATAU berita murni. Jawab HANYA dengan label tersebut.
 
-TRAINING_PROMPT_TEMPLATE = """Judul: {title}
+Judul: {title}
 Konten: {content}
 
 Klasifikasi:
@@ -36,23 +36,14 @@ def load_dataset(dataset_path: str):
         return json.load(f)
 
 def parse_model_output(output_text: str):
-    try:
-        # Find JSON block
-        start = output_text.find('{')
-        end = output_text.rfind('}') + 1
-        if start != -1 and end != -1:
-            data = json.loads(output_text[start:end])
-            return data.get('label', 'unknown').lower()
-    except:
-        pass
+    # Phase 4 Label Parsing (Raw String)
+    clean_text = output_text.lower().strip()
     
-    # Fallback keyword matching
-    clean_text = output_text.lower()
-    if 'native ads' in clean_text or '"label": "native ads"' in clean_text:
-        return 'native ads'
-    elif 'berita murni' in clean_text or '"label": "berita murni"' in clean_text:
-        return 'berita murni'
-    return 'unknown'
+    if "native ads" in clean_text:
+        return "native ads"
+    elif "berita murni" in clean_text:
+        return "berita murni"
+    return "unknown"
 
 def plot_confusion_matrix(y_true, y_pred, save_path):
     labels = ['berita murni', 'native ads']
@@ -86,7 +77,7 @@ def main():
         model = AutoModelForCausalLM.from_pretrained(
             args.model_path,
             device_map="auto",
-            torch_dtype=torch.bfloat16,
+            torch_dtype=torch.bfloat16, # Kept for explicit precision but using correct var
             token=hf_token
         )
     else:
@@ -117,7 +108,6 @@ def main():
     print(f"🧪 Evaluating {len(test_samples)} samples...")
     for i, sample in enumerate(tqdm(test_samples)):
         title = sample.get('title', sample.get('input', '')[:100])
-        content = sample.get('input', '')[:1000]
         
         # Determine ground truth (standardize to 'native ads' or 'berita murni')
         gt_raw = sample.get('output', '').lower()
@@ -126,12 +116,11 @@ def main():
         else:
             gt_label = 'berita murni'
         
+        content = sample['input'][:800] # Match Phase 4 training length
         user_text = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
         
-        # Apply chat template for evaluation
-        messages = [
-            {"role": "user", "content": SYSTEM_PROMPT + "\n\n" + user_text},
-        ]
+        # Direct prompt matching training
+        messages = [{"role": "user", "content": user_text}]
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         
         inputs = tokenizer(prompt, return_tensors="pt").to("cuda")

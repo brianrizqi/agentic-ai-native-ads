@@ -22,10 +22,10 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Optimized prompt for small models (Gemma 3 270M) - Phase 3 (Simple Label Only)
-SYSTEM_PROMPT = "Klasifikasikan artikel sebagai JSON: {'label': 'native ads' atau 'berita murni'}"
+# Extreme Simplification for Phase 4 (Raw Labels Only)
+TRAINING_PROMPT_TEMPLATE = """Klasifikasikan artikel berikut sebagai: native ads ATAU berita murni. Jawab HANYA dengan label tersebut.
 
-TRAINING_PROMPT_TEMPLATE = """Judul: {title}
+Judul: {title}
 Konten: {content}
 
 Klasifikasi:
@@ -66,13 +66,13 @@ MODEL_CONFIGS = {
     },
     "gemma3": {
         "name": "unsloth/gemma-3-270m-it-bnb-4bit",
-        "max_seq_length": 2048,
+        "max_seq_length": 1024, # Reduced for focus
         "lora_r": 32,
         "lora_alpha": 64,
         "batch_size": 4,
         "gradient_accumulation": 4,
-        "learning_rate": 2e-5, # Lower LR for better stability in small models
-        "description": "Gemma 3 270M Instruct - Optimized for small-scale instruction following"
+        "learning_rate": 2e-5,
+        "description": "Gemma 3 270M Instruct - Phase 4 (Raw Label Optimization)"
     }
 }
 
@@ -157,18 +157,13 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
     # Format with proper chat template for training
     formatted_data = []
     for sample in data:
-        # Parse output to get expected JSON format (Simplified for Phase 3)
+        # Phase 4: Raw string target instead of JSON
         try:
             output_data = json.loads(sample['output'])
-            # Strip reasoning/confidence to prevent overfitting on repetitive patterns
-            simplified_output = {"label": output_data.get("label", "berita murni")}
-            expected_output = json.dumps(simplified_output, ensure_ascii=False)
+            label = output_data.get("label", "berita murni").lower()
+            expected_output = "native ads" if "native ads" in label else "berita murni"
         except:
-            # Fallback if not JSON
-            if 'native ads' in sample['output'].lower():
-                expected_output = json.dumps({"label": "native ads"})
-            else:
-                expected_output = json.dumps({"label": "berita murni"})
+            expected_output = "native ads" if "native ads" in sample['output'].lower() else "berita murni"
         
         # Format: prompt + expected_output
         # Use standalone TRAINING_PROMPT_TEMPLATE defined at top of file
@@ -183,22 +178,20 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         
         user_text = TRAINING_PROMPT_TEMPLATE.format(
             title=title,
-            content=sample['input'][:1000]
+            content=sample['input'][:800] # Reduced for Phase 4
         )
         
-        # Use chat template if tokenizer is provided (Standard for Instruct models)
+        # Phase 4: Direct prompt without system role for 270M stability
         if tokenizer is not None:
             messages = [
-                {"role": "user", "content": SYSTEM_PROMPT + "\n\n" + user_text},
+                {"role": "user", "content": user_text},
                 {"role": "assistant", "content": expected_output}
             ]
             text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
-            # Ensure EOS
             if not text.endswith(tokenizer.eos_token):
                 text += tokenizer.eos_token
         else:
-            # Fallback for base models
-            text = SYSTEM_PROMPT + "\n\n" + user_text + expected_output
+            text = user_text + expected_output
         
         formatted_data.append({"text": text})
     
@@ -216,8 +209,8 @@ def main():
                        help='Output directory (default: ../models/{model}-native-ads)')
     parser.add_argument('--max-steps', type=int, default=1500,
                        help='Maximum training steps')
-    parser.add_argument('--epochs', type=int, default=1,
-                       help='Number of training epochs')
+    parser.add_argument('--epochs', type=int, default=3,
+                       help='Number of training epochs (Phase 4 recommends 3)')
     parser.add_argument('--eval-steps', type=int, default=100,
                        help='Evaluation frequency (steps)')
     args = parser.parse_args()
