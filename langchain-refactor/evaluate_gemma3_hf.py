@@ -17,13 +17,14 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Phase 5: Multiple Choice Question (MCQ) Formatting for Sub-1B Models
-TRAINING_PROMPT_TEMPLATE = """Apakah artikel berikut ini merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
+# Phase 7: Recency Bias Fix (Inverted Prompt & Drastic Length Reduction)
+TRAINING_PROMPT_TEMPLATE = """Judul: {title}
+Konten: {content}
+
+===
+Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
 A. native ads
 B. berita murni
-
-Judul: {title}
-Konten: {content}
 
 Jawaban (Pilih A atau B):
 """
@@ -132,7 +133,7 @@ def main():
         else:
             gt_label = 'berita murni'
         
-        content = sample['input'][:800] # Match Phase 4 training length
+        content = sample['input'][:400] # Phase 7 Length Reduction
         user_text = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
         
         # Direct prompt matching training
