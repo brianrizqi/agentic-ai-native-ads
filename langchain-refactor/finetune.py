@@ -156,16 +156,23 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         print("   Please run: python tools/prepare_finetuning_dataset.py first")
         print("   Continuing with input-only format (not recommended)\n")
     
+    count_a = 0
+    count_b = 0
+    
     # Format with proper chat template for training
     formatted_data = []
     for sample in data:
-        # Phase 5: MCQ Target (A or B)
-        try:
-            output_data = json.loads(sample['output'])
-            label = output_data.get("label", "berita murni").lower()
-            expected_output = "A" if "native ads" in label else "B"
-        except:
-            expected_output = "A" if "native ads" in sample['output'].lower() else "B"
+        # Phase 6: Bulletproof Label Extraction
+        raw_output = str(sample.get('output', '')).lower()
+        
+        # Priority 1: Check if 'native ads' explicitly exists anywhere in the raw output string
+        # This bypasses JSON parsing failures.
+        if "native ads" in raw_output:
+            expected_output = "A"
+            count_a += 1
+        else:
+            expected_output = "B"
+            count_b += 1
         
         # Format: prompt + expected_output
         # Use standalone TRAINING_PROMPT_TEMPLATE defined at top of file
@@ -190,12 +197,16 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
                 {"role": "assistant", "content": expected_output}
             ]
             text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
-            if not text.endswith(tokenizer.eos_token):
-                text += tokenizer.eos_token
+            # Phase 6: Letting SFTTrainer/tokenizer handle EOS natively to avoid double-token issues
         else:
             text = user_text + expected_output
         
         formatted_data.append({"text": text})
+    
+    print("\n✅ Validated Label Distribution Before Training:")
+    print(f"   Native Ads (A): {count_a}")
+    print(f"   Berita Murni (B): {count_b}")
+    print("   If these numbers are not ~50/50, DO NOT PROCEED WITH TRAINING.\n")
     
     return Dataset.from_list(formatted_data)
 
