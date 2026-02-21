@@ -17,13 +17,15 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Extreme Simplification for Phase 4 (Raw Labels Only)
-TRAINING_PROMPT_TEMPLATE = """Klasifikasikan artikel berikut sebagai: native ads ATAU berita murni. Jawab HANYA dengan label tersebut.
+# Phase 5: Multiple Choice Question (MCQ) Formatting for Sub-1B Models
+TRAINING_PROMPT_TEMPLATE = """Apakah artikel berikut ini merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
+A. native ads
+B. berita murni
 
 Judul: {title}
 Konten: {content}
 
-Klasifikasi:
+Jawaban (Pilih A atau B):
 """
 
 def load_dataset(dataset_path: str):
@@ -36,13 +38,27 @@ def load_dataset(dataset_path: str):
         return json.load(f)
 
 def parse_model_output(output_text: str):
-    # Phase 4 Label Parsing (Raw String)
-    clean_text = output_text.lower().strip()
+    # Phase 5 Label Parsing (MCQ Extraction)
+    clean_text = output_text.strip().upper()
     
-    if "native ads" in clean_text:
+    # In MCQ, we only care about the very first character the model generates
+    # which should be 'A' or 'B'
+    if not clean_text:
+        return "unknown"
+        
+    first_char = clean_text[0]
+    
+    if first_char == "A":
         return "native ads"
-    elif "berita murni" in clean_text:
+    elif first_char == "B":
         return "berita murni"
+        
+    # Fallback if model generates full words despite MCQ prompt
+    if "NATIVE ADS" in clean_text:
+        return "native ads"
+    elif "BERITA MURNI" in clean_text:
+        return "berita murni"
+        
     return "unknown"
 
 def plot_confusion_matrix(y_true, y_pred, save_path):

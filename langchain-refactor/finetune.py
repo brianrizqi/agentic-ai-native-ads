@@ -22,13 +22,15 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Extreme Simplification for Phase 4 (Raw Labels Only)
-TRAINING_PROMPT_TEMPLATE = """Klasifikasikan artikel berikut sebagai: native ads ATAU berita murni. Jawab HANYA dengan label tersebut.
+# Phase 5: Multiple Choice Question (MCQ) Formatting for Sub-1B Models
+TRAINING_PROMPT_TEMPLATE = """Apakah artikel berikut ini merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
+A. native ads
+B. berita murni
 
 Judul: {title}
 Konten: {content}
 
-Klasifikasi:
+Jawaban (Pilih A atau B):
 """
 
 # Model configurations for multi-model support
@@ -157,13 +159,13 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
     # Format with proper chat template for training
     formatted_data = []
     for sample in data:
-        # Phase 4: Raw string target instead of JSON
+        # Phase 5: MCQ Target (A or B)
         try:
             output_data = json.loads(sample['output'])
             label = output_data.get("label", "berita murni").lower()
-            expected_output = "native ads" if "native ads" in label else "berita murni"
+            expected_output = "A" if "native ads" in label else "B"
         except:
-            expected_output = "native ads" if "native ads" in sample['output'].lower() else "berita murni"
+            expected_output = "A" if "native ads" in sample['output'].lower() else "B"
         
         # Format: prompt + expected_output
         # Use standalone TRAINING_PROMPT_TEMPLATE defined at top of file

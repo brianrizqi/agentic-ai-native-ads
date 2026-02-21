@@ -12,5 +12,5 @@ No;Rentang Minggu;Ringkasan Aktivitas Penelitian
 11;19 Jan - 25 Jan 2026;Eksperimen awal teknik Parameter-Efficient Fine-Tuning (PEFT) menggunakan LoRA/QLoRA pada model Llama.
 12;26 Jan - 01 Feb 2026;Transisi fokus optimasi pada model ultra-mini Gemma 3 270M untuk skenario deployment pada perangkat dengan resource minim.
 13;02 Feb - 08 Feb 2026;Refaktorisasi masif basis kode ke struktur modular 'langchain-refactor' guna meningkatkan skalabilitas sistem.
-14;09 Feb - 15 Feb 2026;Finetuning model Gemma 3 270M secara sistematis. Identifikasi kegagalan Phase 3 (degradasi akurasi/sampah) akibat kompleksitas format JSON pada model kecil.
-15;16 Feb - 21 Feb 2026;Implementasi Phase 4: Teknik "Extreme Simplification" menggunakan raw-label output dan multi-epoch training untuk mencapai stabilitas kognitif model 270M.
+14;09 Feb - 15 Feb 2026;Identifikasi kegagalan Phase 3 (degradasi akurasi/sampah) akibat kompleksitas format JSON pada model 270M.
+15;16 Feb - 21 Feb 2026;Implementasi Phase 4 (Extreme Simplification) dan transisi cepat ke Phase 5 (Multiple Choice Question/MCQ Framing) untuk mengatasi limitasi kemampuan generasi teks pada SLM berukuran sub-1B parameter.
