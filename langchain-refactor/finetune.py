@@ -22,13 +22,14 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Phase 5: Multiple Choice Question (MCQ) Formatting for Sub-1B Models
-TRAINING_PROMPT_TEMPLATE = """Apakah artikel berikut ini merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
+# Phase 7: Recency Bias Fix (Inverted Prompt & Drastic Length Reduction)
+TRAINING_PROMPT_TEMPLATE = """Judul: {title}
+Konten: {content}
+
+===
+Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
 A. native ads
 B. berita murni
-
-Judul: {title}
-Konten: {content}
 
 Jawaban (Pilih A atau B):
 """
@@ -68,13 +69,13 @@ MODEL_CONFIGS = {
     },
     "gemma3": {
         "name": "unsloth/gemma-3-270m-it-bnb-4bit",
-        "max_seq_length": 1024, # Reduced for focus
+        "max_seq_length": 1024,
         "lora_r": 32,
         "lora_alpha": 64,
         "batch_size": 4,
         "gradient_accumulation": 4,
-        "learning_rate": 2e-5,
-        "description": "Gemma 3 270M Instruct - Phase 4 (Raw Label Optimization)"
+        "learning_rate": 5e-5, # Phase 7: Increased to escape 'guessing B' local minima
+        "description": "Gemma 3 270M Instruct - Phase 7 (Inverted MCQ Prompt)"
     }
 }
 
@@ -187,7 +188,7 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         
         user_text = TRAINING_PROMPT_TEMPLATE.format(
             title=title,
-            content=sample['input'][:800] # Reduced for Phase 4
+            content=sample['input'][:400] # Phase 7: Drastic reduction to prevent attention loss
         )
         
         # Phase 4: Direct prompt without system role for 270M stability
