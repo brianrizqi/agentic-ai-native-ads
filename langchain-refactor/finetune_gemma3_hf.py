@@ -20,22 +20,18 @@ from transformers import (
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from trl import SFTTrainer
 
-# Prompt template
-TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI.
-Berita Murni adalah konten INFORMATIF yang objektif.
-
-Judul: {title}
+# Phase 7: Recency Bias Fix (Inverted Prompt & Drastic Length Reduction)
+TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
+===
+Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
+A. native ads
+B. berita murni
 
-Klasifikasi:
+Jawaban (Pilih A atau B):
 """
-
-def load_and_format_dataset(dataset_path: str) -> Dataset:
+def load_and_format_dataset(dataset_path: str, tokenizer) -> Dataset:
     # Try different path resolutions
     path = Path(dataset_path)
     if not path.exists():
@@ -58,21 +54,33 @@ def load_and_format_dataset(dataset_path: str) -> Dataset:
     formatted_data = []
     for sample in data:
         # Simple extraction for title if not exists
-        title = sample.get('title', sample.get('input', '')[:100])
-        content = sample.get('input', '')[:800]
-        output = sample.get('output', '')
+        title = sample.get('title')
+        if not title:
+            title = sample.get('input', '')[:100]
+        content = sample.get('input', '')[:400]
         
-        prompt = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
-        text = prompt + output + " <|endoftext|>" # Common end token for HF
+        gt_raw = sample.get('output', '').lower()
+        if 'native ads' in gt_raw:
+            answer = "A"
+        else:
+            answer = "B"
+        
+        user_text = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
+        messages = [
+            {"role": "user", "content": user_text},
+            {"role": "assistant", "content": answer}
+        ]
+        text = tokenizer.apply_chat_template(messages, tokenize=False)
         formatted_data.append({"text": text})
         
     return Dataset.from_list(formatted_data)
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, default='../data/llm_dataset_12k_refined.json')
     parser.add_argument('--output_dir', type=str, default='../models/gemma-3-270m-hf-finetuned')
-    parser.add_argument('--epochs', type=int, default=1)
+    parser.add_argument('--epochs', type=int, default=3)
     parser.add_argument('--batch_size', type=int, default=4)
     args = parser.parse_args()
 
@@ -104,8 +112,8 @@ def main():
     
     # 4. LoRA config
     peft_config = LoraConfig(
-        r=32,
-        lora_alpha=64,
+        r=64,
+        lora_alpha=128,
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
         lora_dropout=0.05,
         bias="none",
@@ -114,7 +122,7 @@ def main():
     model = get_peft_model(model, peft_config)
     
     # 5. Dataset
-    dataset = load_and_format_dataset(args.dataset)
+    dataset = load_and_format_dataset(args.dataset, tokenizer)
     
     # 6. Trainer
     from trl import SFTConfig
