@@ -169,7 +169,7 @@ def main():
         messages = [{"role": "user", "content": user_text}]
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         
-        inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
         
         with torch.no_grad():
             outputs = model.generate(
