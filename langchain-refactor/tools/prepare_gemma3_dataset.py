@@ -11,16 +11,13 @@ from pathlib import Path
 from datasets import Dataset
 from transformers import AutoTokenizer
 
-# Phase 7: Recency Bias Fix Prompt
+# Phase 8: Reverting to Original Gemma 2 Prompt Style
 TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
 
 ===
 Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
-A. native ads
-B. berita murni
-
-Jawaban (Pilih A atau B):
+Jawaban:
 """
 
 GEMMA_CHAT_TEMPLATE = (
@@ -73,20 +70,22 @@ def prepare_dataset(input_path: str, output_path: str, model_id: str):
         # 2. Content Truncation
         content = sample.get('input', '')[:400]
 
-        # 3. Label Mapping
+        # 3. Label Mapping (Original text instead of A/B)
         gt_raw = sample.get('output', '').lower()
         if 'native ads' in gt_raw:
-            answer = "A"
+            answer = "native ads"
         else:
-            answer = "B"
+            answer = "berita murni"
 
-        # 4. Apply Chat Template
+        # 4. Apply Chat Template (Mirroring finetune.py style)
         user_text = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
         messages = [
-            {"role": "user", "content": user_text},
-            {"role": "assistant", "content": answer}
+            {"role": "user", "content": user_text}
         ]
-        text = tokenizer.apply_chat_template(messages, tokenize=False)
+        text_prompt_only = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        
+        # Append answer directly without a strict 'model' turn closure to allow loss calculation on tokens natively
+        text = text_prompt_only + answer
         
         # We save it in a generic format that text fields can be loaded from
         processed_data.append({

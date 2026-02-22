@@ -76,6 +76,16 @@ MODEL_CONFIGS = {
         "gradient_accumulation": 4,
         "learning_rate": 5e-5, # Phase 7: Increased to escape 'guessing B' local minima
         "description": "Gemma 3 270M Instruct - Phase 7 (Inverted MCQ Prompt)"
+    },
+    "gemma3-12b": {
+        "name": "unsloth/gemma-3-12b-it-bnb-4bit",
+        "max_seq_length": 1024,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 1,
+        "gradient_accumulation": 8,
+        "learning_rate": 2e-5,
+        "description": "Gemma 3 12B Instruct - New version for native ads"
     }
 }
 
@@ -216,7 +226,7 @@ def main():
     parser = argparse.ArgumentParser(description='Fine-tune models for Native Ads Detection')
     parser.add_argument('--model', type=str, default='qwen',
                        choices=list(MODEL_CONFIGS.keys()),
-                       help='Model to fine-tune (qwen, gpt-oss, llama, gemma)')
+                       help='Model to fine-tune (qwen, gpt-oss, llama, gemma, gemma3, gemma3-12b)')
     parser.add_argument('--dataset', type=str, default='../data/llm_dataset_12k_refined.json',
                        help='Path to training dataset (use preprocessed version for best results)')
     parser.add_argument('--output', type=str, default=None,
