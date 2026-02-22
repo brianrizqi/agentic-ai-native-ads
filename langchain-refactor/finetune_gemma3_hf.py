@@ -20,16 +20,13 @@ from transformers import (
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from trl import SFTTrainer
 
-# Phase 7: Recency Bias Fix (Inverted Prompt & Drastic Length Reduction)
+# Phase 8: Reverting to Original Gemma 2 Prompt Style
 TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
 
 ===
 Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
-A. native ads
-B. berita murni
-
-Jawaban (Pilih A atau B):
+Jawaban:
 """
 
 GEMMA_CHAT_TEMPLATE = (
@@ -76,6 +73,11 @@ def load_and_format_dataset(dataset_path: str, tokenizer) -> Dataset:
     
     formatted_data = []
     for sample in data:
+        # If dataset is already pre-formatted by prepare_gemma3_dataset.py
+        if "text" in sample and "input" not in sample:
+            formatted_data.append({"text": sample["text"]})
+            continue
+
         # Simple extraction for title if not exists
         title = sample.get('title')
         if not title:
@@ -84,16 +86,16 @@ def load_and_format_dataset(dataset_path: str, tokenizer) -> Dataset:
         
         gt_raw = sample.get('output', '').lower()
         if 'native ads' in gt_raw:
-            answer = "A"
+            answer = "native ads"
         else:
-            answer = "B"
+            answer = "berita murni"
         
         user_text = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
         messages = [
-            {"role": "user", "content": user_text},
-            {"role": "assistant", "content": answer}
+            {"role": "user", "content": user_text}
         ]
-        text = tokenizer.apply_chat_template(messages, tokenize=False)
+        text_prompt_only = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        text = text_prompt_only + answer
         formatted_data.append({"text": text})
         
     return Dataset.from_list(formatted_data)

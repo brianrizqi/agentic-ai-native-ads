@@ -17,16 +17,13 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Phase 7: Recency Bias Fix (Inverted Prompt & Drastic Length Reduction)
+# Phase 8: Reverting to Original Gemma 2 Prompt Style
 TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
 
 ===
 Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
-A. native ads
-B. berita murni
-
-Jawaban (Pilih A atau B):
+Jawaban:
 """
 
 GEMMA_CHAT_TEMPLATE = (
@@ -61,25 +58,15 @@ def load_dataset(dataset_path: str):
         return json.load(f)
 
 def parse_model_output(output_text: str):
-    # Phase 5 Label Parsing (MCQ Extraction)
-    clean_text = output_text.strip().upper()
+    # Phase 8 Label Parsing (Full Text Extraction)
+    clean_text = output_text.strip().lower()
     
-    # In MCQ, we only care about the very first character the model generates
-    # which should be 'A' or 'B'
     if not clean_text:
         return "unknown"
         
-    first_char = clean_text[0]
-    
-    if first_char == "A":
+    if "native ads" in clean_text:
         return "native ads"
-    elif first_char == "B":
-        return "berita murni"
-        
-    # Fallback if model generates full words despite MCQ prompt
-    if "NATIVE ADS" in clean_text:
-        return "native ads"
-    elif "BERITA MURNI" in clean_text:
+    elif "berita murni" in clean_text:
         return "berita murni"
         
     return "unknown"
