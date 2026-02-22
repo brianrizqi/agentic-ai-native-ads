@@ -31,6 +31,29 @@ B. berita murni
 
 Jawaban (Pilih A atau B):
 """
+
+GEMMA_CHAT_TEMPLATE = (
+    "{% if messages[0]['role'] == 'system' %}"
+    "{{ '<start_of_turn>system\\n' + messages[0]['content'] + '<end_of_turn>\\n' }}"
+    "{% set loop_messages = messages[1:] %}"
+    "{% else %}"
+    "{% set loop_messages = messages %}"
+    "{% endif %}"
+    "{% for message in loop_messages %}"
+    "{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}"
+    "{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}"
+    "{% endif %}"
+    "{% if message['role'] == 'user' %}"
+    "{{ '<start_of_turn>user\\n' + message['content'] + '<end_of_turn>\\n' }}"
+    "{% elif message['role'] == 'assistant' %}"
+    "{{ '<start_of_turn>model\\n' + message['content'] + '<end_of_turn>\\n' }}"
+    "{% endif %}"
+    "{% endfor %}"
+    "{% if add_generation_prompt %}"
+    "{{ '<start_of_turn>model\\n' }}"
+    "{% endif %}"
+)
+
 def load_and_format_dataset(dataset_path: str, tokenizer) -> Dataset:
     # Try different path resolutions
     path = Path(dataset_path)
@@ -92,6 +115,11 @@ def main():
     # 1. Tokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_id, token=hf_token)
     tokenizer.pad_token = tokenizer.eos_token
+    
+    # Check and set chat template if missing
+    if not hasattr(tokenizer, 'chat_template') or not tokenizer.chat_template:
+        print("Tokenizer is missing a chat_template. Setting the default Gemma chat template...")
+        tokenizer.chat_template = GEMMA_CHAT_TEMPLATE
     
     # 2. Quantization config (4-bit)
     bnb_config = BitsAndBytesConfig(
