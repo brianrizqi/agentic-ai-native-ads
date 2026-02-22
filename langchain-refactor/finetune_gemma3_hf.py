@@ -130,10 +130,11 @@ def main():
     )
     
     # 3. Load model
+    device_map = {"": torch.cuda.current_device()} if torch.cuda.is_available() else "auto"
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         quantization_config=bnb_config,
-        device_map="auto",
+        device_map=device_map,
         token=hf_token
     )
     model = prepare_model_for_kbit_training(model)
