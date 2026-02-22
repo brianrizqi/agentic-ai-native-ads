@@ -347,6 +347,7 @@ def main():
             save_steps=args.eval_steps * 2,
             save_total_limit=3,
             report_to="none",
+            average_tokens_across_devices=False,
         ),
         callbacks=[monitor]
     )
