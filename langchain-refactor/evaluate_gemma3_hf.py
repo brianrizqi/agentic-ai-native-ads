@@ -124,7 +124,9 @@ def main():
     
     print(f"🧪 Evaluating {len(test_samples)} samples...")
     for i, sample in enumerate(tqdm(test_samples)):
-        title = sample.get('title', sample.get('input', '')[:100])
+        title = sample.get('title')
+        if not title:
+            title = sample.get('input', '')[:100]
         
         # Determine ground truth (standardize to 'native ads' or 'berita murni')
         gt_raw = sample.get('output', '').lower()
