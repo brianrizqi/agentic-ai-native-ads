@@ -53,21 +53,15 @@ class ClassificationAgent:
         
         # Select prompt based on model/provider
         if "gemma-3" in self.model_name.lower():
-            # Use EXACT same prompt as fine-tuning for Gemma 3
+            # Phase 8: Reverting to direct label prompt (matches finetune.py)
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
-                """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-Native Ads adalah konten yang bertujuan untuk PROMOSI atau PERSUASI.
-Berita Murni adalah konten INFORMATIF yang objektif.
-
-Judul: {title}
+                """Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
-
-Klasifikasi:
+===
+Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
+Jawaban:
 """
             )
         elif self.provider == "local":
@@ -131,15 +125,18 @@ Klasifikasi:
                     bnb_config = BitsAndBytesConfig(
                         load_in_4bit=True,
                         bnb_4bit_quant_type="nf4",
-                        bnb_4bit_compute_dtype=torch.float16,
+                        bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
                         bnb_4bit_use_double_quant=True,
                     )
+
+                # Fix for multi-GPU device-side assert: set explicit device 0
+                device_map = {"": 0} if torch.cuda.is_available() else "auto"
 
                 base_model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
                     quantization_config=bnb_config,
-                    device_map="auto",
-                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    device_map=device_map,
+                    torch_dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else (torch.float16 if torch.cuda.is_available() else torch.float32),
                     trust_remote_code=True,
                     token=hf_token
                 )
@@ -152,18 +149,28 @@ Klasifikasi:
                 else:
                     model = base_model
                 
+                # Set chat template if missing (crucial for LangChain LCEL integration)
+                if not tokenizer.chat_template and "gemma-3" in self.model_name.lower():
+                    tokenizer.chat_template = (
+                        "{% for message in messages %}"
+                        "{% if message['role'] == 'user' %}"
+                        "{{ '<start_of_turn>user\\n' + message['content'] + '<end_of_turn>\\n' }}"
+                        "{% elif message['role'] == 'assistant' %}"
+                        "{{ '<start_of_turn>model\\n' + message['content'] + '<end_of_turn>\\n' }}"
+                        "{% endif %}"
+                        "{% endfor %}"
+                        "{% if add_generation_prompt %}"
+                        "{{ '<start_of_turn>model\\n' }}"
+                        "{% endif %}"
+                    )
+
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=512,
+                    max_new_tokens=256, # Shortened for classification
                     temperature=0.1,
-                    do_sample=True,
-                    top_p=0.9,
-                    top_k=50,
-                    repetition_penalty=1.15,
-                    eos_token_id=tokenizer.eos_token_id,
-                    pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id else tokenizer.eos_token_id,
+                    do_sample=False, # Deterministic for eval
                     return_full_text=False
                 )
                 
@@ -197,20 +204,12 @@ Klasifikasi:
             logger.info("Classifying content...")
             
             # Prepare input
-            if self.use_few_shot:
-                input_data = {
-                    "title": title,
-                    "content": content[:800]  # Limit content length
-                }
-            else:
-                input_data = {
-                    "title": title,
-                    "summary": summary,
-                    "content": content[:800],
-                    "context": context if context else "No additional context available."
-                }
+            input_data = {
+                "title": title or content[:100],
+                "content": content[:400] # Use same char limit as training/eval HF scripts
+            }
             
-            # Run chain using LCEL invoke
+            # Use LCEL with explicit dict
             response = self.chain.invoke(input_data)
             
             # Parse response (response is already a string thanks to StrOutputParser)
@@ -302,15 +301,6 @@ Klasifikasi:
                 
                 raise json.JSONDecodeError("Unmatched braces", response, start)
             
-            # Extract only the first complete JSON object
-            json_str = response[start:end]
-            result = json.loads(json_str)
-            
-            reasoning = result.get('reasoning', str(result))
-            if isinstance(reasoning, list):
-                reasoning = " ".join([str(i) for i in reasoning])
-            else:
-                reasoning = str(reasoning)
                 
             return {
                 'label': result.get('label', 'unknown'),
@@ -319,6 +309,13 @@ Klasifikasi:
             }
                 
         except (json.JSONDecodeError, Exception) as e:
+            # Phase 8: If it's not JSON, it's likely a direct label from Gemma 3
+            clean_resp = response.lower().strip()
+            if "native ads" in clean_resp:
+                return {'label': 'native ads', 'confidence': 0.9, 'reasoning': clean_resp}
+            elif "berita murni" in clean_resp:
+                return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': clean_resp}
+            
             # Log the error and fall through to fallback logic
             if isinstance(e, json.JSONDecodeError):
                 logger.debug(f"JSON decode error: {e}")
