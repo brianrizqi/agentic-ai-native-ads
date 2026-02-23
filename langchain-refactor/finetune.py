@@ -22,16 +22,13 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Phase 7: Recency Bias Fix (Inverted Prompt & Drastic Length Reduction)
+# Phase 8: Reverting to Original Gemma 2 Prompt Style (Non-MCQ)
 TRAINING_PROMPT_TEMPLATE = """Judul: {title}
 Konten: {content}
 
 ===
 Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
-A. native ads
-B. berita murni
-
-Jawaban (Pilih A atau B):
+Jawaban:
 """
 
 # Model configurations for multi-model support
@@ -179,10 +176,10 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         # Priority 1: Check if 'native ads' explicitly exists anywhere in the raw output string
         # This bypasses JSON parsing failures.
         if "native ads" in raw_output:
-            expected_output = "A"
+            expected_output = "native ads"
             count_a += 1
         else:
-            expected_output = "B"
+            expected_output = "berita murni"
             count_b += 1
         
         # Format: prompt + expected_output
@@ -204,10 +201,10 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         # Phase 4: Direct prompt without system role for 270M stability
         if tokenizer is not None:
             messages = [
-                {"role": "user", "content": user_text},
-                {"role": "assistant", "content": expected_output}
+                {"role": "user", "content": user_text}
             ]
-            text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
+            text_prompt_only = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            text = text_prompt_only + expected_output
             # Phase 6: Letting SFTTrainer/tokenizer handle EOS natively to avoid double-token issues
         else:
             text = user_text + expected_output

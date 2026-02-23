@@ -309,14 +309,23 @@ Jawaban:
             }
                 
         except (json.JSONDecodeError, Exception) as e:
-            # Phase 8: If it's not JSON, it's likely a direct label from Gemma 3
+            # Phase 8: If it's not JSON, it's likely a direct label from Gemma 3 (Phase 8/finetune.py style)
             clean_resp = response.lower().strip()
-            if "native ads" in clean_resp:
+            
+            # Priority 1: Check if the response STARTS with the label (standard Gemma/Phase 8 output)
+            if clean_resp.startswith("native ads"):
+                return {'label': 'native ads', 'confidence': 0.95, 'reasoning': clean_resp}
+            elif clean_resp.startswith("berita murni"):
+                return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': clean_resp}
+            
+            # Priority 2: Keyword search with protection (checking for existence only in first line or as definitive mentions)
+            first_line = clean_resp.split('\n')[0]
+            if "native ads" in first_line:
                 return {'label': 'native ads', 'confidence': 0.9, 'reasoning': clean_resp}
-            elif "berita murni" in clean_resp:
+            elif "berita murni" in first_line:
                 return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': clean_resp}
             
-            # Log the error and fall through to fallback logic
+            # Log the error and fall through to legacy keyword logic below
             if isinstance(e, json.JSONDecodeError):
                 logger.debug(f"JSON decode error: {e}")
             else:
