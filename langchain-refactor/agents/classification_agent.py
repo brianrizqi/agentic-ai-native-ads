@@ -53,15 +53,26 @@ class ClassificationAgent:
         
         # Select prompt based on model/provider
         if "gemma-3" in self.model_name.lower():
-            # Phase 8: Reverting to direct label prompt (matches finetune.py)
+            # Phase 10: Synced with finetune.py and prompts/classification_prompts.py
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
-                """Judul: {title}
+                """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
 Konten: {content}
 
-===
-Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
-Jawaban:
+Output (JSON):
 """
             )
         elif self.provider == "local":
@@ -168,9 +179,10 @@ Jawaban:
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=256, # Shortened for classification
+                    max_new_tokens=256,
                     temperature=0.1,
-                    do_sample=False, # Deterministic for eval
+                    do_sample=False,
+                    repetition_penalty=1.2, # Added to fix looping issues
                     return_full_text=False
                 )
                 
