@@ -22,13 +22,24 @@ import numpy as np
 from datetime import datetime
 import time
 
-# Phase 8: Reverting to Original Gemma 2 Prompt Style (Non-MCQ)
-TRAINING_PROMPT_TEMPLATE = """Judul: {title}
+# Phase 8: Sycned with prompts/classification_prompts.py for 94%+ target accuracy
+TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
 Konten: {content}
 
-===
-Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
-Jawaban:
+Output (JSON):
 """
 
 # Model configurations for multi-model support
@@ -170,21 +181,20 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
     # Format with proper chat template for training
     formatted_data = []
     for sample in data:
-        # Phase 6: Bulletproof Label Extraction
-        raw_output = str(sample.get('output', '')).lower()
+        # Phase 10: Use full JSON output for training (improves reasoning)
+        expected_output = sample.get('output', '')
         
-        # Priority 1: Check if 'native ads' explicitly exists anywhere in the raw output string
-        # This bypasses JSON parsing failures.
-        if "native ads" in raw_output:
-            expected_output = "native ads"
-            count_a += 1
-        else:
-            expected_output = "berita murni"
-            count_b += 1
+        # Verify it's JSON or at least has the label
+        if '"label":' not in expected_output:
+            # Fallback for old dataset format
+            raw_label = "native ads" if "native ads" in expected_output.lower() else "berita murni"
+            expected_output = json.dumps({
+                "label": raw_label,
+                "confidence": 0.95,
+                "reasoning": "Berdasarkan analisis karakteristik native ads."
+            }, ensure_ascii=False)
         
         # Format: prompt + expected_output
-        # Use standalone TRAINING_PROMPT_TEMPLATE defined at top of file
-        # Use title if available, otherwise extract from input
         if has_title:
             title = sample.get('title', '')
         else:
@@ -195,26 +205,21 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         
         user_text = TRAINING_PROMPT_TEMPLATE.format(
             title=title,
-            content=sample['input'][:400] # Phase 7: Drastic reduction to prevent attention loss
+            content=sample['input'][:500] # Slightly increased char limit for better context
         )
         
-        # Phase 4: Direct prompt without system role for 270M stability
         if tokenizer is not None:
             messages = [
                 {"role": "user", "content": user_text}
             ]
             text_prompt_only = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            text = text_prompt_only + expected_output
-            # Phase 6: Letting SFTTrainer/tokenizer handle EOS natively to avoid double-token issues
+            text = text_prompt_only + expected_output + tokenizer.eos_token
         else:
             text = user_text + expected_output
         
         formatted_data.append({"text": text})
     
-    print("\n✅ Validated Label Distribution Before Training:")
-    print(f"   Native Ads (A): {count_a}")
-    print(f"   Berita Murni (B): {count_b}")
-    print("   If these numbers are not ~50/50, DO NOT PROCEED WITH TRAINING.\n")
+    print(f"\n✅ Formatted {len(formatted_data)} samples for training.")
     
     return Dataset.from_list(formatted_data)
 
