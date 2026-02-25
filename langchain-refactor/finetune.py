@@ -32,6 +32,18 @@ Konten: {content}
 Jawaban:
 """
 
+# Phase 13: MCQ Prompt for 270M stability (Gold Standard for tiny models)
+MCQ_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
+Pilih:
+A. native ads
+B. berita murni
+
+Judul: {title}
+Konten: {content}
+
+Jawaban (A/B):
+"""
+
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
@@ -193,17 +205,9 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         # Phase 10: Use full JSON output for training (improves reasoning)
         expected_output = sample.get('output', '')
         
-        if '"label":' in expected_output:
-            # Phase 12: Convert JSON back to raw label for Lite training
-            try:
-                js = json.loads(expected_output)
-                expected_output = js.get('label', 'berita murni')
-            except:
-                pass
-        
-        # Cleanup: Ensure it's just the label
+        # Phase 13: MCQ Mapping (A for native ads, B for berita murni)
         raw_label = "native ads" if "native ads" in expected_output.lower() else "berita murni"
-        expected_output = raw_label
+        expected_output = "A" if raw_label == "native ads" else "B"
         
         # Format: prompt + expected_output
         if has_title:
@@ -214,9 +218,9 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
             sentences = re.split(r'[.!?]\s+', sample['input'])
             title = sentences[0][:100] if sentences else sample['input'][:100]
         
-        user_text = LITE_PROMPT_TEMPLATE.format(
+        user_text = MCQ_PROMPT_TEMPLATE.format(
             title=title,
-            content=sample['input'][:400] # Slightly shorter to fit more in batch
+            content=sample['input'][:400]
         )
         
         if tokenizer is not None:
@@ -345,8 +349,8 @@ def main():
             gradient_accumulation_steps=config['gradient_accumulation'],
             warmup_steps=5,
             num_train_epochs=args.epochs,
-            max_steps = 2500, # Faster convergence expected for raw labels
-            learning_rate = 1e-4, # Phase 12: Aggressive LR for tiny model
+            max_steps = 3000, 
+            learning_rate = 2e-5, # Phase 13: Reverted to 2e-5 for stability
             fp16 = not torch.cuda.is_bf16_supported(),
             bf16 = torch.cuda.is_bf16_supported(),
             logging_steps = 10,
