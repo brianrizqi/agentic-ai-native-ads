@@ -53,8 +53,20 @@ class ClassificationAgent:
         self.llm = self._initialize_llm(api_key)
         
         # Select prompt based on model/provider
-        if "gemma-3" in self.model_name.lower():
-            # Phase 10: Synced with finetune.py and prompts/classification_prompts.py
+        if "gemma-3" in self.model_name.lower() and "270m" in self.model_name.lower():
+            # Phase 12: Lite Prompt for 270M stability
+            from langchain_core.prompts import PromptTemplate
+            prompt = PromptTemplate.from_template(
+                """Klasifikasikan berita berikut: "native ads" atau "berita murni".
+
+Judul: {title}
+Konten: {content}
+
+Jawaban:
+"""
+            )
+        elif "gemma-3" in self.model_name.lower():
+            # Phase 10: Standard template for larger models
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
                 """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
@@ -186,11 +198,11 @@ Output (JSON):
                     model=model,
                     tokenizer=tokenizer,
                     max_new_tokens=256,
-                    temperature=0.7, # Higher temp can help if it was too stuck, but we'll stick to do_sample=False for consistency
+                    temperature=0.7,
                     do_sample=False,
-                    repetition_penalty=1.2,
+                    repetition_penalty=1.1, # Phase 12: 1.1 is better for tiny models
                     return_full_text=False,
-                    stop_sequence=stop_sequences[0] # Typical pipeline stop
+                    stop_sequence=stop_sequences[0]
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
@@ -262,17 +274,30 @@ Output (JSON):
     def _parse_response(self, response: str) -> Dict[str, Any]:
         """Parse LLM response into structured format."""
         try:
-            # Clean up response - remove prompt echo if present
-            if "Klasifikasi:" in response:
-                response = response.split("Klasifikasi:")[-1].strip()
+            # Clean up response
+            if "Jawaban:" in response:
+                response = response.split("Jawaban:")[-1].strip()
             if "Output (JSON):" in response:
                 response = response.split("Output (JSON):")[-1].strip()
             
-            # Find the first complete JSON object
+            # Phase 12: Check for raw labels FIRST (Lite mode)
+            clean_resp = response.lower().strip()
+            if clean_resp.startswith("native ads"):
+                return {'label': 'native ads', 'confidence': 0.95, 'reasoning': 'Detected via Lite model (label only).'}
+            elif clean_resp.startswith("berita murni"):
+                return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': 'Detected via Lite model (label only).'}
+            
+            # Keep JSON logic as fallback for larger models or hybrid outputs
             start = response.find('{')
             if start == -1:
-                logger.warning(f"No JSON found in response: {response[:500]}")
-                raise json.JSONDecodeError("No JSON found", response, 0)
+                # If no JSON and no startswith, try keyword search
+                if "native ads" in clean_resp[:50]:
+                    return {'label': 'native ads', 'confidence': 0.9, 'reasoning': response[:200]}
+                elif "berita murni" in clean_resp[:50]:
+                    return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': response[:200]}
+                
+                logger.warning(f"No label or JSON found in response: {response[:500]}")
+                raise json.JSONDecodeError("No JSON or label found", response, 0)
             
             # Parse character by character to find the matching closing brace
             brace_count = 0
