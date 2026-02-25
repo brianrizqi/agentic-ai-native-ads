@@ -23,6 +23,15 @@ from datetime import datetime
 import time
 
 # Phase 8: Sycned with prompts/classification_prompts.py for 94%+ target accuracy
+# Phase 12: Lite Prompt for 270M stability
+LITE_PROMPT_TEMPLATE = """Klasifikasikan berita berikut: "native ads" atau "berita murni".
+
+Judul: {title}
+Konten: {content}
+
+Jawaban:
+"""
+
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
@@ -184,32 +193,17 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         # Phase 10: Use full JSON output for training (improves reasoning)
         expected_output = sample.get('output', '')
         
-        # Verify it's JSON or at least has the label
-        if '"label":' not in expected_output:
-            # Phase 11: Add variety to reasoning to prevent overfitting
-            raw_label = "native ads" if "native ads" in expected_output.lower() else "berita murni"
-            
-            import random
-            if raw_label == "native ads":
-                reasons = [
-                    "Konten menunjukkan ciri promosi produk/brand dengan nada persuasif.",
-                    "Artikel memiliki sudut pandang tunggal dan mempromosikan instansi/perusahaan.",
-                    "Gaya penulisan mengajak pembaca dan bersifat mendukung subjek tertentu.",
-                    "Berdasarkan analisis, artikel ini menggabungkan promosi dengan format berita."
-                ]
-            else:
-                reasons = [
-                    "Artikel bersifat netral, objektif, dan menyajikan informasi tanpa promosi.",
-                    "Konten menunjukkan ciri berita murni yang menyajikan fakta secara objektif.",
-                    "Tidak ditemukan unsur persuasif atau promosi produk/brand dalam artikel ini.",
-                    "Informasi disajikan secara informatif tanpa mendukung satu sudut pandang saja."
-                ]
-            
-            expected_output = json.dumps({
-                "label": raw_label,
-                "confidence": 0.95,
-                "reasoning": random.choice(reasons)
-            }, ensure_ascii=False)
+        if '"label":' in expected_output:
+            # Phase 12: Convert JSON back to raw label for Lite training
+            try:
+                js = json.loads(expected_output)
+                expected_output = js.get('label', 'berita murni')
+            except:
+                pass
+        
+        # Cleanup: Ensure it's just the label
+        raw_label = "native ads" if "native ads" in expected_output.lower() else "berita murni"
+        expected_output = raw_label
         
         # Format: prompt + expected_output
         if has_title:
@@ -220,9 +214,9 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
             sentences = re.split(r'[.!?]\s+', sample['input'])
             title = sentences[0][:100] if sentences else sample['input'][:100]
         
-        user_text = TRAINING_PROMPT_TEMPLATE.format(
+        user_text = LITE_PROMPT_TEMPLATE.format(
             title=title,
-            content=sample['input'][:500] # Slightly increased char limit for better context
+            content=sample['input'][:400] # Slightly shorter to fit more in batch
         )
         
         if tokenizer is not None:
@@ -351,8 +345,8 @@ def main():
             gradient_accumulation_steps=config['gradient_accumulation'],
             warmup_steps=5,
             num_train_epochs=args.epochs,
-            max_steps = 4000, # Increased steps for larger dataset
-            learning_rate = 2e-5, # Lowered for 270M stability
+            max_steps = 2500, # Faster convergence expected for raw labels
+            learning_rate = 1e-4, # Phase 12: Aggressive LR for tiny model
             fp16 = not torch.cuda.is_bf16_supported(),
             bf16 = torch.cuda.is_bf16_supported(),
             logging_steps = 10,
