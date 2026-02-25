@@ -54,15 +54,18 @@ class ClassificationAgent:
         
         # Select prompt based on model/provider
         if "gemma-3" in self.model_name.lower() and "270m" in self.model_name.lower():
-            # Phase 12: Lite Prompt for 270M stability
+            # Phase 13: MCQ Prompt for 270M stability
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
-                """Klasifikasikan berita berikut: "native ads" atau "berita murni".
+                """Klasifikasikan berita berikut.
+Pilih:
+A. native ads
+B. berita murni
 
 Judul: {title}
 Konten: {content}
 
-Jawaban:
+Jawaban (A/B):
 """
             )
         elif "gemma-3" in self.model_name.lower():
@@ -280,12 +283,19 @@ Output (JSON):
             if "Output (JSON):" in response:
                 response = response.split("Output (JSON):")[-1].strip()
             
-            # Phase 12: Check for raw labels FIRST (Lite mode)
-            clean_resp = response.lower().strip()
-            if clean_resp.startswith("native ads"):
-                return {'label': 'native ads', 'confidence': 0.95, 'reasoning': 'Detected via Lite model (label only).'}
-            elif clean_resp.startswith("berita murni"):
-                return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': 'Detected via Lite model (label only).'}
+            # Phase 13: MCQ Detection (A/B)
+            clean_resp = response.strip().upper()
+            if clean_resp.startswith("A") or "JAWABAN: A" in clean_resp or clean_resp == "A":
+                return {'label': 'native ads', 'confidence': 0.95, 'reasoning': 'Detected via MCQ model (A).'}
+            elif clean_resp.startswith("B") or "JAWABAN: B" in clean_resp or clean_resp == "B":
+                return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': 'Detected via MCQ model (B).'}
+            
+            # Phase 12: Fallback for raw labels
+            clean_resp_lower = response.lower().strip()
+            if clean_resp_lower.startswith("native ads"):
+                return {'label': 'native ads', 'confidence': 0.9, 'reasoning': 'Detected via label start (fallback).'}
+            elif clean_resp_lower.startswith("berita murni"):
+                return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': 'Detected via label start (fallback).'}
             
             # Keep JSON logic as fallback for larger models or hybrid outputs
             start = response.find('{')
