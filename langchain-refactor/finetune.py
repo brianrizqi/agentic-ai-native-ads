@@ -186,12 +186,29 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         
         # Verify it's JSON or at least has the label
         if '"label":' not in expected_output:
-            # Fallback for old dataset format
+            # Phase 11: Add variety to reasoning to prevent overfitting
             raw_label = "native ads" if "native ads" in expected_output.lower() else "berita murni"
+            
+            import random
+            if raw_label == "native ads":
+                reasons = [
+                    "Konten menunjukkan ciri promosi produk/brand dengan nada persuasif.",
+                    "Artikel memiliki sudut pandang tunggal dan mempromosikan instansi/perusahaan.",
+                    "Gaya penulisan mengajak pembaca dan bersifat mendukung subjek tertentu.",
+                    "Berdasarkan analisis, artikel ini menggabungkan promosi dengan format berita."
+                ]
+            else:
+                reasons = [
+                    "Artikel bersifat netral, objektif, dan menyajikan informasi tanpa promosi.",
+                    "Konten menunjukkan ciri berita murni yang menyajikan fakta secara objektif.",
+                    "Tidak ditemukan unsur persuasif atau promosi produk/brand dalam artikel ini.",
+                    "Informasi disajikan secara informatif tanpa mendukung satu sudut pandang saja."
+                ]
+            
             expected_output = json.dumps({
                 "label": raw_label,
                 "confidence": 0.95,
-                "reasoning": "Berdasarkan analisis karakteristik native ads."
+                "reasoning": random.choice(reasons)
             }, ensure_ascii=False)
         
         # Format: prompt + expected_output
@@ -334,16 +351,16 @@ def main():
             gradient_accumulation_steps=config['gradient_accumulation'],
             warmup_steps=5,
             num_train_epochs=args.epochs,
-            max_steps=args.max_steps,
-            learning_rate=config['learning_rate'],
-            fp16=not torch.cuda.is_bf16_supported(),
-            bf16=torch.cuda.is_bf16_supported(),
-            logging_steps=1,
-            optim="adamw_8bit",
-            weight_decay=0.01,
-            lr_scheduler_type="linear",
-            seed=3407,
-            output_dir=args.output,
+            max_steps = 4000, # Increased steps for larger dataset
+            learning_rate = 2e-5, # Lowered for 270M stability
+            fp16 = not torch.cuda.is_bf16_supported(),
+            bf16 = torch.cuda.is_bf16_supported(),
+            logging_steps = 10,
+            optim = "adamw_8bit",
+            weight_decay = 0.01,
+            lr_scheduler_type = "cosine",
+            seed = 3407,
+            output_dir = args.output,
             eval_strategy="steps",
             eval_steps=args.eval_steps,
             save_steps=args.eval_steps * 2,
