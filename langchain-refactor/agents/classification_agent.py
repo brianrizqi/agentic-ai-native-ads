@@ -49,6 +49,7 @@ class ClassificationAgent:
         self.lora_path = lora_path
         
         # Initialize LLM
+        self.tokenizer = None
         self.llm = self._initialize_llm(api_key)
         
         # Select prompt based on model/provider
@@ -175,15 +176,21 @@ Output (JSON):
                         "{% endif %}"
                     )
 
+                self.tokenizer = tokenizer
+                
+                # Add stop sequence for JSON block
+                stop_sequences = ["}\n", "} ", tokenizer.eos_token]
+                
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
                     max_new_tokens=256,
-                    temperature=0.1,
+                    temperature=0.7, # Higher temp can help if it was too stuck, but we'll stick to do_sample=False for consistency
                     do_sample=False,
-                    repetition_penalty=1.2, # Added to fix looping issues
-                    return_full_text=False
+                    repetition_penalty=1.2,
+                    return_full_text=False,
+                    stop_sequence=stop_sequences[0] # Typical pipeline stop
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
@@ -221,8 +228,18 @@ Output (JSON):
                 "content": content[:400] # Use same char limit as training/eval HF scripts
             }
             
-            # Use LCEL with explicit dict
-            response = self.chain.invoke(input_data)
+            # Use chat template for local models to ensure instruction following
+            if self.provider == "local" and self.tokenizer:
+                messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
+                templated_prompt = self.tokenizer.apply_chat_template(
+                    messages, 
+                    tokenize=False, 
+                    add_generation_prompt=True
+                )
+                response = self.llm.invoke(templated_prompt)
+            else:
+                # Use LCEL with explicit dict
+                response = self.chain.invoke(input_data)
             
             # Parse response (response is already a string thanks to StrOutputParser)
             result = self._parse_response(response)
