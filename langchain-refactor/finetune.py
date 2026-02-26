@@ -44,6 +44,18 @@ Konten: {content}
 Jawaban (A/B):
 """
 
+# Phase 14: Reasoning-First MCQ Prompt
+REASONING_MCQ_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
+Pilih:
+A. native ads
+B. berita murni
+
+Judul: {title}
+Konten: {content}
+
+Analisis:
+"""
+
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
@@ -99,12 +111,12 @@ MODEL_CONFIGS = {
     "gemma3": {
         "name": "unsloth/gemma-3-270m-it-bnb-4bit",
         "max_seq_length": 1024,
-        "lora_r": 32,
-        "lora_alpha": 64,
+        "lora_r": 64, # Phase 14: Increased for more reasoning capacity
+        "lora_alpha": 128,
         "batch_size": 4,
         "gradient_accumulation": 4,
-        "learning_rate": 5e-5, # Phase 7: Increased to escape 'guessing B' local minima
-        "description": "Gemma 3 270M Instruct - Phase 7 (Inverted MCQ Prompt)"
+        "learning_rate": 1e-4, # Phase 14: Increased to escape local minima
+        "description": "Gemma 3 270M Instruct - Phase 14 (Reasoning-First MCQ)"
     },
     "gemma3-12b": {
         "name": "unsloth/gemma-3-12b-it-bnb-4bit",
@@ -196,29 +208,44 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         print("   Please run: python tools/prepare_finetuning_dataset.py first")
         print("   Continuing with input-only format (not recommended)\n")
     
-    count_a = 0
-    count_b = 0
-    
-    # Format with proper chat template for training
+    # Filter and format
     formatted_data = []
     for sample in data:
-        # Phase 10: Use full JSON output for training (improves reasoning)
-        expected_output = sample.get('output', '')
+        # Phase 14: Data Cleaning - Skip samples with errors or empty reasoning
+        output_raw = sample.get('output', '')
+        if "Error: No JSON found" in output_raw or not output_raw:
+            continue
+            
+        try:
+            output_json = json.loads(output_raw)
+            reasoning = output_json.get('reasoning', '')
+            label = output_json.get('label', 'berita murni') # Default to berita murni if missing
+            
+            if len(reasoning) < 10: # Skip very short reasoning
+                continue
+        except Exception:
+            # If not JSON, try to extract label directly and skip reasoning
+            if "native ads" in output_raw.lower():
+                label = "native ads"
+            else:
+                label = "berita murni"
+            reasoning = "" # Will skip Reasoning-First if no reasoning found
+            continue # Phase 14: We ONLY want high-quality reasoning data
+            
+        # Phase 13/14: MCQ Mapping (A for native ads, B for berita murni)
+        mcq_label = "A" if label == "native ads" else "B"
         
-        # Phase 13: MCQ Mapping (A for native ads, B for berita murni)
-        raw_label = "native ads" if "native ads" in expected_output.lower() else "berita murni"
-        expected_output = "A" if raw_label == "native ads" else "B"
+        # Phase 14: Reasoning-First Output
+        expected_output = f"{reasoning}\nJawaban: {mcq_label}"
         
-        # Format: prompt + expected_output
         if has_title:
             title = sample.get('title', '')
         else:
-            # Fallback: extract first sentence as title
             import re
             sentences = re.split(r'[.!?]\s+', sample['input'])
             title = sentences[0][:100] if sentences else sample['input'][:100]
         
-        user_text = MCQ_PROMPT_TEMPLATE.format(
+        user_text = REASONING_MCQ_PROMPT_TEMPLATE.format(
             title=title,
             content=sample['input'][:400]
         )
@@ -349,8 +376,8 @@ def main():
             gradient_accumulation_steps=config['gradient_accumulation'],
             warmup_steps=5,
             num_train_epochs=args.epochs,
-            max_steps = 3000, 
-            learning_rate = 2e-5, # Phase 13: Reverted to 2e-5 for stability
+            max_steps = args.max_steps, 
+            learning_rate = config['learning_rate'], 
             fp16 = not torch.cuda.is_bf16_supported(),
             bf16 = torch.cuda.is_bf16_supported(),
             logging_steps = 10,

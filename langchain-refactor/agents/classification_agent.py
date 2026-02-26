@@ -55,7 +55,7 @@ class ClassificationAgent:
         # Select prompt based on model/provider
         model_name_lower = self.model_name.lower()
         if ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower:
-            # Phase 13: MCQ Prompt for 270M stability
+            # Phase 14: Reasoning-First MCQ Prompt
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
                 """Klasifikasikan berita berikut.
@@ -66,7 +66,7 @@ B. berita murni
 Judul: {title}
 Konten: {content}
 
-Jawaban (A/B):
+Analisis:
 """
             )
         elif "gemma" in model_name_lower:
@@ -204,7 +204,7 @@ Output (JSON):
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=32 if is_mcq else 256,
+                    max_new_tokens=128 if is_mcq else 256,
                     temperature=0.7,
                     do_sample=False,
                     repetition_penalty=1.0 if is_mcq else 1.1, # 1.0 is safer for tiny MCQ models
