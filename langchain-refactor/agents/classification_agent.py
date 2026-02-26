@@ -178,7 +178,8 @@ Output (JSON):
                     model = base_model
                 
                 # Set chat template if missing (crucial for LangChain LCEL integration)
-                if not tokenizer.chat_template and "gemma-3" in self.model_name.lower():
+                model_name_lower = self.model_name.lower()
+                if not tokenizer.chat_template and ("gemma" in model_name_lower or "270" in model_name_lower):
                     tokenizer.chat_template = (
                         "{% for message in messages %}"
                         "{% if message['role'] == 'user' %}"
@@ -197,14 +198,16 @@ Output (JSON):
                 # Add stop sequence for JSON block
                 stop_sequences = ["}\n", "} ", tokenizer.eos_token]
                 
+                is_mcq = ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower
+                
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=256,
+                    max_new_tokens=32 if is_mcq else 256,
                     temperature=0.7,
                     do_sample=False,
-                    repetition_penalty=1.1, # Phase 12: 1.1 is better for tiny models
+                    repetition_penalty=1.0 if is_mcq else 1.1, # 1.0 is safer for tiny MCQ models
                     return_full_text=False,
                     stop_sequence=stop_sequences[0]
                 )
