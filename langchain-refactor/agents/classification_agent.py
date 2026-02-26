@@ -281,26 +281,37 @@ Output (JSON):
     def _parse_response(self, response: str) -> Dict[str, Any]:
         """Parse LLM response into structured format."""
         try:
-            # Clean up response
-            if "Jawaban:" in response:
-                response = response.split("Jawaban:")[-1].strip()
+            import re
+            
+            # Phase 14: First check for "Jawaban: A/B" pattern in the FULL response
+            # This is the expected output format for Reasoning-First MCQ models
+            jawaban_match = re.search(r'Jawaban[:\s]*([AB])\b', response, re.IGNORECASE)
+            if jawaban_match:
+                label_code = jawaban_match.group(1).upper()
+                # Extract reasoning (everything before "Jawaban:")
+                reasoning = response[:jawaban_match.start()].strip()
+                if not reasoning:
+                    reasoning = f'Detected MCQ Label: {label_code}'
+                if label_code == "A":
+                    return {'label': 'native ads', 'confidence': 0.95, 'reasoning': reasoning[:300]}
+                else:
+                    return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': reasoning[:300]}
+            
+            # Clean up response for other parsing paths
             if "Output (JSON):" in response:
                 response = response.split("Output (JSON):")[-1].strip()
             
-            # Phase 13: MCQ Detection (A/B)
-            # Handle formats like "A", "[A]", "(A)", "Jawaban: A", "Jawaban (A/B): A"
-            import re
-            
-            clean_resp = response.strip().upper()
-            
-            # Use regex to find [A] or (A) or A at start or after "Jawaban:"
-            mcq_match = re.search(r'(?:JAWABAN|ANSWER)?[:\s\(\[]*([AB])[:\s\)\]]*', clean_resp)
-            if mcq_match:
-                label_code = mcq_match.group(1)
-                if label_code == "A":
-                    return {'label': 'native ads', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
-                elif label_code == "B":
-                    return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
+            # Phase 13: MCQ Detection — single A or B (only if response is very short)
+            clean_resp = response.strip()
+            if len(clean_resp) <= 5:
+                clean_upper = clean_resp.upper()
+                mcq_match = re.match(r'^[^A-Za-z]*([AB])[^A-Za-z]*$', clean_upper)
+                if mcq_match:
+                    label_code = mcq_match.group(1)
+                    if label_code == "A":
+                        return {'label': 'native ads', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
+                    else:
+                        return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
             
             # Phase 12: Fallback for raw labels
             clean_resp_lower = response.lower().strip()
@@ -313,7 +324,6 @@ Output (JSON):
             start = response.find('{')
             if start == -1:
                 # If no JSON and no startswith, try keyword search
-                # BUG FIX: Use clean_resp_lower instead of clean_resp (which is uppercase)
                 if "native ads" in clean_resp_lower[:100]:
                     return {'label': 'native ads', 'confidence': 0.9, 'reasoning': response[:200]}
                 elif "berita murni" in clean_resp_lower[:100]:

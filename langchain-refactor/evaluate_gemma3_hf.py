@@ -17,13 +17,16 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Phase 8: Reverting to Original Gemma 2 Prompt Style
-TRAINING_PROMPT_TEMPLATE = """Judul: {title}
+# Phase 14: Reasoning-First MCQ Prompt (MUST match finetune.py exactly)
+TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
+Pilih:
+A. native ads
+B. berita murni
+
+Judul: {title}
 Konten: {content}
 
-===
-Berdasarkan teks di atas, apakah artikel tersebut merupakan 'native ads' (iklan terselubung) atau 'berita murni'?
-Jawaban:
+Analisis:
 """
 
 GEMMA_CHAT_TEMPLATE = (
@@ -58,15 +61,29 @@ def load_dataset(dataset_path: str):
         return json.load(f)
 
 def parse_model_output(output_text: str):
-    # Phase 8 Label Parsing (Full Text Extraction)
-    clean_text = output_text.strip().lower()
+    """Phase 14: Parse MCQ output (A/B) and raw labels."""
+    import re
+    clean_text = output_text.strip()
     
     if not clean_text:
         return "unknown"
-        
-    if "native ads" in clean_text:
+    
+    # MCQ Detection: Look for "Jawaban: A" or "Jawaban: B" pattern
+    mcq_match = re.search(r'Jawaban[:\s]*([AB])\b', clean_text, re.IGNORECASE)
+    if mcq_match:
+        label_code = mcq_match.group(1).upper()
+        return "native ads" if label_code == "A" else "berita murni"
+    
+    # Fallback: Check for A or B at the very end of the text
+    last_line = clean_text.strip().split('\n')[-1].strip()
+    if re.match(r'^[AB]$', last_line):
+        return "native ads" if last_line == "A" else "berita murni"
+    
+    # Fallback: raw label detection
+    clean_lower = clean_text.lower()
+    if "native ads" in clean_lower:
         return "native ads"
-    elif "berita murni" in clean_text:
+    elif "berita murni" in clean_lower:
         return "berita murni"
         
     return "unknown"
