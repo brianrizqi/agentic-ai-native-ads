@@ -288,6 +288,8 @@ Output (JSON):
             # Handle formats like "A", "[A]", "(A)", "Jawaban: A", "Jawaban (A/B): A"
             import re
             
+            clean_resp = response.strip().upper()
+            
             # Use regex to find [A] or (A) or A at start or after "Jawaban:"
             mcq_match = re.search(r'(?:JAWABAN|ANSWER)?[:\s\(\[]*([AB])[:\s\)\]]*', clean_resp)
             if mcq_match:
