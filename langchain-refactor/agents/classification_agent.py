@@ -53,7 +53,8 @@ class ClassificationAgent:
         self.llm = self._initialize_llm(api_key)
         
         # Select prompt based on model/provider
-        if "gemma-3" in self.model_name.lower() and "270m" in self.model_name.lower():
+        model_name_lower = self.model_name.lower()
+        if ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower:
             # Phase 13: MCQ Prompt for 270M stability
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
@@ -68,7 +69,7 @@ Konten: {content}
 Jawaban (A/B):
 """
             )
-        elif "gemma-3" in self.model_name.lower():
+        elif "gemma" in model_name_lower:
             # Phase 10: Standard template for larger models
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
@@ -284,26 +285,33 @@ Output (JSON):
                 response = response.split("Output (JSON):")[-1].strip()
             
             # Phase 13: MCQ Detection (A/B)
-            clean_resp = response.strip().upper()
-            if clean_resp.startswith("A") or "JAWABAN: A" in clean_resp or clean_resp == "A":
-                return {'label': 'native ads', 'confidence': 0.95, 'reasoning': 'Detected via MCQ model (A).'}
-            elif clean_resp.startswith("B") or "JAWABAN: B" in clean_resp or clean_resp == "B":
-                return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': 'Detected via MCQ model (B).'}
+            # Handle formats like "A", "[A]", "(A)", "Jawaban: A", "Jawaban (A/B): A"
+            import re
+            
+            # Use regex to find [A] or (A) or A at start or after "Jawaban:"
+            mcq_match = re.search(r'(?:JAWABAN|ANSWER)?[:\s\(\[]*([AB])[:\s\)\]]*', clean_resp)
+            if mcq_match:
+                label_code = mcq_match.group(1)
+                if label_code == "A":
+                    return {'label': 'native ads', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
+                elif label_code == "B":
+                    return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
             
             # Phase 12: Fallback for raw labels
             clean_resp_lower = response.lower().strip()
-            if clean_resp_lower.startswith("native ads"):
+            if clean_resp_lower.startswith("native ads") or "native ads" in clean_resp_lower[:50]:
                 return {'label': 'native ads', 'confidence': 0.9, 'reasoning': 'Detected via label start (fallback).'}
-            elif clean_resp_lower.startswith("berita murni"):
+            elif clean_resp_lower.startswith("berita murni") or "berita murni" in clean_resp_lower[:50]:
                 return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': 'Detected via label start (fallback).'}
             
             # Keep JSON logic as fallback for larger models or hybrid outputs
             start = response.find('{')
             if start == -1:
                 # If no JSON and no startswith, try keyword search
-                if "native ads" in clean_resp[:50]:
+                # BUG FIX: Use clean_resp_lower instead of clean_resp (which is uppercase)
+                if "native ads" in clean_resp_lower[:100]:
                     return {'label': 'native ads', 'confidence': 0.9, 'reasoning': response[:200]}
-                elif "berita murni" in clean_resp[:50]:
+                elif "berita murni" in clean_resp_lower[:100]:
                     return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': response[:200]}
                 
                 logger.warning(f"No label or JSON found in response: {response[:500]}")
