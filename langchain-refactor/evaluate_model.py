@@ -111,7 +111,8 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         
         # Get prediction
         try:
-            pred = agent.classify(sample['input'])
+            title = sample.get('title', sample['input'][:100])
+            pred = agent.classify(sample['input'], title=title)
             pred_label = pred.get('label', 'unknown')
             pred_reasoning = pred.get('reasoning', '')
             
