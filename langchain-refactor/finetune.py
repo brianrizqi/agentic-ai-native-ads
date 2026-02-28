@@ -168,7 +168,7 @@ class TrainingMonitor(TrainerCallback):
         print(f"\n📈 Training curves saved to: {output_path}")
 
 
-def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
+def load_and_format_dataset(dataset_path: str, tokenizer=None, model_key: str = "gemma3") -> Dataset:
     """Load dataset and format using chat templates for better instruction following."""
     
     print(f"Loading dataset from: {dataset_path}")
@@ -208,36 +208,36 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
         print("   Please run: python tools/prepare_finetuning_dataset.py first")
         print("   Continuing with input-only format (not recommended)\n")
     
+    # Determine format based on model
+    use_mcq = model_key == "gemma3"  # Only 270M uses MCQ
+    if use_mcq:
+        print("📝 Using Reasoning-First MCQ format (A/B) for 270M model")
+    else:
+        print(f"📝 Using JSON output format for {model_key} model")
+    
     # Filter and format
     formatted_data = []
+    skipped = 0
     for sample in data:
-        # Phase 14: Data Cleaning - Skip samples with errors or empty reasoning
+        # Data Cleaning - Skip samples with errors or empty output
         output_raw = sample.get('output', '')
         if "Error: No JSON found" in output_raw or not output_raw:
+            skipped += 1
             continue
             
         try:
             output_json = json.loads(output_raw)
             reasoning = output_json.get('reasoning', '')
-            label = output_json.get('label', 'berita murni') # Default to berita murni if missing
+            label = output_json.get('label', 'berita murni')
             
-            if len(reasoning) < 10: # Skip very short reasoning
+            if len(reasoning) < 10:
+                skipped += 1
                 continue
         except Exception:
-            # If not JSON, try to extract label directly and skip reasoning
-            if "native ads" in output_raw.lower():
-                label = "native ads"
-            else:
-                label = "berita murni"
-            reasoning = "" # Will skip Reasoning-First if no reasoning found
-            continue # Phase 14: We ONLY want high-quality reasoning data
-            
-        # Phase 13/14: MCQ Mapping (A for native ads, B for berita murni)
-        mcq_label = "A" if label == "native ads" else "B"
+            skipped += 1
+            continue
         
-        # Phase 14: Reasoning-First Output
-        expected_output = f"{reasoning}\nJawaban: {mcq_label}"
-        
+        # Build title
         if has_title:
             title = sample.get('title', '')
         else:
@@ -245,10 +245,25 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None) -> Dataset:
             sentences = re.split(r'[.!?]\s+', sample['input'])
             title = sentences[0][:100] if sentences else sample['input'][:100]
         
-        user_text = REASONING_MCQ_PROMPT_TEMPLATE.format(
-            title=title,
-            content=sample['input'][:400]
-        )
+        if use_mcq:
+            # MCQ format for 270M: Reasoning + Jawaban: A/B
+            mcq_label = "A" if label == "native ads" else "B"
+            expected_output = f"{reasoning}\nJawaban: {mcq_label}"
+            user_text = REASONING_MCQ_PROMPT_TEMPLATE.format(
+                title=title,
+                content=sample['input'][:400]
+            )
+        else:
+            # JSON format for larger models: Full JSON output
+            expected_output = json.dumps({
+                "label": label,
+                "confidence": output_json.get('confidence', 0.9),
+                "reasoning": reasoning[:150]  # Truncate for efficiency
+            }, ensure_ascii=False)
+            user_text = TRAINING_PROMPT_TEMPLATE.format(
+                title=title,
+                content=sample['input'][:400]
+            )
         
         if tokenizer is not None:
             messages = [
@@ -346,7 +361,7 @@ def main():
     
     # 3. Load and prepare dataset
     print("[3/5] Loading and formatting dataset...")
-    dataset = load_and_format_dataset(args.dataset, tokenizer=tokenizer)
+    dataset = load_and_format_dataset(args.dataset, tokenizer=tokenizer, model_key=args.model)
     
     # Split train/eval
     split = dataset.train_test_split(test_size=0.1, seed=42)
