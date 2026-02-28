@@ -327,80 +327,37 @@ def main():
         return
     
     # 1. Load base model with Unsloth
-    # 1. Load Model
-    print(f"[1/5] Loading base model ({'Standard Transformers' if args.use_transformers else 'Unsloth'})...")
+    print("[1/5] Loading base model with Unsloth...")
     
+    # Handle Hugging Face Token
+    import os
     hf_token = os.environ.get("HF_TOKEN")
+    if not hf_token:
+        print("⚠️  Warning: HF_TOKEN not found in environment. Model download might fail if it's restricted.")
     
-    if args.use_transformers:
-        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-        from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-        
-        # Standard QLoRA loading (doesn't need C compiler)
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
-            bnb_4bit_use_double_quant=True,
-        )
-        
-        try:
-            model = AutoModelForCausalLM.from_pretrained(
-                config['name'],
-                quantization_config=bnb_config,
-                device_map="auto",
-                trust_remote_code=True,
-                token=hf_token
-            )
-            tokenizer = AutoTokenizer.from_pretrained(config['name'], token=hf_token)
-            
-            # 2. Add LoRA adapters
-            print("[2/5] Adding LoRA adapters (Standard PEFT)...")
-            model = prepare_model_for_kbit_training(model)
-            peft_config = LoraConfig(
-                r=config['lora_r'],
-                lora_alpha=config['lora_alpha'],
-                target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-                lora_dropout=0,
-                bias="none",
-                task_type="CAUSAL_LM",
-            )
-            model = get_peft_model(model, peft_config)
-        except Exception as e:
-            print(f"❌ Standard model loading failed: {e}")
-            raise e
-    else:
-        # Unsloth loading (Fast but needs C compiler)
-        try:
-            from unsloth import FastLanguageModel
-            model, tokenizer = FastLanguageModel.from_pretrained(
-                model_name=config['name'],
-                max_seq_length=config['max_seq_length'],
-                dtype=None,
-                load_in_4bit=True,
-                token=hf_token,
-            )
-            print("[2/5] Adding LoRA adapters (Unsloth)...")
-            model = FastLanguageModel.get_peft_model(
-                model,
-                r=config['lora_r'],
-                target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-                lora_alpha=config['lora_alpha'],
-                lora_dropout=0,
-                bias="none",
-                use_gradient_checkpointing="unsloth",
-                random_state=3407,
-                use_rslora=False,
-                loftq_config=None,
-            )
-        except Exception as e:
-            print(f"⚠️ Unsloth failed (Compiler missing?): {e}")
-            print("🔄 Falling back to standard Transformers mode...")
-            args.use_transformers = True
-            # Re-run the loading logic with transformers flag
-            # Note: In a cleaner implementation we'd use a loop or separate function, 
-            # but for this script we just restart the logic if it's the first fail.
-            return main() 
+    model, tokenizer = FastLanguageModel.from_pretrained(
+        model_name=config['name'],
+        max_seq_length=config['max_seq_length'],
+        dtype=None,
+        load_in_4bit=True,
+        token=hf_token, # Use token if provided
+    )
+    
+    # 2. Add LoRA adapters
+    print("[2/5] Adding LoRA adapters...")
+    model = FastLanguageModel.get_peft_model(
+        model,
+        r=config['lora_r'],
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                       "gate_proj", "up_proj", "down_proj"],
+        lora_alpha=config['lora_alpha'],
+        lora_dropout=0,
+        bias="none",
+        use_gradient_checkpointing="unsloth",
+        random_state=3407,
+        use_rslora=False,
+        loftq_config=None,
+    )
     
     # 3. Load and prepare dataset
     print("[3/5] Loading and formatting dataset...")
@@ -415,7 +372,7 @@ def main():
     print(f"Evaluation samples: {len(eval_dataset)}")
     
     # 4. Setup trainer with monitoring
-    print(f"[4/5] Setting up {'Unsloth ' if not args.use_transformers else 'Standard '}SFTTrainer...")
+    print("[4/5] Setting up Unsloth SFTTrainer with monitoring...")
     
     # Initialize training monitor
     monitor = TrainingMonitor()
@@ -425,7 +382,7 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         dataset_text_field="text",
-        max_seq_length=config['max_seq_length'],
+        max_seq_length=2048,
         dataset_num_proc=2,
         packing=False,
         args=TrainingArguments(
@@ -439,7 +396,7 @@ def main():
             fp16 = not torch.cuda.is_bf16_supported(),
             bf16 = torch.cuda.is_bf16_supported(),
             logging_steps = 10,
-            optim = "adamw_8bit" if not args.use_transformers else "paged_adamw_8bit",
+            optim = "adamw_8bit",
             weight_decay = 0.01,
             lr_scheduler_type = "cosine",
             seed = 3407,
@@ -476,28 +433,21 @@ def main():
     print(f"End time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     # Save LoRA adapters
-    if not args.use_transformers:
-        # Save merged model (Unsloth method)
-        print("Saving merged model (16-bit)...")
-        merged_path = f"{args.output}_merged_16bit"
-        model.save_pretrained_merged(
-            merged_path,
-            tokenizer,
-            save_method="merged_16bit"
-        )
-        model.save_pretrained(args.output)
-        tokenizer.save_pretrained(args.output)
-    else:
-        # Standard save (LoRA adapters only)
-        model.save_pretrained(args.output)
-        tokenizer.save_pretrained(args.output)
-        print("Note: To merge standard LoRA, you'll need a separate script or merge during inference.")
-        merged_path = args.output # Fallback
+    model.save_pretrained(args.output)
+    tokenizer.save_pretrained(args.output)
+    
+    # Save merged model for easier deployment
+    print("Saving merged model (16-bit)...")
+    merged_path = f"{args.output}_merged_16bit"
+    model.save_pretrained_merged(
+        merged_path,
+        tokenizer,
+        save_method="merged_16bit"
+    )
     
     print(f"\n✅ Model saved to:")
     print(f"   - LoRA adapters: {args.output}")
-    if not args.use_transformers:
-        print(f"   - Merged 16-bit: {merged_path}")
+    print(f"   - Merged 16-bit: {merged_path}")
     
     if trainer_stats:
         print(f"\n📊 Training Stats:")
@@ -517,23 +467,6 @@ def main():
     print(f"1. Test: cd .. && python main.py --url YOUR_URL --provider local --model {merged_path}")
     print(f"2. Evaluate: python evaluate_model.py --model {merged_path}")
 
-def main():
-    parser = argparse.ArgumentParser(description="Fine-tune LLM for Native Ads Detection")
-    parser.add_argument("--model", type=str, default="gemma3", choices=list(MODEL_CONFIGS.keys()), help="Model config to use")
-    parser.add_argument("--dataset", type=str, required=True, help="Path to json dataset")
-    parser.add_argument("--output", type=str, default="../models/trained_model", help="Path to save output")
-    parser.add_argument("--max-steps", type=int, default=3000, help="Max training steps")
-    parser.add_argument("--epochs", type=int, default=1, help="Number of training epochs")
-    parser.add_argument("--eval-steps", type=int, default=100, help="Evaluation steps")
-    parser.add_argument("--hf-token", type=str, default=None, help="Hugging Face API Token")
-    parser.add_argument("--use-transformers", action="store_true", help="Force use standard Transformers instead of Unsloth (No C Compiler mode)")
-    
-    global args
-    args = parser.parse_args()
-    
-    if args.epochs <= 0: args.epochs = 1
-    
-    run_training()
 
 if __name__ == "__main__":
     main()
