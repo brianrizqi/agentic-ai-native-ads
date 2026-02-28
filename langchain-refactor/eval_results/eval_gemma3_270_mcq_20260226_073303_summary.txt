@@ -1,0 +1,21 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/gemma3-270-mcq_merged_16bit/
+Timestamp: 20260226_073303
+Dataset: ../data/llm_dataset_finetuning_optimized.json
+Samples: 200
+
+Overall Metrics:
+  Accuracy: 52.00%
+  Correct: 104/200
+
+BERTScore:
+  Precision: 0.621
+  Recall: 0.573
+  F1: 0.595
+
+Per-Class Accuracy:
+  berita murni: 100.00%
+  native ads: 0.00%

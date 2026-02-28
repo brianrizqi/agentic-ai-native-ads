@@ -1,0 +1,21 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/gemma3-finetuned_merged_16bit
+Timestamp: 20260219_212505
+Dataset: ../data/llm_dataset_finetuning_ready.json
+Samples: 200
+
+Overall Metrics:
+  Accuracy: 53.50%
+  Correct: 107/200
+
+BERTScore:
+  Precision: 0.654
+  Recall: 0.652
+  F1: 0.653
+
+Per-Class Accuracy:
+  native ads: 12.00%
+  berita murni: 95.00%
