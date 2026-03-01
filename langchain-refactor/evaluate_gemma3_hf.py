@@ -17,8 +17,8 @@ import seaborn as sns
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-# Phase 14: Reasoning-First MCQ Prompt (MUST match finetune.py exactly)
-TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
+# Phase 14: Reasoning-First MCQ Prompt (for 270M)
+MCQ_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
 Pilih:
 A. native ads
 B. berita murni
@@ -27,6 +27,26 @@ Judul: {title}
 Konten: {content}
 
 Analisis:
+"""
+
+# Phase 15: JSON Prompt (for 12B/Larger)
+JSON_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
 """
 
 GEMMA_CHAT_TEMPLATE = (
@@ -60,14 +80,29 @@ def load_dataset(dataset_path: str):
     with open(path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def parse_model_output(output_text: str):
-    """Phase 14: Parse MCQ output (A/B) and raw labels."""
+def parse_model_output(output_text: str, is_mcq: bool = True):
+    """Parse output based on format."""
     import re
     clean_text = output_text.strip()
     
     if not clean_text:
         return "unknown"
     
+    if not is_mcq:
+        # Try JSON parsing for 12B
+        try:
+            # Find JSON block
+            import json as json_lib
+            start = clean_text.find('{')
+            end = clean_text.rfind('}') + 1
+            if start != -1 and end != 0:
+                json_data = json_lib.loads(clean_text[start:end])
+                label = json_data.get('label', '').lower()
+                if 'native' in label: return 'native ads'
+                if 'murni' in label: return 'berita murni'
+        except:
+            pass
+
     # MCQ Detection: Look for "Jawaban: A" or "Jawaban: B" pattern
     mcq_match = re.search(r'Jawaban[:\s]*([AB])\b', clean_text, re.IGNORECASE)
     if mcq_match:
@@ -81,11 +116,36 @@ def parse_model_output(output_text: str):
     
     # Fallback: raw label detection
     clean_lower = clean_text.lower()
-    if "native ads" in clean_lower:
+    if "native ads" in clean_lower[:100]: # Check beginning to avoid false positives in reasoning
         return "native ads"
-    elif "berita murni" in clean_lower:
+    elif "berita murni" in clean_lower[:100]:
         return "berita murni"
         
+    # --- Extreme Fallback (Fuzzy Matching for 270M Model) ---
+    # The 270M model often fails to follow A/B format and just outputs reasoning.
+    # We will try to infer the label based on keywords in the *entire* response.
+    
+    # Positive/Promotional indicators (Native Ads)
+    native_ads_keywords = [
+        "mempromosikan", "promosi", "persuasif", "menarik", "positif", 
+        "memanjakan", "marketing", "copywriting"
+    ]
+    
+    # Neutral/Objective indicators (Berita Murni)
+    berita_murni_keywords = [
+        "netral", "objektif", "tanpa promosi", "kinerja/risiko", 
+        "menginformasikan"
+    ]
+    
+    native_score = sum(1 for kw in native_ads_keywords if kw in clean_lower)
+    murni_score = sum(1 for kw in berita_murni_keywords if kw in clean_lower)
+    
+    if native_score > murni_score:
+        return "native ads"
+    elif murni_score > native_score:
+        return "berita murni"
+        
+    # If tie or no keywords found, default to unknown
     return "unknown"
 
 def plot_confusion_matrix(y_true, y_pred, save_path):
@@ -166,8 +226,11 @@ def main():
         else:
             gt_label = 'berita murni'
         
-        content = sample['input'][:400] # Phase 7 Length Reduction
-        user_text = TRAINING_PROMPT_TEMPLATE.format(title=title, content=content)
+        # Determine format based on model name
+        is_mcq = ("gemma" in args.model_path.lower() and "270" in args.model_path.lower()) or "mcq" in args.model_path.lower()
+        prompt_template = MCQ_PROMPT_TEMPLATE if is_mcq else JSON_PROMPT_TEMPLATE
+        
+        user_text = prompt_template.format(title=title, content=content)
         
         # Direct prompt matching training
         messages = [{"role": "user", "content": user_text}]
@@ -178,13 +241,13 @@ def main():
         with torch.no_grad():
             outputs = model.generate(
                 **inputs, 
-                max_new_tokens=150, 
+                max_new_tokens=150 if is_mcq else 256, 
                 do_sample=False, # Use greedy decoding for stability
                 pad_token_id=tokenizer.eos_token_id
             )
         
         response = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
-        pred_label = parse_model_output(response)
+        pred_label = parse_model_output(response, is_mcq=is_mcq)
         
         if (i < 5):
             print(f"\n--- Debug Sample {i+1} ---")

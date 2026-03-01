@@ -329,6 +329,24 @@ Output (JSON):
                 elif "berita murni" in clean_resp_lower[:100]:
                     return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': response[:200]}
                 
+                # --- Extreme Fallback (Fuzzy Matching for 270M Model) ---
+                native_ads_keywords = [
+                    "mempromosikan", "promosi", "persuasif", "menarik", "positif", 
+                    "memanjakan", "marketing", "copywriting"
+                ]
+                berita_murni_keywords = [
+                    "netral", "objektif", "tanpa promosi", "kinerja/risiko", 
+                    "menginformasikan"
+                ]
+                
+                native_score = sum(1 for kw in native_ads_keywords if kw in clean_resp_lower)
+                murni_score = sum(1 for kw in berita_murni_keywords if kw in clean_resp_lower)
+                
+                if native_score > murni_score:
+                    return {'label': 'native ads', 'confidence': 0.5, 'reasoning': response[:200]}
+                elif murni_score > native_score:
+                    return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': response[:200]}
+                
                 logger.warning(f"No label or JSON found in response: {response[:500]}")
                 raise json.JSONDecodeError("No JSON or label found", response, 0)
             
