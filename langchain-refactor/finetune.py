@@ -129,7 +129,17 @@ MODEL_CONFIGS = {
         "description": "Gemma 3 12B Instruct - New version for native ads"
     },
     "gemma3-4b": {
-        "name": "https://huggingface.co/unsloth/gemma-3-4b-it-bnb-4bit",
+        "name": "unsloth/gemma-3-4b-it-bnb-4bit",
+        "max_seq_length": 1024,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 1,
+        "gradient_accumulation": 8,
+        "learning_rate": 2e-5,
+        "description": "Gemma 3 4B Instruct - New version for native ads"
+    },
+    "gemma3-1b": {
+        "name": "unsloth/gemma-3-1b-it-bnb-4bit",
         "max_seq_length": 1024,
         "lora_r": 16,
         "lora_alpha": 32,
