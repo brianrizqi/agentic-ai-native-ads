@@ -62,7 +62,7 @@ Makalah ini memperkenalkan AGENA (\textit{Agentic AI Framework for Explainable N
 Kontribusi utama dari karya ini adalah:
 \begin{enumerate}
     \item \textbf{Kontribusi Arsitektur}: Kami mengusulkan \textit{pipeline} AGENA, sebuah sistem lima agen untuk deteksi iklan \textit{native} dalam berita digital Indonesia. Sepengetahuan kami, ini adalah kerangka kerja deteksi multi-agen pertama yang didedikasikan untuk domain ini.
-    \item \textbf{Kontribusi Metodologis}: Kami memperkenalkan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'' berbasis RAG, yang ditautkan pada basis pengetahuan terkurasi sebanyak 12.088 artikel berita Indonesia. Pendekatan ini mengurangi halusinasi dan meningkatkan diskriminasi kasus ``\textit{Hard Negative}''.
+    \item \textbf{Kontribusi Metodologis}: Kami memperkenalkan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'' berbasis RAG, yang ditautkan pada basis pengetahuan terkurasi sebanyak 12.088 artikel berita Indonesia. Pendekatan ini mengurangi halusinasi dan meningkatkan diskriminasi ``\textit{Berita Batas}''.
     \item \textbf{Kontribusi Evaluatif}: Kami mengevaluasi kualitas keluaran model di luar metrik akurasi menggunakan protokol ``\textit{LLM-as-a-Judge}'', di mana GPT-4o menilai jejak penalaran pada skala 1--5 berdasarkan empat kriteria interpretabilitas: Sentimen, Persuasi, Promosi, dan keselarasan Perspektif.
 \end{enumerate}
 
@@ -150,13 +150,13 @@ S_{state} = \{U, D, F, K, R\}
 \end{equation}
 di mana $U$ mewakili URL target, $D$ adalah teks dokumen mentah yang diekstraksi, $F$ adalah vektor fitur sintaktik dan semantik, $K$ adalah konteks augmentasi yang diambil, dan $R$ adalah hasil penalaran akhir yang berisi prediksi Boolean dan jejak penjelasan.
 
-Kerangka kerja terdiri dari lima agen otonom $A = \{A_{scrape}, A_{prep}, A_{ret}, A_{class}, A_{exp}\}$ yang secara asinkron membaca dan memutasi $S_{state}$:
+Tugas deteksi didekomposisi menjadi lima agen kooperatif $A = \{A_{scrape}, A_{prep}, A_{ret}, A_{class}, A_{exp}\}$. Agen dipisahkan menjadi dua subkelompok: agen deterministik non-AI ($A_{scrape}, A_{prep}$) yang bertanggung jawab atas penyiapan data, dan agen berbasis AI ($A_{class}, A_{exp}$) dengan dukungan RAG ($A_{ret}$) untuk pengambilan keputusan:
 \begin{itemize}
-    \item \textbf{Agen Scraper ($A_{scrape}$)}: Mengeksekusi mutasi status $\delta_{scrape}: S_{state}[U] \rightarrow S_{state}[D]$. Agen ini memanfaatkan \textit{headless browser} untuk memastikan \textit{rendering} DOM dinamis berkualitas tinggi sebelum menuliskan $D$ yang telah dibersihkan ke dalam status.
-    \item \textbf{Agen Preprocessing ($A_{prep}$)}: Mengeksekusi $\delta_{prep}: S_{state}[D] \rightarrow S_{state}[F]$. Agen ini memproses $D$ untuk mengekstraksi fitur sintaktik $n$-dimensi (misalnya, jumlah hiperbola, densitas huruf kapital) dan penanda semantik.
-    \item \textbf{Agen Retriever ($A_{ret}$)}: Mengeksekusi $\delta_{ret}: (S_{state}[D], \mathcal{MB}) \rightarrow S_{state}[K]$. Agen ini mengkueri indeks FAISS melalui \texttt{VectorSearch\allowbreak Tool} untuk mengambil contoh-contoh paling mirip dari basis pengetahuan 12.088 artikel, yang kemudian ditulis kembali ke $K$.
-    \item \textbf{Agen Classifier ($A_{class}$)}: Mengimplementasikan logika evaluatif inti $\delta_{class}: (S_{state}[D], S_{state}[F], S_{state}[K]) \rightarrow L$, di mana $L \in \{0, 1\}$ mewakili klasifikasi Boolean awal berdasarkan data status yang terintegrasi.
-    \item \textbf{Agen Explainer ($A_{exp}$)}: Mengeksekusi $\delta_{exp}: (S_{state}[D], S_{state}[K], L) \rightarrow S_{state}[R]$. Agen ini menghasilkan jejak justifikasi yang dapat dibaca manusia yang memetakan penalaran kembali ke prinsip-prinsip inti jurnalisme \textit{native}.
+    \item \textbf{Agen Scraper ($A_{scrape}$, Non-AI)}: Mengeksekusi mutasi status $\delta_{scrape}: S_{state}[U] \rightarrow S_{state}[D]$. Agen ini murni berbasis aturan dan mengekstrak DOM dinamis melalui \textit{headless browser} sebelum menuliskan HTML bersih $D$ ke dalam buffer. Model AI tidak digunakan pada tahap pemuatan ini.
+    \item \textbf{Agen Preprocessing ($A_{prep}$, Non-AI)}: Mengeksekusi mutasi $\delta_{prep}: S_{state}[D] \rightarrow S_{state}[F]$. Agen pemrograman deterministik ini memproses $D$ untuk mengekstraksi fitur linguistik $n$-dimensi (misalnya, densitas kata, rasio huruf kapitalisasi) memanfaatkan Regex. Sama halnya seperti \textit{Scraper}, tahap ini tidak bersandar pada eksekusi model bahasa apapun.
+    \item \textbf{Agen Retriever ($A_{ret}$)}: Agen inferensi perantara ini memanfaatkan \texttt{VectorSearchTool} untuk mencari teks semantis terdekat dari basis data FAISS untuk menambatkan klaim model klasifikasi.
+    \item \textbf{Agen Classifier ($A_{class}$ , AI-Based)}: Mengimplementasikan logika evaluatif saraf inti $\delta_{class}: (S_{state}[D], S_{state}[F], S_{state}[K]) \rightarrow L$, di mana $L \in \{0, 1\}$. Agen ini memanfaatkan LLM dasar yang di-\textit{fine-tune} untuk mencapai keputusan Boolean.
+    \item \textbf{Agen Explainer ($A_{exp}$ , AI-Based)}: Mengeksekusi mutasi post-hoc $\delta_{exp}: (S_{state}[D], S_{state}[K], L) \rightarrow S_{state}[R]$. Agen LLM mandiri ini bertugas memberikan rasionalisasi atas pilihan agen Classifier melalui pelacakan teks asli.
 \end{itemize}
 
 \subsection{Orkestrasi Agentik Hierarkis}
@@ -176,14 +176,14 @@ Seperti ditunjukkan pada Gambar~\ref{fig:agena_toolsets}, \textit{pipeline} dimu
 
 Fase keempat adalah Agen Classifier, yang mengintegrasikan tiga aliran bukti (konten narasi mentah, fitur hasil rekayasa, dan konteks yang diambil) dengan menggunakan \textit{prompt} berbatas untuk menghasilkan label dengan jejak penalaran eksplisit. Fase kelima adalah Agen Explainer, yang memetakan klaim penalaran abstrak kembali ke potongan teks konkret sehingga setiap prediksi dapat diaudit oleh editor. Lapisan orkestrasi juga memberlakukan konsistensi status antar fase, mencegah keputusan tanpa konteks dan mengurangi risiko halusinasi dengan memastikan ketersediaan bukti sebelum klasifikasi akhir. Desain ini merupakan inti dari tujuan AGENA untuk menggabungkan kinerja prediksi yang kompetitif dengan transparansi operasional.
 
-\subsubsection{Agen Web Scraper}
-Agen ini memanfaatkan toolset \texttt{Web\allowbreak Scraper\allowbreak Tool} dan \texttt{Selenium\allowbreak Scraper\allowbreak Tool}, menggabungkan \texttt{Beautiful\allowbreak Soup4} untuk struktur DOM statis dan \texttt{Selenium} untuk konten dinamis. Agen ini mengimplementasikan logika ``pembersih'' otomatis yang menghapus \textit{boilerplate} non-jurnalistik (misalnya, \textit{footer}, iklan dalam iklan, bilah navigasi) untuk memastikan bahwa \textit{Classifier} hanya memproses inti narasi artikel.
+\subsubsection{Agen Web Scraper (Non-AI)}
+Agen pendahuluan deterministik ini memanfaatkan toolset \texttt{Web\allowbreak Scraper\allowbreak Tool} dan \texttt{Selenium\allowbreak Scraper\allowbreak Tool}, menggabungkan \texttt{Beautiful\allowbreak Soup4} untuk antarmuka DOM statis, serta \texttt{Selenium} untuk konten HTML dinamis. Agen ini bertugas memecahkan hierarki teks halaman (pembersihan prapemrosesan) menghapus entitas non-jurnalistik (misalnya, elemen \textit{footer}, sisipan iklan pihak ketiga). Tahap ini beroperasi sepenuhya dengan skrip algoritmik klasik tanpa intervensi model prediktif (non-AI).
 
-\subsubsection{Agen Preprocessing}
-Logika \textit{preprocessing} melampaui pembersihan standar. Agen ini memanfaatkan pendekatan hibrida:
+\subsubsection{Agen Preprocessing (Non-AI)}
+Mirip kerangka kerja \textit{Scraper}, langkah \textit{preprocessing} secara eksklusif menggunakan algoritma rekayasa deterministik standar (non-AI):
 \begin{enumerate}
-    \item \textbf{Normalisasi Teks}: Menghapus karakter tidak relevan, URL, dan menstandarisasi spasi menggunakan Regex.
-    \item \textbf{Ekstraksi Fitur}: Menggunakan ekspresi reguler dan larik statistik (\texttt{numpy}) untuk mengekstraksi fitur seperti panjang teks, jumlah kata unik, keragaman leksikal, dan rasio huruf kapital.
+    \item \textbf{Normalisasi Teks}: Algoritme Regex digunakan untuk mendeteksi hierarki semantik artikel, menghapus frasa redudansi spasial, dan URL gantung.
+    \item \textbf{Ekstraksi Fitur}: Mengkompilasi pustaka sintaktik leksikon dan kalkulasi larik \texttt{numpy} untuk variabel densitas panjang tulisan, frasa unik persentase, serta koefisien porsi huruf kapital secara statistik terprogram tanpa inferensi NLP tingkat dalam.
 \end{enumerate}
 
 \subsubsection{Agen Retriever}
@@ -237,7 +237,7 @@ Mesin penalaran inti (Qwen, Gemma, Llama, dan GPT-4o) yang dimanfaatkan dalam ke
 Contoh templat \textit{few-shot} yang digunakan saat \textit{fine-tuning} model Gemma 3 12B disediakan dalam materi pelengkap. Templat ini mengajarkan model untuk membedakan ``pelaporan positif'' dari ``bias promosi'' melalui langkah-langkah penalaran terstruktur.
 
 \subsection{Penyetelan Model dan \textit{Hyperparameter}}
-Mesin penalaran inti (Qwen, Gemma, Llama) dilatih ulang menggunakan teknik \textit{Parameter-Efficient Fine-Tuning} (PEFT), secara spesifik \textit{Low-Rank Adaptation} (LoRA) \cite{b36} dan kuantisasi 4-bit (QLoRA). Pendekatan ini memungkinkan optimalisasi model berskala besar di dalam batasan memori GPU yang tersedia. \textit{Hyperparameter} spesifik yang digunakan dalam proses \textit{fine-tuning} dirinci dalam Tabel \ref{tab:hyperparameters}.
+Mesin penalaran inti (Qwen, Gemma, Llama) dilatih ulang menggunakan teknik \textit{Parameter-Efficient Fine-Tuning} (PEFT), secara spesifik \textit{Low-Rank Adaptation} (LoRA) dan kuantisasi 4-bit (QLoRA). Pendekatan ini memungkinkan optimalisasi model berskala besar di dalam batasan memori GPU yang tersedia. \textit{Hyperparameter} spesifik yang digunakan dalam proses \textit{fine-tuning} dirinci dalam Tabel \ref{tab:hyperparameters}.
 
 \subsection{Perbandingan Arsitektur Backbone}
 Untuk memperjelas perbedaan tingkat-model, Gambar~\ref{fig:model_architectures} menyajikan empat arsitektur \textit{backbone} yang dievaluasi dalam penelitian ini: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, dan GPT-OSS 20B. Kartu-kartu arsitektur ini merangkum profil struktural masing-masing model, kapasitas penanganan konteks, dan karakteristik efisiensi yang berorientasi pada penerapan.
@@ -254,7 +254,7 @@ Untuk memperjelas perbedaan tingkat-model, Gambar~\ref{fig:model_architectures} 
 \label{fig:model_architectures}
 \end{figure*}
 
-Seperti ditunjukkan pada Gambar~\ref{fig:model_architectures}(a), Gemma 3 12B adalah \textit{backbone} produksi utama dalam AGENA karena menawarkan kualitas penalaran yang kuat dengan adaptasi yang hemat parameter dan perilaku stabil pada kasus \textit{Hard Negative}. Gambar~\ref{fig:model_architectures}(b) menunjukkan Qwen 14B, yang memberikan kapasitas representasi tinggi dan kinerja kepatuhan instruksi yang kompetitif, namun dalam pengaturan kami lebih rentan memicu isyarat promosi secara berlebihan pada berita ambigu.
+Seperti ditunjukkan pada Gambar~\ref{fig:model_architectures}(a), Gemma 3 12B adalah \textit{backbone} produksi utama dalam AGENA karena menawarkan kualitas penalaran yang kuat dengan adaptasi yang hemat parameter dan perilaku stabil pada \textit{Berita Batas}. Gambar~\ref{fig:model_architectures}(b) menunjukkan Qwen 14B, yang memberikan kapasitas representasi tinggi dan kinerja kepatuhan instruksi yang kompetitif, namun dalam pengaturan kami lebih rentan memicu isyarat promosi secara berlebihan pada berita ambigu.
 
 Gambar~\ref{fig:model_architectures}(c) menyajikan Llama 3.1 8B, yang dipilih sebagai \textit{baseline} yang ringkas namun mumpuni dengan kebutuhan komputasi yang lebih rendah dan perilaku \textit{fine-tuning} yang dapat diprediksi. Gambar~\ref{fig:model_architectures}(d) menunjukkan GPT-OSS 20B, disertakan untuk memeriksa arsitektur \textit{open-weight} yang lebih besar di bawah jadwal adaptasi yang terbatas. Desain lintas arsitektur ini memungkinkan kami membandingkan tidak hanya akurasi, tetapi juga konsistensi penalaran, kalibrasi dalam sampel batas, dan pengorbanan implementasi praktis antara ukuran model dan kualitas interpretabilitas.
 
@@ -292,16 +292,16 @@ Untuk mengevaluasi kedalaman kualitatif keluaran Agen Explainer, AGENA menerapka
 \begin{enumerate}
     \item \textbf{Akurasi Label}: Kebenaran sesuai dengan \textit{ground truth} yang dianotasi manusia.
     \item \textbf{Kualitas Penalaran}: Koherensi logis yang menghubungkan prediksi dengan sifat-sifat naratif spesifik (misalnya, nada promosi vs. pelaporan objektif).
-    \item \textbf{Pemeriksaan \textit{Hard Negative}}: Kemampuan untuk mengklasifikasikan secara akurat berita editorial yang secara ekstensif menyebutkan entitas perusahaan tanpa secara inheren mempromosikannya.
+    \item \textbf{Pemeriksaan \textit{Kasus Ambigu}}: Kemampuan untuk mengklasifikasikan secara akurat berita editorial yang secara ekstensif menyebutkan entitas perusahaan tanpa secara inheren mempromosikannya.
 \end{enumerate}
 Dimensi kualitatif ini melengkapi metrik biner standar (Akurasi, F1-score) dengan memberi penalti pada model yang mencapai label yang benar melalui penalaran yang dihalusinasikan atau dangkal.
 
-Strategi \textit{tuning} ``\textit{Reasoning-First}'' melibatkan penambahan penalaran \textit{Chain-of-Thought} di depan label target dalam dataset pelatihan. Ini memaksa model untuk mempelajari langkah-langkah perantara linguistik (misalnya, mengidentifikasi penanda persuasif, mendeteksi bias sumber) sebelum berkomitmen pada label klasifikasi akhir. Kami memanfaatkan FlashAttention-2 \cite{b37} untuk mempercepat komputasi \textit{self-attention}, memungkinkan konvergensi yang lebih cepat.
+Strategi \textit{tuning} ``\textit{Reasoning-First}'' melibatkan penambahan penalaran \textit{Chain-of-Thought} di depan label target dalam dataset pelatihan. Ini memaksa model untuk mempelajari langkah-langkah perantara linguistik (misalnya, mengidentifikasi penanda persuasif, mendeteksi bias sumber) sebelum berkomitmen pada label klasifikasi akhir. Kami memanfaatkan FlashAttention-2 untuk mempercepat komputasi \textit{self-attention}, memungkinkan konvergensi yang lebih cepat.
 
 \section{Eksperimen dan Hasil}
 \label{sec:experiments}
 \subsection{Penyiapan Eksperimental}
-Eksperimen dilakukan menggunakan dataset berita Indonesia yang terdiri dari 12.088 artikel. Komponen LLM (\textit{Classifier} dan \textit{Explainer}) dilatih ulang menggunakan kerangka kerja Unsloth dengan adaptor LoRA (\textit{Rank}=16, \textit{Alpha}=32). Pelatihan dilakukan pada infrastruktur komputasi kinerja tinggi. Dataset dibagi menjadi set pelatihan dan pengujian, dengan set pengujian mencakup beragam sampel ``\textit{Hard Negative}'' untuk mengevaluasi ketahanan model.
+Eksperimen dilakukan menggunakan dataset berita Indonesia yang terdiri dari 12.088 artikel. Komponen LLM (\textit{Classifier} dan \textit{Explainer}) dilatih ulang menggunakan kerangka kerja Unsloth dengan adaptor LoRA (\textit{Rank}=16, \textit{Alpha}=32). Pelatihan dilakukan pada infrastruktur komputasi kinerja tinggi. Dataset dibagi menjadi set pelatihan dan pengujian, dengan set pengujian mencakup beragam sampel \textit{Berita Batas} untuk mengevaluasi ketahanan model.
 
 \subsection{Rincian Performa Kuantitatif}
 Performa \textit{pipeline} AGENA dievaluasi di berbagai iterasi \textit{fine-tuning} model, khususnya membandingkan \textit{Instruction Tuning} standar dengan strategi \textit{Prompt} ``\textit{Reasoning-First}'' yang diusulkan. Kerangka kerja mengimplementasikan pemformatan dataset kondisional: \textit{Basic Reasoning-First Prompt} untuk arsitektur yang lebih kecil seperti Gemma 3 (270M), dan \textit{Reasoning-First JSON Prompt} untuk model yang lebih besar (Qwen 14B, Gemma 3 12B, Llama 8B, Gemma 2 9B).
@@ -327,7 +327,7 @@ Gemma 3 (270M) & 0,520 & 0,547 & 0,480 & 52,00\% \\
 \end{center}
 \end{table}
 
-Hasil dari penyelarasan \textit{prompt} ``\textit{Reasoning-First}'' menunjukkan gradien performa yang jelas terkait dengan skala model dan kemampuan mengikuti instruksi. Di antara model-model yang diuji, Gemma 3 (12B) mencapai akurasi keseluruhan tertinggi pada 94,50\%, dengan presisi 0,938 pada kelas Iklan \textit{Native}. Model ini menangani kasus-kasus paling menantang secara efektif, mengidentifikasi dengan benar konten editorial yang menyebutkan entitas perusahaan tanpa pembingkaian promosi (\textit{Hard Negative}). Gemma 3 (4B) mencapai 92,00\%, sedikit mengungguli Gemma 2 (9B) yang lebih lama pada 90,50\%, menunjukkan bahwa peningkatan arsitektur dalam generasi Gemma terbaru berkontribusi secara berarti pada kualitas mengikuti instruksi dalam tugas spesifik domain.
+Hasil dari penyelarasan \textit{prompt} ``\textit{Reasoning-First}'' menunjukkan gradien performa yang jelas terkait dengan skala model dan kemampuan mengikuti instruksi. Di antara model-model yang diuji, Gemma 3 (12B) mencapai akurasi keseluruhan tertinggi pada 94,50\%, dengan presisi 0,938 pada kelas Iklan \textit{Native}. Model ini menangani kasus-kasus paling menantang secara efektif, mengidentifikasi dengan benar konten editorial yang menyebutkan entitas perusahaan tanpa pembingkaian promosi (\textit{Berita Batas}). Gemma 3 (4B) mencapai 92,00\%, sedikit mengungguli Gemma 2 (9B) yang lebih lama pada 90,50\%, menunjukkan bahwa peningkatan arsitektur dalam generasi Gemma terbaru berkontribusi secara berarti pada kualitas mengikuti instruksi dalam tugas spesifik domain.
 
 Seiring penurunan ukuran model, penalaran yang andal semakin sulit dipertahankan. Gemma 3 (1B) turun ke 76,50\%, menunjukkan \textit{recall} tinggi (0,979) namun presisi rendah (0,676), mengindikasikan kecenderungan untuk terlalu menandai penyebutan merek sebagai promosi. Model 270M mendapat skor 52,00\%, dan sering menghasilkan keluaran yang tidak lengkap atau tidak valid secara struktural meskipun menerima format \textit{prompt} yang sama dengan model yang lebih besar.
 
@@ -375,7 +375,7 @@ AGENA mencapai peningkatan akurasi 1,5 poin persentase dibandingkan SENADA (93,0
 
 AGENA menggantikan \textit{pipeline} statis ini dengan alur kerja agentik yang berurutan. Agen Retriever secara dinamis mengambil artikel yang semantis serupa dari basis pengetahuan pada waktu inferensi, memberikan Agen Classifier konteks relevan domain yang tidak dapat diakses oleh model \textit{ensemble} statis. Agen Explainer kemudian menghasilkan justifikasi terstruktur dan mudah dibaca manusia untuk setiap keputusan. Lapisan interpretabilitas ini adalah kemajuan kualitatif utama dibandingkan SENADA dan sangat penting untuk adopsi di alur kerja editorial yang memerlukan pengawasan manusia \cite{b20}.
 
-Di luar akurasi klasifikasi, kami menilai kualitas jejak penalaran yang dihasilkan oleh Agen Explainer menggunakan pendekatan \textit{LLM-as-a-Judge}. GPT-4o mengevaluasi setiap jejak pada skala 1--5 berdasarkan empat kriteria: akurasi label, koherensi penalaran, cakupan penanda persuasif, dan diskriminasi \textit{Hard Negative}. Gemma 3 12B mencapai rating rata-rata 4,4, mencerminkan keselarasan yang kuat antara penjelasannya dan pola penalaran yang dianotasi pakar. Qwen 14B menunjukkan kecenderungan sistematis untuk memberi label teks ambigu sebagai iklan \textit{native}, menghasilkan justifikasi yang menekankan keberadaan merek terlepas dari konteks editorial. Llama 8B menunjukkan sensitivitas berlebihan yang serupa.
+Di luar akurasi klasifikasi, kami menilai kualitas jejak penalaran yang dihasilkan oleh Agen Explainer menggunakan pendekatan \textit{LLM-as-a-Judge}. GPT-4o mengevaluasi setiap jejak pada skala 1--5 berdasarkan empat kriteria: akurasi label, koherensi penalaran, cakupan penanda persuasif, dan diskriminasi \textit{Berita Batas}. Gemma 3 12B mencapai rating rata-rata 4,4, mencerminkan keselarasan yang kuat antara penjelasannya dan pola penalaran yang dianotasi pakar. Qwen 14B menunjukkan kecenderungan sistematis untuk memberi label teks ambigu sebagai iklan \textit{native}, menghasilkan justifikasi yang menekankan keberadaan merek terlepas dari konteks editorial. Llama 8B menunjukkan sensitivitas berlebihan yang serupa.
 
 Hasil ablasi mengonfirmasi bahwa Agen Retriever memberikan peningkatan akurasi paling signifikan (+12,8\% dibandingkan varian yang hanya menggunakan \textit{preprocessing}). Ini menunjukkan bahwa menyediakan \textit{Classifier} dengan contoh-contoh yang semantis serupa dari basis pengetahuan lebih efektif dibandingkan \textit{preprocessing} linguistik saja. Kontribusi Agen Preprocessing paling terlihat dalam meningkatkan \textit{recall} untuk iklan \textit{native} yang disamarkan secara halus, di mana bahasa promosi minimal namun hadir secara struktural.
 
@@ -384,7 +384,7 @@ Gemma 3 12B mencapai akurasi keseluruhan 94,50\%, tertinggi dari semua konfigura
 \subsection{Analisis Kualitatif dan Karakteristik Penalaran}
 Jejak penalaran Agen Explainer dievaluasi terhadap anotasi pakar untuk konfigurasi Gemma 3 12B. Jejak tersebut mencapai 94,2\% keselarasan semantik dengan justifikasi yang dianotasi manusia, diukur melalui tinjauan pakar domain terhadap empat kriteria target.
 
-Seperti ditunjukkan pada Gbr. \ref{fig:confusion_matrix}, kesalahan klasifikasi terkonsentrasi pada kategori \textit{Hard Negative}: artikel yang menyebutkan nama merek atau program korporat tanpa pembingkaian persuasif. Agen berbasis Llama menunjukkan tingkat positif-palsu yang sedikit lebih tinggi untuk berita murni, sering memperkirakan pelaporan pemerintah yang menguntungkan sebagai promosi. Agen berbasis Gemma lebih konservatif, sesekali melewatkan iklan \textit{native} dengan tingkat keyakinan rendah.
+Seperti ditunjukkan pada Gbr. \ref{fig:confusion_matrix}, kesalahan klasifikasi terkonsentrasi pada kategori \textit{Kasus Ambigu}: artikel yang menyebutkan nama merek atau program korporat tanpa pembingkaian persuasif. Agen berbasis Llama menunjukkan tingkat positif-palsu yang sedikit lebih tinggi untuk berita murni, sering memperkirakan pelaporan pemerintah yang menguntungkan sebagai promosi. Agen berbasis Gemma lebih konservatif, sesekali melewatkan iklan \textit{native} dengan tingkat keyakinan rendah.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\linewidth]{eval_results/eval_gemma3_12b_native_ads_20260301_043605_confusion_matrix.png}}
@@ -396,72 +396,72 @@ Seperti ditunjukkan pada Gbr. \ref{fig:confusion_matrix}, kesalahan klasifikasi 
 \label{sec:discussion}
 Hasil ini memvalidasi hipotesis inti AGENA: bahwa mendekomposisi deteksi iklan \textit{native} ke dalam \textit{pipeline} multi-agen dengan penalaran berbasis RAG menghasilkan peningkatan terukur dibandingkan klasifikasi statis, baik dalam akurasi maupun interpretabilitas keluaran.
 
-\subsection{Analisis \textit{Hard Negative}}
-Sumber kesalahan klasifikasi yang konsisten di semua model yang diuji adalah kategori \textit{Hard Negative}. Ini adalah artikel berita yang akurat secara faktual yang menyebutkan entitas perusahaan, produk, atau program pemerintah tanpa niat promosi. Sebagai contoh, pelaporan infrastruktur rutin menyebut kontraktor swasta, dan Agen Classifier AGENA terkadang menandai ini berdasarkan pola kata kunci daripada konteks naratif. Bias ``pemicu-merek'' ini lebih menonjol pada model Qwen dan Llama dibandingkan Gemma 3 12B. Mengatasi hal ini di penelitian mendatang memerlukan perluasan basis pengetahuan dengan proporsi yang lebih besar dari contoh \textit{Hard Negative} untuk meningkatkan diskriminasi negatif.
+\subsection{Analisis \textit{Kasus Ambigu}}
+Sumber kesalahan klasifikasi yang konsisten di semua model yang diuji adalah kategori \textit{Berita Batas}. Ini adalah artikel berita yang akurat secara faktual yang menyebutkan entitas perusahaan, produk, atau program pemerintah tanpa niat promosi. Sebagai contoh, pelaporan infrastruktur rutin menyebut kontraktor swasta, dan Agen Classifier AGENA terkadang menandai ini berdasarkan pola kata kunci daripada konteks naratif. Bias ``pemicu-merek'' ini lebih menonjol pada model Qwen dan Llama dibandingkan Gemma 3 12B. Mengatasi hal ini di penelitian mendatang memerlukan perluasan basis pengetahuan dengan proporsi yang lebih besar dari contoh \textit{Berita Batas} untuk meningkatkan diskriminasi negatif.
 
 \subsection{Peran Agen Explainer dalam Integritas Jurnalistik}
-Kontribusi praktis AGENA adalah Agen Explainer, yang menghasilkan justifikasi tingkat-artikel yang dapat ditinjau editor tanpa memeriksa model secara internal. Untuk setiap klasifikasi, agen memetakan kesimpulannya ke bagian-bagian spesifik artikel melalui alat \texttt{Source\allowbreak Mapper}. Ini menyediakan jalur bukti yang dapat diverifikasi yang mendukung keputusan \textit{override} editorial. Bagi organisasi media yang mempertimbangkan pemantauan konten otomatis, lapisan transparansi ini secara substansial mengurangi hambatan adopsi dibandingkan pengklasifikasi \textit{black-box} \cite{b17}.
+Kontribusi praktis AGENA adalah Agen Explainer, yang menghasilkan justifikasi tingkat-artikel yang dapat ditinjau editor tanpa memeriksa model secara internal. Untuk setiap klasifikasi, agen memetakan kesimpulannya ke bagian-bagian spesifik artikel melalui alat \texttt{Source\allowbreak Mapper}. Ini menyediakan jalur bukti yang dapat diverifikasi yang mendukung keputusan \textit{override} editorial. Bagi organisasi media yang mempertimbangkan pemantauan konten otomatis, lapisan transparansi ini secara substansial mengurangi hambatan adopsi dibandingkan pengklasifikasi \textit{black-box}.
 
 \subsection{Implikasi Etis dan Bias Algoritmik}
 Klasifikasi konten otomatis pada skala besar memperkenalkan risiko bias sistematis. Gaya pelaporan Indonesia berbeda secara substansial antara portal nasional dan media regional, di mana nada informal dan ekspresi lokal yang spesifik dapat secara superfisial menyerupai pembingkaian persuasif. Model yang dilatih terutama pada jurnalisme tingkat nasional dapat terlalu menandai gaya pelaporan regional sebagai niat promosi. AGENA sebagian memitigasi hal ini melalui \textit{grounding} RAG dengan contoh-contoh yang beragam, namun penelitian ini mengakui bahwa evaluasi reguler terhadap bias linguistik regional diperlukan. Kerangka kerja ini tidak boleh diterapkan dalam pengaturan di mana keputusan otomatis memiliki konsekuensi tanpa tinjauan editorial.
 
-Kekhawatiran terkait bias dalam perilaku model juga telah didokumentasikan dalam analisis komparatif yang lebih luas tentang model bahasa besar \cite{b24}.
+Kekhawatiran terkait bias dalam perilaku model juga telah didokumentasikan dalam analisis komparatif yang lebih luas tentang model bahasa besar.
 
 \subsection{Pertimbangan Latensi dan Penerapan}
 \textit{Pipeline} lima agen memperkenalkan waktu pemrosesan per-artikel sekitar 1,5--3 detik. Untuk aplikasi pemantauan \textit{batch}, ini dapat diterima. Untuk aliran \textit{real-time} bervolume tinggi, penerapan berjenjang mungkin praktis: pengklasifikasi ringan menangani penapisan rutin, dengan AGENA diinvokasi untuk kasus-kasus di batas keputusan atau berprioritas tinggi. Implementasi saat ini menargetkan pengaturan deteksi berkeakuratan tinggi dan menyediakan tolok ukur untuk pekerjaan optimisasi di masa mendatang.
 
-Untuk lingkungan produksi, pelajaran dari penelitian \textit{retrieval} iklan \textit{real-time} juga menunjukkan bahwa desain \textit{retrieval} yang sadar-latensi sangat penting untuk penskalaan penerapan \cite{b22}.
+Untuk lingkungan produksi, pelajaran dari penelitian \textit{retrieval} iklan \textit{real-time} juga menunjukkan bahwa desain \textit{retrieval} yang sadar-latensi sangat penting untuk penskalaan penerapan.
 
 \section{Kesimpulan}
 \label{sec:conclusion}
-Makalah ini mempresentasikan AGENA, sebuah kerangka kerja AI multi-agen untuk deteksi iklan \textit{native} yang dapat dijelaskan dalam berita digital Indonesia. Kerangka kerja ini memenuhi dua keterbatasan utama dari karya sebelumnya: kurangnya interpretabilitas dalam pengklasifikasi berbasis \textit{ensemble}, dan kecenderungan LLM generik untuk berhalusinasi ketika diterapkan pada jurnalisme Indonesia yang spesifik domain. Dengan menggabungkan basis pengetahuan berbasis RAG dengan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'', AGENA mencapai akurasi klasifikasi 94,5\% menggunakan Gemma 3 12B sebagai Agen Classifier dan menghasilkan jejak penalaran terstruktur yang dapat ditinjau secara editorial.
+Makalah ini mempresentasikan AGENA, sebuah kerangka kerja AI multi-agen untuk deteksi iklan \textit{native} yang dapat dijelaskan dalam berita digital Indonesia. Kerangka kerja ini memenuhi dua keterbatasan utama dari karya sebelumnya: kurangnya interpretabilitas dalam pengklasifikasi berbasis \textit{ensemble}, dan kecenderungan LLM generik untuk berhalusinasi ketika diterapkan pada jurnalisme Indonesia yang spesifik domain. Dengan menggabungkan basis pengetahuan berbasis RAG dengan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'', AGENA mencapai akurasi klasifikasi 94,5\% menggunakan Gemma 3 12B sebagai Agen Classifier dan menghasilkan jejak penalaran terstruktur yang dapat ditinjau secara editorial. Secara khusus, kerangka kerja ini mengungguli \textit{baseline} non-agentik sebelumnya, SENADA, dengan perolehan +4,5\% pada akurasi keseluruhan dan +16,0\% pada presisi Iklan \textit{Native} \cite{b19}.
 
-Studi ablasi mengonfirmasi bahwa setiap komponen \textit{pipeline} berkontribusi pada performa keseluruhan, dengan Agen Retriever memberikan gain tunggal terbesar (+12,8\%). Protokol evaluasi \textit{LLM-as-a-Judge} lebih lanjut menunjukkan bahwa akurasi saja merupakan ukuran yang tidak memadai: model yang lebih kecil yang mencapai akurasi batas melakukannya melalui penalaran yang dangkal atau dihalusinasikan daripada pemahaman linguistik yang sesungguhnya. Pekerjaan di masa mendatang akan fokus pada perluasan basis pengetahuan untuk mencakup lebih banyak contoh \textit{Hard Negative} dari portal berita Indonesia regional, mengurangi latensi per-artikel untuk aplikasi \textit{real-time}, dan mengevaluasi AGENA pada lingkungan berita lintas bahasa. Selain itu, \textit{baseline} transformer yang lebih kuat dan skema adaptasi yang hemat parameter tetap penting untuk penerapan praktis \cite{b39, b36}. Arah penerapan ini juga kompatibel dengan praktik rekayasa efisien yang ditunjukkan dalam karya kerangka kerja lokal sebelumnya \cite{b48}.
+Studi ablasi mengonfirmasi bahwa setiap komponen \textit{pipeline} berkontribusi pada performa keseluruhan, dengan Agen Retriever memberikan gain tunggal terbesar (+12,8\%). Protokol evaluasi \textit{LLM-as-a-Judge} lebih lanjut menunjukkan bahwa akurasi saja merupakan ukuran yang tidak memadai: model yang lebih kecil yang mencapai akurasi batas melakukannya melalui penalaran yang dangkal atau dihalusinasikan daripada pemahaman linguistik yang sesungguhnya. Pekerjaan di masa mendatang akan fokus pada perluasan basis pengetahuan untuk mencakup lebih banyak contoh \textit{Berita Batas} dari portal berita Indonesia regional, mengurangi latensi per-artikel untuk aplikasi \textit{real-time}, dan mengevaluasi AGENA pada lingkungan berita lintas bahasa. Selain itu, \textit{baseline} transformer yang lebih kuat dan skema adaptasi yang hemat parameter tetap penting untuk penerapan praktis. Arah penerapan ini juga kompatibel dengan praktik rekayasa efisien yang ditunjukkan dalam karya kerangka kerja lokal sebelumnya.
 
-Lebih luas lagi, bukti berskala besar tentang difusi informasi online terus menunjukkan bahwa informasi yang salah dapat menyebar lebih cepat dan lebih luas dibandingkan konten yang terverifikasi, memperkuat kebutuhan akan \textit{pipeline} deteksi dan penjelasan yang andal \cite{b65}.
+Lebih luas lagi, bukti berskala besar tentang difusi informasi online terus menunjukkan bahwa informasi yang salah dapat menyebar lebih cepat dan lebih luas dibandingkan konten yang terverifikasi, memperkuat kebutuhan akan \textit{pipeline} deteksi dan penjelasan yang andal.
 
 \section*{Ucapan Terima Kasih (Acknowledgment)}
 Penelitian ini didanai oleh Lembaga Pengelola Dana Pendidikan (LPDP) atas nama Kementerian Pendidikan Tinggi, Sains, dan Teknologi Republik Indonesia serta dikelola di bawah Program EQUITY (Kontrak No. 10916/IT2.III/T/KP.03.00/XII/2025).
 
 \begin{thebibliography}{00}
 \bibitem{b38} Smith, K., et al. (2023). The Ethics of Native Advertising in the Age of Generative AI. Journal of Media Ethics, Taylor \& Francis.
-\bibitem{b53} LaBrecque, A. C., Voorhees, C. M., Khodakarami, F., \& Fombelle, P. W. (2024). Native advertising effectiveness: The role of congruence and consumer annoyance on clicks, bounces, and visits. Journal of the Academy of Marketing Science, 52(6), 1692--1712.
-\bibitem{b54} Matteo, S., \& Dal Zotto, C. (2015). Native Advertising, or How to Stretch Editorial to Sponsored Content Within a Transmedia Branding Era. In Handbook of Media Branding (pp. 169--185). Springer.
-\bibitem{b17} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2024). Electronic news dataset for native advertisement detection. Scientific Data, 11(1), 1045.
+\bibitem{b53} LaBrecque, A. C., Voorhees, C. M., Khodakarami, F., \& Fombelle, P. W. (2024). Native advertising effectiveness: The role of congruence and consumer annoyance on clicks, bounces, and visits. Journal of the Academy of Marketing Science, 52(6), 1692--1712. https://doi.org/10.1007/s11747-024-01014-z
+\bibitem{b54} Matteo, S., \& Dal Zotto, C. (2015). Native Advertising, or How to Stretch Editorial to Sponsored Content Within a Transmedia Branding Era. In G. Siegert, K. Förster, S. Chan-Olmsted, \& M. Ots (Eds.), Handbook of Media Branding (pp. 169--185). Springer.
+\bibitem{b17} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2024). Electronic news dataset for native advertisement detection. Scientific Data, 11(1), 1045. https://doi.org/10.1038/s41597-024-04341-6
 \bibitem{b21} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). Automated Detection of Persuasive Content in Electronic News. Informatics, 10(4), 86. MDPI.
-\bibitem{b8} Fawaid, J., et al. (2021). Indonesia's Fake News Detection using Transformer Network. In ACM International Conference Proceeding Series.
-\bibitem{b9} Vlad, G.-A., et al. (2019). Sentence-Level Propaganda Detection in News Articles with Transfer Learning and BERT-BiLSTM-Capsule Model. ACL.
+\bibitem{b8} Fawaid, J., et al. (2021). Indonesia’s Fake News Detection using Transformer Network. In ACM International Conference Proceeding Series.
+\bibitem{b9} Vlad, G.-A., Tanase, M.-A., Onose, C., \& Cercel, D.-C. (2019). Sentence-Level Propaganda Detection in News Articles with Transfer Learning and BERT-BiLSTM-Capsule Model. In Proceedings of the Second Workshop on Natural Language Processing for Internet Freedom: Censorship, Disinformation, and Propaganda, pp. 148--154. Association for Computational Linguistics. https://doi.org/10.18653/v1/D19-5022
 \bibitem{b19} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). SENADA: A Stacked Ensemble Learning for Native Advertisement Detection in Electronic News. IEEE Access, 11, 102341--102355.
-\bibitem{b23} Vaswani, A., et al. (2017). Attention is All You Need. In NeurIPS.
-\bibitem{b39} Devlin, J., et al. (2018). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. NAACL 2019.
-\bibitem{b25} Lewis, P., et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. NeurIPS.
-\bibitem{b15} Brown, T., et al. (2020). Language Models are Few-Shot Learners. NeurIPS.
-\bibitem{b50} Alnabhan, M., \& Branco, P. (2024). Explainability and Robustness in AI-Based Fake News Detection. IEEE Access, 12, 161739--161760.
+\bibitem{b23} Vaswani, A., et al. (2017). Attention is All You Need. In Advances in Neural Information Processing Systems (NeurIPS).
+\bibitem{b39} Devlin, J., et al. (2018). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics.
+\bibitem{b25} Lewis, P., et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. In Advances in Neural Information Processing Systems (NeurIPS).
+\bibitem{b15} Brown, T., et al. (2020). Language Models are Few-Shot Learners. In Advances in Neural Information Processing Systems (NeurIPS).
+\bibitem{b50} Alnabhan, M., \& Branco, P. (2024). Explainability and Robustness in AI-Based Fake News Detection: A Systematic Literature Review. IEEE Access, 12, 161739--161760.
 \bibitem{b55} Touahri, H., et al. (2024). Fake news detection methods in social networks: a review. Artificial Intelligence Review, 57, 169.
-\bibitem{b18} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). A Comprehensive Ensemble Deep Learning Method for Identifying Native Advertising in News Articles. In IEEE ICSECS, pp. 450--455.
-\bibitem{b52} Galli, A., et al. (2022). A comprehensive Benchmark for fake news detection. Journal of Intelligent Information Systems, 59, 237--261.
-\bibitem{b57} Peng, J., et al. (2025). Disinformation detection technology: a survey. Discover Computing, 28, 320.
-\bibitem{b10} Zhang, Y., et al. (2025). Agentic AI: Autonomous Intelligence for Complex Goals. IEEE Access, 13, 4521--4545.
-\bibitem{b49} Adadi, A., \& Berrada, M. (2018). Peeking Inside the Black-Box: A Survey on XAI. IEEE Access, 6, 52138--52160.
-\bibitem{b51} Arrieta, A. B., et al. (2020). Explainable Artificial Intelligence (XAI): Concepts, taxonomies, opportunities and challenges. Information Fusion, 58, 82--115.
-\bibitem{b59} Samek, W., et al. (2019). Explainable AI: Interpreting, Explaining and Visualizing Deep Learning. LNCS 11700. Springer.
-\bibitem{b36} Hu, E. J., et al. (2022). LoRA: Low-Rank Adaptation of Large Language Models. ICLR.
-\bibitem{b37} Dao, T. (2023). FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning. ICLR.
+\bibitem{b18} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). A Comprehensive Ensemble Deep Learning Method for Identifying Native Advertising in News Articles. In 2023 IEEE 8th International Conference on Software Engineering and Computer Systems (ICSECS), pp. 450--455.
+\bibitem{b52} Galli, A., Masciari, E., Moscato, V., \& Sperlí, G. (2022). A comprehensive Benchmark for fake news detection. Journal of Intelligent Information Systems, 59, 237--261. https://doi.org/10.1007/s10844-021-00646-9
+\bibitem{b57} Peng, J., Yang, Z., Jia, L., et al. (2025). Disinformation detection technology: a survey. Discover Computing, 28, 320. https://doi.org/10.1007/s10791-025-09864-z
+\bibitem{b10} Zhang, Y., et al. (2025). Agentic AI: Autonomous Intelligence for Complex Goals: A Comprehensive Survey. IEEE Access, 13, 4521--4545.
+\bibitem{b49} Adadi, A., \& Berrada, M. (2018). Peeking Inside the Black-Box: A Survey on Explainable Artificial Intelligence (XAI). IEEE Access, 6, 52138--52160.
+\bibitem{b51} Arrieta, A. B., et al. (2020). Explainable Artificial Intelligence (XAI): Concepts, taxonomies, opportunities and challenges toward responsible AI. Information Fusion, 58, 82--115.
+\bibitem{b59} Samek, W., Montavon, G., Vedaldi, A., Hansen, L. K., \& Müller, K.-R. (2019). Explainable AI: Interpreting, Explaining and Visualizing Deep Learning. Lecture Notes in Computer Science, 11700. Springer.
+\bibitem{b36} Hu, E. J., et al. (2022). LoRA: Low-Rank Adaptation of Large Language Models. International Conference on Learning Representations (ICLR).
+\bibitem{b37} Dao, T. (2023). FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning. International Conference on Learning Representations (ICLR).
 \bibitem{b20} Johnson, A., et al. (2024). Explainable AI in Digital Journalism: A Systematic Review of Editorial Requirements. Digital Journalism, Elsevier.
-\bibitem{b24} Choudhary, T. (2025). Political Bias in Large Language Models. IEEE Access, 13, 11341--11379.
-\bibitem{b22} Wang, J., et al. (2025). Real-time Ad Retrieval via LLM-generative Commercial Intention. ACL 2025.
-\bibitem{b48} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2022). A Novel Framework to Detect Irrelevant Software Requirements Based on MultiPhiLDA. Informatics, 9(3), 67. MDPI.
-\bibitem{b60} Zhou, X., \& Zafarani, R. (2020). A Survey of Fake News: Fundamental Theories, Detection Methods, and Opportunities. ACM Computing Surveys, 53(5), 109.
-\bibitem{b61} Bondielli, A., \& Marcelloni, F. (2019). A survey on fake news and rumour detection techniques. Information Sciences, 497, 38--55.
-\bibitem{b62} Shu, K., et al. (2017). Fake News Detection on Social Media: A Data Mining Perspective. ACM SIGKDD Explorations, 19(1), 22--36.
-\bibitem{b63} Lundberg, S. M., \& Lee, S.-I. (2017). A Unified Approach to Interpreting Model Predictions. NeurIPS.
-\bibitem{b64} Ribeiro, M. T., et al. (2016). ``Why Should I Trust You?'': Explaining the Predictions of Any Classifier. ACM SIGKDD, pp. 1135--1144.
-\bibitem{b65} Vosoughi, S., Roy, D., \& Aral, S. (2018). The spread of true and false news online. Science, 359(6380), 1146--1151.
-\bibitem{b66} Castillo, C., Mendoza, M., \& Poblete, B. (2011). Information credibility on Twitter. WWW 2011, pp. 675--684.
-\bibitem{b67} Shu, K., et al. (2019). Beyond News Contents: The Role of Social Context for Fake News Detection. WSDM, pp. 312--320.
+\bibitem{b24} Choudhary, T. (2025). Political Bias in Large Language Models: A Comparative Analysis of ChatGPT-4, Perplexity, Google Gemini, and Claude. IEEE Access, 13, 11341--11379.
+\bibitem{b22} Wang, J., et al. (2025). Real-time Ad Retrieval via LLM-generative Commercial Intention for Sponsored Search Advertising. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (ACL).
+\bibitem{b48} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2022). A Novel Framework to Detect Irrelevant Software Requirements Based on MultiPhiLDA as the Topic Model. Informatics, 9(3), 67. MDPI.
+\bibitem{b60} Zhou, X., \& Zafarani, R. (2020). A Survey of Fake News: Fundamental Theories, Detection Methods, and Opportunities. ACM Computing Surveys, 53(5), 109:1--109:40. https://doi.org/10.1145/3395046
+\bibitem{b61} Bondielli, A., \& Marcelloni, F. (2019). A survey on fake news and rumour detection techniques. Information Sciences, 497, 38--55. https://doi.org/10.1016/j.ins.2019.05.035
+\bibitem{b62} Shu, K., Sliva, A., Wang, S., Tang, J., \& Liu, H. (2017). Fake News Detection on Social Media: A Data Mining Perspective. ACM SIGKDD Explorations Newsletter, 19(1), 22--36. https://doi.org/10.1145/3137597.3137600
+\bibitem{b63} Lundberg, S. M., \& Lee, S.-I. (2017). A Unified Approach to Interpreting Model Predictions. In Advances in Neural Information Processing Systems 30 (NeurIPS), pp. 4765--4774.
+\bibitem{b64} Ribeiro, M. T., Singh, S., \& Guestrin, C. (2016). ``Why Should I Trust You?'': Explaining the Predictions of Any Classifier. In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, pp. 1135--1144. https://doi.org/10.1145/2939672.2939778
+\bibitem{b65} Vosoughi, S., Roy, D., \& Aral, S. (2018). The spread of true and false news online. Science, 359(6380), 1146--1151. https://doi.org/10.1126/science.aap9559
+\bibitem{b66} Castillo, C., Mendoza, M., \& Poblete, B. (2011). Information credibility on Twitter. In Proceedings of the 20th International Conference on World Wide Web, pp. 675--684. https://doi.org/10.1145/1963405.1963500
+\bibitem{b67} Shu, K., Wang, S., Lee, D., \& Liu, H. (2019). Beyond News Contents: The Role of Social Context for Fake News Detection. In Proceedings of the 12th ACM International Conference on Web Search and Data Mining, pp. 312--320. https://doi.org/10.1145/3289600.3290994
 \end{thebibliography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{brian.jpg}}]{Brian Rizqi Paradisiaca Darnoto} menerima gelar doktor di bidang informatika dari Institut Teknologi Sepuluh Nopember, Surabaya, Indonesia, pada tahun 2025. Ia juga merupakan Dosen di Universitas Jember, Indonesia. Minat penelitiannya meliputi kecerdasan buatan, pemrosesan bahasa alami, dan rekayasa perangkat lunak.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{brian.jpg}}]{Brian Rizqi Paradisiaca Darnoto} menerima gelar doktor di bidang informatika dari Institut Teknologi Sepuluh Nopember, Surabaya, Indonesia, pada tahun 2025. Saat ini, ia adalah Peneliti Postdoktoral di Institut Teknologi Sepuluh Nopember dan juga merupakan Dosen di Universitas Jember, Indonesia. Minat penelitiannya meliputi kecerdasan buatan, pemrosesan bahasa alami, dan rekayasa perangkat lunak.
 \end{IEEEbiography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{diana.png}}]{Diana Purwitasari} (Senior Member, IEEE) adalah seorang Profesor di Departemen Informatika, Institut Teknologi Sepuluh Nopember. Minat penelitian beliau meliputi \textit{information retrieval}, \textit{social network analysis}, dan \textit{web mining}.

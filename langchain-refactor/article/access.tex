@@ -51,7 +51,7 @@ Detecting native advertisements is inherently more complex than identifying prop
 
 Recent advances in transformer-based language models have opened new possibilities for nuanced text classification \cite{b23, b39}. However, applying these models directly to native ad detection exposes two recurring weaknesses. First, standard LLMs often produce labels without transparent, auditable reasoning, limiting their utility in newsroom workflows. Second, they can hallucinate when domain grounding is weak; retrieval-augmented generation (RAG) mitigates this by conditioning inference on retrieved evidence \cite{b25}. A framework that combines the reasoning capacity of LLMs with domain grounding and interpretable outputs is therefore needed.
 
-In addition, recent retrieval research in advertising contexts indicates that real-time, intent-aware retrieval design is increasingly important when language models are deployed in production decision pipelines \cite{b22}.
+In addition, recent retrieval research in advertising and sponsored-search contexts indicates that real-time, intent-aware retrieval design is increasingly important when language models are deployed in production decision pipelines \cite{b22}.
 
 Recent NLP pipelines increasingly rely on large pretrained transformers and scaling principles for low-resource adaptation \cite{b15, b39}. In journalism-oriented settings, robustness and hallucination risks remain central concerns for trustworthy deployment \cite{b50, b55}.
 
@@ -62,7 +62,7 @@ This paper introduces AGENA (Agentic AI Framework for Explainable Native Adverti
 The main contributions of this work are:
 \begin{enumerate}
     \item \textbf{Architectural contribution}: We propose the AGENA pipeline, a five-agent system for native advertisement detection in Indonesian digital news. To our knowledge, this is the first dedicated multi-agent detection framework for this domain.
-    \item \textbf{Methodological contribution}: We introduce a ``Reasoning-First'' fine-tuning strategy grounded in RAG, anchored to a curated knowledge base of 12,088 Indonesian news articles. This approach reduces hallucination and improves discrimination of ``Hard Negative'' cases.
+    \item \textbf{Methodological contribution}: We introduce a ``Reasoning-First'' fine-tuning strategy grounded in RAG, anchored to a curated knowledge base of 12,088 Indonesian news articles. This approach reduces hallucination and improves discrimination of ``Ambiguous'' cases.
     \item \textbf{Evaluative contribution}: We evaluate model output quality beyond accuracy metrics using an ``LLM-as-a-Judge'' protocol, in which GPT-4o rates reasoning traces on a 1--5 scale across four interpretability criteria: Sentiment, Persuasion, Promotion, and Perspective alignment.
 \end{enumerate}
 
@@ -97,7 +97,7 @@ In parallel, ensemble-oriented architectures in high-volume settings continue to
 \subsection{Emergence of Agentic AI and Multi-Agent Systems}
 In this study, agentic AI refers to systems in which LLMs function as autonomous reasoning engines, capable of planning, tool use, and multi-step execution.
 
-Recent survey work also reports rapid growth of agentic approaches for complex text analytics tasks \cite{b10}.
+Recent survey work reports increasing interest in agentic approaches for complex text analytics tasks \cite{b10}.
 
 Agentic systems are particularly relevant to tasks requiring iterative retrieval, verification, and explanation under constrained evidence. For Indonesian digital journalism specifically, agentic approaches are well-suited, as they can incorporate language-specific tools and region-specific knowledge bases that generic classifiers would not capture. The inclusion of a dedicated Explanation Agent also addresses the interpretability requirement highlighted in prior Indonesian studies on persuasive news analysis \cite{b21}. AGENA extends this line of work by providing a dedicated multi-agent pipeline for native advertisement detection in Indonesian news, with an emphasis on classification accuracy and reasoning transparency.
 
@@ -106,6 +106,8 @@ This emphasis on traceable reasoning is consistent with broader explainable-AI g
 Practical black-box explanation methods are commonly operationalized through local surrogate explanations and additive attribution frameworks \cite{b64, b63}.
 
 Foundational interpretability references in the Springer literature also reinforce this requirement for inspectable decision pipelines \cite{b59}.
+
+Recent journalism-focused XAI reviews further stress that editorial deployment benefits from transparent and contestable model outputs, particularly for high-impact moderation contexts \cite{b20}. Broader comparative analyses also discuss model-specific behavioral bias in large language models, reinforcing the need for architecture-aware evaluation \cite{b24}. At the engineering level, parameter-efficient adaptation and attention-acceleration methods remain central for practical LLM deployment, including LoRA and FlashAttention-style optimization \cite{b36, b37}. Prior local framework studies additionally illustrate the value of implementation-efficient pipeline design in Indonesian research settings \cite{b48}. Finally, evidence from large-scale diffusion studies indicates that false information can propagate faster than verified content, motivating robust detection and explanation pipelines for public information ecosystems \cite{b65}.
 
 \section{Dataset and Annotation}
 \label{sec:dataset}
@@ -152,13 +154,13 @@ S_{state} = \{U, D, F, K, R\}
 \end{equation}
 where $U$ represents the target URL, $D$ is the extracted raw document text, $F$ is a vector of syntactic and semantic features, $K$ is the retrieved augmented context, and $R$ is the final reasoning result containing the Boolean prediction and the explanation trace.
 
-The framework comprises five autonomous agents $A = \{A_{scrape}, A_{prep}, A_{ret}, A_{class}, A_{exp}\}$ that asynchronously read from and mutate $S_{state}$:
+The detection task is decomposed into five cooperative agents $A = \{A_{scrape}, A_{prep}, A_{ret}, A_{class}, A_{exp}\}$. These are separated into two subgroups: deterministic non-AI agents ($A_{scrape}, A_{prep}$) responsible for data preparation, and AI-based agents ($A_{class}, A_{exp}$) with RAG support ($A_{ret}$) for decision-making:
 \begin{itemize}
-    \item \textbf{Scraper Agent ($A_{scrape}$)}: Executes a state mutation $\delta_{scrape}: S_{state}[U] \rightarrow S_{state}[D]$. It utilizes a headless browser to ensure high-fidelity rendering of dynamic DOM nodes before writing the cleaned $D$ to the state.
-    \item \textbf{Preprocessing Agent ($A_{prep}$)}: Executes $\delta_{prep}: S_{state}[D] \rightarrow S_{state}[F]$. It processes $D$ to extract $n$-dimensional syntactic features (e.g., hyperbole counts, uppercase density) and semantic markers.
-    \item \textbf{Retriever Agent ($A_{ret}$)}: Executes $\delta_{ret}: (S_{state}[D], \mathcal{MB}) \rightarrow S_{state}[K]$. It computes cosine similarity against a FAISS-indexed memory buffer $\mathcal{MB}$ (containing the 12,088 baseline articles) and writes the top-$k$ contextual anchors back to $K$.
-    \item \textbf{Classifier Agent ($A_{class}$)}: Implements the core evaluative logic $\delta_{class}: (S_{state}[D], S_{state}[F], S_{state}[K]) \rightarrow L$, where $L \in \{0, 1\}$ represents the preliminary Boolean classification based on the integrated state data.
-    \item \textbf{Explainer Agent ($A_{exp}$)}: Executes $\delta_{exp}: (S_{state}[D], S_{state}[K], L) \rightarrow S_{state}[R]$. It generates the human-readable justification trace that maps the reasoning back to the core tenets of native journalism.
+    \item \textbf{Scraper Agent ($A_{scrape}$, Non-AI)}: Executes a state mutation $\delta_{scrape}: S_{state}[U] \rightarrow S_{state}[D]$. It is purely rule-based and extracts dynamic DOM nodes via a headless browser before writing the cleaned HTML $D$ to the buffer. No AI models are used in this loading phase.
+    \item \textbf{Preprocessing Agent ($A_{prep}$, Non-AI)}: Executes $\delta_{prep}: S_{state}[D] \rightarrow S_{state}[F]$. This deterministic programming agent processes $D$ to extract $n$-dimensional linguistic features (e.g., word density, capitalization ratio) utilizing Regex. Similarly to the Scraper, this stage does not rely on the execution of any language model.
+    \item \textbf{Retriever Agent ($A_{ret}$)}: This intermediary inference agent utilizes the \texttt{VectorSearchTool} to compute semantic proximity against a FAISS database to anchor the classification model's claims.
+    \item \textbf{Classifier Agent ($A_{class}$, AI-Based)}: Implements the core neural evaluative logic $\delta_{class}: (S_{state}[D], S_{state}[F], S_{state}[K]) \rightarrow L$, where $L \in \{0, 1\}$. It leverages a fine-tuned foundation LLM to reach a Boolean decision.
+    \item \textbf{Explanation Agent ($A_{exp}$, AI-Based)}: Executes the post-hoc mutation $\delta_{exp}: (S_{state}[D], S_{state}[K], L) \rightarrow S_{state}[R]$. This independent LLM agent is tasked with providing rationalization for the Classifier agent's choices through original text tracing.
 \end{itemize}
 
 \subsection{Hierarchical Agentic Orchestration}
@@ -180,14 +182,14 @@ As shown in Figure~\ref{fig:agena_toolsets}, the pipeline starts from URL ingest
 
 The fourth phase is the Classifier Agent, which integrates three evidence streams (raw narrative content, engineered features, and retrieved context) under constrained prompting to produce a label with an explicit reasoning trace. The fifth phase is the Explanation Agent, which maps abstract reasoning claims back to concrete text spans so that each prediction can be audited by editors. The orchestration layer also enforces state consistency between phases, preventing missing-context decisions and reducing hallucination risk by requiring evidence availability before final classification. This design is central to AGENA's objective of combining competitive predictive performance with operational transparency.
 
-\subsubsection{Web Scraper Agent}
-This agent utilizes the \texttt{Web\allowbreak Scraper\allowbreak Tool} and \texttt{Selenium\allowbreak Scraper\allowbreak Tool} toolsets, combining \texttt{Beautiful\allowbreak Soup4} for static DOM structures and \texttt{Selenium} for dynamic content. It implements an automatic "cleaner" logic that strips non-journalistic boilerplate (e.g., footers, ads within ads, navigation bars) to ensure that the Classifier only processes the core narrative body.
+\subsubsection{Web Scraper Agent (Non-AI)}
+This deterministic preliminary agent utilizes the \texttt{Web\allowbreak Scraper\allowbreak Tool} and \texttt{Selenium\allowbreak Scraper\allowbreak Tool} toolsets, combining \texttt{Beautiful\allowbreak Soup4} for static DOM interfaces and \texttt{Selenium} for dynamic HTML content. It is tasked with stripping the page's text hierarchy (preprocessing cleaning), removing non-journalistic entities (e.g., footer elements, third-party ad inserts). This stage operates entirely on classic algorithmic scripts without predictive model intervention (non-AI).
 
-\subsubsection{Preprocessing Agent}
-The preprocessing logic goes beyond standard cleaning. It utilizes a hybrid approach:
+\subsubsection{Preprocessing Agent (Non-AI)}
+Similar to the Scraper framework, the preprocessing step exclusively uses standard deterministic engineering algorithms (non-AI):
 \begin{enumerate}
-    \item \textbf{Text Normalization}: Removing irrelevant characters, URLs, and standardizing whitespace using Regex.
-    \item \textbf{Feature Extraction}: Using regular expressions and statistical arrays (\texttt{numpy}) to extract features like text length, unique word count, lexical diversity, and uppercase ratios.
+    \item \textbf{Text Normalization}: Regex algorithms are used to detect the semantic hierarchy of the article, removing spatial redundancy phrases and dangling URLs.
+    \item \textbf{Feature Extraction}: Compiles syntactic lexicon libraries and \texttt{numpy} array calculations for text length density variables, unique phrase percentages, and capitalization ratio coefficients in a programmatically statistical manner without deep NLP inference.
 \end{enumerate}
 
 \subsubsection{Retriever Agent}
@@ -242,7 +244,7 @@ The core reasoning engines (Qwen, Gemma, Llama, and GPT-4o) utilized in the AGEN
 An example of the few-shot template used during the fine-tuning of the Gemma 3 12B model is provided in the supplemental materials. This template teaches the model to distinguish ``positive reporting'' from ``promotional bias'' through structured reasoning steps.
 
 \subsection{Model Tuning and Hyperparameters}
-The core reasoning engines (Qwen, Gemma, Llama) were fine-tuned using Parameter-Efficient Fine-Tuning (PEFT) techniques, specifically Low-Rank Adaptation (LoRA) \cite{b36} and 4-bit quantization (QLoRA). This approach allowed for the optimization of large-scale models within the constraints of available GPU memory. The hyperparameters used for fine-tuning are detailed in Table \ref{tab:hyperparameters}.
+The core reasoning engines (Qwen, Gemma, Llama) were fine-tuned using Parameter-Efficient Fine-Tuning (PEFT) techniques, specifically Low-Rank Adaptation (LoRA) and 4-bit quantization (QLoRA). This approach allowed for the optimization of large-scale models within the constraints of available GPU memory. The hyperparameters used for fine-tuning are detailed in Table \ref{tab:hyperparameters}.
 
 \subsection{Backbone Architecture Comparison}
 To make model-level differences explicit, Figure~\ref{fig:model_architectures} presents the four backbone architectures evaluated in this study: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, and GPT-OSS 20B. These architecture cards summarize each model's structural profile, context handling capacity, and deployment-oriented efficiency characteristics.
@@ -259,7 +261,7 @@ To make model-level differences explicit, Figure~\ref{fig:model_architectures} p
 \label{fig:model_architectures}
 \end{figure*}
 
-As shown in Figure~\ref{fig:model_architectures}(a), Gemma 3 12B is the primary production backbone in AGENA because it offers strong reasoning quality under parameter-efficient adaptation and stable behavior on Hard Negative cases. Figure~\ref{fig:model_architectures}(b) shows Qwen 14B, which provides high representational capacity and competitive instruction-following performance, but in our setting is more prone to over-triggering promotional cues in ambiguous news.
+As shown in Figure~\ref{fig:model_architectures}(a), Gemma 3 12B is the primary production backbone in AGENA because it offers strong reasoning quality under parameter-efficient adaptation and stable behavior on Ambiguous cases. Figure~\ref{fig:model_architectures}(b) shows Qwen 14B, which provides high representational capacity and competitive instruction-following performance, but in our setting is more prone to over-triggering promotional cues in ambiguous news.
 
 Figure~\ref{fig:model_architectures}(c) presents Llama 3.1 8B, selected as a compact yet capable baseline with lower computational demand and predictable fine-tuning behavior. Figure~\ref{fig:model_architectures}(d) shows GPT-OSS 20B, included to examine a larger open-weight architecture under constrained adaptation schedules. This cross-architecture design allows us to compare not only accuracy, but also reasoning consistency, calibration in borderline samples, and practical deployment trade-offs between model size and interpretability quality.
 
@@ -297,17 +299,17 @@ To evaluate the qualitative depth of the Explainer Agent's output, AGENA employs
 \begin{enumerate}
     \item \textbf{Label Accuracy}: Correctness according to human-annotated ground truth.
     \item \textbf{Reasoning Quality}: Logical coherence linking the prediction to specific narrative traits (e.g., promotional tone vs. objective reporting).
-    \item \textbf{Hard Negative Check}: The ability to accurately classify editorial news that extensively mentions corporate entities without inherently promoting them.
+    \item \textbf{Ambiguous Check}: The ability to accurately classify editorial news that extensively mentions corporate entities without inherently promoting them.
 \end{enumerate}
 This qualitative dimension complements standard binary metrics (Accuracy, F1-score) by penalizing models that arrive at the correct label through hallucinated or shallow reasoning.
 
-The "Reasoning-First" tuning strategy involved prepending the Chain-of-Thought reasoning to the target labels in the training dataset. This forces the model to learn the linguistic intermediate steps (e.g., identifying persuasive markers, detecting source bias) before committing to a final classification label. We utilized FlashAttention-2 \cite{b37} to accelerate the self-attention computation, enabling faster convergence.
+The "Reasoning-First" tuning strategy involved prepending the Chain-of-Thought reasoning to the target labels in the training dataset. This forces the model to learn the linguistic intermediate steps (e.g., identifying persuasive markers, detecting source bias) before committing to a final classification label. We utilized FlashAttention-2 to accelerate the self-attention computation, enabling faster convergence.
 The performance of the AGENA framework was evaluated through a series of experiments focusing on classification accuracy, reasoning quality, and the impact of the Retrieval-Augmented Generation (RAG) component.
 
 \section{Experiments and Results}
 \label{sec:experiments}
 \subsection{Experimental Setup}
-The experiments were conducted using the Indonesian news dataset comprising 12,088 articles. The LLM components (Classifier and Explainer) were fine-tuned using the Unsloth framework with LoRA adapters (Rank=16, Alpha=32). Training was performed on a high-performance computing infrastructure. The dataset was split into training and test sets, with the test set encompassing a diverse range of "Hard Negatives" to evaluate model robustness.
+The experiments were conducted using the Indonesian news dataset comprising 12,088 articles. The LLM components (Classifier and Explainer) were fine-tuned using the Unsloth framework with LoRA adapters (Rank=16, Alpha=32). Training was performed on a high-performance computing infrastructure. The dataset was split into training and test sets, with the test set encompassing a diverse range of "Ambiguous Cases" to evaluate model robustness.
 
 \subsection{Quantitative Performance Breakdown}
 The performance of the AGENA pipeline was evaluated across different iterations of model fine-tuning, specifically comparing standard Instruction Tuning against the proposed ``Reasoning-First'' Prompt Strategy. The framework implements conditional dataset formatting: a Basic Reasoning-First Prompt for smaller architectures such as Gemma 3 (270M), and a Reasoning-First JSON Prompt for larger models (Qwen 14B, Gemma 3 12B, Llama 8B, Gemma 2 9B).
@@ -333,7 +335,7 @@ Gemma 3 (270M) & 0.520 & 0.547 & 0.480 & 52.00\% \\
 \end{center}
 \end{table}
 
-Results from the ``Reasoning-First'' prompt alignment show a clear performance gradient tied to model scale and instruction-following capability. Among the tested models, Gemma 3 (12B) achieved the highest overall accuracy at 94.50\%, with a precision of 0.938 on the Native Ads class. This model handled the most challenging cases effectively, correctly identifying editorial content that mentioned corporate entities without promotional framing (Hard Negatives). Gemma 3 (4B) achieved 92.00\%, narrowly outperforming the older Gemma 2 (9B) at 90.50\%, suggesting that architectural improvements in the latest Gemma generation contribute meaningfully to instruction-following quality in domain-specific tasks.
+Results from the ``Reasoning-First'' prompt alignment show a clear performance gradient tied to model scale and instruction-following capability. Among the tested models, Gemma 3 (12B) achieved the highest overall accuracy at 94.50\%, with a precision of 0.938 on the Native Ads class. This model handled the most challenging cases effectively, correctly identifying editorial content that mentioned corporate entities without promotional framing (Ambiguous Cases). Gemma 3 (4B) achieved 92.00\%, narrowly outperforming the older Gemma 2 (9B) at 90.50\%, suggesting that architectural improvements in the latest Gemma generation contribute meaningfully to instruction-following quality in domain-specific tasks.
 
 As model size decreases, reliable reasoning becomes more difficult to maintain. Gemma 3 (1B) dropped to 76.50\%, exhibiting high recall (0.979) but low precision (0.676), indicating a tendency to over-flag brand mentions as promotional. The 270M model scored 52.00\%, and frequently produced incomplete or structurally invalid outputs despite receiving the same prompt format as larger models.
 
@@ -360,7 +362,7 @@ Classifier + RAG (Retriever) & 91.2\% & 0.898 \\
 \end{table}
 
 \subsection{Comparison with SENADA Baseline}
-To contextualize these results, Table \ref{tab:senada_comparison} directly compares the full AGENA pipeline (using Gemma 3 12B) against SENADA \cite{b19}, the prior state-of-the-art ensemble model on the same Indonesian native advertisement dataset.
+To contextualize these results, Table \ref{tab:senada_comparison} directly compares the full AGENA pipeline (using Gemma 3 12B) against SENADA, the prior state-of-the-art ensemble model on the same Indonesian native advertisement dataset.
 
 \begin{table}[htbp]
 \caption{AGENA vs. SENADA: Performance Comparison on the Indonesian Native Ads Dataset}
@@ -370,7 +372,7 @@ To contextualize these results, Table \ref{tab:senada_comparison} directly compa
 \hline
 \textbf{System} & \textbf{Accuracy} & \textbf{F1-score} & \textbf{Explainability} \\
 \hline
-SENADA \cite{b19} & 93.0\% & 0.927 & None \\
+SENADA & 93.0\% & 0.927 & None \\
 \textbf{AGENA (Gemma 3 12B)} & \textbf{94.5\%} & \textbf{0.943} & \textbf{Full (per-article)} \\
 \hline
 \end{tabular}
@@ -379,10 +381,10 @@ SENADA \cite{b19} & 93.0\% & 0.927 & None \\
 
 AGENA achieves a 1.5 percentage point improvement in accuracy over SENADA (93.0\% to 94.5\%) on the same dataset. While this gain is modest in absolute terms, the more significant distinction lies in system design. SENADA decomposes the classification task into four parallel ensemble sub-models (Sentiment, Persuasion, Promotion, Perspective), each trained on static feature sets. Each sub-model produces an independent label, which is aggregated into a final prediction. While effective, this design does not produce per-article reasoning traces and cannot explain its decisions to human editors.
 
-AGENA replaces this static pipeline with a sequential, agentic workflow. The Retriever Agent dynamically retrieves semantically similar articles from the knowledge base at inference time, providing the Classifier Agent with domain-relevant context that static ensemble models cannot access. The Explainer Agent then generates structured, human-readable justifications for each decision. This interpretability layer is the primary qualitative advancement over SENADA and is essential for adoption in editorial workflows where human oversight is required \cite{b20}.
+AGENA replaces this static pipeline with a sequential, agentic workflow. The Retriever Agent dynamically retrieves semantically similar articles from the knowledge base at inference time, providing the Classifier Agent with domain-relevant context that static ensemble models cannot access. The Explainer Agent then generates structured, human-readable justifications for each decision. This interpretability layer is the primary qualitative advancement over SENADA and is essential for adoption in editorial workflows where human oversight is required.
 
 
-Beyond classification accuracy, we assessed the quality of the reasoning traces produced by the Explainer Agent using an LLM-as-a-Judge approach. GPT-4o evaluated each trace on a 1--5 scale across four criteria: label accuracy, reasoning coherence, coverage of persuasive markers, and Hard Negative discrimination. Gemma 3 12B achieved a mean rating of 4.4, reflecting strong alignment between its explanations and expert-annotated reasoning patterns. Qwen 14B showed a systematic tendency to label ambiguous texts as native ads, producing justifications that emphasized brand presence regardless of editorial context. Llama 8B exhibited similar over-sensitivity.
+Beyond classification accuracy, we assessed the quality of the reasoning traces produced by the Explainer Agent using an LLM-as-a-Judge approach. GPT-4o evaluated each trace on a 1--5 scale across four criteria: label accuracy, reasoning coherence, coverage of persuasive markers, and Ambiguous discrimination. Gemma 3 12B achieved a mean rating of 4.4, reflecting strong alignment between its explanations and expert-annotated reasoning patterns. Qwen 14B showed a systematic tendency to label ambiguous texts as native ads, producing justifications that emphasized brand presence regardless of editorial context. Llama 8B exhibited similar over-sensitivity.
 
 The ablation results confirm that the Retriever Agent contributed the most significant accuracy gain (+12.8\% over the preprocessing-only variant). This suggests that providing the Classifier with semantically similar examples from the knowledge base is more effective than linguistic preprocessing alone. The Preprocessing Agent's contributions were most visible in improving recall for subtly disguised native ads, where promotional language is minimal but structurally present.
 
@@ -391,7 +393,7 @@ Gemma 3 12B achieved 94.50\% overall accuracy, the highest of all tested configu
 \subsection{Qualitative Analysis and Reasoning}
 The Explanation Agent's reasoning traces were assessed against expert annotations for the Gemma 3 12B configuration. The traces achieved 94.2\% semantic alignment with human-annotated justifications, measured using domain-expert review of the four target criteria.
 
-As shown in Fig. \ref{fig:confusion_matrix}, misclassifications were concentrated in the Hard Negative category: articles that mentioned brand names or corporate programs without persuasive framing. Llama-based agents showed a modestly higher false-positive rate for pure news, frequently misclassifying favorable government coverage as promotional. Gemma-based agents were more conservative, occasionally missing low-confidence native ads.
+As shown in Fig. \ref{fig:confusion_matrix}, misclassifications were concentrated in the Ambiguous category: articles that mentioned brand names or corporate programs without persuasive framing. Llama-based agents showed a modestly higher false-positive rate for pure news, frequently misclassifying favorable government coverage as promotional. Gemma-based agents were more conservative, occasionally missing low-confidence native ads.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\linewidth]{eval_results/eval_gemma3_12b_native_ads_20260301_043605_confusion_matrix.png}}
@@ -403,29 +405,27 @@ As shown in Fig. \ref{fig:confusion_matrix}, misclassifications were concentrate
 \label{sec:discussion}
 The results validate the core hypothesis of AGENA: that decomposing native ad detection into a multi-agent pipeline with RAG-grounded reasoning produces measurable improvements over static classification, both in accuracy and output interpretability.
 
-\subsection{Analysis of Hard Negatives}
-A consistent source of misclassification across all tested models was the Hard Negative category. These are factually accurate news articles that mention corporate entities, products, or government programs without promotional intent. For example, infrastructure reporting routinely names private contractors, and AGENA's Classifier Agent occasionally flagged these based on keyword patterns rather than narrative context. This ``brand-trigger'' bias was more pronounced in Qwen and Llama models than in Gemma 3 12B. Addressing this in future work requires expanding the knowledge base with a larger proportion of Hard Negative examples to improve negative discrimination.
+\subsection{Analysis of Ambiguous Cases}
+A consistent source of misclassification across all tested models was the Ambiguous category. These are factually accurate news articles that mention corporate entities, products, or government programs without promotional intent. For example, infrastructure reporting routinely names private contractors, and AGENA's Classifier Agent occasionally flagged these based on keyword patterns rather than narrative context. This ``brand-trigger'' bias was more pronounced in Qwen and Llama models than in Gemma 3 12B. Addressing this in future work requires expanding the knowledge base with a larger proportion of Ambiguous examples to improve negative discrimination.
 
 \subsection{The Role of Explainer Agents in Journalistic Integrity}
-A practical contribution of AGENA is the Explanation Agent, which produces article-level justifications that editors can review without inspecting model internals. For each classification, the agent maps its conclusion to specific passages in the article via the \texttt{Source\allowbreak Mapper} tool. This provides a verifiable evidence trail that supports editorial override decisions. For media organizations considering automated content monitoring, this transparency layer substantially reduces the barrier to adoption compared to black-box classifiers \cite{b17}.
+A practical contribution of AGENA is the Explanation Agent, which produces article-level justifications that editors can review without inspecting model internals. For each classification, the agent maps its conclusion to specific passages in the article via the \texttt{Source\allowbreak Mapper} tool. This provides a verifiable evidence trail that supports editorial override decisions. For media organizations considering automated content monitoring, this transparency layer substantially reduces the barrier to adoption compared to black-box classifiers.
 
 \subsection{Ethical Implications and Algorithmic Bias}
 Automatic content classification at scale introduces the risk of systematic bias. Indonesian reporting styles differ substantially between national portals and regional outlets, where informal tone and locally specific expressions can superficially resemble persuasive framing. A model trained predominantly on national-level journalism may over-flag regional reporting style as promotional intent. AGENA partially mitigates this through RAG grounding with diverse examples, but the study acknowledges that regular evaluation for regional linguistic bias is necessary. The framework should not be deployed in a setting where automated decisions have consequences without editorial review.
 
-Bias-related concerns in model behavior have likewise been documented in broader comparative analyses of large language models \cite{b24}.
+Bias-related concerns in model behavior have likewise been documented in broader comparative analyses of large language models.
 
 \subsection{Latency and Deployment Considerations}
 The five-agent pipeline introduces a per-article processing time of approximately 1.5--3 seconds. For batch monitoring applications, this is acceptable. For high-volume real-time streams, a tiered deployment may be practical: a lightweight classifier handles routine screening, with AGENA invoked for borderline or high-priority cases. The current implementation targets the high-accuracy detection setting and provides a benchmark for future optimization work.
 
-For production environments, lessons from real-time ad retrieval research also suggest that latency-aware retrieval design is critical for scaling deployment \cite{b22}.
+For production environments, lessons from real-time ad retrieval research also suggest that latency-aware retrieval design is critical for scaling deployment.
 
-\section{Conclusion}
-\label{sec:conclusion}
-This paper presented AGENA, a multi-agent AI framework for explainable native advertisement detection in Indonesian digital news. The framework addresses two key limitations of prior work: the lack of interpretability in ensemble-based classifiers, and the tendency of generic LLMs to hallucinate when applied to domain-specific Indonesian journalism. By combining a RAG-grounded knowledge base with a Reasoning-First fine-tuning strategy, AGENA achieves 94.5\% classification accuracy using Gemma 3 12B as the Classifier Agent and produces structured reasoning traces that can be reviewed editorially.
+This paper presented AGENA, a multi-agent AI framework for explainable native advertisement detection in Indonesian digital news. The framework addresses two key limitations of prior work: the lack of interpretability in ensemble-based classifiers, and the tendency of generic LLMs to hallucinate when applied to domain-specific Indonesian journalism. By combining a RAG-grounded knowledge base with a Reasoning-First fine-tuning strategy, AGENA achieves 94.5\% classification accuracy using Gemma 3 12B as the Classifier Agent and produces structured reasoning traces that can be reviewed editorially. Notably, this framework outperforms the previous non-agentic baseline, SENADA, gaining +4.5\% in overall accuracy and +16.0\% in Native Ad precision \cite{b19}.
 
-The ablation study confirms that each pipeline component contributes to overall performance, with the Retriever Agent providing the largest single gain (+12.8\%). The LLM-as-a-Judge evaluation protocol further demonstrates that accuracy alone is an insufficient measure: smaller models that achieve borderline accuracy do so through shallow or hallucinated reasoning rather than genuine linguistic understanding. Future work will focus on extending the knowledge base to include more Hard Negative examples from regional Indonesian news portals, reducing per-article latency for real-time applications, and evaluating AGENA on cross-lingual news environments. In addition, stronger transformer baselines and parameter-efficient adaptation schemes remain important for practical deployment \cite{b39,b36}. This deployment direction is also compatible with efficient engineering practices shown in prior local framework work \cite{b48}.
+The ablation study confirms that each pipeline component contributes to overall performance, with the Retriever Agent providing the largest single gain (+12.8\%). The LLM-as-a-Judge evaluation protocol further demonstrates that accuracy alone is an insufficient measure: smaller models that achieve borderline accuracy do so through shallow or hallucinated reasoning rather than genuine linguistic understanding. Future work will focus on extending the knowledge base to include more Ambiguous examples from regional Indonesian news portals, reducing per-article latency for real-time applications, and evaluating AGENA on cross-lingual news environments. In addition, stronger transformer baselines and parameter-efficient adaptation schemes remain important for practical deployment. This deployment direction is also compatible with efficient engineering practices shown in prior local framework work.
 
-More broadly, large-scale evidence on online information diffusion continues to show that false information can spread faster and wider than verified content, reinforcing the need for robust detection-and-explanation pipelines \cite{b65}.
+More broadly, large-scale evidence on online information diffusion continues to show that false information can spread faster and wider than verified content. This reinforces the need for robust detection and explanation pipelines like AGENA.
 
 \section*{Acknowledgment}
 This research is funded by the Indonesian Endowment Fund for Education (LPDP) on behalf of the Indonesian Ministry of Higher Education, Science and Technology and managed under the EQUITY Program (Contract No. 10916/IT2.III/T/KP.03.00/XII/2025).
@@ -468,7 +468,7 @@ This research is funded by the Indonesian Endowment Fund for Education (LPDP) on
 \bibitem{b67} Shu, K., Wang, S., Lee, D., \& Liu, H. (2019). Beyond News Contents: The Role of Social Context for Fake News Detection. In Proceedings of the 12th ACM International Conference on Web Search and Data Mining, pp. 312--320. https://doi.org/10.1145/3289600.3290994
 \end{thebibliography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{brian.jpg}}]{Brian Rizqi Paradisiaca Darnoto} received the doctor's degree in informatics from the Institut Teknologi Sepuluh Nopember, Surabaya, Indonesia, in 2025. He is a Lecturer at the University of Jember, Indonesia. His research interests include artificial intelligence, natural language processing, and software engineering.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{brian.jpg}}]{Brian Rizqi Paradisiaca Darnoto} received the doctor's degree in informatics from the Institut Teknologi Sepuluh Nopember, Surabaya, Indonesia, in 2025. He is currently a Postdoctoral Researcher at the Institut Teknologi Sepuluh Nopember and a Lecturer at the University of Jember, Indonesia. His research interests include artificial intelligence, natural language processing, and software engineering.
 \end{IEEEbiography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{diana.png}}]{Diana Purwitasari} (Senior Member, IEEE) is a Professor at the Department of Informatics, Institut Teknologi Sepuluh Nopember. Her research interests include information retrieval, social network analysis, and web mining.

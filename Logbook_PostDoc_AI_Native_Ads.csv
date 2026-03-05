@@ -1,16 +1,85 @@
-No;Rentang Minggu;Ringkasan Aktivitas Penelitian
-1;10 Nov - 16 Nov 2025;Inisiasi penelitian, studi literatur komprehensif terkait mekanisme deteksi advertorial, dan pengumpulan dataset awal.
-2;17 Nov - 23 Nov 2025;Eksperimen awal menggunakan GPT-4o sebagai baseline (Ground Truth) untuk klasifikasi native ads pada media digital Indonesia.
-3;24 Nov - 30 Nov 2025;Eksplorasi model bahasa Open-Source (OSS) melalui OpenRouter untuk melakukan studi komparatif performa model komersial vs terbuka.
-4;01 Des - 07 Des 2025;Perancangan arsitektur awal sistem deteksi deteksi konten menggunakan kerangka kerja LangChain untuk orkestrasi agen.
-5;08 Des - 14 Des 2025;Pengujian kapabilitas inferensi model Llama-3 dalam memahami nuansa bahasa persuasif pada korpus berita lokal.
-6;15 Des - 21 Des 2025;Implementasi integrasi API OpenAI dan OpenRouter ke dalam backend klasifikasi untuk monitoring biaya dan efisiensi token.
-7;22 Des - 28 Des 2025;Pengembangan pipeline standarisasi datasets untuk persiapan fase fine-tuning model bahasa lokal.
-8;29 Des - 04 Jan 2026;Konfigurasi environment penelitian pada server GPU (A100) dan penyiapan dependensi komputasi tingkat lanjut.
-9;05 Jan - 11 Jan 2026;Analisis performa model Llama berbasis instruksi dalam tugas tagging entitas dan kategorisasi konten berita.
-10;12 Jan - 18 Jan 2026;Inisiasi riset efisiensi VRAM melalui pengujian library Unsloth untuk akselerasi proses pelatihan model.
-11;19 Jan - 25 Jan 2026;Eksperimen awal teknik Parameter-Efficient Fine-Tuning (PEFT) menggunakan LoRA/QLoRA pada model Llama.
-12;26 Jan - 01 Feb 2026;Transisi fokus optimasi pada model ultra-mini Gemma 3 270M untuk skenario deployment pada perangkat dengan resource minim.
-13;02 Feb - 08 Feb 2026;Refaktorisasi masif basis kode ke struktur modular 'langchain-refactor' guna meningkatkan skalabilitas sistem.
-14;09 Feb - 15 Feb 2026;Identifikasi kegagalan Phase 3 (degradasi akurasi/sampah) akibat kompleksitas format JSON pada model 270M.
-15;16 Feb - 21 Feb 2026;Implementasi Phase 4 (Extreme Simplification) dan transisi cepat ke Phase 5 (Multiple Choice Question/MCQ Framing) untuk mengatasi limitasi kemampuan generasi teks pada SLM berukuran sub-1B parameter.
+No;Tanggal;Ringkasan Aktivitas Penelitian
+1;10 Nov 2025;Inisiasi penelitian dan penetapan ruang lingkup proyek deteksi advertorial.
+2;11 Nov 2025;Studi literatur komprehensif terkait mekanisme deteksi native ads terkini.
+3;12 Nov 2025;Penyusunan kriteria dan batasan dari dataset awal yang akan dikumpulkan.
+4;13 Nov 2025;Eksekusi pengumpulan dataset artikel berita elektronik dari portal Indonesia.
+5;14 Nov 2025;Validasi dan kurasi manual subset pertama dari dataset awal yang terkumpul.
+6;17 Nov 2025;Penyiapan environment eksperimen untuk pengujian model baseline.
+7;18 Nov 2025;Integrasi akses API GPT-4o sebagai validator Ground Truth percobaan awal
+8;19 Nov 2025;Uji coba prompt engineering untuk klasifikasi native ads dengan GPT-4o.
+9;20 Nov 2025;Eksekusi eksperimen klasifikasi pada subset data menggunakan GPT-4o.
+10;21 Nov 2025;Evaluasi kinerja dan rekapitulasi performa GPT-4o sebagai metrik baseline.
+11;24 Nov 2025;Identifikasi kandidat model bahasa Open-Source (OSS) yang potensial.
+12;25 Nov 2025;Registrasi dan setup API OpenRouter untuk memfasilitasi akses multi-model OSS.
+13;26 Nov 2025;Pembuatan skrip otomatisasi pengujian inferensi melalui endpoint OpenRouter.
+14;27 Nov 2025;Pengumpulan hasil inferensi eksperimen beberapa kandidat model OSS.
+15;28 Nov 2025;Analisis komparatif performa deteksi antara model komersial dan terbuka (OSS).
+16;01 Des 2025;Studi dan perancangan konsep arsitektur multi-agen untuk deteksi konten.
+17;02 Des 2025;Inisialisasi desain sistem deteksi berbasis kerangka kerja LangChain.
+18;03 Des 2025;Pembuatan prototipe logika komunikasi antar agen secara sistematis.
+19;04 Des 2025;Implementasi orkestrasi agen dasar menggunakan objek StateGraph LangChain.
+20;05 Des 2025;Pengujian dan debugging fungsionalitas alur tugas agen dalam LangChain.
+21;08 Des 2025;Penyiapan korpus berita dengan nuansa persuasif untuk pengujian intensif Llama-3.
+22;09 Des 2025;Konfigurasi dan penyesuaian instruksi prompt pada uji coba Llama-3.
+23;10 Des 2025;Pelaksanaan eksperimen deteksi dan pemahaman fitur linguistik persuasif.
+24;11 Des 2025;Analisis kesalahan (error analysis) pada pola prediksi yang terklasifikasi salah.
+25;12 Des 2025;Penyusunan laporan temuan kemampuan Llama-3 dalam memahami bahasa berita lokal.
+26;15 Des 2025;Pemetaan rute pemanggilan API OpenAI dan OpenRouter pada backend proyek.
+27;16 Des 2025;Pengembangan modul integrasi dinamis sistem klasifikasi ke backend utama.
+28;17 Des 2025;Implementasi fungsi tracker untuk kalkulasi dan monitoring biaya akses API.
+29;18 Des 2025;Optimalisasi struktur payload permintaan inferensi guna efisiensi token.
+30;19 Des 2025;Finalisasi dan stress-testing kestabilan integrasi API eksternal di lingkungan backend.
+31;22 Des 2025;Audit integritas data, format log, dan kualitas sampel dari dataset mentah.
+32;23 Des 2025;Pembuatan skrip otomatisasi pembersihan teks (text cleaning & preprocessing).
+33;24 Des 2025;Standardisasi struktur label target dan transformasi format output ke JSON/JSONL.
+34;25 Des 2025;Validasi hasil pemrosesan dan ekstraksi fitur awal untuk pipeline pembelajaran.
+35;26 Des 2025;Finalisasi komposisi dataset dan pemecahan partisi (train/val/test split) untuk fine-tuning.
+36;29 Des 2025;Akses awal dan audit spesifikasi pada komputasi hardware server GPU (A100).
+37;30 Des 2025;Instalasi driver grafis CUDA, cuDNN, serta library akselerasi deep learning dasar.
+38;31 Des 2025;Pembuatan virtual environment Python terisolasi dan instalasi PyTorch ekosistem.
+39;01 Jan 2026;Konfigurasi akses sistem remote (Jupyter Lab / SSH) lalu verifikasi topologi GPU.
+40;02 Jan 2026;Uji coba pemuatan (loading) base model terkecil untuk memvalidasi kesiapan environment.
+41;05 Jan 2026;Desain dan kalibrasi prompt berbasis instruksi sistematis untuk tagging entitas.
+42;06 Jan 2026;Eksekusi uji coba inferensi kategorisasi konten dan metadata dengan Llama.
+43;07 Jan 2026;Evaluasi sebaran akurasi dan penyusunan matriks kebingungan (confusion matrix).
+44;08 Jan 2026;Refinement dan iterasi perbaikan prompt instruksi berdasarkan hasil log anomali.
+45;09 Jan 2026;Kompilasi ringkasan analisis kapabilitas analitis instruksional dari model Llama.
+46;12 Jan 2026;Studi literatur terkait algoritma manajemen memori GPU dan dokumentasi paket Unsloth.
+47;13 Jan 2026;Instalasi paket Unsloth dan library pendukung efisiensi (trl, peft) pada server.
+48;14 Jan 2026;Uji beban dan profiling baseline beban VRAM pada skrip training standar non-Unsloth.
+49;15 Jan 2026;Migrasi skrip proses training dasar agar sepenuhnya mendukung eksekusi Unsloth.
+50;16 Jan 2026;Benchmarking efisiensi utilisasi VRAM serta komparasi laju iterasi (waktu eksekusi).
+51;19 Jan 2026;Pemrograman skema perancangan konfigurasi LoRA (pemilihan ukuran Rank dan Alpha).
+52;20 Jan 2026;Penyiapan integrasi algoritma kuantisasi 4-bit (QLoRA) mempergunakan BitsAndBytes.
+53;21 Jan 2026;Uji coba iterasi periode pertama proses Parameter-Efficient Fine-Tuning pada subset data.
+54;22 Jan 2026;Monitoring kestabilan gradien, laju optimisasi, dan kurva loss (training/validation).
+55;23 Jan 2026;Pengujian stabilitas inferensi awal menggunakan adapter pasca-PEFT demi menghindari degradasi.
+56;26 Jan 2026;Studi karakteristik arsitektur ultra-mini dan keterbatasan operasional dari Gemma 3 270M.
+57;27 Jan 2026;Penyesuaian konfigurasi hyperparameter training yang dikalibrasi untuk dimensi model sub-1B.
+58;28 Jan 2026;Uji coba pelaksanaan fine-tuning tahap pertama secara eksklusif untuk model 270M.
+59;29 Jan 2026;Evaluasi perbedaan kinerja base model dibandingkan dengan checkpoint hasil fine-tuned.
+60;30 Jan 2026;Penyusunan proyeksi pengujian lingkungan dan skenario simulasi deployment minim resource.
+61;02 Feb 2026;Audit ekstensif arsitektur program dan identifikasi limitasi basis kode monolithic saat ini.
+62;03 Feb 2026;Pemecahan struktur pipeline agen-agen eksisting menjadi class dan sub-modul yang independen.
+63;04 Feb 2026;Refaktorisasi pola pengendalian state (state-management) memanfaatkan LangChain StateGraph.
+64;05 Feb 2026;Penyesuaian dependensi pemanggilan internal dan integrasi direktori kerja baru 'langchain-refactor'.
+65;06 Feb 2026;Pelaksanaan uji fungsi menyeluruh (end-to-end regression) untuk konfirmasi fungsionalitas sistem.
+66;09 Feb 2026;Analisis performa degradatif model Gemma 3 270M atas penurunan akurasi pada evaluasi Phase 3.
+67;10 Feb 2026;Inspeksi mendetail terhadap keluaran prediksi yang mengungkap disrupsi integritas parsing format JSON.
+68;11 Feb 2026;Investigasi teoritis relasi antara struktur kendala skema output JSON dengan parameter berkapasitas rendah.
+69;12 Feb 2026;Eksperimentasi penyesuaian instruksi constraint JSON dengan harapan meringankan overhead generasi SLM.
+70;13 Feb 2026;Formulasi kesimpulan terkait insufisiensi kemampuan format logika terstruktur pada rentang Small Language Models.
+71;16 Feb 2026;Desain konseptual dan prototipe arsitektur Phase 4 (Extreme Simplification) untuk mengurangi kompleksitas output.
+72;17 Feb 2026;Peralihan fokus menuju pendekatan Phase 5 (Multiple Choice Question / MCQ) demi efisiensi proses penalaran model mini.
+73;18 Feb 2026;Refaktorisasi prompt sistem secara masif dari instruksi naratif menjadi struktur pemilihan opsi (MCQ-Framing).
+74;19 Feb 2026;Uji coba pelaksanaan pipeline utuh memakai format MCQ dengan pengawasan respons langsung pada Gemma 3 270M.
+75;20 Feb 2026;Validasi tingkat keamanan kendala output skema MCQ, beserta penyelesaian penulisan rekapitulasi evaluasi performa SLM akhir.
+76;23 Feb 2026;Pelaksanaan fine-tuning model Gemma 3 12B dengan pendekatan QLoRA dan pengaturan hyperparameter optimal.
+77;24 Feb 2026;Integrasi komponen Retrieval-Augmented Generation (RAG) dengan FAISS untuk context-grounding.
+78;25 Feb 2026;Pengembangan dan pengujian layer Agen Explainer untuk menghasilkan justifikasi klasifikasi.
+79;26 Feb 2026;Pelaksanaan evaluasi kualitatif menggunakan protokol LLM-as-a-Judge (GPT-4o) untuk menilai jejak penalaran.
+80;27 Feb 2026;Analisis komparatif arsitektur backbone (Gemma 3, Qwen, Llama, GPT-OSS) terutama pada kategori Berita Batas/Kasus Ambigu.
+81;02 Mar 2026;Penyusunan draf awal artikel penelitian (versi bahasa Inggris) berdasarkan penemuan kerangka kerja AGENA.
+82;03 Mar 2026;Penerjemahan dan sinkronisasi draf artikel penelitian ke dalam bahasa Indonesia untuk target publikasi.
+83;04 Mar 2026;Pembuatan visualisasi diagram arsitektur multi-agen dan grafik performa matriks kebingungan (confusion matrix).
+84;05 Mar 2026;Finalisasi proofreading manuskrip penelitian, penyesuaian terminologi 'Berita Batas', dan penambahan komparasi baseline SENADA.
