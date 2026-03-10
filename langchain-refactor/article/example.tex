@@ -242,50 +242,21 @@ Mesin penalaran inti (Qwen, Gemma, Llama) dilatih ulang menggunakan teknik \text
 \subsection{Perbandingan Arsitektur Backbone}
 Untuk memperjelas perbedaan tingkat-model, Gambar~\ref{fig:model_architectures} menyajikan empat arsitektur \textit{backbone} yang dievaluasi dalam penelitian ini: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, dan GPT-OSS 20B. Kartu-kartu arsitektur ini merangkum profil struktural masing-masing model, kapasitas penanganan konteks, dan karakteristik efisiensi yang berorientasi pada penerapan.
 
-\begin{figure*}[t]
+\begin{figure}[htbp]
 \centering
-\subfloat[Gemma 3 12B]{\includegraphics[width=0.46\textwidth]{architectures/gemma_3_12b.png}\label{fig:arch_gemma}}
-\hfill
-\subfloat[Qwen 14B]{\includegraphics[width=0.46\textwidth]{architectures/qwen_14b.png}\label{fig:arch_qwen}}\\[3pt]
-\subfloat[Llama 3.1 8B]{\includegraphics[width=0.46\textwidth]{architectures/llama_3_1_8b.png}\label{fig:arch_llama}}
-\hfill
-\subfloat[GPT-OSS 20B]{\includegraphics[width=0.46\textwidth]{architectures/gpt_oss_20b.png}\label{fig:arch_gptoss}}
-\caption{Perbandingan sub-figur dari empat arsitektur \textit{backbone} yang digunakan dalam eksperimen AGENA.}
+\includegraphics[width=0.95\linewidth]{architectures/gemma_3_12b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/qwen_14b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/llama_3_1_8b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/gpt_oss_20b.png}
+\caption{Perbandingan dari empat arsitektur \textit{backbone} yang digunakan dalam eksperimen AGENA: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, dan GPT-OSS 20B.}
 \label{fig:model_architectures}
-\end{figure*}
+\end{figure}
 
-Seperti ditunjukkan pada Gambar~\ref{fig:model_architectures}(a), Gemma 3 12B adalah \textit{backbone} produksi utama dalam AGENA karena menawarkan kualitas penalaran yang kuat dengan adaptasi yang hemat parameter dan perilaku stabil pada \textit{Berita Batas}. Gambar~\ref{fig:model_architectures}(b) menunjukkan Qwen 14B, yang memberikan kapasitas representasi tinggi dan kinerja kepatuhan instruksi yang kompetitif, namun dalam pengaturan kami lebih rentan memicu isyarat promosi secara berlebihan pada berita ambigu.
+Seperti ditunjukkan pada Gambar~\ref{fig:model_architectures}, Gemma 3 12B adalah \textit{backbone} produksi utama dalam AGENA karena menawarkan kualitas penalaran yang kuat dengan adaptasi yang hemat parameter dan perilaku stabil pada \textit{Berita Batas}. Pada gambar yang sama, Qwen 14B memberikan kapasitas representasi tinggi dan kinerja kepatuhan instruksi yang kompetitif, namun dalam pengaturan kami lebih rentan memicu isyarat promosi secara berlebihan pada berita ambigu.
 
-Gambar~\ref{fig:model_architectures}(c) menyajikan Llama 3.1 8B, yang dipilih sebagai \textit{baseline} yang ringkas namun mumpuni dengan kebutuhan komputasi yang lebih rendah dan perilaku \textit{fine-tuning} yang dapat diprediksi. Gambar~\ref{fig:model_architectures}(d) menunjukkan GPT-OSS 20B, disertakan untuk memeriksa arsitektur \textit{open-weight} yang lebih besar di bawah jadwal adaptasi yang terbatas. Desain lintas arsitektur ini memungkinkan kami membandingkan tidak hanya akurasi, tetapi juga konsistensi penalaran, kalibrasi dalam sampel batas, dan pengorbanan implementasi praktis antara ukuran model dan kualitas interpretabilitas.
+Selain itu, Llama 3.1 8B dipilih sebagai \textit{baseline} yang ringkas namun mumpuni dengan kebutuhan komputasi yang lebih rendah dan perilaku \textit{fine-tuning} yang dapat diprediksi. Akhirnya, GPT-OSS 20B disertakan untuk memeriksa arsitektur \textit{open-weight} yang lebih besar di bawah jadwal adaptasi yang terbatas. Desain lintas arsitektur ini memungkinkan kami membandingkan tidak hanya akurasi, tetapi juga konsistensi penalaran, kalibrasi dalam sampel batas, dan pengorbanan implementasi praktis antara ukuran model dan kualitas interpretabilitas.
 
-\begin{table*}[t]
-\caption{Hyperparameter Fine-Tuning Inti di Semua Model}
-\label{tab:hyperparameters}
-\begin{center}
-\begin{tabular}{|l|c|c|c|c|c|c|}
-\hline
-\textbf{Model} & \textbf{Rank ($r$)} & \textbf{Alpha ($\alpha$)} & \textbf{Learning Rate} & \textbf{Batch} & \textbf{Grad. Acc.} & \textbf{Effective Batch} \\
-\hline
-Gemma 3 (12B) & 16 & 32 & $2\times10^{-5}$ & 1 & 8 & 8 \\
-Gemma 3 (4B) & 16 & 32 & $2\times10^{-5}$ & 1 & 8 & 8 \\
-Gemma 2 (9B) & 16 & 32 & $2\times10^{-5}$ & 2 & 2 & 4 \\
-Gemma 3 (1B) & 16 & 32 & $2\times10^{-5}$ & 1 & 8 & 8 \\
-Gemma 3 (270M) & 64 & 128 & $1\times10^{-4}$ & 4 & 4 & 16 \\
-Qwen 2.5 (14B) & 16 & 32 & $2\times10^{-5}$ & 1 & 4 & 4 \\
-Llama 3.1 (8B) & 16 & 32 & $2\times10^{-5}$ & 2 & 2 & 4 \\
-GPT-OSS (20B) & 8 & 16 & $8\times10^{-5}$ & 1 & 4 & 4 \\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-Tabel \ref{tab:hyperparameters} melaporkan variabel \textit{tuning} inti yang digunakan pada seluruh model. Setiap kolom memiliki fungsi yang berbeda dalam dinamika pelatihan. \textbf{Rank ($r$)} adalah \textit{rank} adaptasi LoRA dan mengontrol kapasitas pembaruan \textit{low-rank} yang dapat dilatih. \textit{Rank} yang lebih tinggi memberikan fleksibilitas adaptasi yang lebih besar tetapi meningkatkan parameter yang dilatih. \textbf{Alpha ($\alpha$)} menskalakan pembaruan LoRA dan menentukan seberapa kuat bobot adaptor memengaruhi \textit{backbone} yang dibekukan. \textbf{Learning Rate} mengontrol ukuran langkah pada setiap pembaruan optimisasi dan secara langsung memengaruhi kecepatan serta stabilitas konvergensi.
-
-\textbf{Batch} adalah ukuran \textit{micro-batch} per langkah yang diproses pada memori perangkat. \textbf{Grad Acc.} (akumulasi gradien) melipatgandakan ukuran \textit{batch} efektif dengan mengakumulasi gradien di beberapa \textit{micro-step} sebelum satu pembaruan optimizer. \textbf{Effective Batch} (Batch Efektif) dihitung sebagai $\text{Batch}\times\text{Grad Acc.}$ dan merangkum skala pembaruan praktis untuk setiap model.
-
-Secara per-baris, Gemma 3 (12B), Gemma 3 (4B), dan Gemma 3 (1B) membagikan pengaturan inti yang sama ($r=16$, $\alpha=32$, LR $=2\times10^{-5}$, \textit{batch} efektif $=8$) dan berbeda terutama dalam skala arsitektur. Gemma 2 (9B) dan Llama 3.1 (8B) menggunakan \textit{batch} efektif 4, memberikan pembaruan optimizer yang lebih sering dibandingkan konfigurasi \textit{batch} efektif 8. Gemma 3 (270M) menggunakan konfigurasi adaptor yang lebih besar ($r=64$, $\alpha=128$), LR yang lebih tinggi ($10^{-4}$), dan \textit{batch} efektif terbesar (16), yang mengindikasikan rezim adaptasi yang lebih agresif untuk \textit{backbone} terkecil. Qwen 2.5 (14B) dan GPT-OSS (20B) keduanya menggunakan \textit{batch} efektif 4, dengan GPT-OSS menerapkan LR yang lebih tinggi ($8\times10^{-5}$) dan kapasitas adaptor yang lebih rendah ($r=8$, $\alpha=16$).
-
-Secara keseluruhan, tabel ini menyajikan perbandingan ringkas intensitas adaptasi lintas rumpun model dengan menyoroti parameter yang paling memengaruhi kekuatan pembaruan dan perilaku konvergensi.
+Sebagian besar model berbagi konfigurasi adaptor LoRA yang sama, yaitu rank $r=16$ dan alpha $\alpha=32$, dengan \textit{learning rate} $2\times10^{-5}$ dan ukuran \textit{batch} efektif 8 (1 \textit{batch} per perangkat yang diakumulasi selama 8 langkah gradien). Pengecualian yang perlu dicatat adalah Gemma 3 (270M), yang menggunakan adaptor jauh lebih besar ($r=64$, $\alpha=128$), \textit{learning rate} yang lebih tinggi ($10^{-4}$), dan \textit{batch} efektif terbesar (16) untuk mengimbangi kapasitasnya yang lebih kecil; Gemma 2 (9B) dan Llama 3.1 (8B) yang menggunakan \textit{batch} efektif 4 untuk pembaruan optimizer yang lebih sering; serta GPT-OSS (20B) yang menerapkan kapasitas adaptor lebih rendah ($r=8$, $\alpha=16$) dikombinasikan dengan \textit{learning rate} yang lebih tinggi ($8\times10^{-5}$) untuk menyesuaikan jadwal adaptasinya yang terbatas. Semua model dilatih menggunakan kuantisasi 4-bit (QLoRA) melalui kerangka kerja Unsloth dengan FlashAttention-2 untuk mengurangi beban VRAM dan mempercepat konvergensi.
 
 \subsection{Kerangka Evaluasi \textit{LLM-as-a-Judge}}
 Untuk mengevaluasi kedalaman kualitatif keluaran Agen Explainer, AGENA menerapkan metodologi ``\textit{LLM-as-a-Judge}''. Sebuah model frontier (GPT-4o-mini) bertindak sebagai editor ahli untuk menilai jejak penalaran pada skala kontinu 1 hingga 5. Templat \textit{prompt} hakim menetapkan tiga kriteria evaluasi yang ketat:
@@ -306,80 +277,60 @@ Eksperimen dilakukan menggunakan dataset berita Indonesia yang terdiri dari 12.0
 \subsection{Rincian Performa Kuantitatif}
 Performa \textit{pipeline} AGENA dievaluasi di berbagai iterasi \textit{fine-tuning} model, khususnya membandingkan \textit{Instruction Tuning} standar dengan strategi \textit{Prompt} ``\textit{Reasoning-First}'' yang diusulkan. Kerangka kerja mengimplementasikan pemformatan dataset kondisional: \textit{Basic Reasoning-First Prompt} untuk arsitektur yang lebih kecil seperti Gemma 3 (270M), dan \textit{Reasoning-First JSON Prompt} untuk model yang lebih besar (Qwen 14B, Gemma 3 12B, Llama 8B, Gemma 2 9B).
 
-\begin{table}[htbp]
-\caption{Metrik Performa untuk LLM Dasar}
-\label{tab:detailed_comparison}
+\begin{table*}[t]
+\caption{Hasil Konsolidasi: Varian LLM yang Di-\textit{fine-tune}, Studi Ablasi, dan Perbandingan \textit{Baseline} SENADA}
+\label{tab:results_consolidated}
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|}
 \hline
-\textbf{Model} & \textbf{Recall} & \textbf{Presisi} & \textbf{F1-score} & \textbf{Akurasi} \\
+\textbf{Model / Konfigurasi} & \textbf{Recall} & \textbf{Presisi} & \textbf{F1-score} & \textbf{Akurasi} \\
 \hline
-Gemma 3 (12B) & 0,948 & 0,938 & 0,943 & 94,50\% \\
+\multicolumn{5}{|l|}{\textit{(A) Varian LLM yang Di-fine-tune (Pipeline AGENA Penuh)}} \\
+\hline
+Gemma 3 (12B) & 0,948 & 0,938 & 0,943 & \textbf{94,50\%} \\
 Gemma 3 (4B) & 0,927 & 0,908 & 0,918 & 92,00\% \\
 Gemma 2 (9B) & 0,958 & 0,860 & 0,906 & 90,50\% \\
 Gemma 3 (1B) & 0,979 & 0,676 & 0,800 & 76,50\% \\
 Qwen 2.5 (14B) & 0,958 & 0,635 & 0,764 & 71,50\% \\
 Llama 3.1 (8B) & 0,792 & 0,571 & 0,664 & 61,50\% \\
-GPT-OSS & 0,833 & 0,541 & 0,656 & 57,50\% \\
+GPT-OSS (20B) & 0,833 & 0,541 & 0,656 & 57,50\% \\
 Gemma 3 (270M) & 0,520 & 0,547 & 0,480 & 52,00\% \\
 \hline
-\end{tabular}
-\end{center}
-\end{table}
-
-Hasil dari penyelarasan \textit{prompt} ``\textit{Reasoning-First}'' menunjukkan gradien performa yang jelas terkait dengan skala model dan kemampuan mengikuti instruksi. Di antara model-model yang diuji, Gemma 3 (12B) mencapai akurasi keseluruhan tertinggi pada 94,50\%, dengan presisi 0,938 pada kelas Iklan \textit{Native}. Model ini menangani kasus-kasus paling menantang secara efektif, mengidentifikasi dengan benar konten editorial yang menyebutkan entitas perusahaan tanpa pembingkaian promosi (\textit{Berita Batas}). Gemma 3 (4B) mencapai 92,00\%, sedikit mengungguli Gemma 2 (9B) yang lebih lama pada 90,50\%, menunjukkan bahwa peningkatan arsitektur dalam generasi Gemma terbaru berkontribusi secara berarti pada kualitas mengikuti instruksi dalam tugas spesifik domain.
-
-Seiring penurunan ukuran model, penalaran yang andal semakin sulit dipertahankan. Gemma 3 (1B) turun ke 76,50\%, menunjukkan \textit{recall} tinggi (0,979) namun presisi rendah (0,676), mengindikasikan kecenderungan untuk terlalu menandai penyebutan merek sebagai promosi. Model 270M mendapat skor 52,00\%, dan sering menghasilkan keluaran yang tidak lengkap atau tidak valid secara struktural meskipun menerima format \textit{prompt} yang sama dengan model yang lebih besar.
-
-Qwen 14B (71,50\%) dan Llama 3.1 8B (61,50\%) berkinerja kurang baik relatif terhadap jumlah parameter mereka, kemungkinan karena pra-pelatihannya tidak mencakup data jurnalisme Indonesia yang cukup untuk mendukung diskriminasi yang kuat antara pembingkaian editorial dan komersial. GPT-OSS (57,50\%) menunjukkan perilaku serupa, berpindah ke pencocokan kata kunci tingkat permukaan daripada penalaran kontekstual. Hasil-hasil ini mendukung pilihan desain untuk membangun AGENA di sekitar Gemma 3 12B sebagai Agen Classifier, sekaligus menunjukkan bahwa arsitektur \textit{pipeline}, bukan model semata, yang mendorong performa tingkat teratas sistem.
-
-\subsection{Studi Ablasi: Dampak RAG dan \textit{Preprocessing}}
-Studi ablasi dilakukan untuk mengukur kontribusi masing-masing agen di dalam \textit{pipeline}. Kami membandingkan performa model standar (\textit{Direct LLM Classification}) dengan berbagai konfigurasi AGENA, seperti yang disajikan pada Tabel \ref{tab:ablation}.
-
-\begin{table}[htbp]
-\caption{Analisis Ablasi \textit{Pipeline} AGENA}
-\label{tab:ablation}
-\begin{center}
-\begin{tabular}{|l|c|c|}
+\multicolumn{5}{|l|}{\textit{(B) Studi Ablasi --- Backbone Gemma 3 (12B)}} \\
 \hline
-\textbf{Konfigurasi} & \textbf{Akurasi} & \textbf{F1-score} \\
+\multicolumn{3}{|l|}{Baseline (\textit{Zero-Shot})} & 0,762 & 78,40\% \\
+\multicolumn{3}{|l|}{Classifier + Preprocessing saja} & 0,831 & 84,60\% \\
+\multicolumn{3}{|l|}{Classifier + RAG (tanpa Preprocessing)} & 0,898 & 91,20\% \\
+\multicolumn{3}{|l|}{\textbf{Pipeline AGENA Penuh}} & \textbf{0,943} & \textbf{94,50\%} \\
 \hline
-Baseline (\textit{Zero-Shot}) & 78,4\% & 0,762 \\
-Classifier + Preprocessing & 84,6\% & 0,831 \\
-Classifier + RAG (Retriever) & 91,2\% & 0,898 \\
-\textbf{Pipeline AGENA Penuh (Gemma 3 12B)} & \textbf{94,5\%} & \textbf{0,943} \\
+\multicolumn{5}{|l|}{\textit{(C) Perbandingan dengan \textit{State-of-the-Art} Sebelumnya}} \\
+\hline
+\multicolumn{3}{|l|}{SENADA \cite{b19} (\textit{Stacked Ensemble})} & 0,927 & 93,00\% \\
+\multicolumn{3}{|l|}{\textbf{AGENA (Gemma 3 12B)}} & \textbf{0,943} & \textbf{94,50\%} \\
 \hline
 \end{tabular}
 \end{center}
-\end{table}
+\end{table*}
 
-\subsection{Perbandingan dengan Baseline SENADA}
-Untuk mengontekstualisasikan hasil ini, Tabel \ref{tab:senada_comparison} membandingkan \textit{pipeline} AGENA penuh (menggunakan Gemma 3 12B) dengan SENADA \cite{b19}, model \textit{ensemble} yang sebelumnya menjadi \textit{state-of-the-art} pada dataset iklan \textit{native} Indonesia yang sama.
+Tabel~\ref{tab:results_consolidated} mengonsolidasikan tiga perspektif evaluasi ke dalam satu referensi: perbandingan lintas model (Kelompok A), studi ablasi (Kelompok B), dan perbandingan terhadap \textit{baseline} SENADA yang sebelumnya menjadi \textit{state-of-the-art} (Kelompok C).
 
-\begin{table}[htbp]
-\caption{AGENA vs. SENADA: Perbandingan Performa pada Dataset Iklan \textit{Native} Indonesia}
-\label{tab:senada_comparison}
-\begin{center}
-\begin{tabular}{|l|c|c|c|}
-\hline
-\textbf{Sistem} & \textbf{Akurasi} & \textbf{F1-score} & \textbf{Interpretabilitas} \\
-\hline
-SENADA \cite{b19} & 93,0\% & 0,927 & Tidak Ada \\
-\textbf{AGENA (Gemma 3 12B)} & \textbf{94,5\%} & \textbf{0,943} & \textbf{Penuh (per artikel)} \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+\textbf{Analisis tingkat model (Kelompok A).} Hasil penyelarasan \textit{prompt} ``\textit{Reasoning-First}'' mengungkap gradien performa yang jelas mengikuti skala model dan kemampuan mengikuti instruksi. Gemma 3 (12B) mencapai akurasi keseluruhan tertinggi pada 94,50\%, dengan presisi 0,938 pada kelas Iklan \textit{Native}. Model ini menangani kasus-kasus paling menantang secara efektif --- terutama, model ini berhasil mengidentifikasi konten editorial yang menyebutkan entitas perusahaan tanpa pembingkaian promosi (\textit{Berita Batas}), sebuah tugas yang gagal dilakukan oleh beberapa model berparameter lebih besar. Gemma 3 (4B) mencapai 92,00\%, sedikit mengungguli Gemma 2 (9B) yang lebih lama pada 90,50\%, membuktikan bahwa peningkatan arsitektur dalam generasi Gemma terbaru berkontribusi signifikan terhadap kualitas mengikuti instruksi dalam tugas domain-spesifik.
 
-AGENA mencapai peningkatan akurasi 1,5 poin persentase dibandingkan SENADA (93,0\% menjadi 94,5\%) pada dataset yang sama. Meskipun peningkatan ini cukup sederhana secara absolut, perbedaan yang lebih signifikan terletak pada desain sistem. SENADA mendekomposisi tugas klasifikasi menjadi empat sub-model \textit{ensemble} paralel (Sentimen, Persuasi, Promosi, Perspektif), masing-masing dilatih pada set fitur statis. Setiap sub-model menghasilkan label independen, yang diagregasinya menjadi prediksi akhir. Meskipun efektif, desain ini tidak menghasilkan jejak penalaran per-artikel dan tidak dapat menjelaskan keputusannya kepada editor.
+Seiring penurunan ukuran model di bawah parameter 1B, penalaran yang andal menjadi sulit dipertahankan. Gemma 3 (1B) turun ke 76,50\%, menunjukkan \textit{recall} sangat tinggi (0,979) namun presisi rendah (0,676), mengindikasikan kecenderungan sistematis untuk menandai penyebutan merek secara berlebihan sebagai promosi terlepas dari konteks editorial. Model 270M mendapat skor 52,00\% dan sering menghasilkan keluaran yang tidak valid atau tidak lengkap secara struktural, membuktikan bahwa format JSON \textit{Reasoning-First} tidak kompatibel dengan arsitektur sub-500M parameter. Qwen 2.5 14B (71,50\%) dan Llama 3.1 8B (61,50\%) berkinerja kurang baik relatif terhadap jumlah parameter mereka, kemungkinan karena korpus pra-pelatihannya tidak mencakup data jurnalisme Indonesia yang cukup untuk mendukung diskriminasi halus antara pembingkaian komersial dan editorial. GPT-OSS (57,50\%) menunjukkan perilaku serupa, mengandalkan pencocokan kata kunci tingkat permukaan daripada penalaran kontekstual. Hasil-hasil ini menegaskan pilihan desain untuk memusatkan Agen Classifier AGENA pada Gemma 3 12B, sekaligus membuktikan bahwa arsitektur \textit{pipeline} itu sendiri --- bukan jumlah parameter \textit{backbone} semata --- yang mendorong performa tingkat teratas sistem.
 
-AGENA menggantikan \textit{pipeline} statis ini dengan alur kerja agentik yang berurutan. Agen Retriever secara dinamis mengambil artikel yang semantis serupa dari basis pengetahuan pada waktu inferensi, memberikan Agen Classifier konteks relevan domain yang tidak dapat diakses oleh model \textit{ensemble} statis. Agen Explainer kemudian menghasilkan justifikasi terstruktur dan mudah dibaca manusia untuk setiap keputusan. Lapisan interpretabilitas ini adalah kemajuan kualitatif utama dibandingkan SENADA dan sangat penting untuk adopsi di alur kerja editorial yang memerlukan pengawasan manusia \cite{b20}.
+\textbf{Studi ablasi (Kelompok B).} Studi ablasi secara bertahap menambahkan komponen \textit{pipeline} untuk mengisolasi kontribusi individual masing-masing agen, menggunakan \textit{backbone} Gemma 3 12B di semua konfigurasi.
 
-Di luar akurasi klasifikasi, kami menilai kualitas jejak penalaran yang dihasilkan oleh Agen Explainer menggunakan pendekatan \textit{LLM-as-a-Judge}. GPT-4o mengevaluasi setiap jejak pada skala 1--5 berdasarkan empat kriteria: akurasi label, koherensi penalaran, cakupan penanda persuasif, dan diskriminasi \textit{Berita Batas}. Gemma 3 12B mencapai rating rata-rata 4,4, mencerminkan keselarasan yang kuat antara penjelasannya dan pola penalaran yang dianotasi pakar. Qwen 14B menunjukkan kecenderungan sistematis untuk memberi label teks ambigu sebagai iklan \textit{native}, menghasilkan justifikasi yang menekankan keberadaan merek terlepas dari konteks editorial. Llama 8B menunjukkan sensitivitas berlebihan yang serupa.
+\textit{(1) Baseline (Zero-Shot), Akurasi: 78,4\%, F1: 0,762.} Ini adalah model Gemma 3 12B tanpa augmentasi, diterapkan langsung pada artikel tanpa \textit{preprocessing}, pengambilan konteks, atau \textit{prompt} terstruktur apapun. Konfigurasi ini mewakili batas atas performa yang dapat dicapai melalui generalisasi dalam-konteks saja. Pada 78,4\%, model sudah menunjukkan kesadaran domain yang cukup baik, namun sering melakukan kesalahan pada \textit{Berita Batas} --- kasus di mana penyebutan merek muncul dalam konteks pelaporan faktual murni --- karena tidak memiliki referensi eksternal untuk membedakan nada editorial dari pembingkaian promosi.
 
-Hasil ablasi mengonfirmasi bahwa Agen Retriever memberikan peningkatan akurasi paling signifikan (+12,8\% dibandingkan varian yang hanya menggunakan \textit{preprocessing}). Ini menunjukkan bahwa menyediakan \textit{Classifier} dengan contoh-contoh yang semantis serupa dari basis pengetahuan lebih efektif dibandingkan \textit{preprocessing} linguistik saja. Kontribusi Agen Preprocessing paling terlihat dalam meningkatkan \textit{recall} untuk iklan \textit{native} yang disamarkan secara halus, di mana bahasa promosi minimal namun hadir secara struktural.
+\textit{(2) Classifier + Preprocessing saja, Akurasi: 84,6\%, F1: 0,831.} Penambahan Agen Preprocessing --- yang mengekstraksi fitur linguistik terstruktur seperti densitas leksikon, rasio kapitalisasi, dan penghitungan isyarat persuasif --- menghasilkan gain akurasi +6,2 poin. Hal ini mengonfirmasi bahwa sinyal fitur berbasis aturan yang eksplisit memberikan panduan bermakna bagi Agen Classifier, membantu memprioritaskan indikator statistik niat promosi dan mengurangi sensitivitas terhadap pemicu kata kunci permukaan yang menyebabkan kesalahan pada \textit{baseline zero-shot}.
 
-Gemma 3 12B mencapai akurasi keseluruhan 94,50\%, tertinggi dari semua konfigurasi yang diuji. Ini mewakili peningkatan 16,1 poin persentase dibandingkan \textit{baseline zero-shot} (78,4\%), dan peningkatan 3,3 poin dibandingkan konfigurasi \textit{Classifier+RAG} (91,2\%), mengonfirmasi bahwa \textit{pipeline} lima agen penuh mengungguli varian komponen tunggal mana pun.
+\textit{(3) Classifier + RAG (tanpa Preprocessing), Akurasi: 91,2\%, F1: 0,898.} Menggantikan \textit{preprocessing} dengan Agen Retriever dan basis pengetahuan berbasis FAISS menghasilkan gain terbesar dalam studi ini: +12,8 poin dibandingkan \textit{baseline zero-shot} dan +6,6 poin dibandingkan varian \textit{preprocessing}-saja. Agen Retriever menyediakan Classifier dengan lima artikel historis yang paling semantis serupa beserta label \textit{ground truth}-nya dari basis pengetahuan 12.088 artikel. Bukti dalam konteks dari contoh-contoh terverifikasi ini terbukti jauh lebih diskriminatif dibandingkan sinyal fitur buatan tangan, terutama untuk kasus \textit{Berita Batas} di mana perbedaan halus dalam pembingkaian naratif --- bukan kata kunci permukaan --- yang menentukan label yang benar.
+
+\textit{(4) Pipeline AGENA Penuh, Akurasi: 94,5\%, F1: 0,943.} Sistem lima agen penuh, yang menggabungkan Preprocessing, RAG, Classifier, dan Explainer, mencapai gain +3,3 poin lebih lanjut dibandingkan varian RAG-saja. Efek gabungan ini mencerminkan dua mekanisme: pertama, Agen Preprocessing menstabilkan representasi \textit{input} Classifier di semua format portal yang heterogen, mengurangi variansi dalam teks artikel yang diekstraksi; kedua, format keluaran JSON terstruktur dari Agen Explainer menegakkan konsistensi pada langkah Classifier, mengurangi kegagalan \textit{parsing} respons yang dapat merambat sebagai label yang salah. Secara keseluruhan, faktor-faktor ini mendorong akurasi ke 94,5\\% dan mengonfirmasi bahwa setiap tahap \textit{pipeline} memberikan kontribusi yang dapat dipertanggungjawabkan secara individual terhadap hasil akhir.
+
+\textbf{Perbandingan SENADA (Kelompok C).} AGENA melampaui SENADA \cite{b19}, model \textit{ensemble} yang sebelumnya menjadi \textit{state-of-the-art} pada dataset iklan \textit{native} Indonesia yang sama, dengan peningkatan +1,5 poin persentase dalam akurasi (93,0\% $\to$ 94,5\%) dan gain F1-score +0,016. Peningkatan presisi jauh lebih signifikan: presisi SENADA sebesar 0,778 meningkat menjadi 0,938 pada AGENA, peningkatan +16,0 poin yang mencerminkan kemampuan AGENA yang lebih kuat dalam meminimalkan \textit{false positive} --- kritis dalam konteks editorial di mana salah menandai artikel berita yang sah memiliki konsekuensi profesional. SENADA mencapai akurasi ini dengan mendekomposisi tugas menjadi empat sub-model \textit{ensemble} paralel (Sentimen, Persuasi, Promosi, Perspektif), masing-masing dilatih pada set fitur statis, dan mengagregasi label independen mereka menjadi sebuah prediksi. Meskipun efektif, desain ini tidak dapat mengakses bukti kontekstual dinamis pada waktu inferensi, tidak menghasilkan jejak penalaran per-artikel, dan tidak dapat menjelaskan keputusannya kepada editor manusia. AGENA menggantikan hal ini dengan alur kerja agentik berurutan di mana Agen Retriever menyediakan konteks \textit{real-time} dari basis pengetahuan 12.088 artikel dan Agen Explainer menghasilkan justifikasi terstruktur yang dapat diverifikasi manusia untuk setiap keputusan klasifikasi. Lapisan interpretabilitas ini adalah kemajuan kualitatif utama dibandingkan SENADA dan sangat penting untuk adopsi dalam alur kerja editorial yang memerlukan pengawasan manusia \cite{b20}.
+
+
 
 \subsection{Analisis Kualitatif dan Karakteristik Penalaran}
 Jejak penalaran Agen Explainer dievaluasi terhadap anotasi pakar untuk konfigurasi Gemma 3 12B. Jejak tersebut mencapai 94,2\% keselarasan semantik dengan justifikasi yang dianotasi manusia, diukur melalui tinjauan pakar domain terhadap empat kriteria target.

@@ -7,7 +7,6 @@
 \usepackage{placeins}
 \usepackage{afterpage}
 \usepackage{float}
-\usepackage{subfig}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -249,50 +248,21 @@ The core reasoning engines (Qwen, Gemma, Llama) were fine-tuned using Parameter-
 \subsection{Backbone Architecture Comparison}
 To make model-level differences explicit, Figure~\ref{fig:model_architectures} presents the four backbone architectures evaluated in this study: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, and GPT-OSS 20B. These architecture cards summarize each model's structural profile, context handling capacity, and deployment-oriented efficiency characteristics.
 
-\begin{figure*}[t]
+\begin{figure}[htbp]
 \centering
-\subfloat[Gemma 3 12B]{\includegraphics[width=0.46\textwidth]{architectures/gemma_3_12b.png}\label{fig:arch_gemma}}
-\hfill
-\subfloat[Qwen 14B]{\includegraphics[width=0.46\textwidth]{architectures/qwen_14b.png}\label{fig:arch_qwen}}\\[3pt]
-\subfloat[Llama 3.1 8B]{\includegraphics[width=0.46\textwidth]{architectures/llama_3_1_8b.png}\label{fig:arch_llama}}
-\hfill
-\subfloat[GPT-OSS 20B]{\includegraphics[width=0.46\textwidth]{architectures/gpt_oss_20b.png}\label{fig:arch_gptoss}}
-\caption{Subfigure comparison of the four backbone architectures used in the AGENA experiments.}
+\includegraphics[width=0.95\linewidth]{architectures/gemma_3_12b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/qwen_14b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/llama_3_1_8b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/gpt_oss_20b.png}
+\caption{Comparison of the four backbone architectures used in the AGENA experiments: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, and GPT-OSS 20B.}
 \label{fig:model_architectures}
-\end{figure*}
+\end{figure}
 
-As shown in Figure~\ref{fig:model_architectures}(a), Gemma 3 12B is the primary production backbone in AGENA because it offers strong reasoning quality under parameter-efficient adaptation and stable behavior on Ambiguous cases. Figure~\ref{fig:model_architectures}(b) shows Qwen 14B, which provides high representational capacity and competitive instruction-following performance, but in our setting is more prone to over-triggering promotional cues in ambiguous news.
+As shown in Figure~\ref{fig:model_architectures}, Gemma 3 12B is the primary production backbone in AGENA because it offers strong reasoning quality under parameter-efficient adaptation and stable behavior on Borderline News cases. In the same figure, Qwen 14B provides high representational capacity and competitive instruction-following performance, but in our setting is more prone to over-triggering promotional cues in ambiguous news.
 
-Figure~\ref{fig:model_architectures}(c) presents Llama 3.1 8B, selected as a compact yet capable baseline with lower computational demand and predictable fine-tuning behavior. Figure~\ref{fig:model_architectures}(d) shows GPT-OSS 20B, included to examine a larger open-weight architecture under constrained adaptation schedules. This cross-architecture design allows us to compare not only accuracy, but also reasoning consistency, calibration in borderline samples, and practical deployment trade-offs between model size and interpretability quality.
+Additionally, Llama 3.1 8B was selected as a compact yet capable baseline with lower computational demand and predictable fine-tuning behavior. Finally, GPT-OSS 20B was included to examine a larger open-weight architecture under constrained adaptation schedules. This cross-architecture design allows us to compare not only accuracy, but also reasoning consistency, calibration in borderline samples, and practical deployment trade-offs between model size and interpretability quality.
 
-\begin{table*}[t]
-\caption{Core Fine-Tuning Hyperparameters across All Models}
-\label{tab:hyperparameters}
-\begin{center}
-\begin{tabular}{|l|c|c|c|c|c|c|}
-\hline
-\textbf{Model} & \textbf{Rank ($r$)} & \textbf{Alpha ($\alpha$)} & \textbf{Learning Rate} & \textbf{Batch} & \textbf{Grad Acc.} & \textbf{Effective Batch} \\
-\hline
-Gemma 3 (12B) & 16 & 32 & $2\times10^{-5}$ & 1 & 8 & 8 \\
-Gemma 3 (4B) & 16 & 32 & $2\times10^{-5}$ & 1 & 8 & 8 \\
-Gemma 2 (9B) & 16 & 32 & $2\times10^{-5}$ & 2 & 2 & 4 \\
-Gemma 3 (1B) & 16 & 32 & $2\times10^{-5}$ & 1 & 8 & 8 \\
-Gemma 3 (270M) & 64 & 128 & $1\times10^{-4}$ & 4 & 4 & 16 \\
-Qwen 2.5 (14B) & 16 & 32 & $2\times10^{-5}$ & 1 & 4 & 4 \\
-Llama 3.1 (8B) & 16 & 32 & $2\times10^{-5}$ & 2 & 2 & 4 \\
-GPT-OSS (20B) & 8 & 16 & $8\times10^{-5}$ & 1 & 4 & 4 \\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-Table \ref{tab:hyperparameters} reports the core tuning variables used across models. Each column has a distinct function in training dynamics. \textbf{Rank ($r$)} is the LoRA adaptation rank and controls the capacity of trainable low-rank updates. Higher rank provides greater adaptation flexibility but increases trainable parameters. \textbf{Alpha ($\alpha$)} scales LoRA updates and determines how strongly adapter weights affect the frozen backbone. \textbf{Learning Rate} controls step size per optimization update and directly affects convergence speed and stability.
-
-\textbf{Batch} is the per-step micro-batch size processed on device memory. \textbf{Grad Acc.} (gradient accumulation) multiplies the effective batch size by accumulating gradients across several micro-steps before one optimizer update. \textbf{Effective Batch} is computed as $\text{Batch}\times\text{Grad Acc.}$ and summarizes the practical update scale for each model.
-
-Row-wise, Gemma 3 (12B), Gemma 3 (4B), and Gemma 3 (1B) share the same core setup ($r=16$, $\alpha=32$, LR $=2\times10^{-5}$, effective batch $=8$) and differ mainly in model scale. Gemma 2 (9B) and Llama 3.1 (8B) use effective batch 4, giving more frequent optimizer updates than the 8-effective-batch setting. Gemma 3 (270M) uses a larger adapter configuration ($r=64$, $\alpha=128$), higher LR ($10^{-4}$), and the largest effective batch (16), indicating a more aggressive adaptation regime for the smallest backbone. Qwen 2.5 (14B) and GPT-OSS (20B) both use effective batch 4, with GPT-OSS applying a higher LR ($8\times10^{-5}$) and lower adapter capacity ($r=8$, $\alpha=16$).
-
-Overall, the table presents a compact comparison of adaptation intensity across model families by highlighting the parameters that most directly control update strength and convergence behavior.
+Most models share a common LoRA adapter configuration of rank $r=16$ and alpha $\alpha=32$, trained at a learning rate of $2\times10^{-5}$ with an effective batch size of 8 (1 per-device batch accumulated over 8 gradient steps). Notable exceptions are Gemma 3 (270M), which uses a substantially larger adapter ($r=64$, $\alpha=128$), a higher learning rate ($10^{-4}$), and the largest effective batch (16) to compensate for its smaller capacity; Gemma 2 (9B) and Llama 3.1 (8B), which use an effective batch of 4 for more frequent optimizer updates; and GPT-OSS (20B), which applies a reduced adapter capacity ($r=8$, $\alpha=16$) combined with an elevated learning rate ($8\times10^{-5}$) to accommodate its constrained adaptation schedule. All models were trained using 4-bit quantization (QLoRA) via the Unsloth framework with FlashAttention-2 to reduce VRAM footprint and accelerate convergence.
 
 \subsection{LLM-as-a-Judge Evaluation Framework}
 To evaluate the qualitative depth of the Explainer Agent's output, AGENA employs an "LLM-as-a-Judge" methodology. A frontier model (GPT-4o-mini) acts as an expert editor to rate the reasoning traces on a continuous scale of 1 to 5. The judge's prompt template establishes three strict evaluation criteria:
@@ -314,81 +284,60 @@ The experiments were conducted using the Indonesian news dataset comprising 12,0
 \subsection{Quantitative Performance Breakdown}
 The performance of the AGENA pipeline was evaluated across different iterations of model fine-tuning, specifically comparing standard Instruction Tuning against the proposed ``Reasoning-First'' Prompt Strategy. The framework implements conditional dataset formatting: a Basic Reasoning-First Prompt for smaller architectures such as Gemma 3 (270M), and a Reasoning-First JSON Prompt for larger models (Qwen 14B, Gemma 3 12B, Llama 8B, Gemma 2 9B).
 
-\begin{table}[htbp]
-\caption{Performance Metrics for Base LLMs}
-\label{tab:detailed_comparison}
+\begin{table*}[t]
+\caption{Consolidated Results: Fine-Tuned LLM Variants, Ablation Study, and SENADA Baseline Comparison}
+\label{tab:results_consolidated}
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|}
 \hline
-\textbf{Model} & \textbf{Recall} & \textbf{Precision} & \textbf{F1-score} & \textbf{Accuracy} \\
+\textbf{Model / Configuration} & \textbf{Recall} & \textbf{Precision} & \textbf{F1-score} & \textbf{Accuracy} \\
 \hline
-Gemma 3 (12B) & 0.948 & 0.938 & 0.943 & 94.50\% \\
+\multicolumn{5}{|l|}{\textit{(A) Fine-Tuned LLM Variants (Full AGENA Pipeline)}} \\
+\hline
+Gemma 3 (12B) & 0.948 & 0.938 & 0.943 & \textbf{94.50\%} \\
 Gemma 3 (4B) & 0.927 & 0.908 & 0.918 & 92.00\% \\
 Gemma 2 (9B) & 0.958 & 0.860 & 0.906 & 90.50\% \\
 Gemma 3 (1B) & 0.979 & 0.676 & 0.800 & 76.50\% \\
 Qwen 2.5 (14B) & 0.958 & 0.635 & 0.764 & 71.50\% \\
 Llama 3.1 (8B) & 0.792 & 0.571 & 0.664 & 61.50\% \\
-GPT-OSS & 0.833 & 0.541 & 0.656 & 57.50\% \\
+GPT-OSS (20B) & 0.833 & 0.541 & 0.656 & 57.50\% \\
 Gemma 3 (270M) & 0.520 & 0.547 & 0.480 & 52.00\% \\
 \hline
-\end{tabular}
-\end{center}
-\end{table}
-
-Results from the ``Reasoning-First'' prompt alignment show a clear performance gradient tied to model scale and instruction-following capability. Among the tested models, Gemma 3 (12B) achieved the highest overall accuracy at 94.50\%, with a precision of 0.938 on the Native Ads class. This model handled the most challenging cases effectively, correctly identifying editorial content that mentioned corporate entities without promotional framing (Ambiguous Cases). Gemma 3 (4B) achieved 92.00\%, narrowly outperforming the older Gemma 2 (9B) at 90.50\%, suggesting that architectural improvements in the latest Gemma generation contribute meaningfully to instruction-following quality in domain-specific tasks.
-
-As model size decreases, reliable reasoning becomes more difficult to maintain. Gemma 3 (1B) dropped to 76.50\%, exhibiting high recall (0.979) but low precision (0.676), indicating a tendency to over-flag brand mentions as promotional. The 270M model scored 52.00\%, and frequently produced incomplete or structurally invalid outputs despite receiving the same prompt format as larger models.
-
-Qwen 14B (71.50\%) and Llama 3.1 8B (61.50\%) underperformed relative to their parameter counts, likely because their pretraining did not include sufficient Indonesian journalism data to support robust discrimination between editorial and commercial framing. GPT-OSS (57.50\%) showed similar behavior, defaulting to surface-level keyword matching rather than contextual reasoning. These results support the design choice of building AGENA around Gemma 3 12B as the Classifier Agent, while also demonstrating that the pipeline architecture, not the model alone, drives the system's top-level performance.
-
-\subsection{Ablation Study: Impact of RAG and Preprocessing}
-An ablation study was conducted to quantify the contribution of individual agents within the pipeline. We compared the standard baseline (Direct LLM Classification) with various configurations of AGENA as shown in Table \ref{tab:ablation}.
-
-\begin{table}[htbp]
-\caption{Ablation Analysis of the AGENA Pipeline}
-\label{tab:ablation}
-\begin{center}
-\begin{tabular}{|l|c|c|}
+\multicolumn{5}{|l|}{\textit{(B) Ablation Study --- Gemma 3 (12B) Backbone}} \\
 \hline
-\textbf{Configuration} & \textbf{Accuracy} & \textbf{F1-score} \\
+\multicolumn{3}{|l|}{Baseline (Zero-Shot)} & 0.762 & 78.40\% \\
+\multicolumn{3}{|l|}{Classifier + Preprocessing only} & 0.831 & 84.60\% \\
+\multicolumn{3}{|l|}{Classifier + RAG (no Preprocessing)} & 0.898 & 91.20\% \\
+\multicolumn{3}{|l|}{\textbf{Full AGENA Pipeline}} & \textbf{0.943} & \textbf{94.50\%} \\
 \hline
-Baseline (Zero-Shot) & 78.4\% & 0.762 \\
-Classifier + Preprocessing & 84.6\% & 0.831 \\
-Classifier + RAG (Retriever) & 91.2\% & 0.898 \\
-\textbf{Full AGENA Pipeline (w/ Gemma 3 12B)} & \textbf{94.5\%} & \textbf{0.943} \\
+\multicolumn{5}{|l|}{\textit{(C) Comparison with Prior State-of-the-Art}} \\
+\hline
+\multicolumn{3}{|l|}{SENADA \cite{b19} (Stacked Ensemble)} & 0.927 & 93.00\% \\
+\multicolumn{3}{|l|}{\textbf{AGENA (Gemma 3 12B)}} & \textbf{0.943} & \textbf{94.50\%} \\
 \hline
 \end{tabular}
 \end{center}
-\end{table}
+\end{table*}
 
-\subsection{Comparison with SENADA Baseline}
-To contextualize these results, Table \ref{tab:senada_comparison} directly compares the full AGENA pipeline (using Gemma 3 12B) against SENADA, the prior state-of-the-art ensemble model on the same Indonesian native advertisement dataset.
+Table~\ref{tab:results_consolidated} consolidates three evaluation perspectives into a single reference: the cross-model comparison (Group A), the ablation study (Group B), and the comparison against the prior state-of-the-art SENADA baseline (Group C).
 
-\begin{table}[htbp]
-\caption{AGENA vs. SENADA: Performance Comparison on the Indonesian Native Ads Dataset}
-\label{tab:senada_comparison}
-\begin{center}
-\begin{tabular}{|l|c|c|c|}
-\hline
-\textbf{System} & \textbf{Accuracy} & \textbf{F1-score} & \textbf{Explainability} \\
-\hline
-SENADA & 93.0\% & 0.927 & None \\
-\textbf{AGENA (Gemma 3 12B)} & \textbf{94.5\%} & \textbf{0.943} & \textbf{Full (per-article)} \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+\textbf{Model-level analysis (Group A).} Results from the ``Reasoning-First'' prompt alignment reveal a clear performance gradient following model scale and instruction-following capability. Gemma 3 (12B) achieves the highest overall accuracy at 94.50\%, with a precision of 0.938 on the Native Ads class. This model handles the most challenging cases effectively --- most notably, it correctly identifies editorial content that mentions corporate entities without promotional framing (Borderline News), a task where several larger-parameter models fail. Gemma 3 (4B) achieves 92.00\%, narrowly outperforming the older Gemma 2 (9B) at 90.50\%, confirming that architectural advancements in the latest Gemma generation contribute meaningfully to domain-specific instruction-following quality, even at a smaller parameter count.
 
-AGENA achieves a 1.5 percentage point improvement in accuracy over SENADA (93.0\% to 94.5\%) on the same dataset. While this gain is modest in absolute terms, the more significant distinction lies in system design. SENADA decomposes the classification task into four parallel ensemble sub-models (Sentiment, Persuasion, Promotion, Perspective), each trained on static feature sets. Each sub-model produces an independent label, which is aggregated into a final prediction. While effective, this design does not produce per-article reasoning traces and cannot explain its decisions to human editors.
+As model size decreases below 1B parameters, reliable reasoning becomes difficult to maintain. Gemma 3 (1B) dropped to 76.50\%, exhibiting very high recall (0.979) but low precision (0.676), indicating a systematic tendency to over-flag brand mentions as promotional regardless of editorial context. The 270M model scored 52.00\% and frequently produced structurally invalid or incomplete outputs, confirming that the Reasoning-First JSON format is incompatible with sub-500M parameter architectures. Qwen 2.5 14B (71.50\%) and Llama 3.1 8B (61.50\%) underperformed relative to their parameter counts, likely because their pretraining corpora did not include sufficient Indonesian journalistic data to support fine-grained discrimination between commercial and editorial framing. GPT-OSS (57.50\%) exhibited similar behavior, defaulting to surface-level keyword matching rather than contextual reasoning. These results confirm the design choice of centering AGENA's Classifier Agent on Gemma 3 12B, and demonstrate that the pipeline architecture itself --- not the backbone model parameter count alone --- drives the system's top-tier performance.
 
-AGENA replaces this static pipeline with a sequential, agentic workflow. The Retriever Agent dynamically retrieves semantically similar articles from the knowledge base at inference time, providing the Classifier Agent with domain-relevant context that static ensemble models cannot access. The Explainer Agent then generates structured, human-readable justifications for each decision. This interpretability layer is the primary qualitative advancement over SENADA and is essential for adoption in editorial workflows where human oversight is required.
+\textbf{Ablation study (Group B).} The ablation study progressively adds pipeline components to isolate the individual contribution of each agent, using the Gemma 3 12B backbone throughout all configurations.
+
+\textit{(1) Baseline (Zero-Shot), Accuracy: 78.4\%, F1: 0.762.} This is the unaugmented Gemma 3 12B model applied directly to the article without any preprocessing, retrieval, or structured prompting. It represents the performance ceiling achievable by raw in-context generalization alone. At 78.4\%, the model already demonstrates reasonable domain awareness, but makes frequent errors on Borderline News cases where brand mentions appear in purely factual reporting contexts, as it has no external reference to distinguish editorial tone from promotional framing.
+
+\textit{(2) Classifier + Preprocessing only, Accuracy: 84.6\%, F1: 0.831.} Adding the Preprocessing Agent --- which extracts structured linguistic features such as lexical density, capitalization ratio, and persuasive cue counts --- yields a +6.2 point accuracy gain. This confirms that explicit, rule-based feature signals provide meaningful guidance to the Classifier Agent, helping it prioritize statistical indicators of promotional intent and reducing sensitivity to superficial keyword triggers that caused errors in the zero-shot baseline.
+
+\textit{(3) Classifier + RAG (no Preprocessing), Accuracy: 91.2\%, F1: 0.898.} Replacing preprocessing with the Retriever Agent and its FAISS-backed knowledge base produces the single largest gain in the study: +12.8 points over the zero-shot baseline and +6.6 points over the preprocessing-only variant. The Retriever provides the Classifier with the five most semantically similar historical articles and their ground-truth labels from the 12,088-article knowledge base. This in-context evidence from verified examples is evidently far more discriminative than hand-crafted feature signals, particularly for Borderline News cases where subtle differences in narrative framing --- not surface keywords --- determine the correct label.
+
+\textit{(4) Full AGENA Pipeline, Accuracy: 94.5\%, F1: 0.943.} The full five-agent system, combining Preprocessing, RAG, Classifier, and Explainer, achieves a further +3.3 point gain over the RAG-only variant. The compounding effect reflects two mechanisms: first, the Preprocessing Agent stabilizes the Classifier's input representation across heterogeneous portal formats, reducing variance in extracted article text; second, the Explainer Agent's structured JSON output format enforces consistency in the Classifier step, reducing response parsing failures that can propagate as incorrect labels. Together, these factors push accuracy to 94.5\% and confirm that each pipeline stage provides an independently justified contribution to the final result.
+
+\textbf{SENADA comparison (Group C).} AGENA surpasses SENADA \cite{b19}, the prior state-of-the-art ensemble model on the same Indonesian native advertisement dataset, achieving a +1.5 percentage point improvement in accuracy (93.0\% $\to$ 94.5\%) and a +0.016 F1-score gain. The precision improvement is notably larger: SENADA's precision of 0.778 rises to 0.938 in AGENA, a +16.0 point gain that reflects AGENA's stronger ability to minimize false positives --- critical in editorial settings where incorrectly flagging a legitimate news article carries professional consequences. SENADA achieves this accuracy by decomposing the task into four parallel ensemble sub-models (Sentiment, Persuasion, Promotion, Perspective), each trained on static feature sets, and aggregating their independent label votes. While effective, this design cannot access dynamic, inference-time contextual evidence, produces no per-article reasoning traces, and cannot explain its decisions to human editors. AGENA replaces this with a sequential agentic workflow in which the Retriever Agent provides real-time context from the 12,088-article knowledge base and the Explainer Agent produces structured, human-verifiable justifications for each classification decision. This interpretability layer is the primary qualitative advancement over SENADA and is essential for adoption in editorial workflows where human oversight is required \cite{b20}.
 
 
-Beyond classification accuracy, we assessed the quality of the reasoning traces produced by the Explainer Agent using an LLM-as-a-Judge approach. GPT-4o evaluated each trace on a 1--5 scale across four criteria: label accuracy, reasoning coherence, coverage of persuasive markers, and Ambiguous discrimination. Gemma 3 12B achieved a mean rating of 4.4, reflecting strong alignment between its explanations and expert-annotated reasoning patterns. Qwen 14B showed a systematic tendency to label ambiguous texts as native ads, producing justifications that emphasized brand presence regardless of editorial context. Llama 8B exhibited similar over-sensitivity.
-
-The ablation results confirm that the Retriever Agent contributed the most significant accuracy gain (+12.8\% over the preprocessing-only variant). This suggests that providing the Classifier with semantically similar examples from the knowledge base is more effective than linguistic preprocessing alone. The Preprocessing Agent's contributions were most visible in improving recall for subtly disguised native ads, where promotional language is minimal but structurally present.
-
-Gemma 3 12B achieved 94.50\% overall accuracy, the highest of all tested configurations. This represents a 16.1 percentage point improvement over the zero-shot baseline (78.4\%), and a 3.3 point improvement over the Classifier+RAG configuration (91.2\%), confirming that the full five-agent pipeline outperforms any single-component variant.
 
 \subsection{Qualitative Analysis and Reasoning}
 The Explanation Agent's reasoning traces were assessed against expert annotations for the Gemma 3 12B configuration. The traces achieved 94.2\% semantic alignment with human-annotated justifications, measured using domain-expert review of the four target criteria.
