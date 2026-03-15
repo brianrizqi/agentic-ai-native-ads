@@ -558,3 +558,26 @@ Output (JSON):
                 'confidence': 0.60,
                 'reasoning': 'Keyword-based: appears to be pure news content'
             }
+
+    def compute_perplexity(self, text: str) -> float:
+        """Compute perplexity for a given text using the local model."""
+        if self.provider != "local" or not self.tokenizer:
+            return 0.0
+            
+        try:
+            import torch
+            model = self.llm.pipeline.model
+            tokenizer = self.tokenizer
+            
+            inputs = tokenizer(text, return_tensors="pt")
+            input_ids = inputs["input_ids"].to(model.device)
+            
+            with torch.no_grad():
+                outputs = model(input_ids, labels=input_ids)
+                loss = outputs.loss
+                perplexity = torch.exp(loss).item()
+                
+            return perplexity
+        except Exception as e:
+            logger.error(f"Perplexity calculation error: {e}")
+            return 0.0

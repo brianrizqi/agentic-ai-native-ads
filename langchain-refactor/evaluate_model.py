@@ -45,6 +45,19 @@ try:
 except ImportError:
     HAS_OPENAI = False
 
+# For NLP Metrics
+try:
+    import nltk
+    from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+    from nltk.translate.meteor_score import meteor_score
+    from rouge_score import rouge_scorer
+    nltk.download('wordnet', quiet=True)
+    nltk.download('punkt', quiet=True)
+    HAS_NLP_METRICS = True
+except ImportError:
+    HAS_NLP_METRICS = False
+    print("Warning: nltk or rouge-score not installed. Install with: pip install nltk rouge-score")
+
 
 def load_test_set(dataset_path: str, num_samples: int = 100, lang_filter: str = None) -> List[Dict]:
     """Load test samples from dataset. Shuffles with seed to ensure diversity."""
@@ -56,14 +69,48 @@ def load_test_set(dataset_path: str, num_samples: int = 100, lang_filter: str = 
     if lang_filter:
         data = [item for item in data if item.get('lang') == lang_filter.lower()]
         print(f"🌍 Filtered by language: {lang_filter} ({len(data)} samples found)")
-    
-    # Shuffle with fixed seed to be reproducible but diverse
+        # Shuffle and take samples
+        import random
+        random.seed(42)
+        random.shuffle(data)
+        test_data = data[:num_samples]
+    else:
+        # Proportional sampling between languages
+        lang_groups = defaultdict(list)
+        for item in data:
+            lang = item.get('lang', 'id').lower()
+            lang_groups[lang].append(item)
+            
+        total_available = len(data)
+        test_data = []
+        
+        print(f"🌍 No language filter. Sampling proportionally from {len(lang_groups)} languages...")
+        
+        import random
+        random.seed(42)
+        
+        for lang, items in lang_groups.items():
+            # Calculate proportion
+            proportion = len(items) / total_available
+            lang_samples = int(num_samples * proportion)
+            
+            random.shuffle(items)
+            test_data.extend(items[:lang_samples])
+            print(f"   - {lang}: {lang_samples} samples")
+            
+        # If we're slightly under due to rounding, fill from the largest group
+        if len(test_data) < num_samples:
+            diff = num_samples - len(test_data)
+            largest_lang = max(lang_groups, key=lambda k: len(lang_groups[k]))
+            # Get samples not already in test_data
+            current_ids = {item['id'] for item in test_data}
+            remaining = [item for item in lang_groups[largest_lang] if item['id'] not in current_ids]
+            test_data.extend(remaining[:diff])
+
+    # Final shuffle of the mixed set
     import random
     random.seed(42)
-    random.shuffle(data)
-    
-    # Take samples
-    test_data = data[:num_samples]
+    random.shuffle(test_data)
     
     # Print distribution
     from collections import Counter
@@ -100,7 +147,8 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         'predictions': [],
         'ground_truth_labels': [],
         'predicted_labels': [],
-        'reasoning_texts': {'ground_truth': [], 'predicted': []}
+        'reasoning_texts': {'ground_truth': [], 'predicted': []},
+        'perplexities': []
     }
     
     print(f"\nEvaluating on {len(test_data)} samples...")
@@ -143,9 +191,15 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         results['ground_truth_labels'].append(gt_label)
         results['predicted_labels'].append(pred_label)
         
-        # Store reasoning for BERTScore
+        # Store reasoning for NLP metrics
         results['reasoning_texts']['ground_truth'].append(gt_reasoning)
         results['reasoning_texts']['predicted'].append(pred_reasoning)
+        
+        # Calculate perplexity if local model
+        if hasattr(agent, 'compute_perplexity') and pred_reasoning:
+            ppl = agent.compute_perplexity(pred_reasoning)
+            if ppl > 0:
+                results['perplexities'].append(ppl)
         
         if pred_label == gt_label:
             results['correct'] += 1
@@ -170,7 +224,7 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         })
         
         if (i + 1) % 10 == 0:
-            print(f"Processed {i + 1}/{len(test_data)} samples...")
+            print(f"Processed {i + 1}/{len(test_data)} samples..." + (f" (Avg PPL: {np.mean(results['perplexities']):.2f})" if results['perplexities'] else ""))
     
     return results
 
@@ -194,26 +248,71 @@ def compute_bertscore(results: Dict) -> Dict:
         return {}
     
     gt_texts, pred_texts = zip(*valid_pairs)
-    
-    # Final safety check: ensure all are strings
     gt_texts = [str(t) for t in gt_texts]
     pred_texts = [str(t) for t in pred_texts]
     
-    # Run BERTScore on CPU to avoid conflicts with classification model on GPU
-    # Do NOT call torch.cuda.empty_cache() here - GPU may be in error state
     try:
         P, R, F1 = bert_score(pred_texts, gt_texts, lang='id', verbose=False, device='cpu')
+        return {
+            'precision': float(P.mean()),
+            'recall': float(R.mean()),
+            'f1': float(F1.mean())
+        }
     except Exception as e:
         print(f"⚠️  BERTScore failed: {e}")
         return {}
 
-    
-    return {
-        'precision': float(P.mean()),
-        'recall': float(R.mean()),
-        'f1': float(F1.mean())
-    }
 
+def compute_nlp_metrics(results: Dict) -> Dict:
+    """Compute BLEU, ROUGE, and METEOR for reasoning quality."""
+    
+    if not HAS_NLP_METRICS:
+        return {}
+    
+    print("\n📝 Computing BLEU, ROUGE, and METEOR metrics...")
+    
+    gt_reasoning = results['reasoning_texts']['ground_truth']
+    pred_reasoning = results['reasoning_texts']['predicted']
+    
+    bleu_scores = []
+    meteor_scores = []
+    
+    scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+    rouge_results = defaultdict(list)
+    
+    smoothie = SmoothingFunction().method1
+    
+    for gt, pred in zip(gt_reasoning, pred_reasoning):
+        if not gt or not pred:
+            continue
+            
+        # Tokenize for NLTK
+        gt_tokens = nltk.word_tokenize(gt.lower())
+        pred_tokens = nltk.word_tokenize(pred.lower())
+        
+        # BLEU
+        bleu = sentence_bleu([gt_tokens], pred_tokens, smoothing_function=smoothie)
+        bleu_scores.append(bleu)
+        
+        # METEOR
+        try:
+            meteor = meteor_score([gt_tokens], pred_tokens)
+            meteor_scores.append(meteor)
+        except Exception:
+            pass
+            
+        # ROUGE
+        scores = scorer.score(gt, pred)
+        for k, v in scores.items():
+            rouge_results[k].append(v.fmeasure)
+            
+    return {
+        'bleu': np.mean(bleu_scores) if bleu_scores else 0,
+        'meteor': np.mean(meteor_scores) if meteor_scores else 0,
+        'rouge1': np.mean(rouge_results['rouge1']) if rouge_results['rouge1'] else 0,
+        'rouge2': np.mean(rouge_results['rouge2']) if rouge_results['rouge2'] else 0,
+        'rougeL': np.mean(rouge_results['rougeL']) if rouge_results['rougeL'] else 0
+    }
 
 
 def llm_as_judge(results: Dict, api_key: str = None, provider: str = "openai", model: str = "gpt-4o-mini") -> Dict:
@@ -286,42 +385,6 @@ Output JSON:
     # Mix: up to 80% incorrect, 20% correct
     num_incorrect = int(sample_size * 0.8)
     judge_samples = (incorrect[:num_incorrect] + correct)[:sample_size]
-    
-    ratings = []
-    details = []
-    
-    for i, pred in enumerate(judge_samples):
-        print(f"   Judging sample {i+1}/{len(judge_samples)}...", end='\r')
-        try:
-            response = llm.invoke(
-                judge_prompt.format(
-                    input_text=pred['input'][:2000],
-                    ground_truth=pred['ground_truth'],
-                    prediction=pred['prediction'],
-                    reasoning=pred.get('pred_reasoning', '')
-                )
-            )
-            
-            judge_result = json.loads(response.content)
-            ratings.append(judge_result['rating'])
-            details.append({
-                'input_preview': pred['input'][:100] + "...",
-                'gt': pred['ground_truth'],
-                'pred': pred['prediction'],
-                'judge_rating': judge_result['rating'],
-                'judge_justification': judge_result['justification']
-            })
-        except Exception as e:
-            print(f"\n   Judge error on sample {i}: {e}")
-            continue
-    
-    print(f"\n✅ Finished judging {len(ratings)} samples.")
-    
-    return {
-        'average_rating': np.mean(ratings) if ratings else 0,
-        'num_samples_judged': len(ratings),
-        'judge_details': details
-    }
     
     ratings = []
     details = []
@@ -450,6 +513,20 @@ def print_results(results: Dict, bertscore_results: Dict = None,
                 print(f"      Recall: {recall*100:.2f}%")
                 print(f"      F1-Score: {f1*100:.2f}%")
     
+    # NLP Metrics
+    if results.get('nlp_metrics'):
+        m = results['nlp_metrics']
+        print(f"\n📝 NLP Metrics (Reasoning Quality):")
+        print(f"   BLEU: {m.get('bleu', 0):.4f}")
+        print(f"   METEOR: {m.get('meteor', 0):.4f}")
+        print(f"   ROUGE-1: {m.get('rouge1', 0):.4f}")
+        print(f"   ROUGE-2: {m.get('rouge2', 0):.4f}")
+        print(f"   ROUGE-L: {m.get('rougeL', 0):.4f}")
+    
+    # Perplexity
+    if results.get('perplexities'):
+        print(f"   Perplexity: {np.mean(results['perplexities']):.2f}")
+    
     # BERTScore results
     if bertscore_results:
         print(f"\n🎯 BERTScore (Reasoning Quality):")
@@ -537,6 +614,10 @@ def main():
     # Compute BERTScore
     bertscore_results = compute_bertscore(results)
     
+    # Compute NLP Metrics
+    nlp_results = compute_nlp_metrics(results)
+    results['nlp_metrics'] = nlp_results
+    
     # LLM-as-a-Judge
     judge_results = {}
     if args.use_judge:
@@ -562,6 +643,8 @@ def main():
             'correct': results['correct']
         },
         'bertscore': bertscore_results,
+        'nlp_metrics': nlp_results,
+        'avg_perplexity': np.mean(results['perplexities']) if results['perplexities'] else 0,
         'llm_judge': judge_results,
         'per_class': {k: {'accuracy': v['correct']/v['total']} 
                      for k, v in results['by_class'].items()},
@@ -591,6 +674,17 @@ def main():
             f.write(f"  Precision: {bertscore_results['precision']:.3f}\n")
             f.write(f"  Recall: {bertscore_results['recall']:.3f}\n")
             f.write(f"  F1: {bertscore_results['f1']:.3f}\n\n")
+        
+        if nlp_results:
+            f.write(f"NLP Metrics (Reasoning Quality):\n")
+            f.write(f"  BLEU: {nlp_results['bleu']:.4f}\n")
+            f.write(f"  METEOR: {nlp_results['meteor']:.4f}\n")
+            f.write(f"  ROUGE-1: {nlp_results['rouge1']:.4f}\n")
+            f.write(f"  ROUGE-L: {nlp_results['rougeL']:.4f}\n\n")
+            
+        if output_data.get('avg_perplexity'):
+            f.write(f"Perplexity: {output_data['avg_perplexity']:.2f}\n\n")
+            
         f.write(f"Per-Class Accuracy:\n")
         for label, stats in output_data['per_class'].items():
             f.write(f"  {label}: {stats['accuracy']*100:.2f}%\n")
