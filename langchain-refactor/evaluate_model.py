@@ -289,13 +289,18 @@ def compute_nlp_metrics(results: Dict) -> Dict:
     
     smoothie = SmoothingFunction().method1
     
+    processed_count = 0
     for gt, pred in zip(gt_reasoning, pred_reasoning):
         if not gt or not pred:
             continue
             
+        processed_count += 1
         # Tokenize for NLTK
-        gt_tokens = nltk.word_tokenize(gt.lower())
-        pred_tokens = nltk.word_tokenize(pred.lower())
+        gt_lower = str(gt).lower()
+        pred_lower = str(pred).lower()
+        
+        gt_tokens = nltk.word_tokenize(gt_lower)
+        pred_tokens = nltk.word_tokenize(pred_lower)
         
         # BLEU
         bleu = sentence_bleu([gt_tokens], pred_tokens, smoothing_function=smoothie)
@@ -308,10 +313,12 @@ def compute_nlp_metrics(results: Dict) -> Dict:
         except Exception:
             pass
             
-        # ROUGE
-        scores = scorer.score(gt, pred)
+        # ROUGE (using pre-processed lowercase strings)
+        scores = scorer.score(gt_lower, pred_lower)
         for k, v in scores.items():
             rouge_results[k].append(v.fmeasure)
+            
+    print(f"   (Processed {processed_count} samples for NLP metrics)")
             
     return {
         'bleu': np.mean(bleu_scores) if bleu_scores else 0,
