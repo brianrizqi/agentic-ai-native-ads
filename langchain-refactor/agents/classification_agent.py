@@ -268,7 +268,9 @@ Output (JSON):
                 'model': self.model_name,
                 'provider': self.provider,
                 'use_few_shot': self.use_few_shot,
-                'input_length': len(content)
+                'input_length': len(content),
+                'raw_prompt': templated_prompt if self.provider == "local" else "",
+                'raw_response': response
             }
             
             logger.info(f"Classification: {result.get('label')} (confidence: {result.get('confidence', 0):.2f})")
@@ -559,8 +561,8 @@ Output (JSON):
                 'reasoning': 'Keyword-based: appears to be pure news content'
             }
 
-    def compute_perplexity(self, text: str) -> float:
-        """Compute perplexity for a given text using the local model."""
+    def compute_perplexity(self, text: str, prompt: str = "") -> float:
+        """Compute perplexity for a given text, optionally conditioned on a prompt."""
         if self.provider != "local" or not self.tokenizer:
             return 0.0
             
@@ -569,13 +571,32 @@ Output (JSON):
             model = self.llm.pipeline.model
             tokenizer = self.tokenizer
             
-            inputs = tokenizer(text, return_tensors="pt")
-            input_ids = inputs["input_ids"].to(model.device)
-            
-            with torch.no_grad():
-                outputs = model(input_ids, labels=input_ids)
-                loss = outputs.loss
-                perplexity = torch.exp(loss).item()
+            if prompt:
+                # Calculate PPL of 'text' given 'prompt'
+                # Encode both together
+                full_text = prompt + text
+                encoding = tokenizer(full_text, return_tensors="pt")
+                input_ids = encoding["input_ids"].to(model.device)
+                
+                # Get the length of the prompt tokens
+                prompt_len = tokenizer(prompt, return_tensors="pt")["input_ids"].shape[1]
+                
+                # Create labels: mask out the prompt tokens with -100
+                labels = input_ids.clone()
+                labels[:, :prompt_len] = -100
+                
+                with torch.no_grad():
+                    outputs = model(input_ids, labels=labels)
+                    loss = outputs.loss
+                    perplexity = torch.exp(loss).item()
+            else:
+                # Standalone PPL (fallback)
+                inputs = tokenizer(text, return_tensors="pt")
+                input_ids = inputs["input_ids"].to(model.device)
+                with torch.no_grad():
+                    outputs = model(input_ids, labels=input_ids)
+                    loss = outputs.loss
+                    perplexity = torch.exp(loss).item()
                 
             return perplexity
         except Exception as e:
