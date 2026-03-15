@@ -34,7 +34,7 @@ def convert_excel_to_json(input_file, output_file):
         
         # Determine instruction based on language
         if lang == 'en':
-            instruction = "Classify the following article as native ads or pure news."
+            instruction = "Classify the following article as native ads or berita murni."
             label_map = {
                 "berita murni": "berita murni",
                 "native ads": "native ads"
