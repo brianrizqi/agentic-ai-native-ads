@@ -53,6 +53,7 @@ try:
     from rouge_score import rouge_scorer
     nltk.download('wordnet', quiet=True)
     nltk.download('punkt', quiet=True)
+    nltk.download('punkt_tab', quiet=True)
     HAS_NLP_METRICS = True
 except ImportError:
     HAS_NLP_METRICS = False
