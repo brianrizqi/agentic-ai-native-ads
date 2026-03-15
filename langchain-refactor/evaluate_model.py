@@ -46,11 +46,16 @@ except ImportError:
     HAS_OPENAI = False
 
 
-def load_test_set(dataset_path: str, num_samples: int = 100) -> List[Dict]:
+def load_test_set(dataset_path: str, num_samples: int = 100, lang_filter: str = None) -> List[Dict]:
     """Load test samples from dataset. Shuffles with seed to ensure diversity."""
     
     with open(dataset_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
+    
+    # Filter by language if specified
+    if lang_filter:
+        data = [item for item in data if item.get('lang') == lang_filter.lower()]
+        print(f"🌍 Filtered by language: {lang_filter} ({len(data)} samples found)")
     
     # Shuffle with fixed seed to be reproducible but diverse
     import random
@@ -497,6 +502,8 @@ def main():
                        help='Model for LLM judge (e.g., openai/gpt-4o for openrouter)')
     parser.add_argument('--api-key', type=str, default=None,
                        help='API key for LLM judge (REQUIRED if --use-judge is set)')
+    parser.add_argument('--lang', type=str, default=None,
+                       help='Filter evaluation by language (e.g. "en", "id")')
     args = parser.parse_args()
     
     # Extract model name from path
@@ -522,7 +529,7 @@ def main():
     print(f"{'='*80}\n")
     
     # Load test set
-    test_data = load_test_set(args.dataset, args.num_samples)
+    test_data = load_test_set(args.dataset, args.num_samples, args.lang)
     
     # Evaluate
     results = evaluate_model(args.model, test_data, lora_path=args.lora_path)

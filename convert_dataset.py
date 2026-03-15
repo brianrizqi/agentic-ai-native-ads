@@ -65,7 +65,8 @@ def convert_excel_to_json(input_file, output_file):
             "instruction": instruction,
             "title": str(row.get('title', '')),
             "input": str(row.get('content', '')),
-            "output": json.dumps(output_obj, ensure_ascii=False)
+            "output": json.dumps(output_obj, ensure_ascii=False),
+            "lang": lang
         }
         
         json_data.append(item)
