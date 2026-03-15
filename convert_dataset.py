@@ -35,20 +35,16 @@ def convert_excel_to_json(input_file, output_file):
         # Determine instruction based on language
         if lang == 'en':
             instruction = "Classify the following article as native ads or berita murni."
-            label_map = {
-                "berita murni": "berita murni",
-                "native ads": "native ads"
-            }
         else:
             instruction = "Klasifikasikan artikel berikut sebagai native ads atau berita murni."
-            label_map = {
-                "berita murni": "berita murni",
-                "native ads": "native ads"
-            }
 
-        # Map label and create output structure
+        # Consolidate all label variants into 2 classes: 'native ads' or 'berita murni'
         raw_label = str(row.get('label', 'berita murni')).strip().lower()
-        processed_label = label_map.get(raw_label, raw_label)
+        
+        if any(x in raw_label for x in ["native", "ads", "advertising","native ads"]):
+            processed_label = "native ads"
+        else:
+            processed_label = "berita murni"
         
         # Standard output structure as seen in refined JSON
         output_obj = {
