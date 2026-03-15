@@ -214,6 +214,10 @@ def compute_bertscore(results: Dict) -> Dict:
 def llm_as_judge(results: Dict, api_key: str = None, provider: str = "openai", model: str = "gpt-4o-mini") -> Dict:
     """Use an LLM (OpenAI or OpenRouter) to judge prediction quality, prioritizing errors."""
     
+    if not HAS_OPENAI:
+        print("⚠️  Skipping LLM-as-a-Judge: langchain-openai not installed.")
+        return {}
+
     if not api_key:
         print(f"⚠️  Skipping LLM-as-a-Judge: API Key missing. Please provide via --api-key.")
         return {}
@@ -226,7 +230,7 @@ def llm_as_judge(results: Dict, api_key: str = None, provider: str = "openai", m
         llm = ChatOpenAI(
             model=model,
             openai_api_key=final_api_key,
-            openai_api_base="https://openrouter.ai/api/v1",
+            base_url="https://openrouter.ai/api/v1",
             temperature=0,
             default_headers={
                 "HTTP-Referer": "https://github.com/brianrizqi/agentic-ai-native-ads",
@@ -273,9 +277,46 @@ Output JSON:
     incorrect = [p for p in all_predictions if not p.get('correct')]
     correct = [p for p in all_predictions if p.get('correct')]
     
-    sample_size = min(20, len(all_predictions))
-    # Mix: up to 15 incorrect, 5 correct
-    judge_samples = (incorrect[:15] + correct)[:sample_size]
+    sample_size = min(100, len(all_predictions))
+    # Mix: up to 80% incorrect, 20% correct
+    num_incorrect = int(sample_size * 0.8)
+    judge_samples = (incorrect[:num_incorrect] + correct)[:sample_size]
+    
+    ratings = []
+    details = []
+    
+    for i, pred in enumerate(judge_samples):
+        print(f"   Judging sample {i+1}/{len(judge_samples)}...", end='\r')
+        try:
+            response = llm.invoke(
+                judge_prompt.format(
+                    input_text=pred['input'][:2000],
+                    ground_truth=pred['ground_truth'],
+                    prediction=pred['prediction'],
+                    reasoning=pred.get('pred_reasoning', '')
+                )
+            )
+            
+            judge_result = json.loads(response.content)
+            ratings.append(judge_result['rating'])
+            details.append({
+                'input_preview': pred['input'][:100] + "...",
+                'gt': pred['ground_truth'],
+                'pred': pred['prediction'],
+                'judge_rating': judge_result['rating'],
+                'judge_justification': judge_result['justification']
+            })
+        except Exception as e:
+            print(f"\n   Judge error on sample {i}: {e}")
+            continue
+    
+    print(f"\n✅ Finished judging {len(ratings)} samples.")
+    
+    return {
+        'average_rating': np.mean(ratings) if ratings else 0,
+        'num_samples_judged': len(ratings),
+        'judge_details': details
+    }
     
     ratings = []
     details = []
