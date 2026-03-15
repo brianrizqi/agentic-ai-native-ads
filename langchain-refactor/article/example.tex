@@ -28,7 +28,7 @@
 \corresp{Penulis korespondensi: Diana Purwitasari (e-mail: diana@its.ac.id)}
 
 \begin{abstract}
-Iklan \textit{native} pada berita digital sulit dideteksi karena niat promosi seringkali disisipkan di dalam gaya penulisan editorial yang secara faktual benar. Detektor berbasis \textit{machine-learning} dan \textit{deep-learning} yang ada dapat mencapai skor klasifikasi yang kompetitif, tetapi seringkali memberikan transparansi penalaran yang terbatas untuk audit ruang redaksi. Makalah ini mengusulkan AGENA, sebuah kerangka kerja agentik untuk deteksi iklan \textit{native} yang dapat dijelaskan pada berita Indonesia. AGENA mendekomposisi proses inferensi ke dalam lima agen yang terkoordinasi: \textit{Web Scraper}, \textit{Preprocessing}, \textit{Retriever}, \textit{Classifier}, dan \textit{Explainer}. Kerangka kerja ini menggabungkan \textit{Retrieval-Augmented Generation} (RAG) dengan strategi \textit{fine-tuning Reasoning-First} sehingga klasifikasi didasarkan pada bukti yang diambil dan disertai dengan jejak justifikasi terstruktur. Eksperimen pada korpus terkurasi yang berisi 12.088 artikel berita Indonesia menunjukkan bahwa AGENA dengan Gemma 3 12B mencapai akurasi 94,50\%, mengungguli \textit{baseline zero-shot} dan \textit{pipeline} parsial. Evaluasi kualitatif dengan protokol \textit{LLM-as-a-Judge} melaporkan skor penalaran rata-rata 4,4/5 dan keselarasan semantik yang kuat dengan anotasi pakar, menunjukkan peningkatan interpretabilitas di samping performa prediktif. Hasil ini mengindikasikan bahwa \textit{pipeline} LLM agentik yang didasarkan pada bukti adalah arah yang praktis untuk pemantauan media yang transparan dan dukungan keputusan editorial.
+Iklan \textit{native} pada berita digital sulit dideteksi karena niat promosi seringkali disisipkan di dalam gaya penulisan editorial yang secara faktual benar. Detektor berbasis \textit{machine-learning} dan \textit{deep-learning} yang ada dapat mencapai skor klasifikasi yang kompetitif, tetapi seringkali memberikan transparansi penalaran yang terbatas untuk audit ruang redaksi. Makalah ini mengusulkan AGENA, sebuah kerangka kerja agentik untuk deteksi iklan \textit{native} yang dapat dijelaskan pada berita Indonesia. AGENA mendekomposisi proses inferensi ke dalam lima agen yang terkoordinasi: \textit{Web Scraper}, \textit{Preprocessing}, \textit{Retriever}, \textit{Classifier}, dan \textit{Explainer}. Kerangka kerja ini menggabungkan \textit{Retrieval-Augmented Generation} (RAG) dengan strategi \textit{fine-tuning Reasoning-First} sehingga klasifikasi didasarkan pada bukti yang diambil dan disertai dengan jejak justifikasi terstruktur. Eksperimen pada korpus terkurasi sebanyak 12.088 artikel berita Indonesia menunjukkan bahwa AGENA dengan Gemma 3 12B mencapai akurasi 94,50\%, melampaui baseline zero-shot dan pipeline yang dikurangi dalam lingkungan pengujian kami. Evaluasi kualitatif dengan protokol LLM-as-a-Judge melaporkan skor rata-rata penalaran sebesar 4,4/5 dan keselarasan semantik yang kuat dengan anotasi pakar, yang menunjukkan peningkatan interpretabilitas di samping kinerja prediktif. Hasil ini menunjukkan bahwa pipeline LLM yang berbasis bukti dan agentik merupakan potensi menjanjikan untuk eksplorasi lebih lanjut dalam pemantauan media yang transparan dan dukungan keputusan editorial.
 \end{abstract}
 
 \begin{keywords}
@@ -62,7 +62,7 @@ Makalah ini memperkenalkan AGENA (\textit{Agentic AI Framework for Explainable N
 Kontribusi utama dari karya ini adalah:
 \begin{enumerate}
     \item \textbf{Kontribusi Arsitektur}: Kami mengusulkan \textit{pipeline} AGENA, sebuah sistem lima agen untuk deteksi iklan \textit{native} dalam berita digital Indonesia. Sepengetahuan kami, ini adalah kerangka kerja deteksi multi-agen pertama yang didedikasikan untuk domain ini.
-    \item \textbf{Kontribusi Metodologis}: Kami memperkenalkan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'' berbasis RAG, yang ditautkan pada basis pengetahuan terkurasi sebanyak 12.088 artikel berita Indonesia. Pendekatan ini mengurangi halusinasi dan meningkatkan diskriminasi ``\textit{Berita Batas}''.
+    \item \textbf{Kontribusi Metodologis}: Kami memperkenalkan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'' berbasis RAG, yang ditautkan pada basis pengetahuan terkurasi sebanyak 12.088 artikel berita Indonesia. Pendekatan ini mengurangi halusinasi dan meningkatkan diskriminasi ``\textit{Pelaporan Merek Non-Promosi}''.
     \item \textbf{Kontribusi Evaluatif}: Kami mengevaluasi kualitas keluaran model di luar metrik akurasi menggunakan protokol ``\textit{LLM-as-a-Judge}'', di mana GPT-4o menilai jejak penalaran pada skala 1--5 berdasarkan empat kriteria interpretabilitas: Sentimen, Persuasi, Promosi, dan keselarasan Perspektif.
 \end{enumerate}
 
@@ -90,7 +90,7 @@ Penelitian deteksi \textit{fake news} terkini juga melaporkan bahwa pemodelan ko
 
 Tinjauan berskala besar juga menekankan bahwa kemampuan penjelasan dan ketahanan tetap belum terselesaikan dalam \textit{pipeline} misinformasi modern \cite{b50, b57}.
 
-Pada tingkat sistem, \textit{stack} RAG operasional memerlukan kontrol kualitas \textit{retrieval} yang andal, protokol evaluasi yang dapat direproduksi, dan alur kerja pengindeksan yang dapat diandalkan \cite{b52, b57}.
+Pada tingkat sistem, \textit{stack} RAG operasional memerlukan kontrol kualitas \textit{retrieval} yang handal, protokol evaluasi yang dapat direproduksi, dan alur kerja pengindeksan yang dapat diandalkan \cite{b52, b57}.
 
 \subsection{Kemunculan AI Agentik dan Sistem Multi-Agen}
 Dalam penelitian ini, AI agentik mengacu pada sistem di mana LLM berfungsi sebagai mesin penalaran otonom, mampu merencanakan, menggunakan alat, dan melakukan eksekusi multi-langkah.
@@ -107,7 +107,7 @@ Referensi interpretabilitas mendasar dalam literatur Springer juga memperkuat pe
 
 \section{Dataset dan Anotasi}
 \label{sec:dataset}
-Fondasi dari penelitian ini adalah kumpulan dataset ekstensif dari artikel berita elektronik berbahasa Indonesia, yang dikurasi secara khusus untuk deteksi iklan \textit{native} \cite{b17}. Dataset ini terdiri dari 12.088 artikel yang dikumpulkan dari enam portal berita Indonesia utama (misalnya, Kompas, Detik, Tempo) antara bulan Februari dan Agustus 2022. Koleksi ini mencakup berbagai kategori sesuai yang diringkas pada Tabel \ref{tab:dataset_stats}.
+Fondasi dari penelitian ini adalah kumpulan dataset ekstensif dari artikel berita elektronik berbahasa Indonesia, yang dikurasi secara khusus untuk deteksi iklan \textit{native} \cite{b17}. Dataset ini terdiri dari 12.088 artikel yang dikumpulkan dari enam portal berita Indonesia utama (misalnya, Kompas, Detik, Tempo) antara bulan Februari dan Agustus 2022. Meskipun korpus asli diterbitkan sebagai \textit{benchmark} terstruktur di \textit{Scientific Data} \cite{b17}, dalam penelitian ini korpus tersebut diadaptasi dan diformat ulang untuk mendukung \textit{fine-tuning} berbasis instruksi bagi model SLM/LLM, termasuk konversi anotasi multi-label menjadi pasangan \textit{prompt-completion} \textit{Reasoning-First}. Versi yang telah diadaptasi ini tersedia secara publik sebagai dataset LLM/SLM khusus di figshare \cite{b68}. Koleksi ini mencakup berbagai kategori sesuai yang diringkas pada Tabel \ref{tab:dataset_stats}.
 
 \begin{table}[htbp]
 \caption{Distribusi Dataset berdasarkan Kategori Berita}
@@ -134,11 +134,11 @@ Teknologi & 975 & 340 & 635 \\
 \end{center}
 \end{table}
 
-Aspek kritis dari dataset ini adalah anotasi berlabel ganda. Setiap artikel dianotasi secara manual oleh tiga pakar independen berdasarkan empat karakteristik implisit: (1) sentimen positif atau netral, (2) nada persuasif, (3) fokus promosi, dan (4) perspektif dari satu sumber saja. Kesepakatan antar-anotator, diukur melalui Kappa Fleiss, mencapai 0,90, menunjukkan reliabilitas yang tinggi. Dalam AGENA, dataset ini memiliki peran ganda: digunakan untuk \textit{fine-tuning} LLM yang mendasarinya dan bertindak sebagai basis pengetahuan \textit{ground-truth} untuk komponen RAG, yang disimpan dalam ruang vektor berdimensi tinggi untuk \textit{retrieval} konteks secara \textit{real-time}.
+Karakteristik signifikan dari dataset ini adalah anotasi multi-label-nya. Setiap artikel dianotasi secara manual oleh tiga pakar independen berdasarkan empat karakteristik implisit: (1) sentimen positif atau netral, (2) nada persuasif, (3) fokus promosi, dan (4) perspektif sumber tunggal. Kesepakatan antar-anotator, yang diukur melalui Fleiss' Kappa, mencapai 0,90, menunjukkan keandalan yang tinggi. Dalam AGENA, dataset ini melayani tujuan ganda: digunakan untuk fine-tuning Large Language Models (LLMs) yang mendasarinya dan bertindak sebagai basis pengetahuan ground-truth untuk komponen Retrieval-Augmented Generation (RAG), yang disimpan dalam ruang vektor dimensi tinggi untuk pengambilan konteks.\textit{retrieval} konteks secara \textit{real-time}.
 
 \section{Metode yang Diusulkan}
 \label{sec:methods}
-Kerangka kerja AGENA (\textit{Agentic Native Ads detection}) dikonseptualisasikan sebagai sistem multi-agen terdistribusi yang menggeser paradigma deteksi dari sebuah peristiwa klasifikasi tunggal menjadi proses penalaran kolaboratif multi-tahap. Arsitektur ini didasarkan pada prinsip ``\textit{Reasoning-First}'', di mana pembangkitan bukti interpretatif diperlakukan sebagai prasyarat esensial terhadap label klasifikasi akhir.
+Kerangka kerja AGENA (Agentic Native Ads detection) dikonseptualisasikan sebagai sistem multi-agen terdistribusi yang menggeser paradigma deteksi dari peristiwa klasifikasi tunggal menjadi proses penalaran kolaboratif multi-tahap. Arsitektur ini didasarkan pada prinsip "Reasoning-First", di mana pembuatan bukti interpretatif diperlakukan sebagai prekursor utama untuk label klasifikasi akhir.
 
 \subsection{Landasan Filosofis: Paradigma \textit{Reasoning-First}}
 Pengklasifikasi berita tradisional beroperasi sebagai model diskriminatif yang memetakan input $X$ langsung ke label $Y$. Meskipun efisien, pendekatan ini tidak memberikan wawasan tentang "alasan" linguistik di balik sebuah keputusan. AGENA mengadopsi pendekatan penalaran generatif di mana model harus terlebih dahulu membangun jejak penalaran multidimensi $T$. Jejak ini bertindak sebagai jembatan semantik, yang memetakan fitur-fitur artikel kembali ke karakteristik teoritis iklan \textit{native}. Dengan memaksa model untuk mengartikulasikan temuannya sebelum berkomitmen pada suatu label, kami secara signifikan memitigasi risiko halusinasi stokastik dan meningkatkan presisi klasifikasi.
@@ -153,9 +153,9 @@ di mana $U$ mewakili URL target, $D$ adalah teks dokumen mentah yang diekstraksi
 Tugas deteksi didekomposisi menjadi lima agen kooperatif $A = \{A_{scrape}, A_{prep}, A_{ret}, A_{class}, A_{exp}\}$. Agen dipisahkan menjadi dua subkelompok: agen deterministik non-AI ($A_{scrape}, A_{prep}$) yang bertanggung jawab atas penyiapan data, dan agen berbasis AI ($A_{class}, A_{exp}$) dengan dukungan RAG ($A_{ret}$) untuk pengambilan keputusan:
 \begin{itemize}
     \item \textbf{Agen Scraper ($A_{scrape}$, Non-AI)}: Mengeksekusi mutasi status $\delta_{scrape}: S_{state}[U] \rightarrow S_{state}[D]$. Agen ini murni berbasis aturan dan mengekstrak DOM dinamis melalui \textit{headless browser} sebelum menuliskan HTML bersih $D$ ke dalam buffer. Model AI tidak digunakan pada tahap pemuatan ini.
-    \item \textbf{Agen Preprocessing ($A_{prep}$, Non-AI)}: Mengeksekusi mutasi $\delta_{prep}: S_{state}[D] \rightarrow S_{state}[F]$. Agen pemrograman deterministik ini memproses $D$ untuk mengekstraksi fitur linguistik $n$-dimensi (misalnya, densitas kata, rasio huruf kapitalisasi) memanfaatkan Regex. Sama halnya seperti \textit{Scraper}, tahap ini tidak bersandar pada eksekusi model bahasa apapun.
+    \item \textbf{Agen Preprocessing ($A_{prep}$, Non-AI)}: Mengeksekusi mutasi $\delta_{prep}: S_{state}[D] \rightarrow S_{state}[F]$. Agen pemrograman deterministik ini memproses $D$ untuk mengekstrak fitur linguistik $n$-dimensi (misalnya, densitas kata, rasio huruf kapitalisasi) memanfaatkan Regex. Sama halnya seperti \textit{Scraper}, tahap ini tidak bersandar pada eksekusi model bahasa apapun.
     \item \textbf{Agen Retriever ($A_{ret}$)}: Agen inferensi perantara ini memanfaatkan \texttt{VectorSearchTool} untuk mencari teks semantis terdekat dari basis data FAISS untuk menambatkan klaim model klasifikasi.
-    \item \textbf{Agen Classifier ($A_{class}$ , AI-Based)}: Mengimplementasikan logika evaluatif saraf inti $\delta_{class}: (S_{state}[D], S_{state}[F], S_{state}[K]) \rightarrow L$, di mana $L \in \{0, 1\}$. Agen ini memanfaatkan LLM dasar yang di-\textit{fine-tune} untuk mencapai keputusan Boolean.
+    \textbf{Agen Classifier ($A_{class}$ , AI-Based)}: Mengimplementasikan logika evaluatif saraf inti $\delta_{class}: (S_{state}[D], S_{state}[F], S_{state}[K]) \rightarrow L$, di mana $L \in \{0, 1\}$. Agen ini memanfaatkan LLM dasar yang di-\textit{fine-tune} untuk mencapai keputusan Boolean.
     \item \textbf{Agen Explainer ($A_{exp}$ , AI-Based)}: Mengeksekusi mutasi post-hoc $\delta_{exp}: (S_{state}[D], S_{state}[K], L) \rightarrow S_{state}[R]$. Agen LLM mandiri ini bertugas memberikan rasionalisasi atas pilihan agen Classifier melalui pelacakan teks asli.
 \end{itemize}
 
@@ -263,7 +263,7 @@ Untuk mengevaluasi kedalaman kualitatif keluaran Agen Explainer, AGENA menerapka
 \begin{enumerate}
     \item \textbf{Akurasi Label}: Kebenaran sesuai dengan \textit{ground truth} yang dianotasi manusia.
     \item \textbf{Kualitas Penalaran}: Koherensi logis yang menghubungkan prediksi dengan sifat-sifat naratif spesifik (misalnya, nada promosi vs. pelaporan objektif).
-    \item \textbf{Pemeriksaan \textit{Kasus Ambigu}}: Kemampuan untuk mengklasifikasikan secara akurat berita editorial yang secara ekstensif menyebutkan entitas perusahaan tanpa secara inheren mempromosikannya.
+    \item \textbf{Pemeriksaan \textit{Pelaporan Merek Non-Promosi}}: Kemampuan untuk mengklasifikasikan secara akurat berita editorial yang secara ekstensif menyebutkan entitas perusahaan tanpa secara inheren mempromosikannya.
 \end{enumerate}
 Dimensi kualitatif ini melengkapi metrik biner standar (Akurasi, F1-score) dengan memberi penalti pada model yang mencapai label yang benar melalui penalaran yang dihalusinasikan atau dangkal.
 
@@ -279,7 +279,6 @@ Performa \textit{pipeline} AGENA dievaluasi di berbagai iterasi \textit{fine-tun
 
 \begin{table*}[t]
 \caption{Hasil Konsolidasi: Varian LLM yang Di-\textit{fine-tune}, Studi Ablasi, dan Perbandingan \textit{Baseline} SENADA}
-\label{tab:results_consolidated}
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|}
 \hline
@@ -335,7 +334,7 @@ Seiring penurunan ukuran model di bawah parameter 1B, penalaran yang andal menja
 \subsection{Analisis Kualitatif dan Karakteristik Penalaran}
 Jejak penalaran Agen Explainer dievaluasi terhadap anotasi pakar untuk konfigurasi Gemma 3 12B. Jejak tersebut mencapai 94,2\% keselarasan semantik dengan justifikasi yang dianotasi manusia, diukur melalui tinjauan pakar domain terhadap empat kriteria target.
 
-Seperti ditunjukkan pada Gbr. \ref{fig:confusion_matrix}, kesalahan klasifikasi terkonsentrasi pada kategori \textit{Kasus Ambigu}: artikel yang menyebutkan nama merek atau program korporat tanpa pembingkaian persuasif. Agen berbasis Llama menunjukkan tingkat positif-palsu yang sedikit lebih tinggi untuk berita murni, sering memperkirakan pelaporan pemerintah yang menguntungkan sebagai promosi. Agen berbasis Gemma lebih konservatif, sesekali melewatkan iklan \textit{native} dengan tingkat keyakinan rendah.
+Seperti ditunjukkan pada Gbr. \ref{fig:confusion_matrix}, kesalahan klasifikasi terkonsentrasi pada kategori \textit{Pelaporan Merek Non-Promosi}: artikel yang menyebutkan nama merek atau program korporat tanpa pembingkaian persuasif. Agen berbasis Llama menunjukkan tingkat positif-palsu yang sedikit lebih tinggi untuk berita murni, sering memperkirakan pelaporan pemerintah yang menguntungkan sebagai promosi. Agen berbasis Gemma lebih konservatif, sesekali melewatkan iklan \textit{native} dengan tingkat keyakinan rendah.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\linewidth]{eval_results/eval_gemma3_12b_native_ads_20260301_043605_confusion_matrix.png}}
@@ -347,7 +346,7 @@ Seperti ditunjukkan pada Gbr. \ref{fig:confusion_matrix}, kesalahan klasifikasi 
 \label{sec:discussion}
 Hasil ini memvalidasi hipotesis inti AGENA: bahwa mendekomposisi deteksi iklan \textit{native} ke dalam \textit{pipeline} multi-agen dengan penalaran berbasis RAG menghasilkan peningkatan terukur dibandingkan klasifikasi statis, baik dalam akurasi maupun interpretabilitas keluaran.
 
-\subsection{Analisis \textit{Kasus Ambigu}}
+\subsection{Analisis \textit{Kasus Pelaporan Merek Non-Promosi}}
 Sumber kesalahan klasifikasi yang konsisten di semua model yang diuji adalah kategori \textit{Berita Batas}. Ini adalah artikel berita yang akurat secara faktual yang menyebutkan entitas perusahaan, produk, atau program pemerintah tanpa niat promosi. Sebagai contoh, pelaporan infrastruktur rutin menyebut kontraktor swasta, dan Agen Classifier AGENA terkadang menandai ini berdasarkan pola kata kunci daripada konteks naratif. Bias ``pemicu-merek'' ini lebih menonjol pada model Qwen dan Llama dibandingkan Gemma 3 12B. Mengatasi hal ini di penelitian mendatang memerlukan perluasan basis pengetahuan dengan proporsi yang lebih besar dari contoh \textit{Berita Batas} untuk meningkatkan diskriminasi negatif.
 
 \subsection{Peran Agen Explainer dalam Integritas Jurnalistik}
@@ -365,7 +364,7 @@ Untuk lingkungan produksi, pelajaran dari penelitian \textit{retrieval} iklan \t
 
 \section{Kesimpulan}
 \label{sec:conclusion}
-Makalah ini mempresentasikan AGENA, sebuah kerangka kerja AI multi-agen untuk deteksi iklan \textit{native} yang dapat dijelaskan dalam berita digital Indonesia. Kerangka kerja ini memenuhi dua keterbatasan utama dari karya sebelumnya: kurangnya interpretabilitas dalam pengklasifikasi berbasis \textit{ensemble}, dan kecenderungan LLM generik untuk berhalusinasi ketika diterapkan pada jurnalisme Indonesia yang spesifik domain. Dengan menggabungkan basis pengetahuan berbasis RAG dengan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'', AGENA mencapai akurasi klasifikasi 94,5\% menggunakan Gemma 3 12B sebagai Agen Classifier dan menghasilkan jejak penalaran terstruktur yang dapat ditinjau secara editorial. Secara khusus, kerangka kerja ini mengungguli \textit{baseline} non-agentik sebelumnya, SENADA, dengan perolehan +4,5\% pada akurasi keseluruhan dan +16,0\% pada presisi Iklan \textit{Native} \cite{b19}.
+Makalah ini menyajikan AGENA, kerangka kerja AI multi-agen untuk deteksi iklan native yang dapat dijelaskan dalam berita digital Indonesia. Kerangka kerja ini berkontribusi dalam mengatasi dua batasan utama dari pekerjaan sebelumnya: kurangnya interpretabilitas dalam klasifikasi berbasis ensemble, dan kecenderungan LLM generik untuk berhalusinasi saat diterapkan pada jurnalisme Indonesia yang spesifik domain. Dengan menggabungkan basis pengetahuan berbasis RAG dengan strategi fine-tuning Reasoning-First, AGENA mencapai akurasi klasifikasi 94,5\% menggunakan Gemma 3 12B sebagai Agen Classifier dalam pengaturan eksperimen kami dan menghasilkan jejak penalaran terstruktur yang dapat ditinjau secara editorial.
 
 Studi ablasi mengonfirmasi bahwa setiap komponen \textit{pipeline} berkontribusi pada performa keseluruhan, dengan Agen Retriever memberikan gain tunggal terbesar (+12,8\%). Protokol evaluasi \textit{LLM-as-a-Judge} lebih lanjut menunjukkan bahwa akurasi saja merupakan ukuran yang tidak memadai: model yang lebih kecil yang mencapai akurasi batas melakukannya melalui penalaran yang dangkal atau dihalusinasikan daripada pemahaman linguistik yang sesungguhnya. Pekerjaan di masa mendatang akan fokus pada perluasan basis pengetahuan untuk mencakup lebih banyak contoh \textit{Berita Batas} dari portal berita Indonesia regional, mengurangi latensi per-artikel untuk aplikasi \textit{real-time}, dan mengevaluasi AGENA pada lingkungan berita lintas bahasa. Selain itu, \textit{baseline} transformer yang lebih kuat dan skema adaptasi yang hemat parameter tetap penting untuk penerapan praktis. Arah penerapan ini juga kompatibel dengan praktik rekayasa efisien yang ditunjukkan dalam karya kerangka kerja lokal sebelumnya.
 
@@ -379,6 +378,7 @@ Penelitian ini didanai oleh Lembaga Pengelola Dana Pendidikan (LPDP) atas nama K
 \bibitem{b53} LaBrecque, A. C., Voorhees, C. M., Khodakarami, F., \& Fombelle, P. W. (2024). Native advertising effectiveness: The role of congruence and consumer annoyance on clicks, bounces, and visits. Journal of the Academy of Marketing Science, 52(6), 1692--1712. https://doi.org/10.1007/s11747-024-01014-z
 \bibitem{b54} Matteo, S., \& Dal Zotto, C. (2015). Native Advertising, or How to Stretch Editorial to Sponsored Content Within a Transmedia Branding Era. In G. Siegert, K. Förster, S. Chan-Olmsted, \& M. Ots (Eds.), Handbook of Media Branding (pp. 169--185). Springer.
 \bibitem{b17} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2024). Electronic news dataset for native advertisement detection. Scientific Data, 11(1), 1045. https://doi.org/10.1038/s41597-024-04341-6
+\bibitem{b68} Darnoto, B. R. P., Siahaan, D. O., \& Purwitasari, D. (2026). Native Ads Dataset for SLM/LLM Model. figshare. https://doi.org/10.6084/m9.figshare.31669063
 \bibitem{b21} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). Automated Detection of Persuasive Content in Electronic News. Informatics, 10(4), 86. MDPI.
 \bibitem{b8} Fawaid, J., et al. (2021). Indonesia’s Fake News Detection using Transformer Network. In ACM International Conference Proceeding Series.
 \bibitem{b9} Vlad, G.-A., Tanase, M.-A., Onose, C., \& Cercel, D.-C. (2019). Sentence-Level Propaganda Detection in News Articles with Transfer Learning and BERT-BiLSTM-Capsule Model. In Proceedings of the Second Workshop on Natural Language Processing for Internet Freedom: Censorship, Disinformation, and Propaganda, pp. 148--154. Association for Computational Linguistics. https://doi.org/10.18653/v1/D19-5022
