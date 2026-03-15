@@ -50,14 +50,13 @@ try:
     import nltk
     from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
     from nltk.translate.meteor_score import meteor_score
-    from rouge_score import rouge_scorer
     nltk.download('wordnet', quiet=True)
     nltk.download('punkt', quiet=True)
     nltk.download('punkt_tab', quiet=True)
     HAS_NLP_METRICS = True
 except ImportError:
     HAS_NLP_METRICS = False
-    print("Warning: nltk or rouge-score not installed. Install with: pip install nltk rouge-score")
+    print("Warning: nltk not installed. Install with: pip install nltk")
 
 
 def load_test_set(dataset_path: str, num_samples: int = 100, lang_filter: str = None) -> List[Dict]:
@@ -284,9 +283,6 @@ def compute_nlp_metrics(results: Dict) -> Dict:
     bleu_scores = []
     meteor_scores = []
     
-    scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
-    rouge_results = defaultdict(list)
-    
     smoothie = SmoothingFunction().method1
     
     processed_count = 0
@@ -313,19 +309,11 @@ def compute_nlp_metrics(results: Dict) -> Dict:
         except Exception:
             pass
             
-        # ROUGE (using pre-processed lowercase strings)
-        scores = scorer.score(gt_lower, pred_lower)
-        for k, v in scores.items():
-            rouge_results[k].append(v.fmeasure)
-            
     print(f"   (Processed {processed_count} samples for NLP metrics)")
             
     return {
         'bleu': np.mean(bleu_scores) if bleu_scores else 0,
-        'meteor': np.mean(meteor_scores) if meteor_scores else 0,
-        'rouge1': np.mean(rouge_results['rouge1']) if rouge_results['rouge1'] else 0,
-        'rouge2': np.mean(rouge_results['rouge2']) if rouge_results['rouge2'] else 0,
-        'rougeL': np.mean(rouge_results['rougeL']) if rouge_results['rougeL'] else 0
+        'meteor': np.mean(meteor_scores) if meteor_scores else 0
     }
 
 
@@ -533,9 +521,6 @@ def print_results(results: Dict, bertscore_results: Dict = None,
         print(f"\n📝 NLP Metrics (Reasoning Quality):")
         print(f"   BLEU: {m.get('bleu', 0):.4f}")
         print(f"   METEOR: {m.get('meteor', 0):.4f}")
-        print(f"   ROUGE-1: {m.get('rouge1', 0):.4f}")
-        print(f"   ROUGE-2: {m.get('rouge2', 0):.4f}")
-        print(f"   ROUGE-L: {m.get('rougeL', 0):.4f}")
     
     # Perplexity
     if results.get('perplexities'):
@@ -692,9 +677,7 @@ def main():
         if nlp_results:
             f.write(f"NLP Metrics (Reasoning Quality):\n")
             f.write(f"  BLEU: {nlp_results['bleu']:.4f}\n")
-            f.write(f"  METEOR: {nlp_results['meteor']:.4f}\n")
-            f.write(f"  ROUGE-1: {nlp_results['rouge1']:.4f}\n")
-            f.write(f"  ROUGE-L: {nlp_results['rougeL']:.4f}\n\n")
+            f.write(f"  METEOR: {nlp_results['meteor']:.4f}\n\n")
             
         if output_data.get('avg_perplexity'):
             f.write(f"Perplexity: {output_data['avg_perplexity']:.2f}\n\n")
