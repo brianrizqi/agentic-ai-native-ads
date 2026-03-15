@@ -36,7 +36,7 @@ def convert_excel_to_json(input_file, output_file):
         if lang == 'en':
             instruction = "Classify the following article as native ads or pure news."
             label_map = {
-                "berita murni": "pure news",
+                "berita murni": "berita murni",
                 "native ads": "native ads"
             }
         else:
@@ -59,7 +59,7 @@ def convert_excel_to_json(input_file, output_file):
         
         # Adjust reasoning for English
         if lang == 'en':
-            if processed_label == "pure news":
+            if processed_label == "berita murni":
                 output_obj["reasoning"] = "The article is neutral and objective, presenting information without product/brand promotion."
             else:
                 output_obj["reasoning"] = "The article contains promotional or persuasive elements towards a specific product/brand."
