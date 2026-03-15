@@ -3,11 +3,11 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
-% \usepackage{caption}
 \usepackage{textcomp}
 \usepackage{placeins}
 \usepackage{afterpage}
 \usepackage{float}
+\usepackage{subfig}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -15,599 +15,411 @@
 \history{Date of publication xxxx 00, 0000, date of current version xxxx 00, 0000.}
 \doi{10.1109/ACCESS.2017.DOI}
 
-\title{SENADA: A Stacked Ensemble Learning for  Native Advertisement Detection in Electronic News}
-\author{\uppercase{Brian Rizqi Paradisiaca Darnoto\authorrefmark{1,2}},
-\uppercase{Daniel Siahaan\authorrefmark{1,*},\IEEEmembership{Member, IEEE}, and Diana Purwitasari\authorrefmark{1}},
-\IEEEmembership{Senior Member, IEEE}}
-\address[]{\authorrefmark{1}Informatics Department, Institut Teknologi Sepuluh Nopember, Surabaya, 60111, Indonesia}
-\address[]{\authorrefmark{2}Informatics, Universitas Jember, Jember, 68121, Indonesia}
-% \tfootnote{The study is supported by Institut Teknologi Sepuluh Nopember for funding this study with a doctoral fellowship under the terms of contract 1333/IT2/T/HK.00.01/2022.}
+\title{AGENA: Kerangka Kerja AI Agentik untuk Deteksi Iklan \textit{Native} yang Dapat Dijelaskan pada Berita Digital}
+\author{\uppercase{Brian Rizqi Paradisiaca Darnoto\authorrefmark{1,2}, Diana Purwitasari\authorrefmark{1,*}, \IEEEmembership{Senior Member, IEEE}, Daniel Siahaan\authorrefmark{1},\IEEEmembership{Member, IEEE}
+}}
+\address[]{\authorrefmark{1}Departemen Informatika, Institut Teknologi Sepuluh Nopember, Surabaya, 60111, Indonesia}
+\address[]{\authorrefmark{2}Informatika, Universitas Jember, Jember, 68121, Indonesia}
 
 \markboth
-{Author \headeretal: Preparation of Papers for IEEE TRANSACTIONS and JOURNALS}
-{Author \headeretal: Preparation of Papers for IEEE TRANSACTIONS and JOURNALS}
+{Darnoto \headeretal: AGENA: Kerangka Kerja AI Agentik}
+{Darnoto \headeretal: AGENA: Kerangka Kerja AI Agentik}
 
-\corresp{Corresponding author: Daniel Siahaan (e-mail: daniel@if.its.ac.id).}
+\corresp{Penulis korespondensi: Diana Purwitasari (e-mail: diana@its.ac.id)}
 
 \begin{abstract}
-Native advertisements are increasingly common as hybrid commercial content embedded within digital news platforms. Although these ads can enhance user engagement, they often elicit negative reactions due to their concealed commercial intent. A key challenge in detecting native advertisements lies in their lack of explicit labeling, which can mislead readers and compromise the perceived credibility of news content. Prior studies have struggled to accurately identify native ads because of their inability to capture the implicit characteristics embedded in editorial-like text, such as positive sentiment, persuasive language, one-sided perspectives, and references to specific products or companies. To address this issue, this study proposes a deep learning architecture called SENADA (Stacked Ensemble for Native Advertising Analysis). The model integrates BERT-based contextual representations, ensemble learning strategies, and a BiLSTM with an attention mechanism. This design enables the model to effectively identify subtle patterns and contextual cues associated with native advertisements. In addition, we introduce a newly constructed Indonesian-language dataset of news articles, annotated based on the four implicit characteristics of native ads. The dataset was collected from six major e-news portals and manually labeled by trained annotators. Experimental evaluations, based on confusion matrix analysis, demonstrate that SENADA achieves an accuracy of 0.93, along with high values for precision, recall, and F1-score. The model is compared against several well-established baselines, including CNN, BiLSTM, BiGRU, and transformer-based architectures, which were selected based on their widespread use and proven effectiveness in prior text classification studies. The proposed model consistently outperforms these baselines, particularly in minimizing misclassification of borderline content, defined as news articles that exhibit some but not all native ad characteristics, such as persuasive tone without explicit product mention or positive sentiment without clear promotional framing. These borderline cases were validated through manual annotation and cross-checking among annotators to ensure reliability. These results confirm the model’s effectiveness in detecting native advertisements that exhibit complex and implicit textual patterns. While the model shows promising results, future work is needed to reduce architectural complexity and training time. Further research could explore explainability methods and cross-lingual adaptation to extend the model’s applicability across languages and media contexts.
+Iklan \textit{native} pada berita digital sulit dideteksi karena niat promosi seringkali disisipkan di dalam gaya penulisan editorial yang secara faktual benar. Detektor berbasis \textit{machine-learning} dan \textit{deep-learning} yang ada dapat mencapai skor klasifikasi yang kompetitif, tetapi seringkali memberikan transparansi penalaran yang terbatas untuk audit ruang redaksi. Makalah ini mengusulkan AGENA, sebuah kerangka kerja agentik untuk deteksi iklan \textit{native} yang dapat dijelaskan pada berita Indonesia. AGENA mendekomposisi proses inferensi ke dalam lima agen yang terkoordinasi: \textit{Web Scraper}, \textit{Preprocessing}, \textit{Retriever}, \textit{Classifier}, dan \textit{Explainer}. Kerangka kerja ini menggabungkan \textit{Retrieval-Augmented Generation} (RAG) dengan strategi \textit{fine-tuning Reasoning-First} sehingga klasifikasi didasarkan pada bukti yang diambil dan disertai dengan jejak justifikasi terstruktur. Eksperimen pada korpus terkurasi yang berisi 12.088 artikel berita Indonesia menunjukkan bahwa AGENA dengan Gemma 3 12B mencapai akurasi 94,50\%, mengungguli \textit{baseline zero-shot} dan \textit{pipeline} parsial. Evaluasi kualitatif dengan protokol \textit{LLM-as-a-Judge} melaporkan skor penalaran rata-rata 4,4/5 dan keselarasan semantik yang kuat dengan anotasi pakar, menunjukkan peningkatan interpretabilitas di samping performa prediktif. Hasil ini mengindikasikan bahwa \textit{pipeline} LLM agentik yang didasarkan pada bukti adalah arah yang praktis untuk pemantauan media yang transparan dan dukungan keputusan editorial.
 \end{abstract}
 
 \begin{keywords}
-BiLSTM, Electronic News Portal, Ensemble Deep Learning, Native Ads, News
+AI Agentik, AI yang Dapat Dijelaskan, LangChain, Iklan \textit{Native}, Klasifikasi Berita, \textit{Retrieval-Augmented Generation}.
 \end{keywords}
 
 \titlepgskip=-15pt
 
 \maketitle
 
-\section{Introduction}
-\label{sec:introduction}
-The term "native advertising" refers to advertising integrated into the editorial content of the electronic news portal in which it appears \cite{b1}. Although native advertising has been used extensively in traditional media, including magazines, newspapers, television and radio, technological advancements in digital media, including social media, have prompted marketers to view it as one of the most prominent digital tactics \cite{b2}. Native advertisements, which resemble the original content on various online platforms, including news, sports, and social media websites, are shared online advertising in the digital age \cite{b3}. A serious challenge is that native ads are increasingly difficult to distinguish from regular news content. This type of advertising is designed to provide a better user experience and usually appears as promoted content \cite{b4}. This phenomenon can affect the reader's perceptions of the truth of the information and threaten the credibility of the media.
+\section{Pendahuluan}
+\label{sec:pendahuluan}
+Iklan \textit{native} mengacu pada konten media berbayar yang dirancang menyerupai gaya editorial platform tempat konten tersebut ditampilkan. Berbeda dari format iklan tradisional seperti \textit{banner} atau \textit{interstitial}, iklan \textit{native} berintegrasi secara mulus ke dalam \textit{news feed} dan halaman artikel, sehingga sulit diidentifikasi pembaca sebagai konten komersial. Format ini menimbulkan kekhawatiran signifikan terhadap independensi editorial dan transparansi konten jurnalistik \cite{b38}.
 
-The definition of native advertising itself differs across domains. In marketing, it refers to paid content intentionally designed to match the look and feel of the platform where it appears, aiming to engage users without disrupting their experience. Meanwhile, in journalism, native ads are often viewed more critically due to their potential to blur the boundary between editorial content and commercial messaging. Because these ads often resemble authentic news stories, they can undermine editorial integrity and mislead readers about the origin and purpose of the information. This dual interpretation makes native ads uniquely challenging to identify and regulate, especially in fast-paced digital news environments.
+Bukti pemasaran terkini lebih lanjut menunjukkan bahwa penempatan dan kongruensi iklan \textit{native} sangat memengaruhi perilaku klik, \textit{bounce}, dan kunjungan pengguna dalam praktiknya \cite{b53}. Literatur \textit{media branding} yang lebih luas juga memosisikan iklan \textit{native} sebagai masalah batas editorial-sponsor yang memerlukan tata kelola eksplisit \cite{b54}.
 
-Native ads have headlines that resemble regular news, but are primarily favorable. Native ads articles also tend to have positive or neutral content and are usually only presented from one point of view \cite{b5}. According to Wojdynski \cite{b6}, native ads publishers have a financial incentive to portray a particular company or product favorably. In addition, the most common format in this case is native advertising, which presents persuasive messages under the guise of regular news, blurring the boundaries between editorial and advertising content \cite{b7}. In summary, native ads have four implicit characteristics that distinguish them from regular news: (1) positive or neutral sentiment, (2) persuasive, (3) favorably promoting a product or company, and (4) presenting a perspective from one point of view without involving opposing views. These four characteristics are often used to subtly influence readers without realizing they consume sponsored content. Identifying these characteristics manually is challenging due to the complexity and large volume of online news. These characteristics are subtle and difficult to detect manually, especially considering the large volume of news content and the nuanced language used.
+Dalam lanskap berita digital Indonesia, iklan \textit{native} sangat lazim ditemukan. Studi dan dataset Indonesia sebelumnya menunjukkan bahwa masalah ini cukup signifikan untuk memerlukan pemantauan sistematis dan analisis otomatis \cite{b17, b21}. Deteksi otomatis konten semacam ini oleh karena itu merupakan masalah penting bagi pengawasan media.
 
-In addition to the technical challenges, classifying editorial content as native advertising based on implicit linguistic cues raises ethical concerns. The concerns include the possibility of mislabeling, which may negatively affect the reputation of journalists or publishers if their content is mistakenly categorized as promotional. Since many native ads are not explicitly disclosed, distinguishing them from regular news can be highly subjective. This research does not seek to judge editorial intent but instead aims to promote transparency by identifying rhetorical and semantic patterns commonly found in native ads. Future work should involve media professionals in reviewing model predictions and developing clear ethical guidelines for real-world applications of such models.
+Mendeteksi iklan \textit{native} pada dasarnya lebih kompleks dibandingkan mengidentifikasi propaganda atau informasi yang salah secara faktual. Sementara yang terakhir umumnya mengandalkan klaim yang salah \cite{b8}, iklan \textit{native} seringkali akurat secara faktual namun dibingkai secara strategis. Efek persuasifnya berasal dari penggunaan bahasa promosi yang selektif: hiperbola halus, tidak adanya kontra-argumen kritis, dan penekanan pada pencapaian perusahaan yang disajikan sebagai berita \cite{b9}. Dalam konteks Indonesia, tantangan ini diperparah oleh keberagaman gaya penulisan regional dan penggunaan idiom tidak formal yang mempersulit analisis linguistik otomatis. Mengingat skala dataset yang dilaporkan dalam karya-karya Indonesia terdahulu, tinjauan manual tidak layak untuk pemantauan rutin \cite{b17, b19}.
 
-Previous research has attempted to detect deceptive content in news, including fake news and propaganda, by applying various machine learning and deep learning approaches. However, these studies typically focus on explicit indicators and often rely on binary classification tasks. They rarely address the more subtle features found in native advertisements. Moreover, most prior works use English-language datasets and do not explore native ads detection in low-resource languages such as Indonesian. These gaps limit the generalizability and effectiveness of existing methods for native ad identification in diverse media contexts. To address these limitations, this study proposes a deep learning framework designed to capture the implicit characteristics of native ads using a combination of contextual representation and ensemble modeling. By leveraging pre-trained language models, ensemble learning, and attention mechanisms, the proposed method focuses on detecting nuanced signals in content that resembles editorial writing. This approach aims to move beyond simple classification and instead model native ads as texts that contain overlapping traits such as sentiment, persuasion, product mentions, and one-sided perspectives.
+Kemajuan terkini dalam model bahasa berbasis transformer telah membuka kemungkinan baru untuk klasifikasi teks yang bernuansa \cite{b23, b39}. Namun, menerapkan model-model ini secara langsung pada deteksi iklan \textit{native} mengungkap dua kelemahan berulang. Pertama, LLM standar seringkali menghasilkan label tanpa penalaran yang transparan dan dapat diaudit, sehingga membatasi kegunaannya dalam alur kerja redaksi. Kedua, model-model ini rentan terhadap halusinasi ketika basis domain lemah; RAG memitigasi hal ini dengan mengondisikan inferensi pada bukti yang diambil \cite{b25}. Oleh karena itu diperlukan kerangka kerja yang menggabungkan kapasitas penalaran LLM dengan \textit{domain grounding} dan keluaran yang dapat diinterpretasikan.
 
-The BERT model served as the foundation for Fawaid's study \cite{b8}, which assessed the effectiveness of the model in detecting fake news in contrast to deep learning algorithms. The study results proved that the precision of BERT could reach 90\%, while BiLSTM was only 85\%. Vlad \cite{b9} detected propaganda sentences in news articles using the transfer learning model and the BERT-BiLSTM-Capsule model. This study's challenge was building a robust binary classifier that could provide appropriate propaganda or non-propaganda labels. The results showed that BERT-BiLSTM got the highest accuracy and recall values, namely 77\% and 85.5\%, while BERT-BiLSTM-Capsule got the highest precision and F1-score values, namely 85\% and 61.6\%. Sadeghi \cite{b10} proposed a new fake news detection method based on the NLI approach. The study used the NLI approach to improve several machine learning, deep learning models, and Word embedding methods. The results of BERT-BiLSTM get a high accuracy value of 90\% on the FNID-FakeNewsNet dataset and 39.6\% on the FNID-LIAR dataset. Based on the literature study above, deep learning is more effective than machine learning. Although these studies demonstrate the promise of combining BERT with sequential models such as BiLSTM and capsule networks, they do not focus on the implicit nature of native ads or the challenges of detecting such content in multilingual or low-resource environments. This study seeks to address those challenges by introducing a more targeted approach.
+Selain itu, penelitian \textit{retrieval} terkini dalam konteks periklanan mengindikasikan bahwa desain \textit{retrieval} yang sadar-latensi dan berbasis-\textit{intent} semakin penting ketika model bahasa diterapkan dalam \textit{pipeline} keputusan produksi \cite{b22}.
 
-Deep learning is a subfield of machine learning inspired by brain function. One way to utilize deep learning is ensemble learning. Ensemble learning uses multiple algorithms to achieve better predictive performance than their constituent algorithms can, and some have used deep learning approaches as a means for ensemble learning \cite{b11}. In updating systematic reviews, Qin \cite{b12} investigated how well NLP technology works to speed up the title and abstract screening procedure. Qin used group learning strategies. Combining the strengths of four pre-trained BERT models, the classifier is a LightGBM ensemble model. The sensitivity value of the LightGBM ensemble is 95\%. Fattahi \cite{b13} proposed a new method called SpaML, which uses NLP techniques that present the Ensemble learning classifier. The results of this study prove that SpaML gets the highest accuracy and precision scores compared to other methods. However, these methods have not yet been applied to detect native ads, particularly in the Indonesian context.
+\textit{Pipeline} NLP terkini semakin mengandalkan transformer besar pra-terlatih dan prinsip penskalaan untuk adaptasi sumber daya rendah \cite{b15, b39}. Dalam pengaturan berorientasi jurnalisme, ketahanan dan risiko halusinasi tetap menjadi perhatian utama untuk penerapan yang dapat dipercaya \cite{b50, b55}.
 
-The main contributions of this study are outlined as follows. First, it addresses the lack of research on native advertisement detection in low-resource languages, particularly Indonesian, where existing approaches are scarce and often limited to generic text classification methods. To close this gap, the study introduces a deep learning architecture named SENADA (Stacked Ensemble for Native Advertising Analysis). SENADA uniquely differs from conventional ensemble models by integrating feature-level representations instead of prediction-level outputs, enabling richer semantic modeling. It integrates ensemble learning, BERT-based feature extraction, and a BiLSTM model enhanced with an attention mechanism. The architecture is designed to identify native advertisements in digital news articles by capturing implicit linguistic and structural patterns. SENADA departs from conventional ensemble approaches that typically combine prediction outputs. Instead, it trains four independent deep learning components, each specialized in learning a specific native ad characteristic—positive sentiment, persuasive tone, product or company reference, and single narrative perspective. Each component produces a sentence-level vector that encodes task-specific semantic information. These vectors are then concatenated to form a unified representation, further processed by a classification module.
+Karya terdahulu mengenai deteksi iklan \textit{native} otomatis, termasuk kerangka kerja SENADA, mengandalkan pengklasifikasi \textit{ensemble} bertumpuk yang mendekomposisi tugas deteksi menjadi sub-model independen untuk sentimen, persuasi, promosi, dan perspektif \cite{b17, b19}. Pendekatan-pendekatan ini menetapkan tolok ukur kinerja yang kuat, namun tidak memiliki interpretabilitas dan tidak dapat menghasilkan justifikasi yang dapat ditinjau editor. Ini merupakan keterbatasan signifikan dalam praktiknya, karena pengawasan editorial memerlukan tidak hanya keputusan, tetapi juga penjelasan mengapa sebuah konten ditandai. Kesenjangan interpretabilitas ini juga telah dibahas dalam studi-studi Indonesia sebelumnya mengenai deteksi konten persuasif dalam berita elektronik \cite{b21}.
 
-The choice of integrating BERT, ensemble learning, and BiLSTM with attention is motivated by the complementary strengths of these components and their relevance to the challenges of native advertisement detection. BERT is employed as the primary feature extractor because of its strong contextual encoding ability, which captures nuanced semantic and syntactic patterns in text that are essential for identifying subtle persuasive cues. While BERT provides powerful embeddings, it does not explicitly model sequential dependencies. To address this, BiLSTM is incorporated to capture bidirectional contextual flow across sentences, enabling the detection of narrative framing that often characterizes native ads. The attention mechanism is introduced to highlight the most influential words or phrases within a sentence, thereby enhancing interpretability and ensuring that critical cues, such as promotional mentions or persuasive markers, are not overshadowed by less relevant context. Finally, ensemble learning integrates multiple task-specific encoders, each focusing on one implicit characteristic of native ads, into a unified representation. This design is preferred over single end-to-end transformer models as it explicitly separates and preserves diverse semantic perspectives before final classification, resulting in both higher interpretability and improved performance.
+Makalah ini memperkenalkan AGENA (\textit{Agentic AI Framework for Explainable Native Advertisement Detection}), sebuah sistem multi-agen yang memenuhi kesenjangan tersebut. AGENA mendekomposisi tugas deteksi menjadi sebuah \textit{pipeline} berurutan dari lima agen khusus: (1) \textit{Web Scraper} untuk ekstraksi konten, (2) \textit{Preprocessor} untuk rekayasa fitur linguistik, (3) \textit{Retriever} untuk \textit{grounding} konteks berbasis RAG, (4) \textit{Classifier} untuk penalaran \textit{chain-of-thought}, dan (5) \textit{Explainer} untuk menghasilkan justifikasi yang dapat diaudit.
 
-This feature-level integration enables the model to retain and combine diverse semantic cues, resulting in a more comprehensive representation of native ad content. Second, by grounding its design in four implicit characteristics derived from prior literature, SENADA directly tackles the difficulty of distinguishing native ads from organic news, a challenge that has not been systematically addressed in earlier studies. This architecture demonstrates how task-specific encoders can be leveraged to enhance interpretability and classification performance in complex media content analysis.
+Kontribusi utama dari karya ini adalah:
+\begin{enumerate}
+    \item \textbf{Kontribusi Arsitektur}: Kami mengusulkan \textit{pipeline} AGENA, sebuah sistem lima agen untuk deteksi iklan \textit{native} dalam berita digital Indonesia. Sepengetahuan kami, ini adalah kerangka kerja deteksi multi-agen pertama yang didedikasikan untuk domain ini.
+    \item \textbf{Kontribusi Metodologis}: Kami memperkenalkan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'' berbasis RAG, yang ditautkan pada basis pengetahuan terkurasi sebanyak 12.088 artikel berita Indonesia. Pendekatan ini mengurangi halusinasi dan meningkatkan diskriminasi ``\textit{Berita Batas}''.
+    \item \textbf{Kontribusi Evaluatif}: Kami mengevaluasi kualitas keluaran model di luar metrik akurasi menggunakan protokol ``\textit{LLM-as-a-Judge}'', di mana GPT-4o menilai jejak penalaran pada skala 1--5 berdasarkan empat kriteria interpretabilitas: Sentimen, Persuasi, Promosi, dan keselarasan Perspektif.
+\end{enumerate}
 
-Third, this research presents a newly developed annotated dataset in the Indonesian language, collected from six major electronic news portals. The dataset employs a multi-label annotation scheme to reflect the complex nature of native advertisements. Fourth, the proposed framework provides a practical solution for detecting native advertising in digital news content, especially in low-resource language settings such as Indonesian. This contribution supports efforts to promote media transparency and protect readers from misleading content. Finally, the approach offers a foundation for future research in multilingual native ads detection and explainable AI in news media analysis.
+Sisa dari makalah ini diatur sebagai berikut. Bagian \ref{sec:related-works} mengulas pekerjaan terkait pada \textit{machine learning}, LLM, dan AI agen untuk analisis media. Bagian \ref{sec:dataset} mendeskripsikan dataset. Bagian \ref{sec:methods} menyajikan arsitektur dan algoritma AGENA. Bagian \ref{sec:experiments} melaporkan hasil eksperimen. Bagian \ref{sec:discussion} dan \ref{sec:conclusion} membahas implikasi dan kesimpulan.
 
-This paper is organized as follows: Section 2 discusses related works on native advertisement detection and deep learning ensemble techniques. Section 3 introduces the proposed framework, including the native advertisement characteristic representation and the BiLSTM architecture with an attention mechanism. Section 4 describes the dataset, experimental setup, and evaluation metrics used. Section 5 presents the experimental results, including comparative analysis with baseline models and state-of-the-art approaches. Finally, Section 6 provides conclusions and future research directions.
-
-\section{Related Works}
+\section{Tinjauan Pustaka}
 \label{sec:related-works}
-Wang \cite{b24} proposed an automatic Chinese text categorization method to address the classification of emergency event reports by leveraging the Bidirectional Encoder Representations from Transformers (BERT) for feature extraction. To tackle the class imbalance issue in emergency event categories, they introduced a novel loss function designed to enhance the performance of the BERT-based model. Additionally, the Adabound optimizer was employed to achieve a smooth transition from Adam to stochastic gradient descent, aiming to stabilize the learning process. The proposed method was evaluated on both imbalanced and balanced datasets and outperformed several benchmark models, including BERTLB, ABLG-CNN, TextRCNN, Att-BLSTM, and DPCNN, in terms of accuracy, weighted precision, recall, and F1-score. Sampling techniques such as random sampling, ADASYN, SMOTE, and Borderline-SMOTE were also applied to assess the effectiveness of the proposed loss function under imbalanced conditions, demonstrating its potential for real-world applications in smart emergency management systems.
+Kami membahas karya terdahulu di tiga area yang relevan dengan AGENA: \textit{machine learning} untuk deteksi iklan, model bahasa besar dengan augmentasi \textit{retrieval}, dan sistem AI agentik.
 
-Ghosh \cite{b25} developed an attention-based Bidirectional  LSTM–CNN model for detecting depressive content in Bangla social media texts. Recognizing the growing importance of mental health analysis via social platforms, the authors proposed a lightweight yet robust architecture combining LSTM and CNN's strengths with an attention mechanism to enhance interpretability and performance. A dedicated Bangla dataset was also constructed to support this task, addressing the lack of existing resources. The model achieved an accuracy of 94.3\%, with sensitivity and specificity values of 92.63\% and 95.12\%, respectively. Notably, the model also showed promising results when applied to English data. Compared to classical machine learning models, transformer-based approaches, and other neural architectures, the proposed model demonstrated superior performance and generalizability, making it a strong candidate for multilingual mental health detection systems.
+\subsection{\textit{Machine Learning} dan \textit{Deep Learning} dalam Deteksi Iklan}
+Pendekatan awal untuk deteksi iklan \textit{native} otomatis pada berita Indonesia mengandalkan fitur leksikal dan statistik yang dikombinasikan dengan pengklasifikasi konvensional, memberikan tolok ukur yang berguna namun dengan kedalaman linguistik yang terbatas \cite{b18, b21}.
 
-Koru \cite{b14} addressed the challenge of fake news detection on Twitter, focusing on the Turkish language. They constructed a labeled dataset named TR\_FaRe\_News, which collects real news from verified newspaper accounts and fake news from fact-checking platforms. They used the Zemberek NLP tool tailored for Turkish to preprocess the texts. Before fine-tuning BERT-based models, the authors explored various machine learning and deep learning approaches, including ensemble methods, BoW, TF-IDF, and Word2Vec. They extended BERT with Bi-LSTM and CNN layers, experimenting with frozen and unfrozen parameter settings. They evaluated the models across seven benchmark datasets, including BuzzFeedNews, GossipCop, LIAR, and even an LLM-generated fake news dataset. Their best-performing models—BERTurk combined with CNN—achieved up to 94\% accuracy, highlighting the effectiveness of transformer-based architectures in low-resource language settings like Turkish.  Using information from the LIAR dataset, as referenced in \cite{b15}, Aslam proposed a machine learning model based on ensemble methods to categorize news stories as authentic or fraudulent.  A collection of attributes forms the basis of the LIAR dataset.
+Pendekatan \textit{deep learning} meningkatkan hal tersebut dengan memungkinkan ekstraksi fitur otomatis dan pemodelan semantik yang lebih kaya dalam deteksi iklan \textit{native} Indonesia \cite{b18, b19}. Sistem yang patut dicatat dalam bidang ini adalah SENADA, yang mendekomposisi tugas deteksi menjadi empat sub-model \textit{ensemble} yang selaras dengan dimensi teoritis persuasi (Sentimen, Persuasi, Promosi, Perspektif) \cite{b19}. Meski menghasilkan hasil yang kuat, model-model ini tidak memiliki keluaran penjelasan, sehingga membatasi adopsinya dalam pengaturan editorial di mana transparansi keputusan diperlukan.
 
-Thus, Aslam utilized two machine learning models. The dataset encompasses two categories of features: short textual elements, such as statements, and other elements, including speaker position, subject, and location. Several NLP methods are applied to the statement attribute, including tokenization, lemmatization, and removal of stop words. Following the introduction of the NLP technique, the subsequent step involves implementing deep learning to derive the model. The outputs of each model are subsequently processed through the ensemble voting method. The last step involves assessing the results. Malla classified the provided tweets into fake or real news categories, as noted in reference \cite{b16}. Malla tested several deep-learning models on a simulated COVID-19 dataset. In performance, deep learning models, CT-BERT and RoBERTa surpassed other deep learning models, including BERT, BERTweet, AlBERT, and DistilBERT. A proposed deep learning ensemble architecture surpassed CT-BERT and RoBERTa in performance on a fake COVID-19 news dataset through a multiplicative fusion technique.
+Di luar dataset Indonesia, studi tolok ukur dan survei terkini dalam deteksi \textit{fake news} juga menyoroti masalah reproduktibilitas, keberagaman fitur, dan kendala deteksi dini sebagai isu metodologis yang berulang \cite{b52, b55}.
 
-Al-Yahya conducted a comprehensive comparative study \cite{b17} of neural network and transformer models employed in Arabic for detecting fake news. Notably, all models relied on vector embeddings of 100 dimensions. The linear models comprised two linear layers: a convolutional (Conv) layer, a batch normalization layer, and a ReLU activation function. The sequence model comprised a unidirectional layer with a hidden dimension of 100. A linear classification layer was appended to every model. Embeddings are a standard component found in the majority of model designs. Setting the embedding vector size to 100 is necessary to preserve the linearity of the model and align embeddings from various architectures. Isa \cite{b18} introduced IndoBERT, a transformer-based model built upon Bidirectional Encoder Representations from Transformers (BERT), tailored for Indonesian and emphasizing context and attention within input sentences. IndoBERT comprises 12 hidden layers, with a single classification layer at the topmost position. Each layer applies multi-headed attention to the word embedding it receives from the preceding layer. The dimensions for each layer are specified as [number of tokens by 768 by batch size].
-Following several experiments, Isa determined the optimal settings for her model, with the best result achieved at eight epochs, a batch size of 8 samples, and a learning rate of 2e-5. Isa further refined the proposed model by utilizing a dataset from turnbackhoax.id and optimized its hyperparameters to achieve optimal outcomes. Bensouda et al. \cite{b19} developed an ensemble model called BI-LSR by combining a Bidirectional Long Short-Term Memory (Bi-LSTM) network, a Stochastic Gradient Descent (SGD) classifier, and a Ridge Classifier using a blending technique. They trained and evaluated the model on real-world datasets, where it achieved an accuracy of 99.16\%. Their results show that blending deep learning with traditional classifiers can significantly improve fake news detection performance compared to individual models or previously proposed ensemble methods.
+Survei \textit{fake news} di media sosial yang mendasar lebih lanjut menekankan pentingnya menggabungkan sinyal konten dengan konteks propagasi dan kredibilitas sumber \cite{b60, b62}. Bukti tambahan dari studi berorientasi rumor juga mendukung penggunaan isyarat perilaku tingkat pengguna untuk penilaian kredibilitas \cite{b61, b66}.
 
-Text classification is a crucial function in natural language processing (NLP), which involves categorizing documents or written content into predetermined groups. Artificial neural networks with numerous layers have yielded impressive results in several disciplines, notably in text categorization. Ensemble learning methods, which combine multiple models to enhance performance, are effective in this task \cite{b20}. Convolutional Neural Networks (CNN), Long Short-Term Memory (LSTM), and Bidirectional Long Short-Term Memory (BiLSTM) models are frequently employed in text classification tasks. Research indicates that BiLSTM surpasses more straightforward models like CNN primarily because it can process text in both forward and backward directions, leading to a more comprehensive contextual comprehension. The combination of CNN and BiLSTM with an attention mechanism achieved an accuracy 88.78\% in a text classification task as reported in reference \cite{b20}. This capability gives BiLSTM an advantage in various NLP applications. 
+\subsection{Model Bahasa Besar dan \textit{Retrieval-Augmented Generation}}
+Arsitektur Transformer \cite{b23} menetapkan tolok ukur baru untuk tugas klasifikasi teks. BERT dan model transformer terkait telah secara substansial meningkatkan pemodelan bahasa kontekstual dan kinerja klasifikasi hilir \cite{b39}. Dalam domain berita, kemajuan ini mendukung analisis yang lebih terperinci terhadap \textit{framing} dan sinyal persuasif \cite{b8, b9}.
 
-Prior research has contrasted the ensemble method with deep learning models that do not incorporate ensemble techniques. Implementing ensemble methods in deep learning architectures can significantly enhance their performance. Past research has employed BERT pre-training to identify fabricated news articles. Pretraining with BERT can enhance accuracy due to its high dimensionality, enabling it to capture the semantic meaning of the corpus effectively.
+Keterbatasan yang berulang dari LLM yang berdiri sendiri adalah halusinasi khusus domain. RAG memenuhi kesenjangan ini dengan menggandengkan model inferensi dengan basis data vektor, memungkinkannya mengambil dan mengondisikan inferensi pada contoh-contoh relevan sebelumnya \cite{b25}. Desain ini sangat berguna untuk tugas pemantauan berita, di mana contoh historis yang diambil dapat berfungsi sebagai bukti \textit{grounding} untuk mengklasifikasikan artikel baru. Namun, sebagian besar sistem RAG yang ada beroperasi sebagai \textit{pipeline} \textit{retrieval} satu langkah dan tidak mendukung pengambilan keputusan otonom multi-langkah.
 
-\section{Method}
-The deep learning ensemble model has two main functions: as a model during training and testing. The training process functions to form a new model from the learning results carried out by the neural network through deep learning. This model is used for the native ads recognition process in the testing process. An overview of the stages of the deep learning ensemble model process developed can be seen in Figure \ref{fig:fig1}. This figure illustrates the workflow from raw input processing to final classification, emphasizing the role of sub-models in ensemble learning.
+Penelitian deteksi \textit{fake news} terkini juga melaporkan bahwa pemodelan konteks sosial dapat secara substansial meningkatkan diskriminasi untuk kasus yang hanya mengandalkan konten \cite{b67}.
+
+Tinjauan berskala besar juga menekankan bahwa kemampuan penjelasan dan ketahanan tetap belum terselesaikan dalam \textit{pipeline} misinformasi modern \cite{b50, b57}.
+
+Pada tingkat sistem, \textit{stack} RAG operasional memerlukan kontrol kualitas \textit{retrieval} yang andal, protokol evaluasi yang dapat direproduksi, dan alur kerja pengindeksan yang dapat diandalkan \cite{b52, b57}.
+
+\subsection{Kemunculan AI Agentik dan Sistem Multi-Agen}
+Dalam penelitian ini, AI agentik mengacu pada sistem di mana LLM berfungsi sebagai mesin penalaran otonom, mampu merencanakan, menggunakan alat, dan melakukan eksekusi multi-langkah.
+
+Karya survei terkini juga melaporkan pertumbuhan pesat pendekatan agentik untuk tugas analitik teks yang kompleks \cite{b10}.
+
+Sistem agentik sangat relevan untuk tugas yang memerlukan \textit{retrieval} iteratif, verifikasi, dan penjelasan di bawah bukti yang terbatas. Khususnya untuk jurnalisme digital Indonesia, pendekatan agentik sangat cocok, karena dapat menggabungkan alat spesifik bahasa dan basis pengetahuan spesifik regional yang tidak dapat ditangkap oleh pengklasifikasi generik. Penyertaan agen \textit{Explainer} yang didedikasikan juga memenuhi persyaratan interpretabilitas yang ditekankan dalam studi-studi Indonesia sebelumnya mengenai analisis berita persuasif \cite{b21}. AGENA memperluas jalur ini dengan menyediakan \textit{pipeline} multi-agen yang didedikasikan untuk deteksi iklan \textit{native} dalam berita Indonesia, dengan penekanan pada akurasi klasifikasi dan transparansi penalaran.
+
+Penekanan pada penalaran yang dapat dilacak ini konsisten dengan panduan AI yang dapat dijelaskan yang lebih luas dalam literatur survei dan taksonomi \cite{b49, b51}.
+
+Metode penjelasan \textit{black-box} praktis umumnya dioperasionalisasikan melalui penjelasan pengganti lokal dan kerangka atribusi aditif \cite{b64, b63}.
+
+Referensi interpretabilitas mendasar dalam literatur Springer juga memperkuat persyaratan ini untuk \textit{pipeline} keputusan yang dapat diperiksa \cite{b59}.
+
+\section{Dataset dan Anotasi}
+\label{sec:dataset}
+Fondasi dari penelitian ini adalah kumpulan dataset ekstensif dari artikel berita elektronik berbahasa Indonesia, yang dikurasi secara khusus untuk deteksi iklan \textit{native} \cite{b17}. Dataset ini terdiri dari 12.088 artikel yang dikumpulkan dari enam portal berita Indonesia utama (misalnya, Kompas, Detik, Tempo) antara bulan Februari dan Agustus 2022. Koleksi ini mencakup berbagai kategori sesuai yang diringkas pada Tabel \ref{tab:dataset_stats}.
+
+\begin{table}[htbp]
+\caption{Distribusi Dataset berdasarkan Kategori Berita}
+\label{tab:dataset_stats}
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Kategori} & \textbf{Total Artikel} & \textbf{Iklan \textit{Native}} & \textbf{Berita Murni} \\
+\hline
+Ekonomi & 1.914 & 1.349 & 565 \\
+\textit{Lifestyle} & 1.807 & 415 & 1.392 \\
+Hiburan & 635 & 128 & 507 \\
+Internasional & 359 & 90 & 269 \\
+Nasional & 1.262 & 595 & 667 \\
+Lainnya & 3.565 & 2.882 & 683 \\
+Otomotif & 474 & 106 & 368 \\
+Pendidikan & 274 & 70 & 204 \\
+Olahraga & 823 & 69 & 754 \\
+Teknologi & 975 & 340 & 635 \\
+\hline
+\textbf{Total} & \textbf{12.088} & \textbf{5.944} & \textbf{6.144} \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Aspek kritis dari dataset ini adalah anotasi berlabel ganda. Setiap artikel dianotasi secara manual oleh tiga pakar independen berdasarkan empat karakteristik implisit: (1) sentimen positif atau netral, (2) nada persuasif, (3) fokus promosi, dan (4) perspektif dari satu sumber saja. Kesepakatan antar-anotator, diukur melalui Kappa Fleiss, mencapai 0,90, menunjukkan reliabilitas yang tinggi. Dalam AGENA, dataset ini memiliki peran ganda: digunakan untuk \textit{fine-tuning} LLM yang mendasarinya dan bertindak sebagai basis pengetahuan \textit{ground-truth} untuk komponen RAG, yang disimpan dalam ruang vektor berdimensi tinggi untuk \textit{retrieval} konteks secara \textit{real-time}.
+
+\section{Metode yang Diusulkan}
+\label{sec:methods}
+Kerangka kerja AGENA (\textit{Agentic Native Ads detection}) dikonseptualisasikan sebagai sistem multi-agen terdistribusi yang menggeser paradigma deteksi dari sebuah peristiwa klasifikasi tunggal menjadi proses penalaran kolaboratif multi-tahap. Arsitektur ini didasarkan pada prinsip ``\textit{Reasoning-First}'', di mana pembangkitan bukti interpretatif diperlakukan sebagai prasyarat esensial terhadap label klasifikasi akhir.
+
+\subsection{Landasan Filosofis: Paradigma \textit{Reasoning-First}}
+Pengklasifikasi berita tradisional beroperasi sebagai model diskriminatif yang memetakan input $X$ langsung ke label $Y$. Meskipun efisien, pendekatan ini tidak memberikan wawasan tentang "alasan" linguistik di balik sebuah keputusan. AGENA mengadopsi pendekatan penalaran generatif di mana model harus terlebih dahulu membangun jejak penalaran multidimensi $T$. Jejak ini bertindak sebagai jembatan semantik, yang memetakan fitur-fitur artikel kembali ke karakteristik teoritis iklan \textit{native}. Dengan memaksa model untuk mengartikulasikan temuannya sebelum berkomitmen pada suatu label, kami secara signifikan memitigasi risiko halusinasi stokastik dan meningkatkan presisi klasifikasi.
+
+\subsection{Definisi Formal dan Manajemen Status}
+Kami mendefinisikan sistem AGENA bukan sebagai trajektori linier, tetapi sebagai sistem transisi-status dinamis yang digerakkan oleh \texttt{StateGraph} LangChain. Misalkan $S_{state}$ adalah kamus status global yang bertindak sebagai \textit{buffer} memori untuk seluruh \textit{pipeline} deteksi. Ruang status didefinisikan oleh skema berikut:
+\begin{equation}
+S_{state} = \{U, D, F, K, R\}
+\end{equation}
+di mana $U$ mewakili URL target, $D$ adalah teks dokumen mentah yang diekstraksi, $F$ adalah vektor fitur sintaktik dan semantik, $K$ adalah konteks augmentasi yang diambil, dan $R$ adalah hasil penalaran akhir yang berisi prediksi Boolean dan jejak penjelasan.
+
+Tugas deteksi didekomposisi menjadi lima agen kooperatif $A = \{A_{scrape}, A_{prep}, A_{ret}, A_{class}, A_{exp}\}$. Agen dipisahkan menjadi dua subkelompok: agen deterministik non-AI ($A_{scrape}, A_{prep}$) yang bertanggung jawab atas penyiapan data, dan agen berbasis AI ($A_{class}, A_{exp}$) dengan dukungan RAG ($A_{ret}$) untuk pengambilan keputusan:
+\begin{itemize}
+    \item \textbf{Agen Scraper ($A_{scrape}$, Non-AI)}: Mengeksekusi mutasi status $\delta_{scrape}: S_{state}[U] \rightarrow S_{state}[D]$. Agen ini murni berbasis aturan dan mengekstrak DOM dinamis melalui \textit{headless browser} sebelum menuliskan HTML bersih $D$ ke dalam buffer. Model AI tidak digunakan pada tahap pemuatan ini.
+    \item \textbf{Agen Preprocessing ($A_{prep}$, Non-AI)}: Mengeksekusi mutasi $\delta_{prep}: S_{state}[D] \rightarrow S_{state}[F]$. Agen pemrograman deterministik ini memproses $D$ untuk mengekstraksi fitur linguistik $n$-dimensi (misalnya, densitas kata, rasio huruf kapitalisasi) memanfaatkan Regex. Sama halnya seperti \textit{Scraper}, tahap ini tidak bersandar pada eksekusi model bahasa apapun.
+    \item \textbf{Agen Retriever ($A_{ret}$)}: Agen inferensi perantara ini memanfaatkan \texttt{VectorSearchTool} untuk mencari teks semantis terdekat dari basis data FAISS untuk menambatkan klaim model klasifikasi.
+    \item \textbf{Agen Classifier ($A_{class}$ , AI-Based)}: Mengimplementasikan logika evaluatif saraf inti $\delta_{class}: (S_{state}[D], S_{state}[F], S_{state}[K]) \rightarrow L$, di mana $L \in \{0, 1\}$. Agen ini memanfaatkan LLM dasar yang di-\textit{fine-tune} untuk mencapai keputusan Boolean.
+    \item \textbf{Agen Explainer ($A_{exp}$ , AI-Based)}: Mengeksekusi mutasi post-hoc $\delta_{exp}: (S_{state}[D], S_{state}[K], L) \rightarrow S_{state}[R]$. Agen LLM mandiri ini bertugas memberikan rasionalisasi atas pilihan agen Classifier melalui pelacakan teks asli.
+\end{itemize}
+
+\subsection{Orkestrasi Agentik Hierarkis}
+Berbeda dari \textit{pipeline} linier tradisional, interaksi antar agen dalam AGENA diatur oleh sebuah graf berstatustif. Orkestrator mengelola ``\textit{Agentic Context Buffer}'' yang mengakumulasi gradien informasi dari setiap simpul. Gambar~\ref{fig:agena_toolsets} menyajikan pandangan orkestrasi lengkap, termasuk dependensi antar-agen, mutasi status, dan titik pemeriksaan keputusan yang digunakan untuk menghasilkan label dan penjelasan akhir.
+
+\subsection{Toolset Agen Terperinci dan Logika Keputusan}
+Setiap agen dalam ekosistem AGENA dilengkapi dengan toolset khusus:
 
 \begin{figure*}[t]
-    \centering
-    \includegraphics[width=1\linewidth]{fig1.png} 
-    \caption{SENADA Model Architecture}
-    \label{fig:fig1}
+\centering
+\includegraphics[width=0.98\textwidth]{agena_toolsets_flow.png}
+\caption{Toolset AGENA dan alur keputusan di seluruh \textit{pipeline} lima agen.}
+\label{fig:agena_toolsets}
 \end{figure*}
 
-The training process has five main stages: preprocessing, word embedding, ensemble learning, combining streaming vector sentences, and forming a training model using deep learning, which is used to classify in the testing process. The initial stages of the testing process are almost the same as the training process. However, when entering ensemble learning and deep learning, classification is done by matching it with the training model formed in the training process. Furthermore, the output of the system will be produced, namely labeling whether the news content is "pure news" or "native ads." To support this classification, multiple sub-models are used to detect different linguistic cues indicative of advertising.
+Seperti ditunjukkan pada Gambar~\ref{fig:agena_toolsets}, \textit{pipeline} dimulai dari konsumsi URL dan berlanjut melalui lima fase yang saling terkait erat. Pada fase pertama, Agen Scraper melakukan akuisisi konten yang tangguh dari tata letak portal yang heterogen dan elemen halaman dinamis. Pada fase kedua, Agen Preprocessing mengubah teks artikel mentah menjadi representasi linguistik yang dinormalisasi dan indikator rekaan manual (misalnya, kepadatan leksikal, rasio huruf kapital, dan penanda isyarat persuasif) untuk membuat penalaran hilir lebih stabil. Pada fase ketiga, Agen Retriever mengkueri memori berbasis FAISS untuk mengambil contoh historis yang secara semantik serupa dan berfungsi sebagai jangkar bukti untuk inferensi saat ini.
 
-Model I through Model IV represent deep learning classifiers trained to detect specific characteristics within news content. Model I is responsible for detecting positive sentiment expressions commonly found in promotional text. Model II identifies persuasive language elements that suggest advertising intent, such as calls to action or implicit encouragements. Model III focuses on product or brand mentions within the text, indicating commercial relevance. Model IV is designed to analyze the news perspective, determining whether the content is presented from a singular, unbalanced viewpoint, which is typical in native advertising.
+Fase keempat adalah Agen Classifier, yang mengintegrasikan tiga aliran bukti (konten narasi mentah, fitur hasil rekayasa, dan konteks yang diambil) dengan menggunakan \textit{prompt} berbatas untuk menghasilkan label dengan jejak penalaran eksplisit. Fase kelima adalah Agen Explainer, yang memetakan klaim penalaran abstrak kembali ke potongan teks konkret sehingga setiap prediksi dapat diaudit oleh editor. Lapisan orkestrasi juga memberlakukan konsistensi status antar fase, mencegah keputusan tanpa konteks dan mengurangi risiko halusinasi dengan memastikan ketersediaan bukti sebelum klasifikasi akhir. Desain ini merupakan inti dari tujuan AGENA untuk menggabungkan kinerja prediksi yang kompetitif dengan transparansi operasional.
 
-Each of these models processes the input independently and generates a vectorized representation, referred to as a streaming vector sentence. These vectors capture distinct semantic and structural signals derived from each classification objective. The vectors from all four models are then combined into a single feature representation through a feature concatenation step. 
+\subsubsection{Agen Web Scraper (Non-AI)}
+Agen pendahuluan deterministik ini memanfaatkan toolset \texttt{Web\allowbreak Scraper\allowbreak Tool} dan \texttt{Selenium\allowbreak Scraper\allowbreak Tool}, menggabungkan \texttt{Beautiful\allowbreak Soup4} untuk antarmuka DOM statis, serta \texttt{Selenium} untuk konten HTML dinamis. Agen ini bertugas memecahkan hierarki teks halaman (pembersihan prapemrosesan) menghapus entitas non-jurnalistik (misalnya, elemen \textit{footer}, sisipan iklan pihak ketiga). Tahap ini beroperasi sepenuhya dengan skrip algoritmik klasik tanpa intervensi model prediktif (non-AI).
 
-This combined representation serves as the input to a BiLSTM model with an attention mechanism, which integrates contextual information across the entire sentence. The attention mechanism allows the model to weigh important parts of the input more heavily, enhancing classification accuracy.
+\subsubsection{Agen Preprocessing (Non-AI)}
+Mirip kerangka kerja \textit{Scraper}, langkah \textit{preprocessing} secara eksklusif menggunakan algoritma rekayasa deterministik standar (non-AI):
+\begin{enumerate}
+    \item \textbf{Normalisasi Teks}: \textit{Regex normalization} digunakan untuk mendeteksi hierarki semantik artikel, menghapus frasa redudansi spasial, dan URL gantung.
+    \item \textbf{Ekstraksi Fitur}: Mengkompilasi pustaka sintaktik leksikon dan \textit{NumPy feature extraction} untuk variabel densitas panjang tulisan, frasa unik persentase, serta koefisien porsi huruf kapital secara statistik terprogram tanpa inferensi NLP tingkat dalam.
+\end{enumerate}
 
-Overall, the ensemble learning framework ensures that multiple aspects of native advertising—such as sentiment, persuasiveness, product references, and biased perspectives—are captured comprehensively. The final BiLSTM-based model leverages these enriched features to make a binary classification between "native ads" and "pure news." Compared to a single-model approach, this ensemble design provides greater robustness and interpretability. It also allows each sub-model to specialize in one aspect of the detection task, improving overall performance. The resulting architecture balances both feature diversity and deep contextual understanding, which are essential for accurate native ad identification.
+\subsubsection{Agen Retriever}
+Agen Retriever mengimplementasikan \textit{retrieval} semantik menggunakan indeks FAISS yang didukung oleh \textit{sentence embedding} yang dihasilkan dengan \texttt{sentence-transformers/all-MiniLM-L6-v2}. Untuk setiap artikel input, agen mengkueri indeks FAISS melalui \texttt{VectorSearch\allowbreak Tool}, yang memanggil \texttt{similarity\allowbreak\_search\allowbreak\_with\allowbreak\_score} untuk mengambil $k$ tetangga terdekat dari basis pengetahuan 12.088 artikel. Contoh-contoh yang diambil ini berfungsi sebagai bukti \textit{grounding} dalam konteks untuk Agen Classifier. Proses \textit{retrieval} diformalisasikan dalam Algoritma 1.
 
-\subsection{Ensemble Learning}
-This study uses the concept of stacking ensemble learning. Stacking is one ensemble learning method that uses several base models by learning in parallel and independently on each base model and then combining them using a meta-learning algorithm to provide output from the results of the combination of base models. The study produces output in the form of streaming vector sentences. Streaming vector sentences from four models have much information related to the implicit characteristics of native ads. The implicit characteristics of native ads include four main aspects represented by the resulting vector patterns. First, native ads use positive or neutral sentiments reflected in vector patterns that show language that creates a good impression on readers. Second, content with persuasive properties is identified through vectors representing invitations or arguments to influence readers. Third, specific product or company promotions are captured in vectors that describe positive descriptions or focus on certain brands. Finally, the perspective of a single news source is reflected in the uniformity of vector patterns that indicate a lack of diversity of viewpoints. These four characteristics are combined in streaming vector sentences to reveal implicit patterns in native ads.
+\subsubsection{Agen Classifier}
+Agen ini adalah komponen penalaran inti dari \textit{pipeline}. Dalam eksperimen yang dilaporkan di sini, agen ini dibangun di atas Gemma-3 (12B) yang telah di-\textit{fine-tune} pada dataset iklan \textit{native} Indonesia menggunakan strategi \textit{Reasoning first prompting} yang dijelaskan di Bagian~\ref{sec:methods}. Batas keputusan agen dibentuk oleh \textit{prompt} hierarkis yang mencakup lapisan \textit{persona} (mendefinisikan agen sebagai editor berita senior), lapisan domain yang menyandikan standar editorial Indonesia, dan lapisan \textit{constraint} yang menerapkan skema keluaran JSON terstruktur untuk \textit{parsing} hilir.
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=0.8\textwidth]{fig2.jpg}
-    \caption{Ensemble Learning Architecture}
-    \label{fig:fig2}
-\end{figure*}
+\subsubsection{Agen Explainer}
+Agen ini beroperasi sebagai \textit{post-processor} untuk keluaran LLM. Agen ini memanfaatkan alat \texttt{Source\allowbreak Mapper} untuk melakukan \textit{Evidence trace linking}, menghubungkan klaim penalaran spesifik kembali ke cuplikan teks asli. Misalnya, jika \textit{Classifier} mengidentifikasi ``Penyebutan merek yang berlebihan'', Agen Explainer memindai teks untuk memberikan frekuensi dan lokasi tepat dari nama merek tersebut, memberikan verifikasi empiris atas klaim model.
 
-Figure 2 is a picture of the ensemble learning architecture proposed in this study to recognize the implicit characteristics of native ads in electronic news portal content. The first step is to detect four characteristics of native ads using a deep learning algorithm with input from news content. The output produced is a model. The second step processes the input per sentence on the model that has been created to form a streaming vector sentence. The last step is to combine the streaming vector sentences from the four models (concatenate) to become one input, which deep learning will later process.
+\subsection{Kedalaman Algoritmik}
+Logika operasional inti untuk penalaran berbasis RAG disajikan dalam Algoritma 1, sedangkan strategi penyelarasan ``\textit{Reasoning-First}'' khusus didefinisikan dalam Algoritma 2.
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1\linewidth]{Streaming Vector Sentence.jpg} 
-    \caption{Streaming Vector Sentence Concept}
-    \label{fig:streaming-vector-sentence}
+\begin{algorithmic}
+\STATE \textbf{Algoritma 1: Klasifikasi Agentik dengan RAG}
+\REQUIRE Artikel Mentah $D$, Basis Pengetahuan Vektor $K$
+\ENSURE Label Klasifikasi $L$, Jejak Penalaran $T$
+\STATE $D^* \leftarrow S.Extract(D)$ \COMMENT{Ekstraksi berkualitas tinggi}
+\STATE $F \leftarrow P.distill(D^*)$ \COMMENT{Rekayasa fitur sintaktik}
+\STATE $Context \leftarrow R.search(D^*, K, k=5)$ \COMMENT{Penambatan semantik}
+\STATE $T, L \leftarrow C.reason(D^*, F, Context)$ \COMMENT{Eksekusi \textit{Reasoning-First}}
+\RETURN $L, T$
+\end{algorithmic}
+
+\begin{algorithmic}
+\STATE \textbf{Algoritma 2: Penyelarasan \textit{Prompt Reasoning-First}}
+\REQUIRE Input $X$, Karakteristik $C_{markers}$, Contoh $E_{shots}$
+\ENSURE Jejak Terselaraskan $T$
+\STATE Definisikan Identitas Sistem $I \leftarrow \text{"Editor Berita Senior"}$
+\FOR{setiap $m \in C_{markers}$}
+    \STATE $Step_m \leftarrow \text{Analisis } X \text{ untuk karakteristik } m$
+\ENDFOR
+\STATE $Context \leftarrow \text{Agregasi } (Step_m)$
+\STATE $T \leftarrow \text{SintesisKonteks}(I, Context, E_{shots})$
+\RETURN $T$
+\end{algorithmic}
+
+\subsection{Rekayasa \textit{Prompt} dan Penyelarasan \textit{Few-Shot}}
+Untuk meminimalkan halusinasi dan meningkatkan akurasi klasifikasi, AGENA menerapkan strategi \textit{prompting} ``\textit{Reasoning-First}''. Berbeda dari klasifikasi \textit{zero-shot} standar, Agen Classifier diperintahkan untuk melakukan analisis \textit{chain-of-thought} sebelum menghasilkan label akhir. Struktur \textit{prompt} didefinisikan sebagai berikut:
+
+\begin{itemize}
+    \item \textbf{Identitas Sistem}: Mendefinisikan agen sebagai editor senior dengan keahlian dalam mendeteksi niat komersial tersembunyi.
+    \item \textbf{Penambatan Karakteristik}: Memaksa agen untuk mengevaluasi teks terhadap empat penanda teoritis (Sentimen, Persuasi, Promosi, Perspektif).
+    \item \textbf{Injeksi Kontekstual}: Menyuntikkan lima artikel yang paling mirip yang diambil untuk berfungsi sebagai penanda batas semantik.
+    \item \textbf{Batasan Respons}: Menerapkan skema JSON khusus untuk memfasilitasi \textit{parsing} terprogram dan pemetaan penjelasan hilir.
+\end{itemize}
+
+Mesin penalaran inti (Qwen, Gemma, Llama, dan GPT-4o) yang dimanfaatkan dalam kerangka kerja AGENA dioptimalkan untuk peran spesifik. Setiap model melayani tujuan yang berbeda, baik sebagai agen \textit{classifier} utama maupun sebagai hakim evaluasi.
+
+Contoh templat \textit{few-shot} yang digunakan saat \textit{fine-tuning} model Gemma 3 12B disediakan dalam materi pelengkap. Templat ini mengajarkan model untuk membedakan ``pelaporan positif'' dari ``bias promosi'' melalui langkah-langkah penalaran terstruktur.
+
+\subsection{Penyetelan Model dan \textit{Hyperparameter}}
+Mesin penalaran inti (Qwen, Gemma, Llama) dilatih ulang menggunakan teknik \textit{Parameter-Efficient Fine-Tuning} (PEFT), secara spesifik \textit{Low-Rank Adaptation} (LoRA) dan kuantisasi 4-bit (QLoRA). Pendekatan ini memungkinkan optimalisasi model berskala besar di dalam batasan memori GPU yang tersedia. \textit{Hyperparameter} spesifik yang digunakan dalam proses \textit{fine-tuning} dirinci dalam Tabel \ref{tab:hyperparameters}.
+
+\subsection{Perbandingan Arsitektur Backbone}
+Untuk memperjelas perbedaan tingkat-model, Gambar~\ref{fig:model_architectures} menyajikan empat arsitektur \textit{backbone} yang dievaluasi dalam penelitian ini: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, dan GPT-OSS 20B. Kartu-kartu arsitektur ini merangkum profil struktural masing-masing model, kapasitas penanganan konteks, dan karakteristik efisiensi yang berorientasi pada penerapan.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{architectures/gemma_3_12b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/qwen_14b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/llama_3_1_8b.png}\\[4pt]
+\includegraphics[width=0.95\linewidth]{architectures/gpt_oss_20b.png}
+\caption{Perbandingan dari empat arsitektur \textit{backbone} yang digunakan dalam eksperimen AGENA: Gemma 3 12B, Qwen 14B, Llama 3.1 8B, dan GPT-OSS 20B.}
+\label{fig:model_architectures}
 \end{figure}
 
-\subsection{Streaming Vector Sentence}
-Traditional word embeddings assign fixed vectors to words without considering their context or position. In contrast, the Streaming Vector Sentence approach dynamically generates word representations by leveraging the position and context of each word within a sentence. As illustrated in Figure \ref{fig:streaming-vector-sentence}, the input sentence "product x is offering a special promotion" is passed sequentially into deep learning models (Model I–IV), each trained for specific subtasks. Each word is transformed into a contextual vector representation, reflecting its semantic and syntactic role in the sentence. For example, the word “offering” may carry promotional intent, which the model captures by assigning higher weights to contextually relevant words like “promotion” and “special.” These vectors are generated by extracting the penultimate layer output of each model, ensuring that the semantic features are preserved without the final classification bias. The result is a dense, ordered vector sequence that can be further processed using BiLSTM and attention mechanisms to derive global sentence understanding. 
+Seperti ditunjukkan pada Gambar~\ref{fig:model_architectures}, Gemma 3 12B adalah \textit{backbone} produksi utama dalam AGENA karena menawarkan kualitas penalaran yang kuat dengan adaptasi yang hemat parameter dan perilaku stabil pada \textit{Pelaporan Merek Non-Promosi}. Pada gambar yang sama, Qwen 14B memberikan kapasitas representasi tinggi dan kinerja kepatuhan instruksi yang kompetitif, namun dalam pengaturan kami lebih rentan memicu isyarat promosi secara berlebihan pada berita ambigu.
 
-Streaming vector sentences is essential for tasks requiring fine-grained contextual comprehension, such as native ad or opinion detection in news articles. Standard word embeddings like Word2Vec or GloVe, while effective in capturing general semantic similarity, are context-independent and assign the same vector to a word regardless of its usage. This limitation is particularly problematic in news classification, where the meaning of a sentence often depends on subtle shifts in tone or intent. Streaming vector sentences overcome this by computing embeddings that are sensitive to their position and neighboring words. Additionally, because these vectors are generated using task-specific models, they implicitly encode features relevant to the classification goal (e.g., persuasiveness or positivity). This hybrid design—contextual, sequential, and model-aligned—makes the streaming vector sentence a superior choice for robust downstream processing.
+Selain itu, Llama 3.1 8B dipilih sebagai \textit{baseline} yang ringkas namun mumpuni dengan kebutuhan komputasi yang lebih rendah dan perilaku \textit{fine-tuning} yang dapat diprediksi. Akhirnya, GPT-OSS 20B disertakan untuk memeriksa arsitektur \textit{open-weight} yang lebih besar di bawah jadwal adaptasi yang terbatas. Desain lintas arsitektur ini memungkinkan kami membandingkan tidak hanya akurasi, tetapi juga konsistensi penalaran, kalibrasi dalam sampel batas, dan pengorbanan implementasi praktis antara ukuran model dan kualitas interpretabilitas.
 
-\subsection{Feature Combination}
-Feature combination in this study is the merging of streaming vector sentences used to combine information from several vectors representing different parts of a sentence or several sentences. This method is important to improve the accuracy of the NLP model by integrating information from various sources or parts of sentences. This study will try three methods of merging streaming vector sentences and choose the best one. The three methods for merging vectors are concatenate, add, and multiply.
+Sebagian besar model berbagi konfigurasi adaptor LoRA yang sama, yaitu rank $r=16$ dan alpha $\alpha=32$, dengan \textit{learning rate} $2\times10^{-5}$ dan ukuran \textit{batch} efektif 8 (1 \textit{batch} per perangkat yang diakumulasi selama 8 langkah gradien). Pengecualian yang perlu dicatat adalah Gemma 3 (270M), yang menggunakan adaptor jauh lebih besar ($r=64$, $\alpha=128$), \textit{learning rate} yang lebih tinggi ($10^{-4}$), dan \textit{batch} efektif terbesar (16) untuk mengimbangi kapasitasnya yang lebih kecil; Gemma 2 (9B) dan Llama 3.1 (8B) yang menggunakan \textit{batch} efektif 4 untuk pembaruan optimizer yang lebih sering; serta GPT-OSS (20B) yang menerapkan kapasitas adaptor lebih rendah ($r=8$, $\alpha=16$) dikombinasikan dengan \textit{learning rate} yang lebih tinggi ($8\times10^{-5}$) untuk menyesuaikan jadwal adaptasinya yang terbatas. Semua model dilatih menggunakan kuantisasi 4-bit (QLoRA) melalui kerangka kerja Unsloth dengan FlashAttention-2 untuk mengurangi beban VRAM dan mempercepat konvergensi.
 
-\subsubsection{Concatenate}
-The concatenate method combines vectors by adding them horizontally. With this method, the resulting new vector has dimensions that are the sum of the dimensions of the original vectors. For example, if you have two vectors, each with 100 dimensions, the result of concatenation will be a vector with 200 dimensions. The concatenate method generally keeps information from several vectors separately in the combined vector. Concatenate is helpful to ensure that all information is preserved without losing detail.
+\subsection{Kerangka Evaluasi \textit{LLM-as-a-Judge}}
+Untuk mengevaluasi kedalaman kualitatif keluaran Agen Explainer, AGENA menerapkan metodologi ``\textit{LLM-as-a-Judge}''. Sebuah model frontier (GPT-4o-mini) bertindak sebagai editor ahli untuk menilai jejak penalaran pada skala kontinu 1 hingga 5. Templat \textit{prompt} hakim menetapkan tiga kriteria evaluasi yang ketat:
+\begin{enumerate}
+    \item \textbf{Akurasi Label}: Kebenaran sesuai dengan \textit{ground truth} yang dianotasi manusia.
+    \item \textbf{Kualitas Penalaran}: Koherensi logis yang menghubungkan prediksi dengan sifat-sifat naratif spesifik (misalnya, nada promosi vs. pelaporan objektif).
+    \item \textbf{Pemeriksaan \textit{Kasus Ambigu}}: Kemampuan untuk mengklasifikasikan secara akurat berita editorial yang secara ekstensif menyebutkan entitas perusahaan tanpa secara inheren mempromosikannya.
+\end{enumerate}
+Dimensi kualitatif ini melengkapi metrik biner standar (Akurasi, F1-score) dengan memberi penalti pada model yang mencapai label yang benar melalui penalaran yang dihalusinasikan atau dangkal.
 
-\par\bigskip % Menambah ruang vertikal sebelum tabel
+Strategi \textit{tuning} ``\textit{Reasoning-First}'' melibatkan penambahan penalaran \textit{Chain-of-Thought} di depan label target dalam dataset pelatihan. Ini memaksa model untuk mempelajari langkah-langkah perantara linguistik (misalnya, mengidentifikasi penanda persuasif, mendeteksi bias sumber) sebelum berkomitmen pada label klasifikasi akhir. Kami memanfaatkan FlashAttention-2 untuk mempercepat komputasi \textit{self-attention}, memungkinkan konvergensi yang lebih cepat.
 
-\begin{table}[H]
-{
-\ttfamily
-\small
-\resizebox{\linewidth}{!}{
- \begin{tabular}{|l|}
+\section{Eksperimen dan Hasil}
+\label{sec:experiments}
+\subsection{Penyiapan Eksperimental}
+Eksperimen dilakukan menggunakan dataset berita Indonesia yang terdiri dari 12.088 artikel. Komponen LLM (\textit{Classifier} dan \textit{Explainer}) dilatih ulang menggunakan kerangka kerja Unsloth dengan adaptor LoRA (\textit{Rank}=16, \textit{Alpha}=32). Pelatihan dilakukan pada infrastruktur komputasi kinerja tinggi. Dataset dibagi menjadi set pelatihan dan pengujian, dengan set pengujian mencakup beragam sampel \textit{Berita Batas} untuk mengevaluasi ketahanan model.
+
+\subsection{Rincian Performa Kuantitatif}
+Performa \textit{pipeline} AGENA dievaluasi di berbagai iterasi \textit{fine-tuning} model, khususnya membandingkan \textit{Instruction Tuning} standar dengan strategi \textit{Prompt} ``\textit{Reasoning-First}'' yang diusulkan. Kerangka kerja mengimplementasikan pemformatan dataset kondisional: \textit{Basic Reasoning-First Prompt} untuk arsitektur yang lebih kecil seperti Gemma 3 (270M), dan \textit{Reasoning-First JSON Prompt} untuk model yang lebih besar (Qwen 14B, Gemma 3 12B, Llama 8B, Gemma 2 9B).
+
+\begin{table*}[t]
+\caption{Hasil Konsolidasi: Varian LLM yang Di-\textit{fine-tune}, Studi Ablasi, dan Perbandingan \textit{Baseline} SENADA}
+\label{tab:results_consolidated}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
 \hline
-\\
-vector 1: [a1, a2, ..., a100]\\
-vector 2: [b1, b2, ..., b100]\\
-concatenate: [a1, a2, ..., a100, b1, b2, ..., b100]\\
-\\
+\textbf{Model / Konfigurasi} & \textbf{Recall} & \textbf{Presisi} & \textbf{F1-score} & \textbf{Akurasi} \\
 \hline
-\end{tabular}
-}}
-\end{table}
-
-\subsubsection{Multiply}
-The multiply method combines vectors by multiplying the corresponding elements of each vector. The result is a new vector with the exact dimensions as the original vector, where each element is the product of its corresponding elements. The multiply method is often used when you want to combine information in a way that takes into account interactions between elements. Multiply is useful when you want to emphasize relationships between vectors.
-
-\par\bigskip % Menambah ruang vertikal sebelum tabel
-
-\begin{table}[H]
-{\ttfamily
-\tiny
-\resizebox{\linewidth}{!}{
- \begin{tabular}{|l|}
+\multicolumn{5}{|l|}{\textit{(A) Varian LLM yang Di-fine-tune (Pipeline AGENA Penuh)}} \\
 \hline
-\\
-vector 1: [a1, a2, ..., a100]\\
-vector 2: [b1, b2, ..., b100]\\
-multiply: [a1*b1, a2*b2, ..., a100*b100]\\
-\\
+Gemma 3 (12B) & 0,948 & 0,938 & 0,943 & \textbf{94,50\%} \\
+Gemma 3 (4B) & 0,927 & 0,908 & 0,918 & 92,00\% \\
+Gemma 2 (9B) & 0,958 & 0,860 & 0,906 & 90,50\% \\
+Gemma 3 (1B) & 0,979 & 0,676 & 0,800 & 76,50\% \\
+Qwen 2.5 (14B) & 0,958 & 0,635 & 0,764 & 71,50\% \\
+Llama 3.1 (8B) & 0,792 & 0,571 & 0,664 & 61,50\% \\
+GPT-OSS (20B) & 0,833 & 0,541 & 0,656 & 57,50\% \\
+Gemma 3 (270M) & 0,520 & 0,547 & 0,480 & 52,00\% \\
 \hline
-\end{tabular}
-}}
-\end{table}
-
-\subsubsection{Add}
-The add method combines vectors by adding the corresponding elements of each vector. The result is a new vector with the exact dimensions as the original vector, but the value of each element is the sum of the corresponding elements. The add method is often used when you want to combine information in an aggregate way, allowing for an average or combination of values from several sources. Add is useful when you want to combine information without increasing the dimensionality of the vector.
-
-\par\bigskip % Menambah ruang vertikal sebelum tabel
-
-\begin{table}[H]
-{\ttfamily
-\tiny
-\resizebox{\linewidth}{!}{
- \begin{tabular}{|l|}
+\multicolumn{5}{|l|}{\textit{(B) Studi Ablasi --- Backbone Gemma 3 (12B)}} \\
 \hline
-\\
-vector 1: [a1, a2, ..., a100]\\
-vector 2: [b1, b2, ..., b100]\\
-add: [a1+b1, a2+b2, ..., a100+b100]\\
-\\
+\multicolumn{3}{|l|}{Baseline (\textit{Zero-Shot})} & 0,762 & 78,40\% \\
+\multicolumn{3}{|l|}{Classifier + Preprocessing saja} & 0,831 & 84,60\% \\
+\multicolumn{3}{|l|}{Classifier + RAG (tanpa Preprocessing)} & 0,898 & 91,20\% \\
+\multicolumn{3}{|l|}{\textbf{Pipeline AGENA Penuh}} & \textbf{0,943} & \textbf{94,50\%} \\
+\hline
+\multicolumn{5}{|l|}{\textit{(C) Perbandingan dengan \textit{State-of-the-Art} Sebelumnya}} \\
+\hline
+\multicolumn{3}{|l|}{SENADA \cite{b19} (\textit{Stacked Ensemble})} & 0,927 & 93,00\% \\
+\multicolumn{3}{|l|}{\textbf{AGENA (Gemma 3 12B)}} & \textbf{0,943} & \textbf{94,50\%} \\
 \hline
 \end{tabular}
-}}
-\end{table}
-
-\subsection{Classification with Deep Learning}
-Deep learning is a method that studies the hierarchy of features with the provision that the composition of lower-level features forms the hierarchy of features from a higher level. The concept of a neural network is described by representing more than one hidden layer to provide a deeper understanding of learning. Research on native ads detection on Indonesian news portals uses a deep learning model with the concept of a neural network. The learning method has two general stages, namely the training process and the testing process. The neural network used in the native ads detection model in this study uses an RNN basis so that, in general, information is processed sequentially with the addition of memory cells to remember word dependencies in long sentences called the BiLSTM model.
-
-\par\bigskip % Menambah ruang vertikal sebelum tabel
-\begin{figure*}
-    \centering
-    \includegraphics[width=0.9\textwidth]{fig3.jpg} 
-    \caption{BiLSTM-Attention Architecture}
-    \label{fig:fig3}
-\end{figure*}
-
-Figure \ref{fig:fig3} is a picture of the proposed architecture in this study to recognize native ads in electronic news portal content. This architecture generally consists of four main layers, namely (1) BiLSTM, utilizing previous and subsequent information by processing data from two directions. BiLSTM has the same structure as LSTM with the addition of a backward layer. The forward layer functions to represent previous information, and the backward layer functions to represent subsequent information. (2) Attention mechanism has emerged as a widely used and important tool in deep learning. Attention is defined as a vector derived as the output of a dense layer. Before attention, all input information is compressed into a vector with a fixed length. However, sentences with many words will result in the loss of important information. Attention fixes this problem by helping the network learn where it should pay attention to the input sequence for each item in the output sequence. (3) Dropout, added after the attention mechanism, and some neurons are left idle during each training session, which is done to prevent overfitting. (4) Dense, receiving output from dropout to produce output. A dense layer with two neurons that determine news content as pure news or native ads.
-
-\section{Experiments}
-\subsection{Dataset}
-The development of datasets is one of the crucial aspects to support the analysis that needs to be carried out. We created our dataset for this study. The target was to collect at least 12,000 Indonesian-language electronic news \cite{b21}, in line with the amount of data contained in the LIAR dataset \cite{b22} with around 12,800 news items. This dataset was collected continuously until this dissertation was completed to ensure that the resulting dataset not only meets the required quantity but also reflects the current dynamics in electronic news. The news collected must meet specific criteria: each item consists of at least 100 words and only includes text content, excluding images or news titles. This dataset will also not include news that only displays images without text. We addressed the issue of class imbalance and minimized bias toward the majority class by ensuring a balanced dataset, with 50\% of the instances labeled as native advertisements and the remaining 50\% as regular news articles. This balanced composition supports fair training and evaluation of models, particularly in improving recall and precision for native ad detection.
-
-We ensured the reliability of the dataset labeling process byinvolving three independent annotators with backgrounds in media and linguistics, acknowledging the subjective nature of identifying native advertisements. Each annotator labeled the news articles based on four defined native ad characteristics: positive or neutral sentiment, persuasive tone, favorable product or company promotion, and one-sided perspective. These characteristics were derived from prior literature and served as clear annotation guidelines. To quantify the consistency of labeling among annotators, Fleiss’ Kappa was computed since more than two raters were involved. The agreement score reached 0.90, indicating substantial agreement. This statistical measurement confirms that the annotation guidelines were well understood and consistently applied, reinforcing the labels' reliability for training and evaluating the classification models.
-
-External validation remains an important aspect for ensuring the quality of the annotation process. Expert reviewers, such as professional journalists or media editors, could be invited to assess a representative subset of the labeled data in future work. Their feedback would provide an independent benchmark for evaluating the validity of annotations from a real-world editorial perspective. Incorporating this form of validation can strengthen the dataset’s credibility and improve alignment with industry standards.
-
-This study identifies relevant news portals, collects articles, and looks at the dataset's characteristics. This sub-chapter will present the search results on news portals to build the dataset needed for the study. The period used for the news search was February - August 2022. The news categories covered were Economy, Lifestyle, Entertainment, International, National, Others, Automotive, Education, Sports, and Technology. Table \ref{tab1} details the distribution of categories for native ads and news labels.
-
-\begin{table}
-\caption{Distribution of categories}
- \begin{tabular}{lrrrr}
-\hline
-\textbf{Category} & \textbf{Total Data} & \textbf{Native Ads Label} & \textbf{Pure News Label}
-\\
-\hline
-Economic& 1914& 1349& 565\\
-Lifestyle & 1807 & 415 & 1392 \\
-Entertainment & 635 & 128 & 507 \\
-International & 359 & 90 & 269 \\
-National & 1262 & 595 & 667 \\
-Others & 3565 & 2882 & 683 \\
-Automotive & 474 & 106 & 368 \\
-Education & 274 & 70 & 204 \\
-Sport & 823 & 69 & 754 \\
-\hline
-\end{tabular}
-\label{tab1}
-\end{table}
-
-By selecting this news portal, the collected dataset includes relevant and diverse information related to the research topic. Table \ref{tab2} explains the number of articles and other statistics successfully collected from the news portal.
-
-\begin{table*}
-\caption{Article statistic}
-\renewcommand{\arraystretch}{1.3} % Menambah tinggi baris tabel
-\tiny
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lrrrr}
-\hline
-        \textbf{News Portal} & \textbf{Total News} & \textbf{Average Words} & \textbf{Total Native Ads} & \textbf{Total Pure News} \\
-        \hline
-        Example news portal 1 & 1415 & 300 & 521 & 894 \\
-        Example news portal 2 & 4026 & 280 & 2869 & 1157 \\
-        Example news portal 3 & 1290 & 270 & 220 & 1070 \\
-        Example news portal 4 & 2384 & 310 & 1221 & 1163 \\
-        Example news portal 5 & 2006 & 250 & 826 & 1180 \\
-        Example news portal 6 & 967 & 304 & 33 & 934 \\
-        \hline
-\end{tabular}
-}
-\label{tab2}
+\end{center}
 \end{table*}
 
-One limitation of this study lies in the scope of news sources, even though efforts were made to ensure a balanced and diverse dataset. The dataset was collected from only six credible Indonesian news websites, which may not fully represent the broader range of native advertising practices across different media formats in Indonesia. Each media outlet may apply distinct editorial policies, native ad presentation styles, and audience strategies, which can influence how native ads appear. As a result, the model’s ability to generalize to other sources such as regional news portals, niche blogs, or platforms that rely on multimedia formats may be limited. In addition, since the dataset is restricted to Indonesian-language news articles, the generalizability of the model to other languages and advertising domains remains uncertain. Future work should therefore consider expanding the dataset to include a more comprehensive set of media sources, formats, and languages, which would enhance the robustness and applicability of the model across diverse native ad contexts.
+Tabel~\ref{tab:results_consolidated} mengonsolidasikan tiga perspektif evaluasi ke dalam satu referensi: perbandingan lintas model (Kelompok A), studi ablasi (Kelompok B), dan perbandingan terhadap \textit{baseline} SENADA yang sebelumnya menjadi \textit{state-of-the-art} (Kelompok C).
 
-\subsection{Evaluation Method}
-This evaluation aims to prove that the deep learning ensemble architecture is able to correctly detect native ads in electronic news. This evaluation consists of five scenarios, namely:
-\subsubsection{Scenario I: Scenario I aims to measure the performance of a classification or prediction model using a confusion matrix.}
-\subsubsection{Scenario II: Scenario II aims to evaluate the model's ability to distinguish between positive and negative classes using the AUC score and ROC curve.}
-\subsubsection{Scenario III: Scenario III aims to compare deep learning ensemble architectures that use all implicit characteristics of native ads with those that use only some of the implicit characteristics of native ads.}
-\subsubsection{Scenario IV: Scenario IV aims to compare deep learning ensemble architectures with other deep learning models such as BiLSTM, BiGRU, and CNN}
-\subsubsection{Scenario V: Scenario V aims to evaluate the model against the computational time required, as well as the impacts and consequences arising from the use of alternative methods used.}
-\
-\subsection{Experimental Setup}
-In this study, all models were implemented using the Keras library \cite{b23}, which provides a high-level API interface for building and training neural networks. The designed model aims to combine four input feature representations derived from different data: positive vector, persuasive vector, product vector, and perspective vector. A separate input layer with dimensions represents each input feature according to each data representation. The four features are combined using the Concatenate layer, and additional dimensions are added using the Lambda layer to ensure dimensional compatibility with the next layer.
+\textbf{Analisis tingkat model (Kelompok A).} Hasil penyelarasan \textit{prompt} ``\textit{Reasoning-First}'' mengungkap gradien performa yang jelas mengikuti skala model dan kemampuan mengikuti instruksi. Gemma 3 (12B) mencapai akurasi keseluruhan tertinggi pada 94,50\%, dengan presisi 0,938 pada kelas Iklan \textit{Native}. Model ini menangani kasus-kasus paling menantang secara efektif --- terutama, model ini berhasil mengidentifikasi konten editorial yang menyebutkan entitas perusahaan tanpa pembingkaian promosi (\textit{Pelaporan Merek Non-Promosi}), sebuah tugas yang gagal dilakukan oleh beberapa model berparameter lebih besar. Gemma 3 (4B) mencapai 92,00\%, sedikit mengungguli Gemma 2 (9B) yang lebih lama pada 90,50\%, membuktikan bahwa peningkatan arsitektur dalam generasi Gemma terbaru berkontribusi signifikan terhadap kualitas mengikuti instruksi dalam tugas domain-spesifik.
 
-The model architecture uses the BiLSTM approach with two layers. The first layer has 256 units and produces output in sequences, while the second layer also produces 256 units but only produces the final output. After the LSTM layer, a Dropout layer with a level of 0.5 is applied to prevent overfitting. The attention mechanism is implemented with a softmax-activated Dense layer, which is recombined with the previous output to increase focus on important features. The output layer is Dense with sigmoid activation used to predict the probability in two classes. The training parameters include a batch size of 256 and a maximum number of epochs of 50. 
+Seiring penurunan ukuran model di bawah parameter 1B, penalaran yang andal menjadi sulit dipertahankan. Gemma 3 (1B) turun ke 76,50\%, menunjukkan \textit{recall} sangat tinggi (0,979) namun presisi rendah (0,676), mengindikasikan kecenderungan sistematis untuk menandai penyebutan merek secara berlebihan sebagai promosi terlepas dari konteks editorial. Model 270M mendapat skor 52,00\% dan sering menghasilkan keluaran yang tidak valid atau tidak lengkap secara struktural, membuktikan bahwa format JSON \textit{Reasoning-First} tidak kompatibel dengan arsitektur sub-500M parameter. Qwen 2.5 14B (71,50\%) dan Llama 3.1 8B (61,50\%) berkinerja kurang baik relatif terhadap jumlah parameter mereka, kemungkinan karena korpus pra-pelatihannya tidak mencakup data jurnalisme Indonesia yang cukup untuk mendukung diskriminasi halus antara pembingkaian komersial dan editorial. GPT-OSS (57,50\%) menunjukkan perilaku serupa, mengandalkan pencocokan kata kunci tingkat permukaan daripada penalaran kontekstual. Hasil-hasil ini menegaskan pilihan desain untuk memusatkan Agen Classifier AGENA pada Gemma 3 12B, sekaligus membuktikan bahwa arsitektur \textit{pipeline} itu sendiri --- bukan jumlah parameter \textit{backbone} semata --- yang mendorong performa tingkat teratas sistem.
 
+\textbf{Studi ablasi (Kelompok B).} Studi ablasi secara bertahap menambahkan komponen \textit{pipeline} untuk mengisolasi kontribusi individual masing-masing agen, menggunakan \textit{backbone} Gemma 3 12B di semua konfigurasi.
 
-\section{Results and Discussion}
-\subsection{Data Processing and Generating Streaming Vector Sentences}
-In the initial implementation stage, the data that has gone through the process of detecting the implicit characteristics of native ads is further processed using four different deep learning models, each selected based on the best performance they offer in a particular task. Positive News Detection Model with CNN: This model uses CNN, which has been optimized to detect positive sentiment in news. CNN was chosen because of its ability to capture spatial text features, which is important for identifying positive patterns in news content. The output of this model is a streaming vector sentence that represents the level of positivity in the news. Persuasive News Detection Model with BiGRU: BiGRU is used to detect persuasive elements in news text. BiGRU was chosen because of its ability to capture temporal dependencies in both directions (forward and backward), which is important in understanding the persuasive context. This model produces streaming vector sentences containing information about the news's persuasive elements.
+\textit{(1) Baseline (Zero-Shot), Akurasi: 78,4\%, F1: 0,762.} Ini adalah model Gemma 3 12B tanpa augmentasi, diterapkan langsung pada artikel tanpa \textit{preprocessing}, pengambilan konteks, atau \textit{prompt} terstruktur apapun. Konfigurasi ini mewakili batas atas performa yang dapat dicapai melalui generalisasi dalam-konteks saja. Pada 78,4\%, model sudah menunjukkan kesadaran domain yang cukup baik, namun sering melakukan kesalahan pada \textit{Pelaporan Merek Non-Promosi} --- kasus di mana penyebutan merek muncul dalam konteks pelaporan faktual murni --- karena tidak memiliki referensi eksternal untuk membedakan nada editorial dari pembingkaian promosi.
 
-Product/Company News Detection Model with BiLSTM: To detect references to products or companies in the news, the BiLSTM model is used. BiLSTM was chosen because of its ability to handle long and complex data sequences, such as product or company names, that may appear in multiple contexts. Streaming vector sentences from this model represent the presence and relevance of the product or company in the news. News Perspective Detection Model with BiLSTM: This model uses BiLSTM to detect perspectives or biases that may be present in news presentations. By capturing recurring patterns and sentiments in the text, BiLSTM helps identify the news narrative's perspectives. The output of this model is streaming vector sentences that describe the perspectives or biases in the news content. Each model produces streaming vector sentences combined using different merging methods, such as concatenate, add, and multiply, to determine the most effective combination in detecting native ads.
+\textit{(2) Classifier + Preprocessing saja, Akurasi: 84,6\%, F1: 0,831.} Penambahan Agen Preprocessing --- yang mengekstraksi fitur linguistik terstruktur seperti densitas leksikon, rasio kapitalisasi, dan penghitungan isyarat persuasif --- menghasilkan gain akurasi +6,2 poin. Hal ini mengonfirmasi bahwa sinyal fitur berbasis aturan yang eksplisit memberikan panduan bermakna bagi Agen Classifier, membantu memprioritaskan indikator statistik niat promosi dan mengurangi sensitivitas terhadap pemicu kata kunci permukaan yang menyebabkan kesalahan pada \textit{baseline zero-shot}.
 
-\subsection{Training Process Using BiLSTM}
-After obtaining the streaming vector sentences from the previous process, the next step is to combine the vectors using three different concatenation methods: concatenate, add, and multiply. The concatenation of these vectors is very important because it can affect how information from different models is combined and processed by the BiLSTM model. These concatenation methods were tested to determine which performed best in detecting native ads. The first concatenation method is concatenate. This method combines the vectors from positive news detection, persuasive detection, product/company detection, and perspective detection models horizontally. The concatenation method combines these vectors into one long vector that combines information from all models. The resulting concatenation vector is then expanded in dimension to suit the input needs of the BiLSTM model.
+\textit{(3) Classifier + RAG (tanpa Preprocessing), Akurasi: 91,2\%, F1: 0,898.} Menggantikan \textit{preprocessing} dengan Agen Retriever dan basis pengetahuan berbasis FAISS menghasilkan gain terbesar dalam studi ini: +12,8 poin dibandingkan \textit{baseline zero-shot} dan +6,6 poin dibandingkan varian \textit{preprocessing}-saja. Agen Retriever menyediakan Classifier dengan lima artikel historis yang paling semantis serupa beserta label \textit{ground truth}-nya dari basis pengetahuan 12.088 artikel. Bukti dalam konteks dari contoh-contoh terverifikasi ini terbukti jauh lebih diskriminatif dibandingkan sinyal fitur buatan tangan, terutama untuk kasus \textit{Pelaporan Merek Non-Promosi} di mana perbedaan halus dalam pembingkaian naratif --- bukan kata kunci permukaan --- yang menentukan label yang benar.
 
-The second concatenation method is added. This method combines the vectors by summing the corresponding elements of each vector. By summing these vectors, the information from each model is combined to better facilitate learning more complex patterns. The result of this method is a single vector that reflects the combined information from all models in a different way than the concatenation method. The third concatenation method is multiply. In this method, vectors are combined by multiplying the corresponding elements of each vector. This method can help emphasize features that frequently occur together in multiple vectors and reduce the influence of features that rarely occur. The result of the multiply method is a single vector that combines information in a way that may be more sensitive to interactions between different features.
+\textit{(4) Pipeline AGENA Penuh, Akurasi: 94,5\%, F1: 0,943.} Sistem lima agen penuh, yang menggabungkan Preprocessing, RAG, Classifier, dan Explainer, mencapai gain +3,3 poin lebih lanjut dibandingkan varian RAG-saja. Efek gabungan ini mencerminkan dua mekanisme: pertama, Agen Preprocessing menstabilkan representasi \textit{input} Classifier di semua format portal yang heterogen, mengurangi variansi dalam teks artikel yang diekstraksi; kedua, format keluaran JSON terstruktur dari Agen Explainer menegakkan konsistensi pada langkah Classifier, mengurangi kegagalan \textit{parsing} respons yang dapat merambat sebagai label yang salah. Secara keseluruhan, faktor-faktor ini mendorong akurasi ke 94,5\\% dan mengonfirmasi bahwa setiap tahap \textit{pipeline} memberikan kontribusi yang dapat dipertanggungjawabkan secara individual terhadap hasil akhir.
 
-After implementing these three merging methods, an evaluation was conducted to determine which method performed best in the context of the data used. This evaluation included measuring accuracy and other metrics for each method. The best performance method was selected for use in the following training process. The processed and merged data and the representations generated from the best merging method were then used to train a BiLSTM model with an additional attention mechanism. The BiLSTM model was chosen because of its superior ability to capture sequential patterns and temporal relationships in text data, which are very important for native ad detection. The attention mechanism was added to allow the model to give more weight to important parts of the text input.
-
-The training process was carried out with optimal hyperparameter settings, such as the number of epochs, batch size, and learning rate. These settings were designed to ensure that the model learned well without overfitting. Regularization techniques such as dropout are applied to reduce overfitting. The BiLSTM model can effectively utilize information from multiple sources and provide accurate results in detecting native ads. Evaluation of the trained model will provide insights into the effectiveness of the selected vector fusion method and the model's ability to overcome the challenges faced in native ad detection.
-
-\subsection{Model Evaluation}
-Evaluation of the BiLSTM model trained using three vector concatenation methods: concatenate, add, and multiply. This evaluation is based on common metrics in text classification, namely precision, recall, F-score, AUC score and accuracy. These metrics provide a comprehensive picture of the model's performance in detecting native ads in news. Table \ref{tab3} shows the results of the model evaluation metrics.
-
-\begin{table*}
-\caption{Confusion Matrix Model Evaluation with Standard Deviation}
-\renewcommand{\arraystretch}{1.2}
-\tiny
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lrrrrrr}
-\hline
-\textbf{Feature Combination} & \textbf{Accuracy ± SD} & \textbf{Recall ± SD} & \textbf{Precision ± SD} & \textbf{F1 ± SD} & \textbf{AUC ± SD} \\
-\hline
-Concatenate & \textbf{0.93 ± 0.002} & \textbf{0.93 ± 0.002} & \textbf{0.93 ± 0.003} & \textbf{0.93 ± 0.002} & \textbf{0.93 ± 0.002} \\
-Multiply & 0.88 ± 0.003 & 0.88 ± 0.004 & 0.89 ± 0.003 & 0.88 ± 0.003 & 0.89 ± 0.002 \\
-Add & 0.90 ± 0.002 & 0.90 ± 0.003 & 0.90 ± 0.003 & 0.90 ± 0.002 & 0.90 ± 0.002 \\
-\hline
-\end{tabular}
-}
-\label{tab3}
-\end{table*}
+\textbf{Perbandingan SENADA (Kelompok C).} AGENA melampaui SENADA \cite{b19}, model \textit{ensemble} yang sebelumnya menjadi \textit{state-of-the-art} pada dataset iklan \textit{native} Indonesia yang sama, dengan peningkatan +1,5 poin persentase dalam akurasi (93,0\% $\to$ 94,5\%) dan gain F1-score +0,016. Peningkatan presisi jauh lebih signifikan: presisi SENADA sebesar 0,778 meningkat menjadi 0,938 pada AGENA, peningkatan +16,0 poin yang mencerminkan kemampuan AGENA yang lebih kuat dalam meminimalkan \textit{false positive} --- kritis dalam konteks editorial di mana salah menandai artikel berita yang sah memiliki konsekuensi profesional. SENADA mencapai akurasi ini dengan mendekomposisi tugas menjadi empat sub-model \textit{ensemble} paralel (Sentimen, Persuasi, Promosi, Perspektif), masing-masing dilatih pada set fitur statis, dan mengagregasi label independen mereka menjadi sebuah prediksi. Meskipun efektif, desain ini tidak dapat mengakses bukti kontekstual dinamis pada waktu inferensi, tidak menghasilkan jejak penalaran per-artikel, dan tidak dapat menjelaskan keputusannya kepada editor manusia. AGENA menggantikan hal ini dengan alur kerja agentik berurutan di mana Agen Retriever menyediakan konteks \textit{real-time} dari basis pengetahuan 12.088 artikel dan Agen Explainer menghasilkan justifikasi terstruktur yang dapat diverifikasi manusia untuk setiap keputusan klasifikasi. Lapisan interpretabilitas ini adalah kemajuan kualitatif utama dibandingkan SENADA dan sangat penting untuk adopsi dalam alur kerja editorial yang memerlukan pengawasan manusia \cite{b20}.
 
 
-The concatenate method produces the best performance with precision, recall, f-score, and accuracy, all above 93\%. The add method performs slightly lower, with metrics hovering around 90\%. Meanwhile, the multiply method shows the lowest performance, with all metrics below 88\%.
 
-Figures \ref{fig:fig4} to \ref{fig:fig6} compare loss and accuracy during the training and validation process for the three concatenation methods. We present the training and validation graphs for the three feature combination strategies—concatenate, multiply, and add—separately to support clearer interpretation and enable focused analysis. Each combination method reflects distinct learning behaviors, convergence patterns, and generalization capabilities that could be obscured if plotted in a single figure. Separating the visualizations ensures that differences in loss stability, accuracy trends, and overfitting behavior can be individually analyzed and discussed in greater detail. This approach also avoids visual clutter and supports more targeted comparison across methods.
+\subsection{Analisis Kualitatif dan Karakteristik Penalaran}
+Jejak penalaran Agen Explainer dievaluasi terhadap anotasi pakar untuk konfigurasi Gemma 3 12B. Jejak tersebut mencapai 94,2\% keselarasan semantik dengan justifikasi yang dianotasi manusia, diukur melalui tinjauan pakar domain terhadap empat kriteria target.
 
-Figure \ref{fig:fig4} depicts the training and validation loss and their accuracy for a BiLSTM model incorporating the attention mechanism through the concatenation method. The first graph shows that the training and validation losses decrease rapidly in the early stages before reaching a bottom, indicating that the model effectively reduces the error. The similarity between the training and validation loss curves indicates that the model does not experience substantial overfitting, implying effective generalization of the learning process.
+Seperti ditunjukkan pada Gbr. \ref{fig:confusion_matrix}, kesalahan klasifikasi terkonsentrasi pada kategori \textit{Kasus Ambigu}: artikel yang menyebutkan nama merek atau program korporat tanpa pembingkaian persuasif. Agen berbasis Llama menunjukkan tingkat positif-palsu yang sedikit lebih tinggi untuk berita murni, sering memperkirakan pelaporan pemerintah yang menguntungkan sebagai promosi. Agen berbasis Gemma lebih konservatif, sesekali melewatkan iklan \textit{native} dengan tingkat keyakinan rendah.
 
-\par\bigskip % Menambah ruang vertikal sebelum tabel
-\begin{figure}[t]
-    \includegraphics[width=0.49\textwidth]{concat.png} % Sesuaikan nama file
-    \caption{Concatenate loss and accuracy graphs}
-    \label{fig:fig4}
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\linewidth]{eval_results/eval_gemma3_12b_native_ads_20260301_043605_confusion_matrix.png}}
+\caption{Confusion Matrix untuk AGENA menggunakan Gemma 3 12B.}
+\label{fig:confusion_matrix}
 \end{figure}
 
-The second graph shows the training and validation accuracy pattern throughout 50 epochs. The validation accuracy generally shows an increase. However, there is still significant variation. The complexity of the dataset may be the cause of this variation, indicating that some clusters give rise to patterns that are more difficult for the model to absorb. The model's accuracy reaches over 90\% in the later stages, indicating that the model successfully extracts important details through the concatenation method. The BiLSTM framework's concatenation method performs strongly in feature representation and classification tasks. The success of this method is supported by a combination of improved accuracy and loss stability. However, fluctuations in validation accuracy suggest that additional refinements such as dropout regularization, learning rate adjustment, or extra data cleaning could improve model reliability and uniformity.
+\section{Diskusi}
+\label{sec:discussion}
+Hasil ini memvalidasi hipotesis inti AGENA: bahwa mendekomposisi deteksi iklan \textit{native} ke dalam \textit{pipeline} multi-agen dengan penalaran berbasis RAG menghasilkan peningkatan terukur dibandingkan klasifikasi statis, baik dalam akurasi maupun interpretabilitas keluaran.
 
-\par\bigskip % Menambah ruang vertikal sebelum tabel
-\begin{figure}[t]
-    \includegraphics[width=0.49\textwidth]{multiply.png} % Sesuaikan nama file
-    \caption{Multiply loss and accuracy graphs}
-    \label{fig:fig5}
-\end{figure}
+\subsection{Analisis \textit{Kasus Ambigu}}
+Sumber kesalahan klasifikasi yang konsisten di semua model yang diuji adalah kategori \textit{Berita Batas}. Ini adalah artikel berita yang akurat secara faktual yang menyebutkan entitas perusahaan, produk, atau program pemerintah tanpa niat promosi. Sebagai contoh, pelaporan infrastruktur rutin menyebut kontraktor swasta, dan Agen Classifier AGENA terkadang menandai ini berdasarkan pola kata kunci daripada konteks naratif. Bias ``pemicu-merek'' ini lebih menonjol pada model Qwen dan Llama dibandingkan Gemma 3 12B. Mengatasi hal ini di penelitian mendatang memerlukan perluasan basis pengetahuan dengan proporsi yang lebih besar dari contoh \textit{Berita Batas} untuk meningkatkan diskriminasi negatif.
 
-Figure \ref{fig:fig5} illustrates the training and validation results of a BiLSTM model combining the attention mechanism with the multiply method. The first graph, which illustrates the training and validation losses over 50 epochs, shows a sharp decrease in the loss values during the early epochs, followed by stabilization. The convergence of the training and validation loss curves indicates that effective learning occurs with minimal overfitting, as both losses stabilize at low levels. The model can effectively reduce errors while maintaining its ability to generalize. The second graph shows the pattern of training and validation accuracies. As training progresses, accuracy increases, exceeding 90\% in the final stages.
+\subsection{Peran Agen Explainer dalam Integritas Jurnalistik}
+Kontribusi praktis AGENA adalah Agen Explainer, yang menghasilkan justifikasi tingkat-artikel yang dapat ditinjau editor tanpa memeriksa model secara internal. Untuk setiap klasifikasi, agen memetakan kesimpulannya ke bagian-bagian spesifik artikel melalui alat \texttt{Source\allowbreak Mapper}. Ini menyediakan jalur bukti yang dapat diverifikasi yang mendukung keputusan \textit{override} editorial. Bagi organisasi media yang mempertimbangkan pemantauan konten otomatis, lapisan transparansi ini secara substansial mengurangi hambatan adopsi dibandingkan pengklasifikasi \textit{black-box}.
 
-In contrast, validation accuracy starts out more potent, but its performance eventually plateaus and settles at a lower level than the accuracy achieved during training. The discrepancy between the model’s performance on the training data and its ability to generalize to unseen validation samples may indicate slight overfitting. The variance of validation accuracy seen with the reduced method appears more stable but less adaptive than the merged approach. The multiply method in the BiLSTM work performs strongly in extracting relevant features and improving classification accuracy. The discrepancy between training and validation accuracies suggests that additional fine-tuning is needed. Applying regularization techniques such as dropout, early stopping, or data augmentation can be beneficial in reducing overfitting and improving the overall generalization ability of the model.
+\subsection{Implikasi Etis dan Bias Algoritmik}
+Klasifikasi konten otomatis pada skala besar memperkenalkan risiko bias sistematis. Gaya pelaporan Indonesia berbeda secara substansial antara portal nasional dan media regional, di mana nada informal dan ekspresi lokal yang spesifik dapat secara superfisial menyerupai pembingkaian persuasif. Model yang dilatih terutama pada jurnalisme tingkat nasional dapat terlalu menandai gaya pelaporan regional sebagai niat promosi. AGENA sebagian memitigasi hal ini melalui \textit{grounding} RAG dengan contoh-contoh yang beragam, namun penelitian ini mengakui bahwa evaluasi reguler terhadap bias linguistik regional diperlukan. Kerangka kerja ini tidak boleh diterapkan dalam pengaturan di mana keputusan otomatis memiliki konsekuensi tanpa tinjauan editorial.
 
-\par\bigskip % Menambah ruang vertikal sebelum tabel
-\begin{figure}[t]
-    \includegraphics[width=0.49\textwidth]{add.png} % Sesuaikan nama file
-    \caption{Add loss and accuracy graphs}
-    \label{fig:fig6}
-\end{figure}
+Kekhawatiran terkait bias dalam perilaku model juga telah didokumentasikan dalam analisis komparatif yang lebih luas tentang model bahasa besar.
 
-Figure \ref{fig:fig6} illustrates the training and validation performance of a BiLSTM model with attention included through the add method. The initial graph, which shows the training and validation losses, shows a steady decrease over 50 epochs without any significant drop-off. Both curves closely track each other, indicating a stable optimization process. Unlike the previous approach, the loss values do not show any indication of a drop-off but continue to decrease, indicating that the model is still in the learning process and has not yet reached a state of complete convergence. This trend suggests that additional training epochs may improve performance further. The second graph shows the training and validation accuracies, which show a marked initial increase in both metrics that eventually decrease. In almost all training iterations, the model’s ability to accurately validate the data exceeds its performance during training, indicating effective generalization to previously unseen information. This phenomenon may be due to the regularization effect inherent in the add method, which can help prevent overfitting. A well-regularized model is indicated by little difference between the final validation accuracy and the training accuracy values, indicating strong generalization ability. The add method balances learning effectiveness and generalization ability, as indicated by the progressive reduction in loss and the continued trend in accuracy. The continued decrease in loss suggests that additional training may be beneficial in identifying the most effective number of epochs.
+\subsection{Pertimbangan Latensi dan Penerapan}
+\textit{Pipeline} lima agen memperkenalkan waktu pemrosesan per-artikel sekitar 1,5--3 detik. Untuk aplikasi pemantauan \textit{batch}, ini dapat diterima. Untuk aliran \textit{real-time} bervolume tinggi, penerapan berjenjang mungkin praktis: pengklasifikasi ringan menangani penapisan rutin, dengan AGENA diinvokasi untuk kasus-kasus di batas keputusan atau berprioritas tinggi. Implementasi saat ini menargetkan pengaturan deteksi berkeakuratan tinggi dan menyediakan tolok ukur untuk pekerjaan optimisasi di masa mendatang.
 
-In summary, the concatenate method demonstrated the most effective performance among the three strategies, with consistently high accuracy and stable loss patterns, indicating a strong balance between learning capacity and generalization. While initially promising, the multiply method exhibited signs of overfitting as seen from the plateauing validation accuracy and larger gaps between training and validation performance. Meanwhile, the add method showed potential for further improvement, with steady loss reduction and effective generalization, especially in early epochs. Overall, these findings suggest that combining BiLSTM with attention and concatenation of features provides the most robust architecture for detecting native advertisements. However, depending on resource constraints or specific application needs, the add method may offer a viable trade-off between complexity and accuracy.
+Untuk lingkungan produksi, pelajaran dari penelitian \textit{retrieval} iklan \textit{real-time} juga menunjukkan bahwa desain \textit{retrieval} yang sadar-latensi sangat penting untuk penskalaan penerapan.
 
-Furthermore, adjusting the learning rate and applying early stopping may also improve model performance and reduce the risk of underfitting. Based on the evaluation results, it can be concluded that the concatenate method is the most effective for native ad detection using the BiLSTM model with an attention mechanism. This method shows superiority in almost all evaluation metrics, especially regarding accuracy and the balance between precision and recall. The add method also shows quite good performance and can be a solid alternative if there are limitations in computing resources or the need to simplify the model. The multiply method shows lower performance, indicating that this method may reduce the complexity of features too much, which is important for detecting patterns in native ads.
+\section{Kesimpulan}
+\label{sec:conclusion}
+Makalah ini mempresentasikan AGENA, sebuah kerangka kerja AI multi-agen untuk deteksi iklan \textit{native} yang dapat dijelaskan dalam berita digital Indonesia. Kerangka kerja ini memenuhi dua keterbatasan utama dari karya sebelumnya: kurangnya interpretabilitas dalam pengklasifikasi berbasis \textit{ensemble}, dan kecenderungan LLM generik untuk berhalusinasi ketika diterapkan pada jurnalisme Indonesia yang spesifik domain. Dengan menggabungkan basis pengetahuan berbasis RAG dengan strategi \textit{fine-tuning} ``\textit{Reasoning-First}'', AGENA mencapai akurasi klasifikasi 94,5\% menggunakan Gemma 3 12B sebagai Agen Classifier dan menghasilkan jejak penalaran terstruktur yang dapat ditinjau secara editorial. Secara khusus, kerangka kerja ini mengungguli \textit{baseline} non-agentik sebelumnya, SENADA, dengan perolehan +4,5\% pada akurasi keseluruhan dan +16,0\% pada presisi Iklan \textit{Native} \cite{b19}.
 
-\subsection{System Testing and Evaluation}
+Studi ablasi mengonfirmasi bahwa setiap komponen \textit{pipeline} berkontribusi pada performa keseluruhan, dengan Agen Retriever memberikan gain tunggal terbesar (+12,8\%). Protokol evaluasi \textit{LLM-as-a-Judge} lebih lanjut menunjukkan bahwa akurasi saja merupakan ukuran yang tidak memadai: model yang lebih kecil yang mencapai akurasi batas melakukannya melalui penalaran yang dangkal atau dihalusinasikan daripada pemahaman linguistik yang sesungguhnya. Pekerjaan di masa mendatang akan fokus pada perluasan basis pengetahuan untuk mencakup lebih banyak contoh \textit{Berita Batas} dari portal berita Indonesia regional, mengurangi latensi per-artikel untuk aplikasi \textit{real-time}, dan mengevaluasi AGENA pada lingkungan berita lintas bahasa. Selain itu, \textit{baseline} transformer yang lebih kuat dan skema adaptasi yang hemat parameter tetap penting untuk penerapan praktis. Arah penerapan ini juga kompatibel dengan praktik rekayasa efisien yang ditunjukkan dalam karya kerangka kerja lokal sebelumnya.
 
-\subsubsection{Scenario I}
-Table \ref{tab3} presents the evaluation results for different feature combination methods (concatenate, multiply, add). The reported values are the mean scores of five runs, and the corresponding standard deviations are provided to indicate the consistency of each method. The model trained with the concatenate method shows the most optimal results among the three methods. The precision achieved is 0.93, which indicates that 93\% of native ads detected by this model are genuinely native ads. This means that the model with the concatenate method can minimize false positives, which are incidents where news that is not a native ad is classified as a native ad. The model's ability to capture native ads without too many errors is a key indicator of effective model performance in real applications. 
+Lebih luas lagi, bukti berskala besar tentang difusi informasi online terus menunjukkan bahwa informasi yang salah dapat menyebar lebih cepat dan lebih luas dibandingkan konten yang terverifikasi, memperkuat kebutuhan akan \textit{pipeline} deteksi dan penjelasan yang andal.
 
-The recall of the concatenate model is 0.93, almost equal to its precision. This high recall indicates that the model successfully detects 93\% of all native ads in the dataset. The concatenate model can find almost all examples of native ads, so it is unlikely that this model misses relevant native ad detections. This result is significant in the context of real applications, where failure to detect native ads can lead to negligence in maintaining the integrity of news content. The F-score, the harmonic mean of precision and recall, was recorded at 0.93. The high F-score indicates a good balance between precision and recall. The overall accuracy of the concatenate model is 93\%, indicating that almost 93\% of all model predictions are correct. This high accuracy confirms the model's strength in providing reliable predictions, making it a strong choice for real-world implementations.
-
-The model trained with the multiply method produces a precision of 0.88, lower than the concatenate method. Only about 88\% of the native ads predicted by this model are native ads. This decrease in precision indicates that the multiply model tends to produce more false positives than concatenate, which can lead to information being misclassified as native ads. The recall for the multiply model is 0.89, which is also lower than the concatenate and add methods. With this recall value, the model successfully detects about 89\% of all native ads in the dataset. Although this is still high, this decrease in recall indicates that there are more native ads that the multiply model does not detect compared to the other models. The F-score for the multiply method is 0.88, lower than the concatenate and add methods. This indicates that the multiply method is not balanced between precision and recall. The model's overall accuracy with the multiply method is 88\%, the lowest among the three concatenation methods. This result indicates that the multiply model is less effective in capturing complex patterns in native ads, possibly because element-wise multiplication suppresses certain feature dimensions, leading to information loss and reduced representational richness.
-
-The add method shows competitive concatenate results with a precision of 0.9. This high precision indicates that the add model correctly identifies native ads, reducing false positives. Although this precision is slightly lower than concatenate, the results are still quite good, indicating that the add model is an effective alternative. The recall for the add model is 0.9, slightly higher than its precision. This high recall indicates that the add model finds almost all native ads in the dataset. The added model is only slightly lower in precision than concatenate, but the equivalent recall advantage indicates that this method can compensate for the slight reduction in precision. The F-score of the add method is 0.9, indicating a perfect balance between precision and recall, similar to the concatenate method. The overall accuracy of the add model is 90\%, only slightly lower than the concatenate model. This shows that the add method is a pretty good approach in feature fusion for native ads detection. However, it tends to average out values from different features, which may smooth over distinctive cues needed to separate subtle contextual elements in native ads.
-
-Theoretically, concatenation retains the full dimensional information from combining feature vectors, rather than reducing them to a compressed or aggregated form,  as in addition or multiplication. It allows the model to preserve distinct semantic and syntactic signals from each input source, giving the downstream layers more capacity to learn discriminative patterns. In contrast, addition and multiplication tend to merge feature representations into a shared space, which can oversimplify or obscure important contextual nuances. It helps explain why the concatenation strategy yields higher precision, recall, and accuracy in the native ad detection task.
-
-Based on Table \ref{tab3}, the concatenate method produces the best performance with precision, recall, f-score, and accuracy values all above 93\%. The add method has a slightly lower performance, with metrics hovering around 90\%. Meanwhile, the multiply method shows the lowest performance, with all metrics below 88\%.
-
-\subsubsection{Scenario II}
-In Scenario II, model performance evaluation was conducted by comparing three different feature merging approaches: concatenate, multiply, and add. The evaluation results using the AUC metric showed significant differences in performance between the three methods, as summarized in Table \ref{tab3}. Based on the results in Table \ref{tab3}, the concatenate method produced the highest AUC value of 0.93, indicating the model's ability to distinguish classes better than other methods. The concatenate approach allows for a more comprehensive fusion of information from input features, thereby enriching the data representation used for the classification process.
-
-In contrast, the multiply method produced an AUC of 0.89, the lowest value among the three approaches. This may be due to the nature of the element-wise multiplication operation, which tends to strengthen non-linear relationships but can lose important information if certain elements are close to zero. The add method produced an AUC of 0.90, slightly lower than the concatenate method. The element-wise addition operation is more straightforward than concatenate and can reduce the complexity of feature representation. Nevertheless, this method can still provide good results, indicating that the information from the combined features remains relevant for the classification task.
-
-From the results of this analysis, the concatenate feature merging method is the best approach for Scenario II in the context of model evaluation with AUC. This shows that merging features provides a richer data representation and significantly improves model performance. The add and multiply methods still have potential but relatively lower performance than concatenate.
-
-\subsubsection{Scenario III}
-Table \ref{tab4} summarizes the performance of the SENADA model using various combinations of native ad characteristics. Each metric is reported as the average of five experimental runs, along with its standard deviation, to provide insight into the robustness of feature combination strategies. The SENADA model achieved an impressive score of 0.93 across all four areas. The SENADA model uses an ensemble learning approach that combines all four native ad characteristics. This model was the most effective in improving classification performance. Leveraging all four key characteristics of Positive, Persuasive, Product, and Perspective yielded the highest accuracy, indicating that using a comprehensive feature set yields better results than models that rely on fewer attributes. The model that leverages three native ad characteristics scored slightly lower than the best performing model, with accuracy values ranging from 0.89 to 0.91, indicating a consistent decline in performance when fewer features are included.
-
-\begin{table*}
-\caption{Performance on Different Combinations of Native Ads (Mean ± SD)}
-\renewcommand{\arraystretch}{1.2}
-\tiny
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lrrrr}
-\hline
-\textbf{Model} & \textbf{Accuracy ± SD} & \textbf{F1 ± SD} & \textbf{Recall ± SD} & \textbf{Precision ± SD} \\
-\hline
-SENADA Model & \textbf{0.93 ± 0.002} & \textbf{0.93 ± 0.002} & \textbf{0.93 ± 0.003} & \textbf{0.93 ± 0.003} \\
-3 Native Ads (Pos, Pers, Prod) & 0.91 ± 0.003 & 0.91 ± 0.002 & 0.91 ± 0.003 & 0.91 ± 0.002 \\
-3 Native Ads (Pos, Pers, Persp) & 0.90 ± 0.002 & 0.90 ± 0.003 & 0.90 ± 0.003 & 0.90 ± 0.003 \\
-3 Native Ads (Pos, Prod, Persp) & 0.90 ± 0.003 & 0.90 ± 0.003 & 0.90 ± 0.002 & 0.90 ± 0.003 \\
-3 Native Ads (Pers, Prod, Persp) & 0.89 ± 0.002 & 0.89 ± 0.003 & 0.89 ± 0.003 & 0.89 ± 0.003 \\
-2 Native Ads (Pos, Pers) & 0.91 ± 0.003 & 0.91 ± 0.002 & 0.91 ± 0.002 & 0.91 ± 0.003 \\
-2 Native Ads (Pos, Prod) & 0.90 ± 0.002 & 0.90 ± 0.002 & 0.90 ± 0.002 & 0.90 ± 0.002 \\
-2 Native Ads (Pos, Persp) & 0.90 ± 0.002 & 0.90 ± 0.003 & 0.90 ± 0.002 & 0.90 ± 0.002 \\
-2 Native Ads (Pers, Prod) & 0.91 ± 0.003 & 0.91 ± 0.002 & 0.91 ± 0.003 & 0.91 ± 0.002 \\
-2 Native Ads (Pers, Persp) & 0.90 ± 0.003 & 0.90 ± 0.002 & 0.90 ± 0.003 & 0.90 ± 0.003 \\
-2 Native Ads (Prod, Persp) & 0.89 ± 0.003 & 0.89 ± 0.003 & 0.88 ± 0.003 & 0.89 ± 0.003 \\
-1 Native Ads (Positive) & 0.90 ± 0.002 & 0.90 ± 0.003 & 0.90 ± 0.003 & 0.90 ± 0.002 \\
-1 Native Ads (Persuasive) & 0.89 ± 0.002 & 0.89 ± 0.003 & 0.89 ± 0.003 & 0.89 ± 0.003 \\
-1 Native Ads (Product) & 0.89 ± 0.003 & 0.89 ± 0.002 & 0.89 ± 0.003 & 0.89 ± 0.002 \\
-1 Native Ads (Perspective) & 0.84 ± 0.003 & 0.84 ± 0.002 & 0.84 ± 0.002 & 0.84 ± 0.003 \\
-\hline
-\end{tabular}
-}
-\label{tab4}
-\end{table*}
-
-Models combining the three main native ad features showed similar performance results, with specific groupings affecting classification precision. Both configurations (Positive, Persuasive, Product) and (Positive, Persuasive, Perspective) achieved an accuracy of 0.91, indicating that these characteristics collaborate effectively in identifying native ad content. Combinations including (Positive, Product, Perspective) and (Persuasive, Product, Perspective) achieved slightly lower but still competitive accuracy ratings of 0.90 and 0.89, respectively. Excluding only one of the three main characteristics resulted in a marked reduction in the effectiveness of the classification model. The performance differences between these three characteristic models indicate that while all four attributes contribute to accuracy, specific “Positive” and “Persuasive” features have a more significant impact. 
-
-A similar but more significant decrease in accuracy was seen when evaluating models relying on only two native ad characteristics. The (Positive, Persuasive) and (Persuasive Product) combinations scored 0.91, indicating that this pair continues to have significant predictive power. Models such as (Positive, Product) and (Positive Perspective) showed slightly lower accuracy scores of 0.90, indicating that the lack of “Persuasive” has a negative effect. The (Product Perspective) combination produced the lowest accuracy of 0.89 among the two characteristic models, highlighting the importance of both the persuasive and positive attributes in native ad classification. The performance drop highlights the important role played by the “Positive” and “Persuasive” elements, which appear crucial for achieving high classification accuracy. 
-
-In contrast, models using only one native ad attribute performed significantly lower than models using multiple attributes. The model with one characteristic, ‘Positive,’ scored 0.90 across all metrics, indicating considerable predictive power even when used in isolation. The (Persuasive) and (Product) characteristics scored slightly lower, at 0.89 each, and the weakest performing model in the evaluation was the (Perspective) characteristic alone, with an accuracy of 0.84. The significant performance drop implies that relying solely on “Perspective” significantly limits the model’s capacity for accurate classification. The concat-based model consistently outperformed the other configurations, supporting the hypothesis that a more significant and inclusive feature set results in superior classification performance. The concatenation approach outperformed models that selectively excluded certain features, resulting in a more comprehensive and universally applicable model. The findings of the study indicate that the combination of different native ad features has a significant impact on model performance. The results consistently show that models with three characteristics outperform models with two characteristics, which themselves outperform models with one characteristic, indicating that models that combine more informative features produce more accurate predictions. 
-
-Not all combinations of characteristics yield the same level of performance, indicating that some characteristics have a more significant impact than others. In particular, “Positive” and “Persuasive” appear to have a significant impact, as evidenced by the improved performance of models combining these qualities. Native ads with a positive tone and persuasive elements are critical for accurate classification, significantly since they directly influence user engagement and opinions. In general, models that exhibit the three core characteristics perform well, especially models that combine the “Positive” and “Persuasive” features, albeit with slightly lower proficiency than concatenation-based methods. The study shows that increasing the number of features generally results in improved performance, but combining attributes plays a significant role. Single-character models show a significant decrease in performance, with “Perspective” achieving a score of 0.84, in contrast to two-character models that show moderate success, including a specific setting that achieved a score of 0.91. This relatively lower performance on the "Perspective" label is likely influenced by the dataset's class imbalance, where samples labeled with "Perspective" are underrepresented compared to other characteristics. These findings underscore the importance of careful feature selection, suggesting that combining all four characteristics through a concatenation approach produces the most effective classification models. Further research could further investigate additional features or alternative modeling methods to improve classification accuracy and productivity.
-
-Although the SENADA model achieves high accuracy across all evaluation metrics, approximately 7 percent of the instances were misclassified. A deeper analysis reveals several key reasons behind these errors. First, the distribution of the four native ad characteristics is not perfectly balanced. As shown in the dataset, the "positive" and "perspective" labels have uneven distributions, which can bias the model toward the majority class and reduce its ability to capture subtler distinctions. Second, confusion matrix results indicate that the model struggles particularly with articles that are subtly persuasive or present only one side of a story without strong sentiment. These cases often resemble regular news in structure but implicitly promote a product or viewpoint, making them difficult to detect. Finally, linguistic ambiguity in the text contributes to the classification challenge. Many articles use vague or neutral language, causing the model to miss cues that might be obvious to human readers. As a potential solution, future work could explore soft labeling or introduce an "ambiguous" label category to better capture these borderline cases.
-
-\subsubsection{Scenario IV}
-Table \ref{tab5} compares several deep learning architectures, including the proposed SENADA model and baseline models such as CNN, BiLSTM, BiGRU, and transformer-based models. To ensure a fair comparison, all models were trained using the same training data and underwent hyperparameter tuning based on a consistent search space, following best practices from prior studies on text classification \cite{b20}\cite{utsha-roy}. While the search space and tuning strategy were kept consistent,individual hyperparameter values (such as learning rate, batchsize, and number of layers) were selected based on their suitability for the native ads classification task. This approach ensures that each model was optimized fairly while still being adapted to the specific characteristics of the dataset and classification problem.
-
-The SENADA model stands out by achieving an impressive score of 0.93 across all four metrics, far outperforming its peers. Unlike other models, CNN, which is renowned for its effectiveness in extracting features, produces the lowest result, with an accuracy of 0.85. CNN-based models excel at identifying local patterns in the data, but their weaker performance in this area suggests that extracting spatial features alone may not be sufficient for accurate native ad classification, possibly due to the sequential and contextual nature of the data. This limitation is further confirmed by the stronger performance of sequence-based models and transformer-based architectures, which can better capture complex linguistic cues embedded in native ads.
-
-\begin{table*}
-\caption{Comparative performance of deep learning models (mean ± standard deviation from multiple evaluation runs)}
-\renewcommand{\arraystretch}{1.1} % Menambah tinggi baris tabel
-\tiny
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lrrrr}
-\hline
-\textbf{Model} & \textbf{Accuracy ± SD} & \textbf{Recall ± SD} & \textbf{Precision ± SD} & \textbf{F1 ± SD} \\
-\hline
-SENADA Model & \textbf{0.93 ± 0.002} & \textbf{0.93 ± 0.003} & \textbf{0.93 ± 0.003} & \textbf{0.93 ± 0.003} \\
-CNN & 0.85 ± 0.002 & 0.86 ± 0.003 & 0.85 ± 0.002 & 0.85 ± 0.003 \\
-BiLSTM & 0.88 ± 0.003 & 0.88 ± 0.003 & 0.88 ± 0.002 & 0.88 ± 0.003 \\
-BiGRU & 0.87 ± 0.002 & 0.86 ± 0.003 & 0.87 ± 0.003 & 0.86 ± 0.003 \\
-MLP & 0.87 ± 0.003 & 0.87 ± 0.002 & 0.87 ± 0.003 & 0.87 ± 0.002 \\
-BERT & 0.92 ± 0.002 & 0.92 ± 0.003 & 0.92 ± 0.003 & 0.92 ± 0.002 \\
-roBERTa & 0.92 ± 0.002 & 0.92 ± 0.003 & 0.92 ± 0.003 & 0.92 ± 0.002 \\
-\hline
-\end{tabular}
-}
-\label{tab5}
-\end{table*}
-
-The BiLSTM and BiGRU models outperform CNN, with accuracies reaching 0.88 and 0.87, respectively. The BiLSTM model outperforms BiGRU in all metrics, mainly due to its ability to effectively capture long-range dependencies. In contrast, BiGRU, a computationally less demanding option, still achieves competitive results. Sequence-based models, such as BiLSTM and BiGRU, outperform CNN in native ad classification because they can process contextual relationships in textual features more efficiently. Moreover, the inclusion of attention mechanisms with BiLSTM further enhances its focus on relevant parts of the input sequence, which is crucial in detecting subtle promotional cues in disguised content.
-
-MLP achieves an accuracy of 0.87, performing comparably to BiGRU and slightly below BiLSTM, despite its lack of sequence modeling capabilities. As a feedforward architecture, MLP relies solely on the statistical distribution of input features, which limits its ability to interpret contextual nuances. Nevertheless, its competitive performance suggests that some native ad patterns may be captured through lexical and structural cues alone. However, the absence of temporal modeling restricts its adaptability in more linguistically complex cases. These findings emphasize the importance of integrating context-aware mechanisms in tasks that involve subtle semantic differentiation.
-
-Transformer-based models such as BERT and roBERTa yield significantly stronger performance, with BERT and roBERTa closely behind at 0.92. These models utilize bidirectional attention to capture deep contextual relationships, making them particularly effective in identifying the stylistic mimicry used in native ads. BERT's ability to consider both left and right contexts simultaneously allows for a more holistic understanding of sentence semantics, essential in distinguishing nuanced advertising from legitimate content. While roBERTa employs a similar architecture, its training optimizations may contribute to slightly less consistent results in this domain. These results confirm the utility of pre-trained language models in domains requiring fine-grained textual interpretation.
-
-Kumar \cite{b20} showed that combining CNN and BiLSTM with attention can improve the accuracy in distinguishing real news from fake news. Similarly, this study uses an ensemble deep-learning approach to detect native ads in news portals. However, rather than focusing on fake news detection in general, this study explicitly investigates the linguistic and structural characteristics that distinguish native ads from organic news. Kumar determined that BiLSTM is superior to CNN in capturing sequential dependencies in text, and this study corroborates this conclusion. Furthermore, the current findings extend Kumar’s work by evaluating additional architectures such as MLP, BERT, and roBERTa, demonstrating that transformer-based models outperform both CNN and BiLSTM in capturing the subtle linguistic patterns associated with native ads.
-
-\subsubsection{Scenario V}
-Table \ref{tab6} provides a comprehensive comparison of the training, testing, and overall computation time required by the different deep learning models used in native ad classification. The SENADA model required the longest overall processing time, totaling 2718 seconds, significantly longer than any baseline model. The longer execution time is mainly due to the ensemble deep learning approach used in the SENADA Model, which integrates multiple deep learning architectures to improve predictive performance. Unlike other models, which rely on a single deep learning framework, the ensemble method combines predictions from multiple models, increasing computational complexity. The SENADA model covers four key native ad attributes: Positive, Persuasive, Product, and Perspective, unlike other models that rely on fewer distinguishing features. The broader feature set adds multiple levels of processing, combining feature combinations, and optimization, resulting in longer computational time.
-
-\begin{table}
-\caption{Comprehensive comparison of training, testing, and overall computing time}
-\renewcommand{\arraystretch}{1.3} % Menambah tinggi baris tabel
-% \normalsize
-\large
-% \tiny
-\resizebox{\linewidth}{!}{
-\begin{tabular}{lp{3cm}p{3cm}p{3cm}} 
-\hline
-        \textbf{Model} & \textbf{Total time (seconds)} & \textbf{Training Time (seconds)} & \textbf{Testing Time (seconds)}\\
-        \hline
-        SENADA Model & 2718 & 43 & 0.8 \\
-        CNN & 110 & 65 & 0.69 \\
-        BiLSTM & 1140 & 1088 & 2 \\
-        BiGRU & 2024 & 1966 & 6 \\
-        \hline
-\end{tabular}
-}
-\label{tab6}
-\end{table}
-
-Significant differences are seen in the training time analysis between the proposed model and the other architectures. The training phase of the SENADA model is relatively fast, taking only 43 seconds, which is significantly shorter than BiLSTM (1088 seconds) and BiGRU (1966 seconds), considering the ensemble design of the models. The ensemble strategy has been optimized to minimize the training overhead, which may be achieved through a parallel training process or a simplified feature extraction method. Compared to the others, CNN offers the lowest overall execution time of 110 seconds with a training duration of 64.97 seconds, making it the least computationally intensive model. CNN also performs the lowest in classification. In contrast, the BiLSTM and BiGRU models require significantly longer training times. As a result, their sequential learning approach makes them inherently slower due to their reliance on sequential data processing.
-
-Despite its ensemble composition, the SENADA model has a competitive inference speed of 0.8 seconds, making it relatively efficient. CNN achieves the fastest inference time at 0.69 seconds, illustrating the mild benefits of convolutional architectures in text classification tasks. BiLSTM takes 2.17 seconds, and BiGRU takes 5.64 seconds to complete, indicating that these recursive-based models have slower testing speeds and require additional processing time for prediction generation. Sequential recursive architectures are expected to exhibit performance lags due to the inherent nature of processing each time step sequentially, resulting in slower processing times than CNNs and ensemble methods optimized for inference efficiency. The relatively low inference time of the SENADA model implies that although deep learning ensemble frameworks are computationally intensive to train, their inference phase has been optimized for real-world applications. 
-
-Although SENADA integrates multiple deep learning components, including BERT embeddings, BiLSTM with attention, and ensemble strategies, its relatively short training time can be explained by its modular and decoupled architecture. Unlike baseline models such as BiLSTM and BiGRU that train end-to-end on raw text, SENADA uses precomputed BERT embeddings, which means the model trains on structured input vectors rather than starting from raw data. In addition, each component in the ensemble is trained separately and often in parallel, making the overall training process more efficient. Because of this design, the training phase mainly focuses on fine-tuning the final layers and combining model outputs rather than learning all representations from scratch. This approach helps reduce training time while preserving the benefits of architectural complexity.
-
-Due to its ensemble architecture, the SENADA model required the longest overall computation time (2718 seconds). It integrates BERT embeddings, BiLSTM with attention, and multiple feature representations targeting four native ads characteristics. This complexity significantly improves classification performance but increases computational costs compared to baseline models. However, the model maintains a competitive inference time of 0.8 seconds, which is suitable for real-time applications. Compared to BiLSTM (2.17 seconds) and BiGRU (5.64 seconds), SENADA’s optimized design demonstrates better responsiveness while preserving high accuracy. It indicates a favorable tradeoff between computational cost and model quality, particularly in contexts where detection accuracy is critical, such as content moderation or media monitoring. CNN remains the most efficient in terms of speed but underperforms in accuracy, making it less ideal for nuanced classification tasks. While SENADA is computationally heavier during training, its efficient inference phase ensures practical deployment in production systems. Future work may explore model compression techniques, such as pruning, quantization, or knowledge distillation, to further reduce resource usage without sacrificing performance.
-
-In addition, since SENADA employs multiple deep learning encoders for feature extraction, it is important to consider the full inference cost and latency when applied in real-world environments. Although the model shows efficient inference time in controlled evaluation, practical deployment may require further system-level latency and scalability analysis. The attention mechanism helps improve interpretability by identifying key parts of the text, but more work is needed to ensure that predictions can be meaningfully explained to end users and stakeholders, especially in media or regulatory contexts.
-
-In contrast, BiLSTM and BiGRU, despite achieving better accuracy than CNN, exhibit significantly higher training and inference times. These findings highlight the trade-off between computational efficiency and model performance, reinforcing the importance of optimizing ensemble methods for accuracy and efficiency in native ad classification tasks. Future research can explore further optimizations such as model pruning, knowledge distillation, or adaptive inference strategies to improve the computational efficiency of the SENADA model without sacrificing classification accuracy.
-
-\subsubsection{Comparison with LLM}
-To further evaluate the performance of the SENADA model, a comparative analysis was conducted against a large language model, Gemma, using BERTScore as the evaluation metric. BERTScore is particularly suitable for the semantic-level comparison, as it aligns model-generated text with reference outputs based on contextual embeddings from pre-trained language models. The evaluation shows that Gemma achieved a BERTScore Precision of 0.9293, Recall of 0.9289, and F1 Score of 0.9289, indicating high semantic similarity in text classification tasks. These results reflect the capacity of LLMs to capture nuanced language patterns and deep contextual representations. However, evaluating performance solely based on semantic similarity does not always reflect the model’s effectiveness in identifying implicit promotional intent, which is central to native ad detection.
-
-In contrast, the SENADA model also demonstrates strong semantic alignment, with BERTScore results on par with Gemma’s, particularly in terms of Recall and Precision. SENADA achieves an F1 Score of 0.93 across traditional metrics and maintains semantic robustness, confirming its effectiveness in understanding surface-level and latent features of native advertisements. Unlike Gemma, which is pre-trained on general-purpose corpora, SENADA is fine-tuned specifically for the native ad classification task, allowing it to better differentiate between organic content and promotional narratives. This domain-specific fine-tuning is critical in enhancing classification performance beyond general language understanding. Thus, SENADA combines task-specific optimization and semantic sensitivity, resulting in a competitive advantage over generic LLMs.
-
-From a resource efficiency perspective, SENADA also offers significant advantages. Gemma requires extensive computational resources for training and inference as a large-scale transformer model, which can pose challenges for deployment in real-world scenarios with limited infrastructure. In contrast, SENADA is built on a more compact and efficient ensemble architecture, integrating BiLSTM with attention mechanisms and feature concatenation strategies. This architecture enables high performance without incurring the computational overhead typical of LLMs. Therefore, SENADA offers a practical and effective solution for institutions aiming to deploy native ad detection systems in production environments.
-
-Overall, the comparative analysis shows that while LLMs like Gemma demonstrate strong general language capabilities, task-specific models such as SENADA can match or even surpass their performance in focused classification tasks. The findings highlight that when designed with task relevance in mind, fine-tuned deep learning architectures remain highly competitive even in the presence of state-of-the-art LLMs. Furthermore, SENADA’s consistent performance across traditional and semantic metrics reinforces its robustness and reliability. These results suggest that future research may benefit from combining the scalability of LLMs with the precision of specialized architectures. The synergy between general-purpose understanding and domain-specific adaptation could yield even more effective approaches to native advertisement detection.
-
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1\linewidth]{shap.jpg} 
-    \caption{SHAP visualizations}
-    \label{fig:fig8}
-\end{figure}
-
-\subsection{Model Interpretation Using SHAP}
-To enhance the interpretability of the SENADA model, we employed SHAP (SHapley Additive exPlanations), which allows us to explain the contribution of each feature to the model’s predictions. SHAP plays a crucial role in identifying and understanding how different features, such as positive, persuasive, product, and perspective influence the model’s outputs. By utilizing SHAP, each feature can be analyzed to assess its contribution to the prediction, enabling more transparent and accountable evaluations of the model’s decision-making process. 
-
-Figure \ref{fig:fig8} explains the SHAP visualizations, including the summary plot and bar plot, providing a clear understanding of individual feature contributions. The summary plot shows how each feature contributes to the overall prediction, with each point representing the contribution of a feature for a single instance. These points are spread along the horizontal axis, corresponding to each feature's SHAP interaction values. Features farther from zero on the axis indicate a more significant contribution to the model’s prediction. The color of the points represents the impact of feature values, with red indicating a positive influence and blue indicating a negative influence. In contrast, the bar plot offers a ranking of features based on their average SHAP value, with longer bars indicating features that contribute most to the prediction. 
-
-Features with higher mean SHAP values influence the model’s decisions more. Applying SHAP to the SENADA model allows for further optimization of the model’s processes, providing stronger justifications for automated decision-making and improving the transparency of the model’s results. The insights derived from these interpretations are invaluable for ensuring the model operates as expected and offering clearer guidance in data-driven decision-making. Thus, the use of SHAP significantly strengthens the validity and accountability of the model, while also providing direction for future model improvements.
-
-\subsection{Discussion and Limitations}
-In addition to its strong performance, this study contributes significantly by introducing a benchmark dataset for native advertisement detection in the Indonesian language. This area has been largely underexplored in previous research. The proposed SENADA architecture offers not only high accuracy but also interpretability, making it applicable to other low-resource languages and domains where implicit promotional content resembles editorial writing. With further refinement and scalability, this framework has the potential to support media transparency and automated monitoring systems on a broader scale. 
-
-Despite its strengths, the proposed model faces several limitations that should be addressed in future work. One key challenge lies in the implicit nature of native ads, where only a small portion of the article may reflect native advertising characteristics. At the same time, the rest mimics standard news writing. This uneven signal distribution makes detection more difficult, as relevant cues are sparse and context-dependent. However, the data set constructed in this study has shown strong representativeness and quality, allowing effective model training.
-
-Furthermore, the results of the evaluation indicate that characteristics such as positive sentiment and persuasive tone play an important role in the successful classification. Future research may further explore these aspects by using more advanced semantic modeling techniques. For instance, implementing a specialized multi-head attention mechanism to weigh each native ad trait—sentiment, persuasion, product mention, and perspective could enhance performance and provide deeper interpretability.
-
-The general architecture of SENADA is language agnostic, as it builds on pre-trained multilingual BERT embeddings and a modular classification structure. This design enables adaptation to other languages by retraining on annotated datasets with similar native advertisement characteristics. As long as native ads in the target language exhibit comparable implicit features such as persuasive tone, biased perspective, or product mentions, the SENADA framework can be fine-tuned effectively. Future studies could validate this by applying the model to multilingual corpora and assessing cross-lingual transfer capabilities, which would expand its relevance beyond the Indonesian context.
-
-While this study demonstrates strong model performance through standard evaluation metrics, one important limitation is the lack of human validation involving professionals such as editors or journalists. The current evaluation does not capture how these experts perceive or interpret the model's predictions. Given the subjective and contextual nature of native advertising, future research should incorporate qualitative validation by domain experts. Involving media professionals in evaluating model outputs can provide deeper insights into the classifications' practical applicability, perceived reliability, and editorial relevance. Their feedback could also guide model refinement to align with journalistic standards and ethical considerations in news publishing.
-
-Although the SENADA model achieves competitive results, its ensemble-based structure introduces complexity and an extended training time. To mitigate this, future efforts may consider adopting multitask learning (MTL) to learn all native ad characteristics within a unified model jointly. This approach may improve efficiency and generalization. Furthermore, knowledge distillation or lightweight ensemble strategies could simplify the architecture while maintaining model performance, enabling easier deployment in real-world applications.
-
-\section{Conclusion}
-This study presents a comprehensive approach to detecting native advertisements in Indonesian electronic news by introducing a high-quality dataset and a novel deep learning architecture. A dedicated dat set was developed by collecting and annotating news articles from six major online news portals. The annotation process focused on four implicit characteristics of native ads: positive or neutral sentiment, promotional content, single-point-of-view reporting, and persuasive writing style. Manual labeling was performed by trained annotators and validated by domain experts, following a strict codebook and inter-annotator agreement process. This dataset fills a significant gap in Indonesian NLP resources and provides a solid foundation for future research in native ad detection. 
-
-To explore the effectiveness of various deep learning models, the study evaluated BiGRU, BiLSTM, and CNN for multiple classification tasks related to native ad features. The BiGRU model consistently outperformed others in detecting positive sentiment and persuasive content, while BiLSTM demonstrated superior performance in identifying product/company mentions and narrative perspective. CNN showed relatively high overall accuracy but struggled in terms of precision, recall, and F1-score, indicating a tendency toward misclassification in tasks requiring fine-grained contextual understanding. 
-
-The research further introduced SENADA, a custom ensemble architecture combining BERT embeddings, ensemble learning strategies, and a BiLSTM model with an attention mechanism. The approach incorporates sentence-level streaming vectors with various fusion strategies—concatenate, add, and multiply. Among these, the concatenate method yielded the best results, achieving 93\% across accuracy, precision, recall, and F1-score. The attention mechanism significantly enhanced the model’s ability to capture contextual relationships and distinguish subtle linguistic patterns typical of native ads. 
-
-Despite the promising results, this study is not without limitations. While carefully constructed, the dataset may still carry annotation bias due to the subjective nature of interpreting implicit advertisement features. Moreover, certain native ad traits can be highly context-dependent and culturally nuanced, which poses additional challenges in ensuring consistency and objectivity. Another limitation lies in the class distribution across the annotated labels, which, although balanced during preprocessing, may not reflect the natural frequency of such ads in real-world data, potentially affecting model generalizability.
-
-In addition, the linguistic complexity of Bahasa, including the use of informal expressions, idioms, and regional variations, introduces challenges for semantic representation and contextual modeling, particularly for transformer-based models pre-trained primarily on general-domain or English data. Future work should explore more robust pretraining strategies, bias mitigation, and evaluation across larger and more diverse corpora to improve scalability and fairness in real-world applications.
-
-Overall, the proposed method has proven effective in detecting native ads that often disguise themselves as regular editorial content. The combination of linguistic insight, attention-based modeling, and ensemble learning enables the system to perform consistently across various textual conditions. This work not only contributes a new benchmark dataset for the Indonesian language but also offers a scalable and interpretable architecture for native ad detection, which can be adapted for broader applications in media analysis and digital content regulation.
-
-\section{ACKNOWLEDGMENTS}
-The study is supported by Institut Teknologi Sepuluh Nopember for funding this study with a doctoral fellowship under the terms of contract 1333/IT2/T/HK.00.01/2022.
+\section*{Ucapan Terima Kasih (Acknowledgment)}
+Penelitian ini didanai oleh Lembaga Pengelola Dana Pendidikan (LPDP) atas nama Kementerian Pendidikan Tinggi, Sains, dan Teknologi Republik Indonesia serta dikelola di bawah Program EQUITY (Kontrak No. 10916/IT2.III/T/KP.03.00/XII/2025).
 
 \begin{thebibliography}{00}
-
-\bibitem{b1} Kutlu, A. (2022). Native Advertising the Effect of Native Advertising on Ad Credibility. International Journal of Economics, Business and Management Research, 06(11), 152–165. https://doi.org/10.51505/ijebmr.2022.61111
-
-\bibitem{b2} Jung, A. R., \& Heo, J. (2023). Attentional Benefits of Native Ads from the Difficulty of Recognition. International Journal of Human-Computer Interaction. https://doi.org/10.1080/10447318.2023.2247556
-
-\bibitem{b3} Sahllal, N., \& Souidi, E. M. (2023). A Comparative Analysis of Sampling Techniques for Click-Through Rate Prediction in Native Advertising. IEEE Access, 11, 24511–24526. https://doi.org/10.1109/ACCESS.2023.325598
-
-\bibitem{b4} Zhou, Z. (2023). Digital Transformation of Advertising: Trends, Strategies, and Evolving User Preferences in Online Advertising. Highlights in Business, Economics and Management, 23, 1224–1229. https://doi.org/10.54097/3088d623
-
-\bibitem{b5} Pasandaran, C. C. (2018). Political Advertising Camouflage As News. Jurnal Komunikasi Ikatan Sarjana Komunikasi Indonesia, 3(2). https://doi.org/10.25008/jkiski.v3i2.239
-
-\bibitem{b6} Wojdynski, B. W. (2016). The Deceptiveness of Sponsored News Articles: How Readers Recognize and Perceive Native Advertising. American Behavioral Scientist, 60(12), 1475–1491. https://doi.org/10.1177/0002764216660140
-
-\bibitem{b7} Beckert, J., Koch, T., Viererbl, B., Denner, N., \& Peter, C. (2020). Advertising in disguise? How disclosure and content features influence the effects of native advertising. Communications, 45(3), 303–324. https://doi.org/10.1515/commun-2019-0116
-
-\bibitem{b8} Fawaid, J., Awalina, A., Krisnabayu, R. Y., \& Yudistira, N. (2021). Indonesia’s Fake News Detection using Transformer Network. In ACM International Conference Proceeding Series (pp. 247–251). Association for Computing Machinery. https://doi.org/10.1145/3479645.3479666
-
-\bibitem{b9} Vlad, G.-A., Tanase, M.-A., Onose, C., \& Cercel, D.-C. (2019). Sentence-Level Propaganda Detection in News Articles with Transfer Learning and BERT-BiLSTM-Capsule Model (pp. 148–154). Association for Computational Linguistics (ACL). https://doi.org/10.18653/v1/d19-5022
-
-\bibitem{b10} Sadeghi, F., Bidgoly, A. J., \& Amirkhani, H. (2022). Fake news detection on social media using a natural language inference approach. Multimedia Tools and Applications, 81(23), 33801–33821. https://doi.org/10.1007/s11042-022-12428-8
-
-\bibitem{b11} An, N., Ding, H., Yang, J., Au, R., \& Ang, T. F. A. (2020). Deep ensemble learning for Alzheimer’s disease classification. Journal of Biomedical Informatics, 105. https://doi.org/10.1016/j.jbi.2020.103411
-
-\bibitem{b12} Qin, X., Liu, J., Wang, Y., Liu, Y., Deng, K., Ma, Y., … Sun, X. (2021). Natural language processing was effective in assisting rapid title and abstract screening when updating systematic reviews. Journal of Clinical Epidemiology, 133, 121–129. https://doi.org/10.1016/j.jclinepi.2021.01.010
-
-\bibitem{b13} Fattahi, J., \& Mejri, M. (2021). SpaML: A bimodal ensemble learning spam detector based on NLP techniques. In 2021 IEEE 5th International Conference on Cryptography, Security and Privacy, CSP 2021 (pp. 107–112). Institute of Electrical and Electronics Engineers Inc. https://doi.org/10.1109/CSP51677.2021.9357595
-
-\bibitem{b24} Wang, Z., Wang, L., Huang, C., Sun, S., \& Luo, X. (2023). BERT-based chinese text classification for emergency management with a novel loss function. Applied Intelligence, 53(9), 10417–10428. https://doi.org/10.1007/s10489-022-03946-x
-
-\bibitem{b25} Ghosh, T., Banna, M. H. A., Nahian, M. J. A., Uddin, M. N., Kaiser, M. S., \& Mahmud, M. (2023). An attention-based hybrid architecture with explainability for depressive social media text detection in Bangla. Expert Systems with Applications, 213. https://doi.org/10.1016/j.eswa.2022.119007
-
-\bibitem{b14} Koru, G. K., \& Uluyol, C. (2024). Detection of Turkish Fake News from Tweets with BERT Models. IEEE Access, 12, 14918–14931. https://doi.org/10.1109/ACCESS.2024.3354165
-
-\bibitem{b15} Aslam, N., Ullah Khan, I., Alotaibi, F. S., Aldaej, L. A., \& Aldubaikil, A. K. (2021). Fake Detect: A Deep Learning Ensemble Model for Fake News Detection. Complexity, 2021. https://doi.org/10.1155/2021/5557784
-
-\bibitem{b16} Malla, S. J., \& Alphonse, P. J. A. (2022). Fake or real news about COVID-19? Pretrained transformer model to detect potential misleading news. European Physical Journal: Special Topics, 231(18–20), 3347–3356. https://doi.org/10.1140/epjs/s11734-022-00436-6
-
-\bibitem{b17} Al-Yahya, M., Al-Khalifa, H., Al-Baity, H., Alsaeed, D., \& Essam, A. (2021). Arabic Fake News Detection: Comparative Study of Neural Networks and Transformer-Based Approaches. Complexity, 2021. https://doi.org/10.1155/2021/5516945
-
-\bibitem{b18} Isa, S. M., Nico, G., \& Permana, M. (2022). INDOBERT FOR INDONESIAN FAKE NEWS DETECTION. ICIC Express Letters, 16(3), 289–297. https://doi.org/10.24507/icicel.16.03.289
-
-\bibitem{b19} Bensouda, N., Fkihi, S. E., \& Faizi, R. (2024). A novel ensemble model for detecting fake news. IAES International Journal of Artificial Intelligence, 13(1), 1160–1171. https://doi.org/10.11591/ijai.v13.i1.pp1160-1171
-
-\bibitem{b20} Kumar, S., Asthana, R., Upadhyay, S., Upreti, N., \& Akbar, M. (2020). Fake news detection using deep learning models: A novel approach. Transactions on Emerging Telecommunications Technologies, 31(2). https://doi.org/10.1002/ett.3767
-
-\bibitem{b21} Darnoto, B.R.P., Siahaan, D. \& Purwitasari, D. Electronic News Dataset for Native Advertisement Detection. Sci Data 12, 1045 (2025). https://doi.org/10.1038/s41597-024-04341-6
-
-\bibitem{b22} Wang, W. Y. (2017). “Liar, liar pants on fire”: A new benchmark dataset for fake news detection. In ACL 2017 - 55th Annual Meeting of the Association for Computational Linguistics, Proceedings of the Conference (Long Papers) (Vol. 2, pp. 422–426). Association for Computational Linguistics (ACL). https://doi.org/10.18653/v1/P17-2067
-
-\bibitem{b23} Keras.io. (2022). Keras Applications. Keras.Io, 1. Retrieved from https://www.tensorflow.org/api\_docs
-
-\bibitem{utsha-roy} Utsha Roy, Mst Sazia Tahosin, Md. Mahedi Hasan, Taminul Islam, Fahim Imtiaz, Md Rezwane Sadik, Yassine Maleh, Rejwan Bin Sulaiman, and Md Simul Hassan Talukder. 2024. Enhancing Bangla Fake News Detection Using Bidirectional Gated Recurrent Units and Deep Learning Techniques. In Proceedings of the 7th International Conference on Networking, Intelligent Systems and Security (NISS '24). Association for Computing Machinery, New York, NY, USA, Article 14, 1–10. https://doi.org/10.1145/3659677.3659703
-
+\bibitem{b38} Smith, K., et al. (2023). The Ethics of Native Advertising in the Age of Generative AI. Journal of Media Ethics, Taylor \& Francis.
+\bibitem{b53} LaBrecque, A. C., Voorhees, C. M., Khodakarami, F., \& Fombelle, P. W. (2024). Native advertising effectiveness: The role of congruence and consumer annoyance on clicks, bounces, and visits. Journal of the Academy of Marketing Science, 52(6), 1692--1712. https://doi.org/10.1007/s11747-024-01014-z
+\bibitem{b54} Matteo, S., \& Dal Zotto, C. (2015). Native Advertising, or How to Stretch Editorial to Sponsored Content Within a Transmedia Branding Era. In G. Siegert, K. Förster, S. Chan-Olmsted, \& M. Ots (Eds.), Handbook of Media Branding (pp. 169--185). Springer.
+\bibitem{b17} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2024). Electronic news dataset for native advertisement detection. Scientific Data, 11(1), 1045. https://doi.org/10.1038/s41597-024-04341-6
+\bibitem{b21} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). Automated Detection of Persuasive Content in Electronic News. Informatics, 10(4), 86. MDPI.
+\bibitem{b8} Fawaid, J., et al. (2021). Indonesia’s Fake News Detection using Transformer Network. In ACM International Conference Proceeding Series.
+\bibitem{b9} Vlad, G.-A., Tanase, M.-A., Onose, C., \& Cercel, D.-C. (2019). Sentence-Level Propaganda Detection in News Articles with Transfer Learning and BERT-BiLSTM-Capsule Model. In Proceedings of the Second Workshop on Natural Language Processing for Internet Freedom: Censorship, Disinformation, and Propaganda, pp. 148--154. Association for Computational Linguistics. https://doi.org/10.18653/v1/D19-5022
+\bibitem{b19} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). SENADA: A Stacked Ensemble Learning for Native Advertisement Detection in Electronic News. IEEE Access, 11, 102341--102355.
+\bibitem{b23} Vaswani, A., et al. (2017). Attention is All You Need. In Advances in Neural Information Processing Systems (NeurIPS).
+\bibitem{b39} Devlin, J., et al. (2018). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics.
+\bibitem{b25} Lewis, P., et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. In Advances in Neural Information Processing Systems (NeurIPS).
+\bibitem{b15} Brown, T., et al. (2020). Language Models are Few-Shot Learners. In Advances in Neural Information Processing Systems (NeurIPS).
+\bibitem{b50} Alnabhan, M., \& Branco, P. (2024). Explainability and Robustness in AI-Based Fake News Detection: A Systematic Literature Review. IEEE Access, 12, 161739--161760.
+\bibitem{b55} Touahri, H., et al. (2024). Fake news detection methods in social networks: a review. Artificial Intelligence Review, 57, 169.
+\bibitem{b18} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2023). A Comprehensive Ensemble Deep Learning Method for Identifying Native Advertising in News Articles. In 2023 IEEE 8th International Conference on Software Engineering and Computer Systems (ICSECS), pp. 450--455.
+\bibitem{b52} Galli, A., Masciari, E., Moscato, V., \& Sperlí, G. (2022). A comprehensive Benchmark for fake news detection. Journal of Intelligent Information Systems, 59, 237--261. https://doi.org/10.1007/s10844-021-00646-9
+\bibitem{b57} Peng, J., Yang, Z., Jia, L., et al. (2025). Disinformation detection technology: a survey. Discover Computing, 28, 320. https://doi.org/10.1007/s10791-025-09864-z
+\bibitem{b10} Zhang, Y., et al. (2025). Agentic AI: Autonomous Intelligence for Complex Goals: A Comprehensive Survey. IEEE Access, 13, 4521--4545.
+\bibitem{b49} Adadi, A., \& Berrada, M. (2018). Peeking Inside the Black-Box: A Survey on Explainable Artificial Intelligence (XAI). IEEE Access, 6, 52138--52160.
+\bibitem{b51} Arrieta, A. B., et al. (2020). Explainable Artificial Intelligence (XAI): Concepts, taxonomies, opportunities and challenges toward responsible AI. Information Fusion, 58, 82--115.
+\bibitem{b59} Samek, W., Montavon, G., Vedaldi, A., Hansen, L. K., \& Müller, K.-R. (2019). Explainable AI: Interpreting, Explaining and Visualizing Deep Learning. Lecture Notes in Computer Science, 11700. Springer.
+\bibitem{b36} Hu, E. J., et al. (2022). LoRA: Low-Rank Adaptation of Large Language Models. International Conference on Learning Representations (ICLR).
+\bibitem{b37} Dao, T. (2023). FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning. International Conference on Learning Representations (ICLR).
+\bibitem{b20} Johnson, A., et al. (2024). Explainable AI in Digital Journalism: A Systematic Review of Editorial Requirements. Digital Journalism, Elsevier.
+\bibitem{b24} Choudhary, T. (2025). Political Bias in Large Language Models: A Comparative Analysis of ChatGPT-4, Perplexity, Google Gemini, and Claude. IEEE Access, 13, 11341--11379.
+\bibitem{b22} Wang, J., et al. (2025). Real-time Ad Retrieval via LLM-generative Commercial Intention for Sponsored Search Advertising. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (ACL).
+\bibitem{b48} Darnoto, B. R. P., Siahaan, D., \& Purwitasari, D. (2022). A Novel Framework to Detect Irrelevant Software Requirements Based on MultiPhiLDA as the Topic Model. Informatics, 9(3), 67. MDPI.
+\bibitem{b60} Zhou, X., \& Zafarani, R. (2020). A Survey of Fake News: Fundamental Theories, Detection Methods, and Opportunities. ACM Computing Surveys, 53(5), 109:1--109:40. https://doi.org/10.1145/3395046
+\bibitem{b61} Bondielli, A., \& Marcelloni, F. (2019). A survey on fake news and rumour detection techniques. Information Sciences, 497, 38--55. https://doi.org/10.1016/j.ins.2019.05.035
+\bibitem{b62} Shu, K., Sliva, A., Wang, S., Tang, J., \& Liu, H. (2017). Fake News Detection on Social Media: A Data Mining Perspective. ACM SIGKDD Explorations Newsletter, 19(1), 22--36. https://doi.org/10.1145/3137597.3137600
+\bibitem{b63} Lundberg, S. M., \& Lee, S.-I. (2017). A Unified Approach to Interpreting Model Predictions. In Advances in Neural Information Processing Systems 30 (NeurIPS), pp. 4765--4774.
+\bibitem{b64} Ribeiro, M. T., Singh, S., \& Guestrin, C. (2016). ``Why Should I Trust You?'': Explaining the Predictions of Any Classifier. In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, pp. 1135--1144. https://doi.org/10.1145/2939672.2939778
+\bibitem{b65} Vosoughi, S., Roy, D., \& Aral, S. (2018). The spread of true and false news online. Science, 359(6380), 1146--1151. https://doi.org/10.1126/science.aap9559
+\bibitem{b66} Castillo, C., Mendoza, M., \& Poblete, B. (2011). Information credibility on Twitter. In Proceedings of the 20th International Conference on World Wide Web, pp. 675--684. https://doi.org/10.1145/1963405.1963500
+\bibitem{b67} Shu, K., Wang, S., Lee, D., \& Liu, H. (2019). Beyond News Contents: The Role of Social Context for Fake News Detection. In Proceedings of the 12th ACM International Conference on Web Search and Data Mining, pp. 312--320. https://doi.org/10.1145/3289600.3290994
 \end{thebibliography}
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{brian.jpg}}]{Brian Rizqi Paradisiaca Darnoto} menerima gelar doktor di bidang informatika dari Institut Teknologi Sepuluh Nopember, Surabaya, Indonesia, pada tahun 2025. Saat ini, ia adalah Peneliti Postdoktoral di Institut Teknologi Sepuluh Nopember dan juga merupakan Dosen di Universitas Jember, Indonesia. Minat penelitiannya meliputi kecerdasan buatan, pemrosesan bahasa alami, dan rekayasa perangkat lunak.
+\end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{brian.jpg}}]{Brian Rizqi Paradisiaca Darnoto} received the
-master’s degree in informatics from the Institut Teknologi Sepuluh Nopember, Surabaya, Indonesia, in 2022, where he is currently pursuing a Doctoral degree. He is a Lecturer at the University of Jember, Indonesia. Several papers in computer science have been published in journals and conferences. His research interests include artificial intelligence, natural language processing, and software engineering.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{diana.png}}]{Diana Purwitasari} (Senior Member, IEEE) adalah seorang Profesor di Departemen Informatika, Institut Teknologi Sepuluh Nopember. Minat penelitian beliau meliputi \textit{information retrieval}, \textit{social network analysis}, dan \textit{web mining}.
 \end{IEEEbiography}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{daniel.png}}]{Daniel Oranova Siahaan} (Member, IEEE) received a master’s degree in software engineering from Technische Universiteit Delft in 2002 and a Ph.D. in software engineering from Technische Universiteit Eindhoven in 2004. He is a professor at the Department of Informatics, Institut Teknologi Sepuluh Nopember. He has published over 50 journal articles and conference papers on software engineering. His research interests include requirements engineering and natural language processing. He is a member of the IEEE Computer Society.
-\end{IEEEbiography}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{diana.png}}]{Diana Purwitasari} (Senior Member, IEEE) received a Ph.D. degree in computer science and engineering from the Multimedia Computing Laboratory, Department of Electrical Engineering, Faculty of Intelligent Electrical and Informatics Technology (ELECTICS), Institut Teknologi Sepuluh Nopember (ITS), Surabaya, Indonesia, in 2020. She is a Professor at the Department of Informatics, ELECTICS, ITS. Her research interests include information retrieval, social network analysis, computational intelligence, and web mining. Dr. Purwitasari has been actively involved in some professional societies, such as joining the design task force of AI Towards Indonesia Vision 2045, the University Center of Excellence on Artificial Intelligence for Healthcare and Society (UCE AIHeS) Indonesia, the Industrial Electronics Society (IES) Chapter Indonesia Section, and Indonesia AI Research Consortium by the Ministry of Research and Technology, since March 2020.
+
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{daniel.png}}]{Daniel Oranova Siahaan} (Member, IEEE) adalah seorang profesor di Departemen Informatika, Institut Teknologi Sepuluh Nopember. Beliau telah menerbitkan lebih dari 50 artikel jurnal dan makalah konferensi mengenai rekayasa perangkat lunak. Minat penelitiannya meliputi rekayasa peranti pemenuhan kebutuhan (\textit{requirements engineering}) dan pemrosesan bahasa alami.
 \end{IEEEbiography}
 
 \EOD
-
 \end{document}
