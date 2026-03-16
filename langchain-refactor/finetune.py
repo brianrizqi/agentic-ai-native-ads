@@ -121,12 +121,12 @@ MODEL_CONFIGS = {
     "gemma3-12b": {
         "name": "unsloth/gemma-3-12b-it-bnb-4bit",
         "max_seq_length": 1024,
-        "lora_r": 16,
-        "lora_alpha": 32,
+        "lora_r": 32,
+        "lora_alpha": 64,
         "batch_size": 1,
         "gradient_accumulation": 8,
         "learning_rate": 2e-5,
-        "description": "Gemma 3 12B Instruct - New version for native ads"
+        "description": "Gemma 3 12B Instruct - Full dataset bilingual (ID+EN)"
     },
     "gemma3-4b": {
         "name": "unsloth/gemma-3-4b-it-bnb-4bit",
@@ -265,6 +265,9 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None, model_key: str = 
             sentences = re.split(r'[.!?]\s+', sample['input'])
             title = sentences[0][:100] if sentences else sample['input'][:100]
         
+        # Determine language for bilingual training
+        lang = sample.get('lang', 'id').lower()
+        
         if use_mcq:
             # MCQ format for 270M: Reasoning + Jawaban: A/B
             mcq_label = "A" if label == "native ads" else "B"
@@ -273,8 +276,37 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None, model_key: str = 
                 title=title,
                 content=sample['input'][:400]
             )
+        elif lang == 'en':
+            # English prompt template for EN samples
+            EN_PROMPT_TEMPLATE = """Classify the following article as 'native ads' or 'pure news'.
+
+Native Ads combine ALL of these traits:
+1. Positive/neutral tone (not critical of the subject)
+2. Persuasive language (convincing/inviting)
+3. Promotes a product, brand, or institution
+4. Only one viewpoint (not objective)
+
+Pure News:
+- Can be positive/neutral/negative
+- Objective, presents multiple viewpoints
+- Does not promote products/brands
+
+Title: {title}
+Content: {content}
+
+Output (JSON):
+"""
+            expected_output = json.dumps({
+                "label": label,
+                "confidence": output_json.get('confidence', 0.9),
+                "reasoning": reasoning[:150]
+            }, ensure_ascii=False)
+            user_text = EN_PROMPT_TEMPLATE.format(
+                title=title,
+                content=sample['input'][:400]
+            )
         else:
-            # JSON format for larger models: Full JSON output
+            # JSON format for larger ID models: Full JSON output
             expected_output = json.dumps({
                 "label": label,
                 "confidence": output_json.get('confidence', 0.9),
