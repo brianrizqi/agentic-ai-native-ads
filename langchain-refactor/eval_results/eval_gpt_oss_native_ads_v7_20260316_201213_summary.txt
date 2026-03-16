@@ -1,0 +1,25 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/gpt-oss-native-ads-v7_merged_16bit/
+Timestamp: 20260316_201213
+Dataset: ../data/llm_dataset_12k_refined_full.json
+Samples: 200
+
+Overall Metrics:
+  Accuracy: 60.50%
+  Correct: 121/200
+
+BERTScore:
+  Precision: 0.555
+  Recall: 0.673
+  F1: 0.606
+
+NLP Metrics (Reasoning Quality):
+  BLEU: 0.0031
+  METEOR: 0.0850
+
+Per-Class Accuracy:
+  native ads: 98.10%
+  berita murni: 18.95%
