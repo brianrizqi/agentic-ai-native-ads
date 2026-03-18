@@ -3,11 +3,16 @@ Fine-Tuning Module for Native Ads Detection
 Standalone script - no langchain dependency needed for training
 """
 
+import os
 import json
 import argparse
 from pathlib import Path
 from typing import Dict, List
 import sys
+
+# Fix for Triton compiler error: ensure CC is set
+if "CC" not in os.environ:
+    os.environ["CC"] = "gcc"
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
