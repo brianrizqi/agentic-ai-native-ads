@@ -21,7 +21,9 @@ MODELS = {
     "Qwen 2.5 14B": "../models/qwen-native-ads_merged_16bit",
     "GPT-OSS 20B": "../models/gpt-oss-native-ads_merged_16bit",
     "Llama 3.1 8B": "../models/llama-native-ads_merged_16bit",
-    "Gemma 2 9B": "../models/gemma-native-ads_merged_16bit"
+    "Gemma 2 9B": "../models/gemma-native-ads_merged_16bit",
+    "Llama 3.1 8B (New)": "../models/llama3.1-8b-native-ads_merged_16bit",
+    "Qwen 3.5 9B": "../models/qwen3.5-9b-native-ads_merged_16bit"
 }
 
 

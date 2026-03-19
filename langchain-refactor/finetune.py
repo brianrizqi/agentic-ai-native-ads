@@ -152,6 +152,26 @@ MODEL_CONFIGS = {
         "gradient_accumulation": 8,
         "learning_rate": 2e-5,
         "description": "Gemma 3 4B Instruct - New version for native ads"
+    },
+    "llama3.1-8b": {
+        "name": "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit",
+        "max_seq_length": 1024,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 2,
+        "gradient_accumulation": 2,
+        "learning_rate": 2e-5,
+        "description": "Llama 3.1 8B Instruct - Meta's advanced small model"
+    },
+    "qwen3.5-9b": {
+        "name": "unsloth/Qwen3.5-9B-Instruct-bnb-4bit",
+        "max_seq_length": 1024,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 2,
+        "gradient_accumulation": 2,
+        "learning_rate": 2e-5,
+        "description": "Qwen 3.5 9B Instruct - Alibaba's latest powerful model"
     }
 }
 
@@ -342,7 +362,7 @@ def main():
     parser = argparse.ArgumentParser(description='Fine-tune models for Native Ads Detection')
     parser.add_argument('--model', type=str, default='qwen',
                        choices=list(MODEL_CONFIGS.keys()),
-                       help='Model to fine-tune (qwen, gpt-oss, llama, gemma, gemma3, gemma3-12b)')
+                       help='Model to fine-tune')
     parser.add_argument('--dataset', type=str, default='../data/llm_dataset_12k_refined.json',
                        help='Path to training dataset (use preprocessed version for best results)')
     parser.add_argument('--output', type=str, default=None,
