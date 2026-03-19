@@ -25,10 +25,20 @@ def _find_cc():
         import ziglang as _zig
         _zig_bin = os.path.join(os.path.dirname(_zig.__file__), "zig")
         if os.path.exists(_zig_bin):
-            # Write a one-shot wrapper script to /tmp
+            # Write wrapper that filters GCC-only flags zig cc doesn't support
             _wrapper = "/tmp/_zig_cc"
             with open(_wrapper, "w") as _f:
-                _f.write(f'#!/bin/sh\nexec "{_zig_bin}" cc "$@"\n')
+                _f.write(
+                    f'#!/bin/sh\n'
+                    f'args=""\n'
+                    f'for arg in "$@"; do\n'
+                    f'  case "$arg" in\n'
+                    f'    -Wno-psabi|-Wno-format-truncation|-mno-avx512f|-fno-semantic-interposition) ;;\n'
+                    f'    *) args="$args \'"$arg"\'" ;;\n'
+                    f'  esac\n'
+                    f'done\n'
+                    f'eval exec "{_zig_bin}" cc $args\n'
+                )
             os.chmod(_wrapper, 0o755)
             print(f"✅ Triton will use ziglang C compiler via {_wrapper}")
             return _wrapper
@@ -56,6 +66,12 @@ try:
             return _orig_build(name, src_path, tmpdir,
                                library_dirs, include_dirs,
                                libraries, ccflags)
+        except _sp.CalledProcessError:
+            # Retry with stripped ccflags (removes -Wno-psabi etc.)
+            print(f"⚠️  Triton build failed, retrying with no extra flags...")
+            return _orig_build(name, src_path, tmpdir,
+                               library_dirs, include_dirs,
+                               libraries, [])
         finally:
             if _old is not None:
                 os.environ["CC"] = _old
