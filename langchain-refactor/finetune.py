@@ -43,15 +43,79 @@ _CC = _find_cc()
 if _CC:
     os.environ["CC"] = _CC
 
-# Patch subprocess.check_call to filter GCC-specific flags zig cc can't handle
-# This intercepts triton's _build which hardcodes these flags directly.
+# Patch subprocess.check_call to fix zig cc incompatibilities:
+# 1. Filter GCC-only flags (-Wno-psabi etc. hardcoded by triton)
+# 2. Fix missing Python.h by finding it in alternative paths
 _orig_check_call = _sp.check_call
+
+def _find_python_h_dir():
+    """Return the directory containing Python.h, searching multiple locations."""
+    import glob as _glob, sys as _sys
+    pyver = f"python{_sys.version_info.major}.{_sys.version_info.minor}"
+    candidates = []
+    # 1. venv include (symlinked from system usually)
+    venv = os.environ.get("VIRTUAL_ENV")
+    if venv:
+        candidates += [
+            os.path.join(venv, "include", pyver),
+            os.path.join(venv, "include"),
+            # TensorFlow bundles Python headers - great fallback when python-dev missing
+            os.path.join(venv, "lib", pyver, "site-packages", "tensorflow",
+                         "include", "external", "local_config_python", "python_include"),
+        ]
+    # 2. Conda/mamba envs
+    conda = os.environ.get("CONDA_PREFIX")
+    if conda:
+        candidates += [
+            os.path.join(conda, "include", pyver),
+            os.path.join(conda, "include"),
+        ]
+    # 3. Common system paths (also try adjacent versions as fallback)
+    candidates += [
+        f"/usr/include/{pyver}",
+        f"/usr/local/include/{pyver}",
+        f"/opt/python/{_sys.version_info.major}.{_sys.version_info.minor}/include/{pyver}",
+        # Adjacent version fallback (3.12 headers compatible for basic triton usage)
+        "/usr/include/python3.12",
+        "/usr/include/python3.13",
+        "/usr/include/python3.11",
+    ]
+    # 4. Glob search as last resort (includes TF bundled headers anywhere)
+    candidates += [os.path.dirname(p) for p in
+                   _glob.glob(f"/*/include/python3.*/Python.h") +
+                   _glob.glob(f"/usr/*/include/python3.*/Python.h") +
+                   _glob.glob(f"/**/site-packages/tensorflow/include/**/python_include/Python.h",
+                              recursive=True)]
+    for d in candidates:
+        if d and os.path.exists(os.path.join(d, "Python.h")):
+            return d
+    return None
+
+_PYTHON_H_DIR = _find_python_h_dir()
+if _PYTHON_H_DIR:
+    print(f"✅ Found Python.h at: {_PYTHON_H_DIR}")
+else:
+    print("⚠️  Python.h not found — triton compilation may fail.")
+
 def _filtered_check_call(cmd, *args, **kwargs):
     if isinstance(cmd, list) and _CC and "zig" in _CC:
-        cmd = [x for x in cmd if x not in _ZIG_BAD_FLAGS]
+        new_cmd = []
+        for x in cmd:
+            if x in _ZIG_BAD_FLAGS:
+                continue  # strip incompatible flags
+            # Fix wrong Python include path if we found the real one
+            if x.startswith("-I") and "python" in x.lower() and _PYTHON_H_DIR:
+                new_cmd.append(f"-I{_PYTHON_H_DIR}")
+            else:
+                new_cmd.append(x)
+        # Add Python.h dir if not already present
+        if _PYTHON_H_DIR and f"-I{_PYTHON_H_DIR}" not in new_cmd:
+            new_cmd.append(f"-I{_PYTHON_H_DIR}")
+        cmd = new_cmd
     return _orig_check_call(cmd, *args, **kwargs)
+
 _sp.check_call = _filtered_check_call
-print(f"✅ Patched subprocess.check_call for zig-compatible flags (CC={_CC or 'not found'})")
+print(f"✅ Patched subprocess.check_call (CC={_CC or 'not found'}, Python.h={_PYTHON_H_DIR or 'not found'})")
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
