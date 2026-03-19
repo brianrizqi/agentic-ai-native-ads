@@ -10,13 +10,22 @@ from pathlib import Path
 from typing import Dict, List
 import sys
 
-# Fix for Triton compiler error: ensure CC is set to an available C compiler
-import shutil
+# Fix for Triton compiler error: find an available C compiler
+import shutil, sysconfig as _sc
 if "CC" not in os.environ:
-    for _cc in ["gcc", "clang", "cc"]:
-        if shutil.which(_cc):
-            os.environ["CC"] = _cc
+    _cc_candidates = [
+        _sc.get_config_var("CC"),           # compiler Python itself was built with
+        "gcc", "clang", "cc", "g++",        # standard names in PATH
+        "/usr/bin/gcc", "/usr/bin/clang",   # common HPC full paths
+        "/usr/local/bin/gcc", "/usr/local/bin/clang",
+    ]
+    for _cc in _cc_candidates:
+        if _cc and shutil.which(str(_cc).split()[0]):  # handle e.g "gcc -fPIC"
+            os.environ["CC"] = str(_cc).split()[0]
             break
+    else:
+        print("⚠️  No C compiler found. Triton fast-kernels may fail.")
+        os.environ["TRITON_DISABLE_LINE_INFO"] = "1"
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
