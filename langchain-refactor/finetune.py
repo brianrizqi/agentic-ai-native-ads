@@ -209,8 +209,8 @@ MODEL_CONFIGS = {
         "max_seq_length": 1024,
         "lora_r": 16,
         "lora_alpha": 32,
-        "batch_size": 2,
-        "gradient_accumulation": 2,
+        "batch_size": 1,              # Reduced from 2 to avoid OOM on A100 40GB
+        "gradient_accumulation": 4,   # Increased to keep effective batch size the same
         "learning_rate": 2e-5,
         "description": "Llama 3.1 8B Instruct - Meta's advanced small model"
     },
@@ -219,8 +219,8 @@ MODEL_CONFIGS = {
         "max_seq_length": 1024,
         "lora_r": 16,
         "lora_alpha": 32,
-        "batch_size": 2,
-        "gradient_accumulation": 2,
+        "batch_size": 1,              # Reduced from 2 to avoid OOM
+        "gradient_accumulation": 4,   # Increased to keep effective batch size the same
         "learning_rate": 2e-5,
         "description": "Qwen 3.5 9B - Alibaba's latest powerful model"
     }
@@ -510,7 +510,7 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         dataset_text_field="text",
-        max_seq_length=2048,
+        max_seq_length=config['max_seq_length'],  # Use config value, not hardcoded 2048
         dataset_num_proc=2,
         packing=False,
         args=TrainingArguments(
@@ -535,6 +535,7 @@ def main():
             save_total_limit=3,
             report_to="none",
             average_tokens_across_devices=False,
+            dataloader_num_workers=0,  # Avoid memory issues with multi-GPU
         ),
         callbacks=[monitor]
     )
