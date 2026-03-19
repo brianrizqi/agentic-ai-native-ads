@@ -13,19 +13,38 @@ import sys
 # Fix for Triton compiler error: find an available C compiler
 import shutil, sysconfig as _sc
 if "CC" not in os.environ:
+    _cc_found = None
     _cc_candidates = [
-        _sc.get_config_var("CC"),           # compiler Python itself was built with
-        "gcc", "clang", "cc", "g++",        # standard names in PATH
-        "/usr/bin/gcc", "/usr/bin/clang",   # common HPC full paths
-        "/usr/local/bin/gcc", "/usr/local/bin/clang",
+        "gcc", "clang", "cc", "g++",         # standard names in PATH
+        "/usr/bin/gcc", "/usr/bin/clang",     # common full paths
+        "/usr/local/bin/gcc",
+        _sc.get_config_var("CC"),             # what Python was built with
     ]
     for _cc in _cc_candidates:
-        if _cc and shutil.which(str(_cc).split()[0]):  # handle e.g "gcc -fPIC"
-            os.environ["CC"] = str(_cc).split()[0]
+        if _cc and shutil.which(str(_cc).split()[0]):
+            _cc_found = str(_cc).split()[0]
             break
+
+    if not _cc_found:
+        # Fallback: use ziglang (pip install ziglang) as drop-in C compiler
+        try:
+            import ziglang as _zig
+            _zig_bin = os.path.join(os.path.dirname(_zig.__file__), "zig")
+            if os.path.exists(_zig_bin):
+                _wrapper = "/tmp/zig-cc-wrapper"
+                with open(_wrapper, "w") as _f:
+                    _f.write(f"#!/bin/sh\n{_zig_bin} cc \"$@\"\n")
+                os.chmod(_wrapper, 0o755)
+                _cc_found = _wrapper
+                print(f"✅ Using ziglang as C compiler wrapper: {_wrapper}")
+        except ImportError:
+            pass
+
+    if _cc_found:
+        os.environ["CC"] = _cc_found
     else:
-        print("⚠️  No C compiler found. Triton fast-kernels may fail.")
-        os.environ["TRITON_DISABLE_LINE_INFO"] = "1"
+        print("⚠️  No C compiler found. Run: pip install ziglang")
+        print("⚠️  Then retry. Triton fast-kernels will fail without a C compiler.")
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
