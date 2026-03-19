@@ -10,41 +10,60 @@ from pathlib import Path
 from typing import Dict, List
 import sys
 
-# Fix for Triton compiler error: find an available C compiler
-import shutil, sysconfig as _sc
-if "CC" not in os.environ:
-    _cc_found = None
-    _cc_candidates = [
-        "gcc", "clang", "cc", "g++",         # standard names in PATH
-        "/usr/bin/gcc", "/usr/bin/clang",     # common full paths
-        "/usr/local/bin/gcc",
-        _sc.get_config_var("CC"),             # what Python was built with
-    ]
-    for _cc in _cc_candidates:
-        if _cc and shutil.which(str(_cc).split()[0]):
-            _cc_found = str(_cc).split()[0]
-            break
+# Fix for Triton compiler error: monkey-patch triton to use ziglang if no system compiler
+import shutil, sysconfig as _sc, subprocess as _sp
 
-    if not _cc_found:
-        # Fallback: use ziglang (pip install ziglang) as drop-in C compiler
+def _find_cc():
+    """Find first available C compiler, trying ziglang as last resort."""
+    for _c in ["gcc", "clang", "cc", "g++",
+               "/usr/bin/gcc", "/usr/bin/clang",
+               _sc.get_config_var("CC")]:
+        if _c and shutil.which(str(_c).split()[0]):
+            return str(_c).split()[0]
+    # Try ziglang (pip install ziglang)
+    try:
+        import ziglang as _zig
+        _zig_bin = os.path.join(os.path.dirname(_zig.__file__), "zig")
+        if os.path.exists(_zig_bin):
+            # Write a one-shot wrapper script to /tmp
+            _wrapper = "/tmp/_zig_cc"
+            with open(_wrapper, "w") as _f:
+                _f.write(f'#!/bin/sh\nexec "{_zig_bin}" cc "$@"\n')
+            os.chmod(_wrapper, 0o755)
+            print(f"✅ Triton will use ziglang C compiler via {_wrapper}")
+            return _wrapper
+    except ImportError:
+        pass
+    return None
+
+_CC = _find_cc()
+if _CC:
+    os.environ["CC"] = _CC
+
+# --- Monkey-patch triton.runtime.build BEFORE importing unsloth ---
+try:
+    import triton.runtime.build as _trb
+    _orig_build = _trb._build
+
+    def _patched_triton_build(name, src_path, tmpdir,
+                               library_dirs, include_dirs,
+                               libraries, ccflags=None):
+        # Force our CC into the environment for this call
+        _old = os.environ.get("CC")
+        if _CC:
+            os.environ["CC"] = _CC
         try:
-            import ziglang as _zig
-            _zig_bin = os.path.join(os.path.dirname(_zig.__file__), "zig")
-            if os.path.exists(_zig_bin):
-                _wrapper = "/tmp/zig-cc-wrapper"
-                with open(_wrapper, "w") as _f:
-                    _f.write(f"#!/bin/sh\n{_zig_bin} cc \"$@\"\n")
-                os.chmod(_wrapper, 0o755)
-                _cc_found = _wrapper
-                print(f"✅ Using ziglang as C compiler wrapper: {_wrapper}")
-        except ImportError:
-            pass
+            return _orig_build(name, src_path, tmpdir,
+                               library_dirs, include_dirs,
+                               libraries, ccflags)
+        finally:
+            if _old is not None:
+                os.environ["CC"] = _old
 
-    if _cc_found:
-        os.environ["CC"] = _cc_found
-    else:
-        print("⚠️  No C compiler found. Run: pip install ziglang")
-        print("⚠️  Then retry. Triton fast-kernels will fail without a C compiler.")
+    _trb._build = _patched_triton_build
+    print(f"✅ Patched triton compiler → {_CC or '(none found)'}")
+except Exception as _e:
+    print(f"⚠️  Could not patch triton: {_e}")
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
