@@ -88,18 +88,25 @@ if _PYTHON_H_DIR:
 else:
     print("⚠️  Python.h not found — triton compilation may fail.")
 
+import re as _re
+_PYTHON_INC_RE = _re.compile(r"-I.*[/\\]python3\.\d+/?$")  # matches -I.../python3.10 style paths only
+
 def _filtered_check_call(cmd, *args, **kwargs):
     if isinstance(cmd, list) and _CC and "zig" in _CC:
         new_cmd = []
+        _py_replaced = False
         for x in cmd:
             if x in _ZIG_BAD_FLAGS:
-                continue  # strip incompatible flags
-            # Fix wrong Python include path if we found the real one
-            if x.startswith("-I") and "python" in x.lower() and _PYTHON_H_DIR:
-                new_cmd.append(f"-I{_PYTHON_H_DIR}")
+                continue  # strip incompatible GCC flags
+            # Only replace actual Python header include dirs (ends with /python3.x)
+            if _PYTHON_H_DIR and _PYTHON_INC_RE.match(x):
+                if not _py_replaced:
+                    new_cmd.append(f"-I{_PYTHON_H_DIR}")
+                    _py_replaced = True
+                # skip the bad path
             else:
                 new_cmd.append(x)
-        # Add Python.h dir if not already present
+        # Ensure Python.h dir is in the command
         if _PYTHON_H_DIR and f"-I{_PYTHON_H_DIR}" not in new_cmd:
             new_cmd.append(f"-I{_PYTHON_H_DIR}")
         cmd = new_cmd
