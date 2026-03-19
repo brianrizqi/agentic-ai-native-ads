@@ -195,14 +195,24 @@ MODEL_CONFIGS = {
         "description": "Qwen 2.5 14B - Best multilingual performance"
     },
     "llama": {
-        "name": "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit",
-        "max_seq_length": 1024,  # Reduced from 2048
+        "name": "unsloth/Llama-3.3-70B-Instruct-bnb-4bit",
+        "max_seq_length": 1024,
         "lora_r": 16,
         "lora_alpha": 32,
-        "batch_size": 2,
-        "gradient_accumulation": 2,
-        "learning_rate": 2e-5,  # Lower LR for stability
-        "description": "Llama 3.1 8B - Balanced speed/quality"
+        "batch_size": 1,
+        "gradient_accumulation": 4,
+        "learning_rate": 2e-5,
+        "description": "Llama 3.3 70B Instruct - Meta's latest large model"
+    },
+    "llama3.3": {
+        "name": "unsloth/Llama-3.3-70B-Instruct-bnb-4bit",
+        "max_seq_length": 1024,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 1,
+        "gradient_accumulation": 4,
+        "learning_rate": 2e-5,
+        "description": "Llama 3.3 70B Instruct - Meta's latest large model"
     },
     "gemma": {
         "name": "unsloth/gemma-2-9b-it-bnb-4bit",
@@ -461,7 +471,7 @@ Output (JSON):
 
 def main():
     parser = argparse.ArgumentParser(description='Fine-tune models for Native Ads Detection')
-    parser.add_argument('--model', type=str, default='qwen',
+    parser.add_argument('--model', type=str, default='llama3.3',
                        choices=list(MODEL_CONFIGS.keys()),
                        help='Model to fine-tune')
     parser.add_argument('--dataset', type=str, default='../data/llm_dataset_12k_refined.json',
