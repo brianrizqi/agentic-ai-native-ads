@@ -6,7 +6,7 @@ set -e  # Exit on error
 
 echo "================================================================================"
 echo "MULTI-MODEL TRAINING PIPELINE"
-echo "Training 4 models: Qwen 14B, GPT-OSS 20B, Llama 3.1 8B, Gemma 2 9B"
+echo "Training 6 models: Qwen 14B, GPT-OSS 20B, Llama 3.1 8B, Gemma 2 9B, Llama 3.1 8B (New), Qwen 3.5 9B"
 echo "================================================================================"
 echo ""
 
@@ -93,7 +93,13 @@ train_model "gemma"
 # Model 3: Qwen 2.5 14B (best multilingual)
 train_model "qwen"
 
-# Model 4: GPT-OSS 20B (largest, experimental - uses dedicated script)
+# Model 4: Llama 3.1 8B (New Unsloth version)
+train_model "llama3.1-8b"
+
+# Model 5: Qwen 3.5 9B (New Unsloth version)
+train_model "qwen3.5-9b"
+
+# Model 6: GPT-OSS 20B (largest, experimental - uses dedicated script)
 echo "================================================================================"
 echo "Training: gpt-oss (using dedicated script)"
 echo "Start time: $(date)"
@@ -125,5 +131,7 @@ echo "Models saved in:" | tee -a "$LOG_FILE"
 echo "  - ../models/llama-native-ads_merged_16bit" | tee -a "$LOG_FILE"
 echo "  - ../models/gemma-native-ads_merged_16bit" | tee -a "$LOG_FILE"
 echo "  - ../models/qwen-native-ads_merged_16bit" | tee -a "$LOG_FILE"
+echo "  - ../models/llama3.1-8b-native-ads_merged_16bit" | tee -a "$LOG_FILE"
+echo "  - ../models/qwen3.5-9b-native-ads_merged_16bit" | tee -a "$LOG_FILE"
 echo "  - ../models/gpt-oss-native-ads_merged_16bit" | tee -a "$LOG_FILE"
 echo "================================================================================" | tee -a "$LOG_FILE"
