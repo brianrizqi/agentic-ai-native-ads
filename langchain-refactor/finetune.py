@@ -49,43 +49,34 @@ if _CC:
 _orig_check_call = _sp.check_call
 
 def _find_python_h_dir():
-    """Return the directory containing Python.h, searching multiple locations."""
-    import glob as _glob, sys as _sys
+    """Return the directory containing Python.h, searching known locations ONLY (no filesystem scan)."""
+    import sys as _sys
     pyver = f"python{_sys.version_info.major}.{_sys.version_info.minor}"
     candidates = []
-    # 1. venv include (symlinked from system usually)
+    # 1. venv paths (check VIRTUAL_ENV env var)
     venv = os.environ.get("VIRTUAL_ENV")
     if venv:
         candidates += [
             os.path.join(venv, "include", pyver),
             os.path.join(venv, "include"),
-            # TensorFlow bundles Python headers - great fallback when python-dev missing
+            # TensorFlow bundles Python headers (works when python3.x-dev not installed)
             os.path.join(venv, "lib", pyver, "site-packages", "tensorflow",
                          "include", "external", "local_config_python", "python_include"),
         ]
-    # 2. Conda/mamba envs
+    # 2. Conda env
     conda = os.environ.get("CONDA_PREFIX")
     if conda:
-        candidates += [
-            os.path.join(conda, "include", pyver),
-            os.path.join(conda, "include"),
-        ]
-    # 3. Common system paths (also try adjacent versions as fallback)
+        candidates += [os.path.join(conda, "include", pyver), os.path.join(conda, "include")]
+    # 3. System paths (exact, no glob)
     candidates += [
         f"/usr/include/{pyver}",
         f"/usr/local/include/{pyver}",
-        f"/opt/python/{_sys.version_info.major}.{_sys.version_info.minor}/include/{pyver}",
-        # Adjacent version fallback (3.12 headers compatible for basic triton usage)
-        "/usr/include/python3.12",
-        "/usr/include/python3.13",
+        "/usr/include/python3.12",   # fallback: adjacent version, compatible for triton
         "/usr/include/python3.11",
+        "/usr/include/python3.13",
+        # Known path from `find / -name Python.h` on this server
+        "/home/riset/.local/share/uv/python/cpython-3.13.12-linux-x86_64-gnu/include/python3.13",
     ]
-    # 4. Glob search as last resort (includes TF bundled headers anywhere)
-    candidates += [os.path.dirname(p) for p in
-                   _glob.glob(f"/*/include/python3.*/Python.h") +
-                   _glob.glob(f"/usr/*/include/python3.*/Python.h") +
-                   _glob.glob(f"/**/site-packages/tensorflow/include/**/python_include/Python.h",
-                              recursive=True)]
     for d in candidates:
         if d and os.path.exists(os.path.join(d, "Python.h")):
             return d
