@@ -10,9 +10,13 @@ from pathlib import Path
 from typing import Dict, List
 import sys
 
-# Fix for Triton compiler error: ensure CC is set
+# Fix for Triton compiler error: ensure CC is set to an available C compiler
+import shutil
 if "CC" not in os.environ:
-    os.environ["CC"] = "gcc"
+    for _cc in ["gcc", "clang", "cc"]:
+        if shutil.which(_cc):
+            os.environ["CC"] = _cc
+            break
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
@@ -164,14 +168,14 @@ MODEL_CONFIGS = {
         "description": "Llama 3.1 8B Instruct - Meta's advanced small model"
     },
     "qwen3.5-9b": {
-        "name": "unsloth/Qwen3.5-9B-Instruct-bnb-4bit",
+        "name": "unsloth/Qwen3.5-9B",  # Unsloth-specific format (no Instruct suffix)
         "max_seq_length": 1024,
         "lora_r": 16,
         "lora_alpha": 32,
         "batch_size": 2,
         "gradient_accumulation": 2,
         "learning_rate": 2e-5,
-        "description": "Qwen 3.5 9B Instruct - Alibaba's latest powerful model"
+        "description": "Qwen 3.5 9B - Alibaba's latest powerful model"
     }
 }
 
