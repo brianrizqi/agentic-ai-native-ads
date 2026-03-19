@@ -13,6 +13,10 @@ import sys
 # Fix for Triton compiler error: monkey-patch triton to use ziglang if no system compiler
 import shutil, sysconfig as _sc, subprocess as _sp
 
+# Flags that zig cc doesn't support (hardcoded by triton in build.py)
+_ZIG_BAD_FLAGS = {"-Wno-psabi", "-Wno-format-truncation",
+                  "-mno-avx512f", "-fno-semantic-interposition"}
+
 def _find_cc():
     """Find first available C compiler, trying ziglang as last resort."""
     for _c in ["gcc", "clang", "cc", "g++",
@@ -25,20 +29,9 @@ def _find_cc():
         import ziglang as _zig
         _zig_bin = os.path.join(os.path.dirname(_zig.__file__), "zig")
         if os.path.exists(_zig_bin):
-            # Write wrapper that filters GCC-only flags zig cc doesn't support
             _wrapper = "/tmp/_zig_cc"
             with open(_wrapper, "w") as _f:
-                _f.write(
-                    f'#!/bin/sh\n'
-                    f'args=""\n'
-                    f'for arg in "$@"; do\n'
-                    f'  case "$arg" in\n'
-                    f'    -Wno-psabi|-Wno-format-truncation|-mno-avx512f|-fno-semantic-interposition) ;;\n'
-                    f'    *) args="$args \'"$arg"\'" ;;\n'
-                    f'  esac\n'
-                    f'done\n'
-                    f'eval exec "{_zig_bin}" cc $args\n'
-                )
+                _f.write(f'#!/bin/sh\nexec "{_zig_bin}" cc "$@"\n')
             os.chmod(_wrapper, 0o755)
             print(f"✅ Triton will use ziglang C compiler via {_wrapper}")
             return _wrapper
@@ -50,36 +43,15 @@ _CC = _find_cc()
 if _CC:
     os.environ["CC"] = _CC
 
-# --- Monkey-patch triton.runtime.build BEFORE importing unsloth ---
-try:
-    import triton.runtime.build as _trb
-    _orig_build = _trb._build
-
-    def _patched_triton_build(name, src_path, tmpdir,
-                               library_dirs, include_dirs,
-                               libraries, ccflags=None):
-        # Force our CC into the environment for this call
-        _old = os.environ.get("CC")
-        if _CC:
-            os.environ["CC"] = _CC
-        try:
-            return _orig_build(name, src_path, tmpdir,
-                               library_dirs, include_dirs,
-                               libraries, ccflags)
-        except _sp.CalledProcessError:
-            # Retry with stripped ccflags (removes -Wno-psabi etc.)
-            print(f"⚠️  Triton build failed, retrying with no extra flags...")
-            return _orig_build(name, src_path, tmpdir,
-                               library_dirs, include_dirs,
-                               libraries, [])
-        finally:
-            if _old is not None:
-                os.environ["CC"] = _old
-
-    _trb._build = _patched_triton_build
-    print(f"✅ Patched triton compiler → {_CC or '(none found)'}")
-except Exception as _e:
-    print(f"⚠️  Could not patch triton: {_e}")
+# Patch subprocess.check_call to filter GCC-specific flags zig cc can't handle
+# This intercepts triton's _build which hardcodes these flags directly.
+_orig_check_call = _sp.check_call
+def _filtered_check_call(cmd, *args, **kwargs):
+    if isinstance(cmd, list) and _CC and "zig" in _CC:
+        cmd = [x for x in cmd if x not in _ZIG_BAD_FLAGS]
+    return _orig_check_call(cmd, *args, **kwargs)
+_sp.check_call = _filtered_check_call
+print(f"✅ Patched subprocess.check_call for zig-compatible flags (CC={_CC or 'not found'})")
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
