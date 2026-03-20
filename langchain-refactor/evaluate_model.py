@@ -425,6 +425,89 @@ Output JSON:
     }
 
 
+def export_reasoning_examples(
+    results: Dict,
+    judge_results: Dict,
+    output_path: str,
+    n_per_category: int = 3
+) -> None:
+    """
+    Export contoh-contoh reasoning model secara kualitatif ke JSON.
+    Dikelompokkan menjadi:
+      - good       : judge score 4-5 (reasoning mendalam & label benar)
+      - borderline : judge score 3   (label benar, reasoning lemah)
+      - bad        : judge score 1-2 (reasoning salah / label salah)
+    
+    Format output cocok untuk screenshot/dokumentasi di research paper.
+    """
+
+    # Bangun lookup: input_preview -> detail prediksi lengkap
+    pred_lookup = {}
+    for p in results.get('predictions', []):
+        key = p['input'][:100]
+        pred_lookup[key] = p
+
+    judge_details = judge_results.get('judge_details', [])
+    if not judge_details:
+        print("\n⚠️  Tidak ada judge details — jalankan dengan --use-judge terlebih dahulu.")
+        return
+
+    good, borderline, bad = [], [], []
+    for detail in judge_details:
+        score = detail.get('judge_rating', 0)
+        # Ambil reasoning lengkap dari pred_lookup berdasarkan input_preview
+        key   = detail.get('input_preview', '')[:100]
+        full  = pred_lookup.get(key, {})
+
+        entry = {
+            "judge_score":         score,
+            "judge_justification": detail.get('judge_justification', ''),
+            "ground_truth_label":  detail.get('gt', ''),
+            "predicted_label":     detail.get('pred', ''),
+            "correct":             detail.get('gt', '') == detail.get('pred', ''),
+            "article_preview":     full.get('input', detail.get('input_preview', ''))[:400],
+            "ground_truth_reasoning": full.get('gt_reasoning', '')[:500],
+            "model_reasoning":        full.get('pred_reasoning', '')[:500],
+            "confidence":          full.get('confidence', None),
+        }
+
+        if score >= 4:
+            good.append(entry)
+        elif score == 3:
+            borderline.append(entry)
+        else:
+            bad.append(entry)
+
+    # Sort: good by score desc, bad by score asc
+    good       = sorted(good, key=lambda x: -x['judge_score'])[:n_per_category]
+    borderline = sorted(borderline, key=lambda x: -x['judge_score'])[:n_per_category]
+    bad        = sorted(bad,        key=lambda x:  x['judge_score'])[:n_per_category]
+
+    output = {
+        "_description": (
+            "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. "
+            "good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), "
+            "bad=score 1-2 (wrong label or incoherent reasoning)."
+        ),
+        "summary": {
+            "total_judged":   len(judge_details),
+            "good_count":     len([d for d in judge_details if d.get('judge_rating', 0) >= 4]),
+            "borderline_count": len([d for d in judge_details if d.get('judge_rating', 0) == 3]),
+            "bad_count":      len([d for d in judge_details if d.get('judge_rating', 0) <= 2]),
+            "avg_judge_score": round(judge_results.get('average_rating', 0), 3),
+        },
+        "good_examples":       good,
+        "borderline_examples": borderline,
+        "bad_examples":        bad,
+    }
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+
+    print(f"\n📋 Qualitative reasoning examples saved to: {output_path}")
+    print(f"   good={len(good)}, borderline={len(borderline)}, bad={len(bad)}")
+
+
 def plot_confusion_matrix(results: Dict, output_path: str = 'confusion_matrix.png'):
     """Plot and save confusion matrix."""
     
@@ -621,7 +704,11 @@ def main():
     judge_results = {}
     if args.use_judge:
         judge_results = llm_as_judge(results, args.api_key, args.judge_provider, args.judge_model)
-    
+
+        # Export qualitative reasoning examples (good / borderline / bad)
+        examples_path = output_dir / f'{output_filename}_reasoning_examples.json'
+        export_reasoning_examples(results, judge_results, str(examples_path))
+
     # Plot confusion matrix
     cm_path = output_dir / f'{output_filename}_confusion_matrix.png'
     cm = plot_confusion_matrix(results, str(cm_path))
