@@ -258,7 +258,9 @@ def compute_bertscore(results: Dict) -> Dict:
     pred_texts = [str(t) for t in pred_texts]
     
     try:
-        P, R, F1 = bert_score(pred_texts, gt_texts, lang='id', verbose=False, device='cpu')
+        P, R, F1 = bert_score(pred_texts, gt_texts,
+                               model_type='bert-base-multilingual-cased',
+                               verbose=False, device='cpu')
         return {
             'precision': float(P.mean()),
             'recall': float(R.mean()),
