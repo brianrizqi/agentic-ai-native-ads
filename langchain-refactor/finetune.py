@@ -306,8 +306,30 @@ MODEL_CONFIGS = {
         "gradient_accumulation": 2,
         "learning_rate": 2e-5,
         "description": "Llama 3.2 1B - Meta's smallest efficient model"
-    }
+    },
+    # ── Reasoning Models ──────────────────────────────────────────────
+    "qwen3-8b": {
+        "name": "unsloth/Qwen3-8B-bnb-4bit",
+        "max_seq_length": 2048,   # Lebih panjang untuk thinking tokens
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 1,
+        "gradient_accumulation": 4,
+        "learning_rate": 2e-5,
+        "description": "Qwen3 8B - Alibaba reasoning model with built-in thinking mode"
+    },
+    "deepseek-r1-llama-8b": {
+        "name": "unsloth/DeepSeek-R1-Distill-Llama-8B-bnb-4bit",
+        "max_seq_length": 2048,   # Lebih panjang untuk chain-of-thought <think>
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 1,
+        "gradient_accumulation": 4,
+        "learning_rate": 2e-5,
+        "description": "DeepSeek-R1 Distill Llama 8B - reasoning model (chain-of-thought)"
+    },
 }
+
 
 
 class TrainingMonitor(TrainerCallback):

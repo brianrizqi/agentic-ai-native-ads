@@ -200,19 +200,26 @@ Output (JSON):
                 
                 is_mcq = ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower
                 
+                # Override max_length di generation_config supaya tidak conflict
+                # dengan max_new_tokens yang kita set di pipeline
+                n_new = 128 if is_mcq else 256
+                if hasattr(model, 'generation_config'):
+                    model.generation_config.max_length = None
+                    model.generation_config.max_new_tokens = n_new
+
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=128 if is_mcq else 256,
-                    temperature=0.7,
-                    do_sample=False,
-                    repetition_penalty=1.0 if is_mcq else 1.1, # 1.0 is safer for tiny MCQ models
+                    max_new_tokens=n_new,
+                    do_sample=False,            # greedy decode
+                    repetition_penalty=1.0 if is_mcq else 1.1,
                     return_full_text=False,
                     stop_sequence=stop_sequences[0]
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
+
             except Exception as e:
                 logger.error(f"Failed to load local model: {e}")
                 raise ValueError(f"Could not load local model from {self.model_name}: {e}")
