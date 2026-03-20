@@ -275,14 +275,34 @@ MODEL_CONFIGS = {
         "description": "Llama 3.1 8B Instruct - Meta's advanced small model"
     },
     "qwen3.5-9b": {
-        "name": "unsloth/Qwen3.5-9B",  # Unsloth-specific format (no Instruct suffix)
+        "name": "unsloth/Qwen3.5-9B",
         "max_seq_length": 1024,
         "lora_r": 16,
         "lora_alpha": 32,
-        "batch_size": 1,              # Reduced from 2 to avoid OOM
-        "gradient_accumulation": 4,   # Increased to keep effective batch size the same
+        "batch_size": 1,
+        "gradient_accumulation": 4,
         "learning_rate": 2e-5,
         "description": "Qwen 3.5 9B - Alibaba's latest powerful model"
+    },
+    "qwen3.5-2b": {
+        "name": "unsloth/Qwen3.5-2B",
+        "max_seq_length": 1024,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 2,
+        "gradient_accumulation": 4,
+        "learning_rate": 2e-5,
+        "description": "Qwen 3.5 2B - Alibaba's compact efficient model"
+    },
+    "llama-1b": {
+        "name": "unsloth/Llama-3.2-1B-bnb-4bit",
+        "max_seq_length": 1024,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "batch_size": 4,
+        "gradient_accumulation": 2,
+        "learning_rate": 2e-5,
+        "description": "Llama 3.2 1B - Meta's smallest efficient model"
     }
 }
 
