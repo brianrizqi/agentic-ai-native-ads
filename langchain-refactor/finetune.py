@@ -298,7 +298,7 @@ MODEL_CONFIGS = {
         "description": "Qwen 3.5 2B - Alibaba's compact efficient model"
     },
     "llama-1b": {
-        "name": "unsloth/Llama-3.2-1B-bnb-4bit",
+        "name": "unsloth/Llama-3.2-1B-Instruct-bnb-4bit",
         "max_seq_length": 1024,
         "lora_r": 16,
         "lora_alpha": 32,
