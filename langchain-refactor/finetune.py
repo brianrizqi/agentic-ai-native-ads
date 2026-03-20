@@ -43,6 +43,9 @@ _CC = _find_cc()
 if _CC:
     os.environ["CC"] = _CC
 
+# Fix CUDA memory fragmentation (recommended when OOM occurs)
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+
 # Patch subprocess.check_call to fix zig cc incompatibilities:
 # 1. Filter GCC-only flags (-Wno-psabi etc. hardcoded by triton)
 # 2. Fix missing Python.h by finding it in alternative paths
@@ -504,6 +507,8 @@ def main():
                        help='Number of training epochs (Phase 4 recommends 3)')
     parser.add_argument('--eval-steps', type=int, default=100,
                        help='Evaluation frequency (steps)')
+    parser.add_argument('--num-gpu', type=int, default=None,
+                       help='Number of GPUs to use (default: all available)')
     args = parser.parse_args()
     
     # Get model configuration
@@ -542,13 +547,24 @@ def main():
     hf_token = os.environ.get("HF_TOKEN")
     if not hf_token:
         print("⚠️  Warning: HF_TOKEN not found in environment. Model download might fail if it's restricted.")
-    
+
+    # Multi-GPU setup
+    n_gpu = torch.cuda.device_count()
+    if args.num_gpu is not None:
+        n_gpu = min(args.num_gpu, n_gpu)
+    print(f"🖥️  GPUs available: {torch.cuda.device_count()}, using: {n_gpu}")
+    for i in range(torch.cuda.device_count()):
+        free, total = torch.cuda.mem_get_info(i)
+        print(f"   GPU {i}: {free/1024**3:.1f}GB free / {total/1024**3:.1f}GB total")
+
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=config['name'],
         max_seq_length=config['max_seq_length'],
         dtype=None,
         load_in_4bit=True,
-        token=hf_token, # Use token if provided
+        token=hf_token,
+        # Spread model layers across all available GPUs (model parallelism)
+        device_map="balanced" if n_gpu > 1 else "cuda:0",
     )
     
     # 2. Add LoRA adapters
@@ -615,7 +631,9 @@ def main():
             save_total_limit=3,
             report_to="none",
             average_tokens_across_devices=False,
-            dataloader_num_workers=0,  # Avoid memory issues with multi-GPU
+            dataloader_num_workers=0,
+            dataloader_pin_memory=False,   # Avoid extra VRAM usage
+            ddp_find_unused_parameters=False,
         ),
         callbacks=[monitor]
     )
