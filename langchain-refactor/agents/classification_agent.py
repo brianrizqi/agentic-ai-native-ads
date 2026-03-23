@@ -429,12 +429,20 @@ Output (JSON):
                 
                 raise json.JSONDecodeError("Unmatched braces", response, start)
             
+            # Successfully extracted potential JSON string, now parse it
+            result = json.loads(response[start:end])
+            reasoning = result.get('reasoning', str(result))
+            if isinstance(reasoning, list):
+                reasoning = " ".join([str(i) for i in reasoning])
+            else:
+                reasoning = str(reasoning)
                 
             return {
                 'label': result.get('label', 'unknown'),
                 'confidence': float(result.get('confidence', 0.5)),
-                'reasoning': reasoning[:200]  # Truncate long reasoning
+                'reasoning': reasoning[:200]
             }
+
                 
         except (json.JSONDecodeError, Exception) as e:
             # Phase 8: If it's not JSON, it's likely a direct label from Gemma 3 (Phase 8/finetune.py style)
