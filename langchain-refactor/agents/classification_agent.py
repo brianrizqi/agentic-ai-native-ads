@@ -339,12 +339,14 @@ Output (JSON):
                     else:
                         return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
             
-            # Phase 12: Fallback for raw labels
+            # Phase 12: Fallback for raw labels (Space-insensitive)
             clean_resp_lower = response.lower().strip()
-            if clean_resp_lower.startswith("native ads") or "native ads" in clean_resp_lower[:50]:
-                return {'label': 'native ads', 'confidence': 0.9, 'reasoning': 'Detected via label start (fallback).'}
-            elif clean_resp_lower.startswith("berita murni") or "berita murni" in clean_resp_lower[:50]:
-                return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': 'Detected via label start (fallback).'}
+            clean_no_space = clean_resp_lower.replace(' ', '').replace('_', '').replace('-', '')
+            
+            if "nativeads" in clean_no_space[:100]:
+                return {'label': 'native ads', 'confidence': 0.9, 'reasoning': 'Detected via label match (lenient).'}
+            elif "beritamurni" in clean_no_space[:100]:
+                return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': 'Detected via label match (lenient).'}
             
             # Keep JSON logic as fallback for larger models or hybrid outputs
             start = response.find('{')
@@ -449,19 +451,20 @@ Output (JSON):
                 
         except (json.JSONDecodeError, Exception) as e:
             # Phase 8: If it's not JSON, it's likely a direct label from Gemma 3 (Phase 8/finetune.py style)
+            # Priority 1: Check if the response STARTS with the label (Space-insensitive)
             clean_resp = response.lower().strip()
+            clean_no_space = clean_resp.replace(' ', '').replace('_', '').replace('-', '')
             
-            # Priority 1: Check if the response STARTS with the label (standard Gemma/Phase 8 output)
-            if clean_resp.startswith("native ads"):
+            if clean_no_space.startswith("nativeads"):
                 return {'label': 'native ads', 'confidence': 0.95, 'reasoning': clean_resp}
-            elif clean_resp.startswith("berita murni"):
+            elif clean_no_space.startswith("beritamurni"):
                 return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': clean_resp}
             
-            # Priority 2: Keyword search with protection (checking for existence only in first line or as definitive mentions)
-            first_line = clean_resp.split('\n')[0]
-            if "native ads" in first_line:
+            # Priority 2: Keyword search with protection
+            first_line_no_space = clean_resp.split('\n')[0].replace(' ', '')
+            if "nativeads" in first_line_no_space:
                 return {'label': 'native ads', 'confidence': 0.9, 'reasoning': clean_resp}
-            elif "berita murni" in first_line:
+            elif "beritamurni" in first_line_no_space:
                 return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': clean_resp}
             
             # Log the error and fall through to legacy keyword logic below
