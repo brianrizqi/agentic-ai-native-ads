@@ -234,7 +234,6 @@ discovery_prompt = PromptTemplate(
 )
 
 
-# Simplified prompt for local fine-tuned models
 SIMPLE_LOCAL_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
@@ -252,9 +251,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat"}}
-
-Klasifikasi:"""
+"""
 
 simple_local_prompt = PromptTemplate(
     input_variables=["title", "content"],

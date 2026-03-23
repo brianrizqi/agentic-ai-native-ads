@@ -18,6 +18,8 @@ import numpy as np
 sys.path.append(str(Path(__file__).parent))
 
 from agents.classification_agent import ClassificationAgent
+from agents.retrieval_agent import RetrievalAgent
+from vector_stores.native_ads_vectorstore import NativeAdsVectorStore
 
 # For visualization and metrics
 try:
@@ -139,7 +141,18 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         lora_path=lora_path
     )
     
+    # Initialize RAG if requested
+    retriever = None
+    if kwargs.get('use_rag'):
+        print(f"🔍 Initializing RAG with vectorstore: {kwargs.get('vectorstore_dir')}")
+        vstore = NativeAdsVectorStore(
+            embedding_model=kwargs.get('embedding_model', "sentence-transformers/all-MiniLM-L6-v2"),
+            persist_directory=kwargs.get('vectorstore_dir')
+        )
+        retriever = RetrievalAgent(vectorstore=vstore)
+
     results = {
+
         'correct': 0,
         'total': 0,
         'by_class': defaultdict(lambda: {'correct': 0, 'total': 0, 'predictions': []}),
@@ -165,7 +178,14 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         # Get prediction
         try:
             title = sample.get('title', sample['input'][:100])
-            pred = agent.classify(sample['input'], title=title)
+            
+            # Get RAG context if enabled
+            context = ""
+            if retriever:
+                context = retriever.get_context_for_classification(sample['input'], top_k=3)
+                
+            pred = agent.classify(sample['input'], title=title, context=context)
+
             pred_label = pred.get('label', 'unknown')
             pred_reasoning = pred.get('reasoning', '')
             
@@ -650,6 +670,13 @@ def main():
                        help='Dataset path')
     parser.add_argument('--num-samples', type=int, default=100,
                        help='Number of test samples')
+    parser.add_argument('--use-rag', action='store_true',
+                       help='Use RAG during evaluation')
+    parser.add_argument('--vectorstore-dir', type=str, default='data/vectorstore',
+                       help='Directory for FAISS vectorstore')
+    parser.add_argument('--embedding-model', type=str, default='sentence-transformers/all-MiniLM-L6-v2',
+                       help='Embedding model for RAG')
+
     parser.add_argument('--output-dir', type=str, default='eval_results',
                        help='Output directory for results')
     parser.add_argument('--lora-path', type=str, default=None,

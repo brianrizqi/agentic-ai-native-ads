@@ -202,7 +202,9 @@ Output (JSON):
                 
                 # Override max_length di generation_config supaya tidak conflict
                 # dengan max_new_tokens yang kita set di pipeline
-                n_new = 128 if is_mcq else 256
+                is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
+                n_new = 128 if is_mcq else (1024 if is_reasoning else 512)
+
                 if hasattr(model, 'generation_config'):
                     model.generation_config.max_length = None
                     model.generation_config.max_new_tokens = n_new
@@ -306,9 +308,21 @@ Output (JSON):
                 else:
                     return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': reasoning[:300]}
             
+            # Phase 14.1: Handle Reasoning Models (DeepSeek-R1, Qwen3)
+            # Remove <think>...</think> blocks if present to clean JSON parsing
+            if "<think>" in response and "</think>" in response:
+                logger.info("Deep-reasoning format detected, stripping <think> tags")
+                import re
+                response = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL).strip()
+            elif "<think>" in response and not "</think>" in response:
+                # Handle case where output is truncated inside <think>
+                logger.warning("Truncated <think> block detected, attempting extraction")
+                response = response.split("<think>")[-1].split("</think>")[-1].strip()
+
             # Clean up response for other parsing paths
             if "Output (JSON):" in response:
                 response = response.split("Output (JSON):")[-1].strip()
+
             
             # Phase 13: MCQ Detection — single A or B (only if response is very short)
             clean_resp = response.strip()
