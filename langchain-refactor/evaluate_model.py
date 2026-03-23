@@ -126,7 +126,7 @@ def load_test_set(dataset_path: str, num_samples: int = 100, lang_filter: str = 
     return test_data
 
 
-def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[str] = None) -> Dict:
+def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[str] = None, **kwargs) -> Dict:
     """Evaluate model on test set with comprehensive metrics."""
     
     print(f"Initializing model from: {model_path}")
@@ -726,7 +726,7 @@ def main():
     test_data = load_test_set(args.dataset, args.num_samples, args.lang)
     
     # Evaluate
-    results = evaluate_model(args.model, test_data, lora_path=args.lora_path)
+    results = evaluate_model(args.model, test_data, lora_path=args.lora_path, **vars(args))
     
     # Compute BERTScore
     bertscore_results = compute_bertscore(results)
