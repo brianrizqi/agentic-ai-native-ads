@@ -726,7 +726,14 @@ def main():
     test_data = load_test_set(args.dataset, args.num_samples, args.lang)
     
     # Evaluate
-    results = evaluate_model(args.model, test_data, lora_path=args.lora_path, **vars(args))
+    results = evaluate_model(
+        args.model, 
+        test_data, 
+        lora_path=args.lora_path,
+        use_rag=args.use_rag,
+        vectorstore_dir=args.vectorstore_dir,
+        embedding_model=args.embedding_model
+    )
     
     # Compute BERTScore
     bertscore_results = compute_bertscore(results)
