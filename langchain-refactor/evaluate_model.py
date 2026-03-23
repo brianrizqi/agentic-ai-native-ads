@@ -18,8 +18,6 @@ import numpy as np
 sys.path.append(str(Path(__file__).parent))
 
 from agents.classification_agent import ClassificationAgent
-from agents.retrieval_agent import RetrievalAgent
-from vector_stores.native_ads_vectorstore import NativeAdsVectorStore
 
 # For visualization and metrics
 try:
@@ -144,12 +142,20 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
     # Initialize RAG if requested
     retriever = None
     if kwargs.get('use_rag'):
-        print(f"🔍 Initializing RAG with vectorstore: {kwargs.get('vectorstore_dir')}")
-        vstore = NativeAdsVectorStore(
-            embedding_model=kwargs.get('embedding_model', "sentence-transformers/all-MiniLM-L6-v2"),
-            persist_directory=kwargs.get('vectorstore_dir')
-        )
-        retriever = RetrievalAgent(vectorstore=vstore)
+        try:
+            from agents.retrieval_agent import RetrievalAgent
+            from vector_stores.native_ads_vectorstore import NativeAdsVectorStore
+            
+            print(f"🔍 Initializing RAG with vectorstore: {kwargs.get('vectorstore_dir')}")
+            vstore = NativeAdsVectorStore(
+                embedding_model=kwargs.get('embedding_model', "sentence-transformers/all-MiniLM-L6-v2"),
+                persist_directory=kwargs.get('vectorstore_dir')
+            )
+            retriever = RetrievalAgent(vectorstore=vstore)
+        except ImportError as e:
+            print(f"⚠️  RAG initialization failed: {e}")
+            print("Please install missing dependencies: pip install langchain-community faiss-cpu")
+            print("Continuing evaluation without RAG...")
 
     results = {
 
