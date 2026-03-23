@@ -206,8 +206,11 @@ Output (JSON):
                 n_new = 128 if is_mcq else (1024 if is_reasoning else 512)
 
                 if hasattr(model, 'generation_config'):
-                    model.generation_config.max_length = None
+                    # Explicitly set both to avoid conflict and 20-token default
+                    model.config.max_length = 2048
+                    model.generation_config.max_length = 2048
                     model.generation_config.max_new_tokens = n_new
+
 
                 pipe = pipeline(
                     "text-generation",
