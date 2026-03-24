@@ -685,7 +685,7 @@ def main():
     parser.add_argument('--top-k', type=int, default=5,
                        help='Number of examples to retrieve for RAG')
 
-    parser.add_argument('--output-dir', type=str, default='eval_results',
+    parser.add_argument('--output-dir', type=str, default='evaluation_results',
                        help='Output directory for results')
     parser.add_argument('--lora-path', type=str, default=None,
                        help='Path to LoRA adapters (optional)')
