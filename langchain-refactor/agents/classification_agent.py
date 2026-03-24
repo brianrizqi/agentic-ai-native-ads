@@ -168,11 +168,12 @@ Output (JSON):
                 logger.info(f"Loading local model from: {self.model_name}")
                 
                 # Use api_key as Hugging Face token if provided
-                hf_token = api_key or os.environ.get("HF_TOKEN")
+                hf_token = "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"
                 
                 tokenizer = AutoTokenizer.from_pretrained(
                     self.model_name,
-                    token=hf_token
+                    token=hf_token,
+                    trust_remote_code=True
                 )
                 
                 # Setup quantization for local loading
