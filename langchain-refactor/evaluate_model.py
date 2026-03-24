@@ -136,7 +136,8 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
     agent = ClassificationAgent(
         provider='local', 
         model_name=model_path,
-        lora_path=lora_path
+        lora_path=lora_path,
+        gpu_id=kwargs.get('gpu_id', 0)
     )
     
     # Initialize RAG if requested
@@ -700,6 +701,8 @@ def main():
                        help='API key for LLM judge (REQUIRED if --use-judge is set)')
     parser.add_argument('--lang', type=str, default=None,
                        help='Filter evaluation by language (e.g. "en", "id")')
+    parser.add_argument('--gpu-id', type=int, default=0,
+                       help='GPU ID to use (0, 1, etc.) or -1 for "auto" (default: 0)')
     args = parser.parse_args()
     
     # Extract model name from path
@@ -736,7 +739,8 @@ def main():
         lora_path=args.lora_path,
         use_rag=args.use_rag,
         vectorstore_dir=args.vectorstore_dir,
-        embedding_model=args.embedding_model
+        embedding_model=args.embedding_model,
+        gpu_id=args.gpu_id
     )
     
     # Compute BERTScore
