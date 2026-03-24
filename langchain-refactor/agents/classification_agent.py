@@ -63,6 +63,8 @@ Pilih:
 A. native ads
 B. berita murni
 
+{context}
+
 Judul: {title}
 Konten: {content}
 
@@ -85,6 +87,8 @@ Berita Murni:
 - Bisa positif/netral/negatif
 - Objektif, menyajikan berbagai sudut pandang
 - Tidak mempromosikan produk/brand
+
+{context}
 
 Judul: {title}
 Konten: {content}

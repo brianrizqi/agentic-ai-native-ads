@@ -256,7 +256,7 @@ Output (JSON):
 """
 
 simple_local_prompt = PromptTemplate(
-    input_variables=["title", "content"],
+    input_variables=["title", "content", "context"],
     template=SIMPLE_LOCAL_PROMPT_TEMPLATE
 )
 
@@ -285,6 +285,6 @@ Klasifikasi:
 """
 
 training_prompt = PromptTemplate(
-    input_variables=["title", "content"],
+    input_variables=["title", "content", "context"],
     template=TRAINING_PROMPT_TEMPLATE
 )
