@@ -252,6 +252,8 @@ Konten: {content}
 
 {context}
 
+Gunakan contoh-contoh di atas sebagai referensi pola penulisan yang serupa untuk menentukan label yang paling tepat.
+
 Output (JSON):
 """
 

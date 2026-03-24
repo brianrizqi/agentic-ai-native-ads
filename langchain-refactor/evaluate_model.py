@@ -188,7 +188,7 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             # Get RAG context if enabled
             context = ""
             if retriever:
-                context = retriever.get_context_for_classification(sample['input'], top_k=3)
+                context = retriever.get_context_for_classification(sample['input'], top_k=kwargs.get('top_k', 5))
                 
             pred = agent.classify(sample['input'], title=title, context=context)
 
@@ -682,6 +682,8 @@ def main():
                        help='Directory for FAISS vectorstore')
     parser.add_argument('--embedding-model', type=str, default='sentence-transformers/all-MiniLM-L6-v2',
                        help='Embedding model for RAG')
+    parser.add_argument('--top-k', type=int, default=5,
+                       help='Number of examples to retrieve for RAG')
 
     parser.add_argument('--output-dir', type=str, default='eval_results',
                        help='Output directory for results')
@@ -708,6 +710,8 @@ def main():
     from datetime import datetime
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_filename = f'eval_{model_name}_{timestamp}'
+    if args.use_rag:
+        output_filename += f'_rag_top{args.top_k}'
     
     # Create output directory
     output_dir = Path(args.output_dir)
