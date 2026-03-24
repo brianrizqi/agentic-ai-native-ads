@@ -98,7 +98,7 @@ Judul: {title}
 Konten: {content}
 
 Analisis perbandingan dengan contoh database (identifikasi pola promosi vs objektif):
-Tuliskan analisis Anda terlebih dahulu, lalu akhiri dengan label dalam format 'Jawaban: A' atau 'Jawaban: B'.
+Tuliskan analisis singkat (maks 2-3 kalimat), lalu akhiri dengan label tetap: 'Jawaban: A' atau 'Jawaban: B'.
 
 Analisis: """
                 )
@@ -241,7 +241,11 @@ Output (JSON):
                 # Override max_length di generation_config supaya tidak conflict
                 # dengan max_new_tokens yang kita set di pipeline
                 is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
-                n_new = 128 if is_mcq else (1024 if is_reasoning else 512)
+                # RAG needs more tokens for the step-by-step analysis
+                if self.use_rag:
+                    n_new = 512
+                else:
+                    n_new = 128 if is_mcq else (1024 if is_reasoning else 512)
 
                 if hasattr(model, 'generation_config'):
                     # Explicitly set both to avoid conflict and 20-token default
