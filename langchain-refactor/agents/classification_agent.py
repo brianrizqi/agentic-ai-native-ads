@@ -31,7 +31,8 @@ class ClassificationAgent:
         use_few_shot: bool = True,
         lora_path: Optional[str] = None,
         gpu_id: int = 0,
-        use_rag: bool = False
+        use_rag: bool = False,
+        is_mcq: bool = False
     ):
         """
         Initialize Classification Agent.
@@ -45,6 +46,7 @@ class ClassificationAgent:
             lora_path: Path to LoRA adapters (optional)
             gpu_id: GPU ID to use (0, 1, etc.) or -1 for 'auto'
             use_rag: Whether RAG context will be provided
+            is_mcq: Force MCQ reasoning-first mode
         """
         self.model_name = model_name
         self.provider = provider
@@ -53,6 +55,7 @@ class ClassificationAgent:
         self.lora_path = lora_path
         self.gpu_id = gpu_id
         self.use_rag = use_rag
+        self.is_mcq = is_mcq or use_rag  # RAG optimization defaults to MCQ
         
         # Initialize LLM
         self.tokenizer = None
@@ -95,7 +98,9 @@ Judul: {title}
 Konten: {content}
 
 Analisis perbandingan dengan contoh database (identifikasi pola promosi vs objektif):
-"""
+Tuliskan analisis Anda terlebih dahulu, lalu akhiri dengan label dalam format 'Jawaban: A' atau 'Jawaban: B'.
+
+Analisis: """
                 )
             else:
                 # Phase 10: Standard template for larger models
@@ -230,7 +235,8 @@ Output (JSON):
                 # Add stop sequence for JSON block
                 stop_sequences = ["}\n", "} ", tokenizer.eos_token]
                 
-                is_mcq = ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower
+                # Use both name-based check and explicit flag
+                is_mcq = self.is_mcq or ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower
                 
                 # Override max_length di generation_config supaya tidak conflict
                 # dengan max_new_tokens yang kita set di pipeline
@@ -252,7 +258,7 @@ Output (JSON):
                     do_sample=False,            # greedy decode
                     repetition_penalty=1.0 if is_mcq else 1.1,
                     return_full_text=False,
-                    stop_sequence=stop_sequences[0]
+                    stop_sequence=stop_sequences[0] if not self.use_rag else None
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
