@@ -29,7 +29,8 @@ class ClassificationAgent:
         api_key: Optional[str] = None,
         temperature: float = 0.3,
         use_few_shot: bool = True,
-        lora_path: Optional[str] = None
+        lora_path: Optional[str] = None,
+        gpu_id: int = 0
     ):
         """
         Initialize Classification Agent.
@@ -41,12 +42,14 @@ class ClassificationAgent:
             temperature: Sampling temperature
             use_few_shot: Whether to use few-shot learning
             lora_path: Path to LoRA adapters (optional)
+            gpu_id: GPU ID to use (0, 1, etc.) or -1 for 'auto'
         """
         self.model_name = model_name
         self.provider = provider
         self.temperature = temperature
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
+        self.gpu_id = gpu_id
         
         # Initialize LLM
         self.tokenizer = None
@@ -161,8 +164,11 @@ Output (JSON):
                         bnb_4bit_use_double_quant=True,
                     )
 
-                # Fix for multi-GPU device-side assert: set explicit device 0
-                device_map = {"": 0} if torch.cuda.is_available() else "auto"
+                # Fix for multi-GPU: set explicit device or 'auto'
+                if self.gpu_id == -1:
+                    device_map = "auto"
+                else:
+                    device_map = {"": self.gpu_id} if torch.cuda.is_available() else "auto"
 
                 base_model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
