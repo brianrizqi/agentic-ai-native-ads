@@ -256,7 +256,8 @@ Output (JSON):
             # Prepare input
             input_data = {
                 "title": title or content[:100],
-                "content": content[:400] # Use same char limit as training/eval HF scripts
+                "content": content[:400], # Use same char limit as training/eval HF scripts
+                "context": context
             }
             
             # Use chat template for local models to ensure instruction following
