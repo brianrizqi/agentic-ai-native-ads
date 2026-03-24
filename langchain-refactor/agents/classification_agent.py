@@ -85,22 +85,17 @@ Analisis:
             from langchain_core.prompts import PromptTemplate
             if self.use_rag:
                 prompt = PromptTemplate.from_template(
-                    """Klasifikasikan berita berikut. Gunakan contoh serupa dari database sebagai referensi pola.
+                    """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-Pilih:
-A. native ads
-B. berita murni
-
+Gunakan contoh berikut sebagai referensi:
 {context}
 
-Target Artikel:
+Target Berita:
 Judul: {title}
 Konten: {content}
 
-Analisis perbandingan dengan contoh database (identifikasi pola promosi vs objektif):
-Tuliskan analisis singkat (maks 2-3 kalimat), lalu akhiri dengan label tetap: 'Jawaban: A' atau 'Jawaban: B'.
-
-Analisis: """
+Output (JSON):
+"""
                 )
             else:
                 # Phase 10: Standard template for larger models
@@ -262,7 +257,7 @@ Output (JSON):
                     do_sample=False,            # greedy decode
                     repetition_penalty=1.0 if is_mcq else 1.1,
                     return_full_text=False,
-                    stop_sequence=stop_sequences[0] if not self.use_rag else None
+                    stop_sequence=stop_sequences[0]
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
