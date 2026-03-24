@@ -137,7 +137,8 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         provider='local', 
         model_name=model_path,
         lora_path=lora_path,
-        gpu_id=kwargs.get('gpu_id', 0)
+        gpu_id=kwargs.get('gpu_id', 0),
+        use_rag=kwargs.get('use_rag', False)
     )
     
     # Initialize RAG if requested

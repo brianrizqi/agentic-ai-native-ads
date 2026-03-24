@@ -30,7 +30,8 @@ class ClassificationAgent:
         temperature: float = 0.3,
         use_few_shot: bool = True,
         lora_path: Optional[str] = None,
-        gpu_id: int = 0
+        gpu_id: int = 0,
+        use_rag: bool = False
     ):
         """
         Initialize Classification Agent.
@@ -43,6 +44,7 @@ class ClassificationAgent:
             use_few_shot: Whether to use few-shot learning
             lora_path: Path to LoRA adapters (optional)
             gpu_id: GPU ID to use (0, 1, etc.) or -1 for 'auto'
+            use_rag: Whether RAG context will be provided
         """
         self.model_name = model_name
         self.provider = provider
@@ -50,6 +52,7 @@ class ClassificationAgent:
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
+        self.use_rag = use_rag
         
         # Initialize LLM
         self.tokenizer = None
@@ -75,10 +78,29 @@ Analisis:
 """
             )
         elif "gemma" in model_name_lower:
-            # Phase 10: Standard template for larger models
+            # Phase 15: RAG-Optimized Reasoning-First Prompt
             from langchain_core.prompts import PromptTemplate
-            prompt = PromptTemplate.from_template(
-                """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+            if self.use_rag:
+                prompt = PromptTemplate.from_template(
+                    """Klasifikasikan berita berikut. Gunakan contoh serupa dari database sebagai referensi pola.
+
+Pilih:
+A. native ads
+B. berita murni
+
+{context}
+
+Target Artikel:
+Judul: {title}
+Konten: {content}
+
+Analisis perbandingan dengan contoh database (identifikasi pola promosi vs objektif):
+"""
+                )
+            else:
+                # Phase 10: Standard template for larger models
+                prompt = PromptTemplate.from_template(
+                    """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
 1. Nada positif/netral (tidak mengkritik subjek)
@@ -98,7 +120,7 @@ Konten: {content}
 
 Output (JSON):
 """
-            )
+                )
         elif self.provider == "local":
             # Use simplified prompt for local models
             from prompts.classification_prompts import simple_local_prompt
