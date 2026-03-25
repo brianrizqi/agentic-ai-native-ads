@@ -65,12 +65,23 @@ class NativeAdsVectorStore:
         documents = []
         for i, item in enumerate(data):
             # Extract content based on format
+            reasoning = ""
             if 'input' in item:
                 content = item['input']
-                label = 'native ads' if 'native ads' in item.get('output', '').lower() else 'berita murni'
+                output_str = item.get('output', '')
+                label = 'native ads' if 'native ads' in output_str.lower() else 'berita murni'
+                
+                # Extract reasoning from JSON output if available
+                try:
+                    if output_str.strip().startswith('{'):
+                        output_json = json.loads(output_str)
+                        reasoning = output_json.get('reasoning', '')
+                except Exception:
+                    pass
             elif 'context' in item:
                 content = item['context']
                 label = item.get('label', 'unknown')
+                reasoning = item.get('reasoning', '')
             else:
                 continue
             
@@ -80,6 +91,7 @@ class NativeAdsVectorStore:
                 metadata={
                     'id': i,
                     'label': label,
+                    'reasoning': reasoning,
                     'source': 'training_dataset'
                 }
             )

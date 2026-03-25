@@ -55,12 +55,16 @@ class RetrievalAgent:
                 return ""
             
             # Format context
-            context_lines = ["Similar examples from database:"]
+            context_lines = ["Berikut adalah beberapa contoh artikel serupa sebagai referensi (Beberapa mungkin memiliki label yang berbeda, gunakan sebagai pembanding):"]
             for i, doc in enumerate(results[:top_k], 1):
                 label = doc.get('metadata', {}).get('label', 'unknown')
-                content = doc.get('content', '')[:150]
-                context_lines.append(f"\n[Example {i}] Label: {label}")
-                context_lines.append(f"Content: {content}...")
+                reasoning = doc.get('metadata', {}).get('reasoning', 'Tidak tersedia')
+                content = doc.get('content', '')[:200]
+                
+                context_lines.append(f"\n[CONTOH {i}]")
+                context_lines.append(f"Label: {label}")
+                context_lines.append(f"Alasan: {reasoning}")
+                context_lines.append(f"Isi Artikel: {content}...")
             
             context = "\n".join(context_lines)
             logger.info(f"Retrieved {len(results)} examples for RAG context")

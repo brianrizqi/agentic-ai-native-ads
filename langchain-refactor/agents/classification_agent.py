@@ -98,10 +98,10 @@ Berita Murni:
 - Objektif, menyajikan berbagai sudut pandang
 - Tidak mempromosikan produk/brand
 
-Gunakan contoh berikut sebagai referensi:
+Gunakan contoh-contoh berikut sebagai referensi. Perhatikan bagian "Alasan" untuk memahami logika klasifikasi:
 {context}
 
-Target Berita:
+Target Berita yang Harus Diklasifikasi:
 Judul: {title}
 Konten: {content}
 
