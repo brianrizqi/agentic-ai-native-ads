@@ -87,6 +87,17 @@ Analisis:
                 prompt = PromptTemplate.from_template(
                     """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
 Gunakan contoh berikut sebagai referensi:
 {context}
 
