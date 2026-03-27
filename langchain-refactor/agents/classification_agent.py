@@ -61,77 +61,42 @@ class ClassificationAgent:
         self.tokenizer = None
         self.llm = self._initialize_llm(api_key)
         
+        # Phase 17: Detection of small models for "Lite RAG"
+        self.is_small_model = self._is_small_model()
+        
         # Select prompt based on model/provider
         model_name_lower = self.model_name.lower()
-        if ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower:
-            # Phase 14: Reasoning-First MCQ Prompt
+        # Phase 18: All models now use a Harmonized RAG Prompt that matches the training format
+        # but with simplified context injection for smaller models to reduce noise.
+        # Phase 18: All models now use a Harmonized RAG Prompt that matches the training format
+        # but with simplified context injection for smaller models to reduce noise.
+        if self.use_rag:
             from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
-                """Klasifikasikan berita berikut.
-Pilih:
-A. native ads
-B. berita murni
+                """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
 
 {context}
 
 Judul: {title}
 Konten: {content}
 
-Analisis:
+Output (JSON):
+{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}
+
+Klasifikasi:
 """
             )
-        elif "gemma" in model_name_lower:
-            # Phase 15: RAG-Optimized Reasoning-First Prompt
-            from langchain_core.prompts import PromptTemplate
-            if self.use_rag:
-                prompt = PromptTemplate.from_template(
-                    """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
-1. Nada positif/netral (tidak mengkritik subjek)
-2. Bahasa persuasif (mengajak/meyakinkan)
-3. Mempromosikan produk/brand/instansi
-4. Hanya satu sudut pandang (tidak objektif)
-
-Berita Murni:
-- Bisa positif/netral/negatif
-- Objektif, menyajikan berbagai sudut pandang
-- Tidak mempromosikan produk/brand
-
-Gunakan contoh-contoh berikut sebagai referensi. Perhatikan bagian "Alasan" untuk memahami logika klasifikasi:
-{context}
-
-Target Berita yang Harus Diklasifikasi:
-Judul: {title}
-Konten: {content}
-
-Output (JSON):
-"""
-                )
-            else:
-                # Phase 10: Standard template for larger models
-                prompt = PromptTemplate.from_template(
-                    """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
-1. Nada positif/netral (tidak mengkritik subjek)
-2. Bahasa persuasif (mengajak/meyakinkan)
-3. Mempromosikan produk/brand/instansi
-4. Hanya satu sudut pandang (tidak objektif)
-
-Berita Murni:
-- Bisa positif/netral/negatif
-- Objektif, menyajikan berbagai sudut pandang
-- Tidak mempromosikan produk/brand
-
-{context}
-
-Judul: {title}
-Konten: {content}
-
-Output (JSON):
-"""
-                )
         elif self.provider == "local":
             # Use simplified prompt for local models
             from prompts.classification_prompts import simple_local_prompt
@@ -144,6 +109,13 @@ Output (JSON):
         self.chain = prompt | self.llm | StrOutputParser()
         
         logger.info(f"Classification Agent initialized with {model_name} ({provider})")
+    
+    def _is_small_model(self) -> bool:
+        """Check if the model is a 'small' or 'lite' variant (typically < 3B)."""
+        name = self.model_name.lower()
+        # Phase 18: Expanded detection for all small model families seen in regression benchmarks
+        small_keywords = ["1b", "2b", "3b", "lite", "tiny", "small", "0.5b", "270m"]
+        return any(kw in name for kw in small_keywords)
     
     def _initialize_llm(self, api_key: Optional[str]):
         """Initialize LLM based on provider."""

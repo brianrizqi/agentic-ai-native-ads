@@ -191,7 +191,20 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             # Get RAG context if enabled
             context = ""
             if retriever:
-                context = retriever.get_context_for_classification(sample['input'], top_k=kwargs.get('top_k', 5))
+                # Lite RAG: Adjust top_k and reasoning length for small models
+                eff_top_k = kwargs.get('top_k', 5)
+                max_reasoning = None
+                
+                if agent.is_small_model:
+                    eff_top_k = min(eff_top_k, 2)
+                    max_reasoning = 150
+                    
+                context = retriever.get_context_for_classification(
+                    sample['input'], 
+                    top_k=eff_top_k,
+                    max_reasoning_length=max_reasoning,
+                    minimalist=agent.is_small_model
+                )
                 
             pred = agent.classify(sample['input'], title=title, context=context)
 
