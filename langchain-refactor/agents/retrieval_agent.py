@@ -135,6 +135,41 @@ class RetrievalAgent:
         except Exception as e:
             logger.error(f"Search error: {e}")
             return []
+
+    def get_examples_for_history(
+        self,
+        text: str,
+        top_k: int = 2
+    ) -> List[Dict[str, Any]]:
+        """
+        Get similar examples formatted for conversation history (Phase 20).
+        
+        Args:
+            text: Query text
+            top_k: Number of examples
+            
+        Returns:
+            List of example dicts with 'content', 'label', 'reasoning'
+        """
+        if not self.vectorstore:
+            return []
+            
+        try:
+            from tools.retrieval_tools import VectorSearchTool
+            retriever = VectorSearchTool(vectorstore=self.vectorstore)
+            results = retriever.run({"query": text[:500], "top_k": top_k})
+            
+            examples = []
+            for doc in results:
+                examples.append({
+                    "content": doc.get('content', ''),
+                    "label": doc.get('metadata', {}).get('label', 'unknown'),
+                    "reasoning": doc.get('metadata', {}).get('reasoning', '')
+                })
+            return examples
+        except Exception as e:
+            logger.error(f"Error getting examples for history: {e}")
+            return []
     
     def search_by_topic(
         self,
