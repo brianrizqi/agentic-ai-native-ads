@@ -234,9 +234,8 @@ Klasifikasi:
                 else:
                     stop_sequences = ["}\n", "} ", "\n\n", "Analisis:", "Artikel:", tokenizer.eos_token]
                 
-                # Use both name-based check and explicit flag
                 # Phase 45: STOP FORCING MCQ for 270M (micro) - Reverting to JSON baseline
-                is_mcq = self.is_mcq or "mcq" in model_name_lower
+                self.is_mcq = self.is_mcq or "mcq" in model_name_lower
                 
                 # Override max_length di generation_config supaya tidak conflict
                 # dengan max_new_tokens yang kita set di pipeline
@@ -245,7 +244,7 @@ Klasifikasi:
                     n_new = 512
                 else:
                     is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
-                    n_new = 128 if is_mcq else (1024 if is_reasoning else 512)
+                    n_new = 128 if self.is_mcq else (1024 if is_reasoning else 512)
                 
                 # Model-specific overrides
                 if self.model_tier == "micro":
@@ -335,7 +334,7 @@ Klasifikasi:
                             
                             # Ensure label matches A/B if using MCQ
                             if self.model_tier == "micro":
-                                if is_mcq:
+                                if self.is_mcq:
                                     # Phase 40: Transitioned to ULTRA-LIGHT RAG for Micro tier
                                     # Instead of a full article (distraction), just provide a single-line hint.
                                     print(f"DEBUG: RAG Triggered MCQ (Dist: {top_similarity:.4f})")
