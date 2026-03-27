@@ -308,6 +308,8 @@ Berita Murni:
 Judul: {title}
 Konten: {content}
 
+{context}
+
 Output (JSON):
 {{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
 
