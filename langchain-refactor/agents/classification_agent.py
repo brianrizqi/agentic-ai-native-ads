@@ -321,25 +321,31 @@ Klasifikasi:
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
                     if self.model_tier in ["micro", "small"]:
-                        # Phase 24: Signal-Focus RAG (Label-Prior) for Micro and Small models
-                        # For models < 3B, providing example text is distracting. 
-                        # We only provide the label "hint" from the retrieved examples.
-                        full_template = self.chain.first.template
-                        instructions = full_template.split('{context}')[0].split('ARTIKEL:')[0].strip()
+                        # Phase 25: Recovery RAG (One-Shot Pattern Match)
+                        # Reverting to full-text but strictly 1-shot to prime the model.
+                        # Aligning format with TRAINING_PROMPT_TEMPLATE.
                         
-                        # Get label consensus from examples
-                        labels = [ex.get('label', 'unknown') for ex in examples[:top_k]]
-                        label_hint = labels[0] if labels else "unknown"
+                        # Get instructions (Characteristics)
+                        full_template = self.chain.first.template
+                        instructions = full_template.split('{context}')[0].strip()
+                        
+                        context_block = ""
+                        if examples:
+                            # Use only the Top-1 (most similar) to minimize distraction
+                            ex = examples[0]
+                            ex_content = ex.get('content', '')[:120].replace('\n', ' ')
+                            ex_label = ex.get('label', 'unknown')
+                            context_block = f"CONTOH REFERENSI:\nJudul/Isi: {ex_content}\nLabel: {ex_label}\n\n"
                         
                         user_msg = f"""{instructions}
 
-PETUNJUK (Artikel serupa biasanya): {label_hint}
+{context_block}TUGAS:
+Klasifikasikan artikel berikut berdasarkan pola di atas.
 
-ARTIKEL:
-Judul: {title or content[:50]}
-Isi: {content[:150] if self.model_tier == "micro" else content[:250]}
+Judul: {title or content[:60]}
+Konten: {content[:200] if self.model_tier == "micro" else content[:350]}
 
-HASIL (JAWABAN A atau B): """
+HASIL (native ads atau berita murni): """
                         messages = [{"role": "user", "content": user_msg.strip()}]
                     else:
                         # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
@@ -406,23 +412,23 @@ HASIL (JAWABAN A atau B): """
         try:
             import re
             
-            # Phase 14: First check for "Jawaban: A/B" pattern in the FULL response
-            # Phase 22/23/24: Robust MCQ checking for both Indonesian and English anchors
-            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN)[:\s]*([AB])\b', response, re.IGNORECASE)
+            # Phase 14: First check for "Jawaban: A/B" pattern (MCQ fallback)
+            # Phase 22/23/24/25: Checking for labels or label codes
+            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
             if not jawaban_match and self.model_tier in ["micro", "small"]:
                 # Check for just the label code at the very beginning
-                micro_match = re.search(r'^\s*([AB])\b', response, re.IGNORECASE)
+                micro_match = re.search(r'^\s*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
                 if micro_match:
                     jawaban_match = micro_match
 
             if jawaban_match:
-                label_code = jawaban_match.group(1).upper()
-                # Extract reasoning (everything before "Jawaban:")
+                match_text = jawaban_match.group(1).upper()
+                # Extract reasoning (everything before result)
                 reasoning = response[:jawaban_match.start()].strip()
                 if not reasoning:
-                    reasoning = f'Detected MCQ Label: {label_code}'
+                    reasoning = f'Detected Label: {match_text}'
                 
-                if label_code == "A":
+                if match_text in ["A", "NATIVE ADS"]:
                     return {'label': 'native ads', 'confidence': 0.95, 'reasoning': reasoning[:300]}
                 else:
                     return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': reasoning[:300]}
