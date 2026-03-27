@@ -261,16 +261,18 @@ Klasifikasi:
                     # Explicitly set both to avoid conflict and 20-token default
                     model.config.max_length = 2048
                     model.generation_config.max_length = 2048
-                    model.generation_config.max_new_tokens = n_new
-
-
+                  # If model is micro, reduce tokens even more to prevent babble
+                n_new = 512 if not is_mcq else 150
+                if self.model_tier == "micro":
+                    n_new = 150
+                
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
                     max_new_tokens=n_new,
                     do_sample=False,            # greedy decode
-                    repetition_penalty=1.0 if is_mcq else 1.1,
+                    repetition_penalty=1.1,     # increase for stability
                     return_full_text=False
                 )
                 
@@ -321,47 +323,35 @@ Klasifikasi:
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
                     if self.model_tier in ["micro", "small"]:
-                        # Phase 27: Safe-Baseline RAG (Adaptive Bypass)
-                        # We only use RAG if the similarity is extremely high.
-                        # Otherwise, we use the Zero-Shot baseline to protect accuracy.
+                        # Phase 28: Identity Mirror - Reverting to Training Format
+                        # This avoids "Label Confusion" and "Instruction Fade"
                         top_similarity = examples[0].get('similarity_score', 0.0) if examples else 0.0
                         
-                        # Threshold 0.95 for micro (Near-perfect match only)
-                        # Threshold 0.85 for small 
+                        # Threshold 0.95 for micro (Baseline protector)
                         threshold = 0.95 if self.model_tier == "micro" else 0.85
                         
-                        if top_similarity < threshold:
-                            # Bypass RAG: Use the high-performing Zero-Shot Baseline
-                            user_msg = f"""Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-Judul: {title or content[:60]}
-Konten: {content[:250] if self.model_tier == "micro" else content[:400]}
-
-HASIL: """
-                        else:
-                            # High-Confidence RAG: Use ultra-compact hint
-                            ex = examples[0]
-                            # Strictly strip reasoning and text for micro to avoid "Analisis:" pollution
-                            ex_label = ex.get('label', 'unknown')
-                            
-                            user_msg = f"""Klasifikasikan berita sebagai "native ads" atau "berita murni".
-
-PETUNJUK (Artikel serupa): {ex_label}
-
-TUGAS:
-Judul: {title or content[:60]}
-Konten: {content[:150] if self.model_tier == "micro" else content[:250]}
-
-HASIL: """
+                        # Use the Training Template as the base
+                        from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
                         
-                        # Phase 26/27: Raw Completion Mode for Micro Models
-                        if self.model_tier == "micro":
-                            templated_prompt = user_msg.strip()
-                            # Expand stop sequences to kill babbling
-                            self.stop_sequences += ["Analisis:", "Jawaban:", "Artikel:", "Contoh:"]
+                        if top_similarity >= threshold:
+                            # Inject RAG as a reference block
+                            ex = examples[0]
+                            ex_content = ex.get('content', '')[:120].replace('\n', ' ')
+                            ex_label = ex.get('label', 'unknown')
+                            context_block = f"CONTOH REFERENSI:\nIsi: {ex_content}\nLabel: {ex_label}\n\n"
+                            
+                            user_msg = f"{TRAINING_PROMPT_TEMPLATE.split('Judul:')[0].strip()}\n\n{context_block}TUGAS:\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nOutput (JSON):"
                         else:
-                            messages = [{"role": "user", "content": user_msg.strip()}]
+                            # Pure Zero-Shot Training Baseline
+                            user_msg = TRAINING_PROMPT_TEMPLATE.format(
+                                title=title or content[:60],
+                                content=content[:400],
+                                context=""
+                            ).split('Output (JSON):')[0].strip() + "\n\nOutput (JSON):"
+                        
+                        messages = [{"role": "user", "content": user_msg.strip()}]
                     else:
+                        # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
                         # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
                         messages = []
                         full_template = self.chain.first.template
@@ -423,14 +413,26 @@ HASIL: """
             logger.error(f"Classification error: {e}")
             return self._get_fallback_classification(content)
     
-    def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Parse LLM response into structured format."""
-        try:
+            # Phase 28: Improved Robust Parsing for local models
             import re
             
-            # Phase 14: First check for "Jawaban: A/B" pattern (MCQ fallback)
-            # Phase 22-27: Robust checking for labels or label codes
-            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
+            # 1. Try JSON parsing first for the "Training Case"
+            if '{' in response and '}' in response:
+                try:
+                    import json
+                    json_str = response[response.find('{'):response.rfind('}')+1]
+                    data = json.loads(json_str)
+                    if 'label' in data:
+                        label = data['label'].lower()
+                        if "native" in label:
+                            return {'label': 'native ads', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', '')}
+                        else:
+                            return {'label': 'berita murni', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', '')}
+                except:
+                    pass
+
+            # 2. Fallback to anchor-based search (HASIL, JAWABAN, etc)
+            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk|label)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
             if not jawaban_match and self.model_tier in ["micro", "small"]:
                 # Check for just the label code at the very beginning
                 micro_match = re.search(r'^\s*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
