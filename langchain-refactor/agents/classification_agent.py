@@ -235,8 +235,8 @@ Klasifikasi:
 
                 self.tokenizer = tokenizer
                 
-                # Add stop sequence for JSON block
-                stop_sequences = ["}\n", "} ", tokenizer.eos_token]
+                # Add stop sequence for JSON block and to prevent babbling
+                stop_sequences = ["}\n", "} ", "\n\n", "Analisis:", "Artikel:", tokenizer.eos_token]
                 
                 # Use both name-based check and explicit flag
                 is_mcq = self.is_mcq or ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower
@@ -310,43 +310,52 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                if examples and self.use_rag:
-                    # Phase 20: Multi-turn RAG history
-                    messages = []
-                    # Get instructions from the template (everything before {context} or {title})
-                    full_template = self.chain.first.template
-                    instructions = full_template.split('{context}')[0].split('Judul:')[0].strip()
-                    
-                    # Add RAG examples as previous turns
-                    for i, ex in enumerate(examples):
-                        ex_content = ex.get('content', '')[:150].replace('\n', ' ')
-                        ex_label = ex.get('label', 'unknown')
-                        ex_reasoning = ex.get('reasoning', 'No reasoning available')
+                if self.use_rag and examples:
+                    if self.model_tier in ["micro", "small"]:
+                        # Phase 21: Single-turn consolidated block for micro/small models
+                        # This keeps instructions close to the generation point.
+                        full_template = self.chain.first.template
+                        instructions = full_template.split('{context}')[0].split('Judul:')[0].strip()
                         
-                        if i == 0:
-                            # First message carries the instructions
-                            user_msg = f"{instructions}\n\nCONTOH 1:\nKonten: {ex_content}"
-                        else:
-                            user_msg = f"CONTOH {i+1}:\nKonten: {ex_content}"
+                        context_block = ""
+                        for i, ex in enumerate(examples[:1] if self.model_tier == "micro" else examples):
+                            ex_content = ex.get('content', '')[:150].replace('\n', ' ')
+                            context_block += f"CONTOH {i+1}:\nKonten: {ex_content}\nLabel: {ex.get('label', 'unknown')}\n\n"
                         
-                        messages.append({"role": "user", "content": user_msg})
+                        user_msg = f"""{instructions}
+
+{context_block.strip()}
+
+TARGET UNTUK DIKLASIFIKASI:
+Judul: {title or content[:100]}
+Konten: {content[:250] if self.model_tier == "micro" else content[:400]}
+
+Output (JSON):
+"""
+                        messages = [{"role": "user", "content": user_msg.strip()}]
+                    else:
+                        # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
+                        messages = []
+                        full_template = self.chain.first.template
+                        instructions = full_template.split('{context}')[0].split('Judul:')[0].strip()
                         
-                        # Assistant provides the label (shows the model the pattern)
-                        if self.model_tier == "micro":
-                            # Micro models get flat labels to stay focused
-                            assistant_msg = ex_label
-                        else:
-                            # Small/Standard models get the JSON pattern they were trained on
-                            assistant_msg = json.dumps({
-                                "label": ex_label,
-                                "confidence": 1.0,
-                                "reasoning": ex_reasoning[:150]
-                            })
-                        messages.append({"role": "assistant", "content": assistant_msg})
-                    
-                    # Finally, add the target article
-                    target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:100]}\nKonten: {content[:400]}"
-                    messages.append({"role": "user", "content": target_msg})
+                        for i, ex in enumerate(examples):
+                            ex_content = ex.get('content', '')[:150].replace('\n', ' ')
+                            ex_label = ex.get('label', 'unknown')
+                            ex_reasoning = ex.get('reasoning', 'No reasoning available')
+                            
+                            if i == 0:
+                                user_msg = f"{instructions}\n\nCONTOH 1:\nKonten: {ex_content}"
+                            else:
+                                user_msg = f"CONTOH {i+1}:\nKonten: {ex_content}"
+                            
+                            messages.append({"role": "user", "content": user_msg})
+                            messages.append({"role": "assistant", "content": json.dumps({
+                                "label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning[:150]
+                            })})
+                        
+                        target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:100]}\nKonten: {content[:400]}"
+                        messages.append({"role": "user", "content": target_msg})
                 else:
                     # standard monolithic path
                     messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
