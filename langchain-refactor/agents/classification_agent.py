@@ -516,7 +516,7 @@ Klasifikasi:
                     return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': response[:200]}
                 
                 logger.warning(f"No label or JSON found in response: {response[:500]}")
-                raise json.JSONDecodeError("No JSON or label found", response, 0)
+                raise ValueError("No JSON or label found")
             
             # Parse character by character to find the matching closing brace
             brace_count = 0
