@@ -271,9 +271,11 @@ Klasifikasi:
                     max_new_tokens=n_new,
                     do_sample=False,            # greedy decode
                     repetition_penalty=1.0 if is_mcq else 1.1,
-                    return_full_text=False,
-                    stop_sequence=stop_sequences[0]
+                    return_full_text=False
                 )
+                
+                # We will pass stop sequences to the invoke() call for better reliability
+                self.stop_sequences = stop_sequences
                 
                 return HuggingFacePipeline(pipeline=pipe)
 
@@ -319,26 +321,26 @@ Klasifikasi:
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
                     if self.model_tier == "micro":
-                        # Phase 22: Single-turn MCQ block for micro models
+                        # Phase 23: Single-turn consolidated block with English-Indonesian anchors
                         full_template = self.chain.first.template
                         instructions = full_template.split('{context}')[0].split('Target:')[0].strip()
                         
+                        # Only 1-shot for micro to minimize noise
                         context_block = ""
-                        # Micro MCQ needs very tight examples
                         for i, ex in enumerate(examples[:1]):
                             ex_content = ex.get('content', '')[:100].replace('\n', ' ')
                             ex_label_code = "A" if ex.get('label') == "native ads" else "B"
-                            context_block += f"Contoh:\nKonten: {ex_content}\nJawaban: {ex_label_code}\n\n"
+                            context_block += f"EXAMPLE:\nText: {ex_content}\nAnswer: {ex_label_code}\n\n"
                         
                         user_msg = f"""{instructions}
 
 {context_block.strip()}
 
-Target:
-Judul: {title or content[:100]}
-Konten: {content[:200]}
+TARGET:
+Titile: {title or content[:50]}
+Content: {content[:150]}
 
-Jawaban: """
+HASIL (SATU KATA): """
                         messages = [{"role": "user", "content": user_msg.strip()}]
                     elif self.model_tier == "small":
                         # Phase 21: Single-turn consolidated block for micro/small models
@@ -394,7 +396,10 @@ Output (JSON):
                     tokenize=False, 
                     add_generation_prompt=True
                 )
-                response = self.llm.invoke(templated_prompt)
+                
+                # Phase 23: Explicitly pass ALL stop sequences to invoke
+                stop_seqs = getattr(self, 'stop_sequences', None)
+                response = self.llm.invoke(templated_prompt, stop=stop_seqs)
             else:
                 # Use LCEL with explicit dict (API providers)
                 response = self.chain.invoke(input_data)
@@ -425,9 +430,8 @@ Output (JSON):
             import re
             
             # Phase 14: First check for "Jawaban: A/B" pattern in the FULL response
-            # This is the expected output format for Reasoning-First MCQ models
-            # Phase 22: Also check for just "A" or "B" at the start (Micro-MCQ)
-            jawaban_match = re.search(r'Jawaban[:\s]*([AB])\b', response, re.IGNORECASE)
+            # Phase 22/23: Robust MCQ checking for both Indonesian and English anchors
+            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer)[:\s]*([AB])\b', response, re.IGNORECASE)
             if not jawaban_match and self.model_tier == "micro":
                 # Check for just the label code at the very beginning
                 micro_match = re.search(r'^\s*([AB])\b', response, re.IGNORECASE)
