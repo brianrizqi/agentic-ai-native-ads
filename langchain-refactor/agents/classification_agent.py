@@ -74,10 +74,13 @@ class ClassificationAgent:
         # but with simplified context injection for smaller models to reduce noise.
         if self.use_rag:
             if self.model_tier == "micro":
-                # Phase 19: Ultra-minimalist prompt for sub-500M models
-                # No JSON, no complex instructions, just pattern matching.
+                # Phase 22: Micro-MCQ RAG for sub-500M models
+                # Strictly constrained A/B format to prevent babbling.
                 prompt = PromptTemplate.from_template(
-                    """Klasifikasikan sebagai "native ads" atau "berita murni".
+                    """Klasifikasikan berita berikut.
+Pilih:
+A. native ads
+B. berita murni
 
 {context}
 
@@ -85,7 +88,7 @@ Target:
 Judul: {title}
 Konten: {content}
 
-Hasil: """
+Jawaban: """
                 )
             else:
                 # Phase 18: Harmonized RAG Prompt for larger models (1B+)
@@ -236,7 +239,11 @@ Klasifikasi:
                 self.tokenizer = tokenizer
                 
                 # Add stop sequence for JSON block and to prevent babbling
-                stop_sequences = ["}\n", "} ", "\n\n", "Analisis:", "Artikel:", tokenizer.eos_token]
+                # Phase 22: Micro tier uses " " (space) or "\n" to force one-token MCQ
+                if self.model_tier == "micro":
+                    stop_sequences = ["\n", " ", tokenizer.eos_token]
+                else:
+                    stop_sequences = ["}\n", "} ", "\n\n", "Analisis:", "Artikel:", tokenizer.eos_token]
                 
                 # Use both name-based check and explicit flag
                 is_mcq = self.is_mcq or ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower
@@ -311,14 +318,36 @@ Klasifikasi:
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
-                    if self.model_tier in ["micro", "small"]:
+                    if self.model_tier == "micro":
+                        # Phase 22: Single-turn MCQ block for micro models
+                        full_template = self.chain.first.template
+                        instructions = full_template.split('{context}')[0].split('Target:')[0].strip()
+                        
+                        context_block = ""
+                        # Micro MCQ needs very tight examples
+                        for i, ex in enumerate(examples[:1]):
+                            ex_content = ex.get('content', '')[:100].replace('\n', ' ')
+                            ex_label_code = "A" if ex.get('label') == "native ads" else "B"
+                            context_block += f"Contoh:\nKonten: {ex_content}\nJawaban: {ex_label_code}\n\n"
+                        
+                        user_msg = f"""{instructions}
+
+{context_block.strip()}
+
+Target:
+Judul: {title or content[:100]}
+Konten: {content[:200]}
+
+Jawaban: """
+                        messages = [{"role": "user", "content": user_msg.strip()}]
+                    elif self.model_tier == "small":
                         # Phase 21: Single-turn consolidated block for micro/small models
                         # This keeps instructions close to the generation point.
                         full_template = self.chain.first.template
                         instructions = full_template.split('{context}')[0].split('Judul:')[0].strip()
                         
                         context_block = ""
-                        for i, ex in enumerate(examples[:1] if self.model_tier == "micro" else examples):
+                        for i, ex in enumerate(examples): # Small models can take more examples
                             ex_content = ex.get('content', '')[:150].replace('\n', ' ')
                             context_block += f"CONTOH {i+1}:\nKonten: {ex_content}\nLabel: {ex.get('label', 'unknown')}\n\n"
                         
@@ -328,7 +357,7 @@ Klasifikasi:
 
 TARGET UNTUK DIKLASIFIKASI:
 Judul: {title or content[:100]}
-Konten: {content[:250] if self.model_tier == "micro" else content[:400]}
+Konten: {content[:400]}
 
 Output (JSON):
 """
@@ -397,13 +426,21 @@ Output (JSON):
             
             # Phase 14: First check for "Jawaban: A/B" pattern in the FULL response
             # This is the expected output format for Reasoning-First MCQ models
+            # Phase 22: Also check for just "A" or "B" at the start (Micro-MCQ)
             jawaban_match = re.search(r'Jawaban[:\s]*([AB])\b', response, re.IGNORECASE)
+            if not jawaban_match and self.model_tier == "micro":
+                # Check for just the label code at the very beginning
+                micro_match = re.search(r'^\s*([AB])\b', response, re.IGNORECASE)
+                if micro_match:
+                    jawaban_match = micro_match
+
             if jawaban_match:
                 label_code = jawaban_match.group(1).upper()
                 # Extract reasoning (everything before "Jawaban:")
                 reasoning = response[:jawaban_match.start()].strip()
                 if not reasoning:
                     reasoning = f'Detected MCQ Label: {label_code}'
+                
                 if label_code == "A":
                     return {'label': 'native ads', 'confidence': 0.95, 'reasoning': reasoning[:300]}
                 else:
