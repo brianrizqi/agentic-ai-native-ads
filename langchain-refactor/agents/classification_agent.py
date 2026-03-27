@@ -320,36 +320,60 @@ Klasifikasi:
                         from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE
                         
                         # Threshold handles noise vs signal
-                        threshold = 0.75 if self.model_tier == "micro" else 0.70
+                        # Phase 32: Raise to 0.82 for micro (High-purity signal only)
+                        threshold = 0.82 if self.model_tier == "micro" else 0.70
                         
                         target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
                         
                         if top_similarity >= threshold and examples:
-                            # Inject best RAG example as a single compact reference block
+                            # Split example into separate turn
                             ex = examples[0]
                             ex_content = ex.get('content', '')[:120].replace('\n', ' ')
                             ex_label = ex.get('label', 'unknown')
+                            ex_reasoning = ex.get('reasoning', 'No reasoning available')[:100]
+                            
                             # Ensure label matches A/B if using MCQ
                             if self.model_tier == "micro":
-                                ex_label = "A (native ads)" if "native" in ex_label.lower() else "B (berita murni)"
+                                ex_label_short = "A" if "native" in ex_label.lower() else "B"
+                                assistant_content = f"{ex_reasoning}\nJawaban: {ex_label_short}"
+                            else:
+                                assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
                             
-                            context_block = f"CONTOH REFERENSI:\nIsi: {ex_content}\nLabel: {ex_label}\n\n"
-                            
-                            user_msg = f"{target_template.split('Judul:')[0].strip()}\n\n{context_block}TUGAS:\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\n{target_template.split('Konten: {content}')[1].strip()}"
+                            # Build 2rd turn messages (Phase 32: Multi-turn Shot-Injection)
+                            messages = [
+                                {
+                                    "role": "user", 
+                                    "content": target_template.format(
+                                        title=ex.get('title', 'Conten Contoh'),
+                                        content=ex_content,
+                                        context=""
+                                    ).strip()
+                                },
+                                {
+                                    "role": "assistant",
+                                    "content": assistant_content
+                                },
+                                {
+                                    "role": "user",
+                                    "content": f"TARGET UNTUK ANDA:\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
+                                }
+                            ]
                         else:
-                            # Pure Zero-Shot: use verbatim training template, no RAG boilerplate
+                            # Pure Zero-Shot: verbatim training template (matches original baseline)
                             user_msg = target_template.format(
                                 title=title or content[:60],
                                 content=content[:400],
                                 context=""
                             )
+                            # Strip literal placeholders left from formatting
+                            user_msg = user_msg.replace('{context}', '').strip()
                             # Clean up trailing prompt anchors
                             if self.model_tier == "micro":
                                 user_msg = user_msg.split('Analisis:')[0].strip() + "\n\nAnalisis:"
                             else:
                                 user_msg = user_msg.split('Output (JSON):')[0].strip() + "\n\nOutput (JSON):"
-                        
-                        messages = [{"role": "user", "content": user_msg.strip()}]
+                            
+                            messages = [{"role": "user", "content": user_msg}]
                     else:
                         # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
                         # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
