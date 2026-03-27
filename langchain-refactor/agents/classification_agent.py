@@ -336,16 +336,19 @@ Klasifikasi:
                             if self.model_tier == "micro":
                                 ex_label_short = "A" if "native" in ex_label.lower() else "B"
                                 
-                                # Phase 40: Reverting to SINGLE-TURN for Micro tier (2-turn confuses 270M)
+                                # Phase 40: Transitioned to ULTRA-LIGHT RAG for Micro tier
+                                # Instead of a full article (distraction), just provide a single-line hint.
                                 print(f"DEBUG: RAG Triggered (Dist: {top_similarity:.4f})")
                                 system_instr = "Pilih A (native ads) atau B (berita murni)."
+                                
+                                # Convert ex_label to a friendly hint
+                                ex_label_text = "NATIVE ADS" if "native" in ex_label.lower() else "BERITA MURNI"
+                                ex_reasoning_brief = ex_reasoning[:120].replace('\n', ' ')
+                                hint = f"(Petunjuk RAG: Dokumen sejenis seringkali diklasifikasikan sebagai '{ex_label_text}' karena {ex_reasoning_brief})"
+                                
                                 user_msg = (
                                     f"Klasifikasikan berita berikut. {system_instr}\n\n"
-                                    f"REFERENSI ARTIKEL SERUPA:\n"
-                                    f"Teks: {ex_content}\n"
-                                    f"Analisis: {ex_reasoning}\n"
-                                    f"Jawaban: {ex_label_short}\n\n"
-                                    f"TUGAS ANDA:\n"
+                                    f"{hint}\n\n"
                                     f"Judul: {title or content[:60]}\n"
                                     f"Konten: {content[:400]}\n\n"
                                     f"Analisis:"
@@ -476,11 +479,12 @@ Klasifikasi:
 
             # 2. Early Phase Fallback to anchor-based search (HASIL, JAWABAN, etc)
             # Priorities: look for "Jawaban: [AB]" first as it's the 270M standard.
-            mcq_label_match = re.search(r'Jawaban[:\s]*([AB])\b', response, re.IGNORECASE)
+            # Phase 42: Removed \b boundary as multilingual gibberish (Thai/Russian) confuses the word boundary.
+            mcq_label_match = re.search(r'Jawaban[:\s]*([AB])', response, re.IGNORECASE)
             
             if not mcq_label_match:
                 # Try generic anchor-based search
-                jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk|label)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
+                jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk|label)[:\s]*([AB]|native ads|berita murni)', response, re.IGNORECASE)
             else:
                 jawaban_match = mcq_label_match
 
