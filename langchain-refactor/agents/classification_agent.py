@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEndpoint, HuggingFacePipeline
 from langchain_core.callbacks.manager import CallbackManager
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
 import json
 import logging
 import os
@@ -71,7 +72,6 @@ class ClassificationAgent:
         # Phase 18: All models now use a Harmonized RAG Prompt that matches the training format
         # but with simplified context injection for smaller models to reduce noise.
         if self.use_rag:
-            from langchain_core.prompts import PromptTemplate
             prompt = PromptTemplate.from_template(
                 """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
@@ -92,7 +92,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}
+{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
 
 Klasifikasi:
 """
