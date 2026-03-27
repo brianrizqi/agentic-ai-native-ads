@@ -160,11 +160,12 @@ class RetrievalAgent:
             results = retriever.run({"query": text[:500], "top_k": top_k})
             
             examples = []
-            for doc in results:
+            for doc_dict in results: # VectorSearchTool returns list of dicts with 'content', 'metadata', 'similarity_score'
                 examples.append({
-                    "content": doc.get('content', ''),
-                    "label": doc.get('metadata', {}).get('label', 'unknown'),
-                    "reasoning": doc.get('metadata', {}).get('reasoning', '')
+                    "content": doc_dict.get('content', ''),
+                    "label": doc_dict.get('metadata', {}).get('label', 'unknown'),
+                    "reasoning": doc_dict.get('metadata', {}).get('reasoning', ''),
+                    "similarity_score": doc_dict.get('similarity_score', 0.0)
                 })
             return examples
         except Exception as e:
