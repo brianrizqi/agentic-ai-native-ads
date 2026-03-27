@@ -321,32 +321,46 @@ Klasifikasi:
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
                     if self.model_tier in ["micro", "small"]:
-                        # Phase 25: Recovery RAG (One-Shot Pattern Match)
-                        # Reverting to full-text but strictly 1-shot to prime the model.
-                        # Aligning format with TRAINING_PROMPT_TEMPLATE.
+                        # Phase 26: Ultra-Minimalist RAG (De-Noising for 270M/1B)
+                        # Similarity Thresholding: Only use RAG if it's high-confidence.
+                        # This "protects" the baseline accuracy.
+                        top_similarity = examples[0].get('similarity_score', 0.0) if examples else 0.0
                         
-                        # Get instructions (Characteristics)
-                        full_template = self.chain.first.template
-                        instructions = full_template.split('{context}')[0].strip()
+                        # Threshold 0.7 for micro (Need strong matches)
+                        # Threshold 0.6 for small (More robust)
+                        threshold = 0.7 if self.model_tier == "micro" else 0.6
                         
-                        context_block = ""
-                        if examples:
-                            # Use only the Top-1 (most similar) to minimize distraction
-                            ex = examples[0]
-                            ex_content = ex.get('content', '')[:120].replace('\n', ' ')
-                            ex_label = ex.get('label', 'unknown')
-                            context_block = f"CONTOH REFERENSI:\nJudul/Isi: {ex_content}\nLabel: {ex_label}\n\n"
-                        
-                        user_msg = f"""{instructions}
-
-{context_block}TUGAS:
-Klasifikasikan artikel berikut berdasarkan pola di atas.
+                        if top_similarity < threshold:
+                            # Bypass RAG: Use Zero-Shot Training Format to hit baseline accuracy
+                            user_msg = f"""Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Judul: {title or content[:60]}
-Konten: {content[:200] if self.model_tier == "micro" else content[:350]}
+Konten: {content[:250] if self.model_tier == "micro" else content[:400]}
 
-HASIL (native ads atau berita murni): """
-                        messages = [{"role": "user", "content": user_msg.strip()}]
+HASIL: """
+                        else:
+                            # Use Ultra-Minimalist 1-Shot
+                            ex = examples[0]
+                            ex_content = ex.get('content', '')[:100].replace('\n', ' ')
+                            ex_label = ex.get('label', 'unknown')
+                            
+                            user_msg = f"""Klasifikasikan berita sebagai "native ads" atau "berita murni".
+
+CONTOH REFERENSI:
+Isi: {ex_content}
+Label: {ex_label}
+
+TUGAS:
+Judul: {title or content[:60]}
+Konten: {content[:150] if self.model_tier == "micro" else content[:250]}
+
+HASIL (JAWABAN A atau B): """
+                        
+                        # Phase 26: Raw Completion Mode for Micro Models
+                        if self.model_tier == "micro":
+                            templated_prompt = user_msg.strip()
+                        else:
+                            messages = [{"role": "user", "content": user_msg.strip()}]
                     else:
                         # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
                         messages = []
@@ -374,11 +388,13 @@ HASIL (native ads atau berita murni): """
                     # standard monolithic path
                     messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
                 
-                templated_prompt = self.tokenizer.apply_chat_template(
-                    messages, 
-                    tokenize=False, 
-                    add_generation_prompt=True
-                )
+                # Use Chat Template only if it hasn't been bypassed by Raw Mode
+                if not templated_prompt:
+                    templated_prompt = self.tokenizer.apply_chat_template(
+                        messages, 
+                        tokenize=False, 
+                        add_generation_prompt=True
+                    )
                 
                 # Phase 23: Explicitly pass ALL stop sequences to invoke
                 stop_seqs = getattr(self, 'stop_sequences', None)
