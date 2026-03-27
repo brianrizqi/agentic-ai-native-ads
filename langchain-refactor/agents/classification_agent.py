@@ -320,49 +320,26 @@ Klasifikasi:
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
-                    if self.model_tier == "micro":
-                        # Phase 23: Single-turn consolidated block with English-Indonesian anchors
+                    if self.model_tier in ["micro", "small"]:
+                        # Phase 24: Signal-Focus RAG (Label-Prior) for Micro and Small models
+                        # For models < 3B, providing example text is distracting. 
+                        # We only provide the label "hint" from the retrieved examples.
                         full_template = self.chain.first.template
-                        instructions = full_template.split('{context}')[0].split('Target:')[0].strip()
+                        instructions = full_template.split('{context}')[0].split('ARTIKEL:')[0].strip()
                         
-                        # Only 1-shot for micro to minimize noise
-                        context_block = ""
-                        for i, ex in enumerate(examples[:1]):
-                            ex_content = ex.get('content', '')[:100].replace('\n', ' ')
-                            ex_label_code = "A" if ex.get('label') == "native ads" else "B"
-                            context_block += f"EXAMPLE:\nText: {ex_content}\nAnswer: {ex_label_code}\n\n"
+                        # Get label consensus from examples
+                        labels = [ex.get('label', 'unknown') for ex in examples[:top_k]]
+                        label_hint = labels[0] if labels else "unknown"
                         
                         user_msg = f"""{instructions}
 
-{context_block.strip()}
+PETUNJUK (Artikel serupa biasanya): {label_hint}
 
-TARGET:
-Titile: {title or content[:50]}
-Content: {content[:150]}
+ARTIKEL:
+Judul: {title or content[:50]}
+Isi: {content[:150] if self.model_tier == "micro" else content[:250]}
 
-HASIL (SATU KATA): """
-                        messages = [{"role": "user", "content": user_msg.strip()}]
-                    elif self.model_tier == "small":
-                        # Phase 21: Single-turn consolidated block for micro/small models
-                        # This keeps instructions close to the generation point.
-                        full_template = self.chain.first.template
-                        instructions = full_template.split('{context}')[0].split('Judul:')[0].strip()
-                        
-                        context_block = ""
-                        for i, ex in enumerate(examples): # Small models can take more examples
-                            ex_content = ex.get('content', '')[:150].replace('\n', ' ')
-                            context_block += f"CONTOH {i+1}:\nKonten: {ex_content}\nLabel: {ex.get('label', 'unknown')}\n\n"
-                        
-                        user_msg = f"""{instructions}
-
-{context_block.strip()}
-
-TARGET UNTUK DIKLASIFIKASI:
-Judul: {title or content[:100]}
-Konten: {content[:400]}
-
-Output (JSON):
-"""
+HASIL (JAWABAN A atau B): """
                         messages = [{"role": "user", "content": user_msg.strip()}]
                     else:
                         # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
@@ -430,9 +407,9 @@ Output (JSON):
             import re
             
             # Phase 14: First check for "Jawaban: A/B" pattern in the FULL response
-            # Phase 22/23: Robust MCQ checking for both Indonesian and English anchors
-            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer)[:\s]*([AB])\b', response, re.IGNORECASE)
-            if not jawaban_match and self.model_tier == "micro":
+            # Phase 22/23/24: Robust MCQ checking for both Indonesian and English anchors
+            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN)[:\s]*([AB])\b', response, re.IGNORECASE)
+            if not jawaban_match and self.model_tier in ["micro", "small"]:
                 # Check for just the label code at the very beginning
                 micro_match = re.search(r'^\s*([AB])\b', response, re.IGNORECASE)
                 if micro_match:
