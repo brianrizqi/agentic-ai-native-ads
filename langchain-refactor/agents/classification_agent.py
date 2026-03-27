@@ -171,8 +171,7 @@ Klasifikasi:
                 tokenizer = AutoTokenizer.from_pretrained(
                     self.model_name,
                     token=hf_token,
-                    trust_remote_code=True,
-                    fix_mistral_regex=True  # As suggested by logs
+                    trust_remote_code=True
                 )
                 
                 # Setup quantization for local loading
