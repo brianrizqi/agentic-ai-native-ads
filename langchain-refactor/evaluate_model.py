@@ -190,8 +190,9 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             
             # Get RAG context if enabled
             context = ""
+            examples = None
             if retriever:
-                # Phase 19: Adaptive RAG parameters based on model tier
+                # Phase 19/20: Adaptive RAG parameters based on model tier
                 eff_top_k = kwargs.get('top_k', 5)
                 max_reasoning = None
                 minimalist = False
@@ -204,14 +205,21 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
                     eff_top_k = min(eff_top_k, 2)
                     max_reasoning = 150 # Truncated reasoning for 1B-3B
                 
-                context = retriever.get_context_for_classification(
-                    sample['input'], 
-                    top_k=eff_top_k,
-                    max_reasoning_length=max_reasoning,
-                    minimalist=minimalist
-                )
+                # Phase 20: Use examples for multi-turn history-based RAG for local models
+                if agent.provider == "local" and agent.tokenizer:
+                    examples = retriever.get_examples_for_history(
+                        sample['input'], 
+                        top_k=eff_top_k
+                    )
+                else:
+                    context = retriever.get_context_for_classification(
+                        sample['input'], 
+                        top_k=eff_top_k,
+                        max_reasoning_length=max_reasoning,
+                        minimalist=minimalist
+                    )
                 
-            pred = agent.classify(sample['input'], title=title, context=context)
+            pred = agent.classify(sample['input'], title=title, context=context, examples=examples)
 
             pred_label = pred.get('label', 'unknown')
             pred_reasoning = pred.get('reasoning', '')

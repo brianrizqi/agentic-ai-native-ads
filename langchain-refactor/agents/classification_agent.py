@@ -3,7 +3,7 @@ Classification Agent using LangChain
 Main agent for classifying content as native ads or pure news
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEndpoint, HuggingFacePipeline
 from langchain_core.callbacks.manager import CallbackManager
@@ -281,7 +281,8 @@ Klasifikasi:
         content: str,
         title: str = "",
         summary: str = "",
-        context: str = ""
+        context: str = "",
+        examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
         Classify content as native ads or pure news.
@@ -290,7 +291,8 @@ Klasifikasi:
             content: Main content text
             title: Article title
             summary: Content summary
-            context: Retrieved context from RAG
+            context: Retrieved context (legacy string format)
+            examples: List of example dicts (Phase 20 multi-turn format)
             
         Returns:
             Classification result with label, confidence, and reasoning
@@ -298,7 +300,8 @@ Klasifikasi:
         try:
             logger.info("Classifying content...")
             
-            # Prepare input
+            templated_prompt = ""
+            # Prepare input data for legacy/API path
             input_data = {
                 "title": title or content[:100],
                 "content": content[:400], # Use same char limit as training/eval HF scripts
@@ -307,7 +310,47 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
+                if examples and self.use_rag:
+                    # Phase 20: Multi-turn RAG history
+                    messages = []
+                    # Get instructions from the template (everything before {context} or {title})
+                    full_template = self.chain.first.template
+                    instructions = full_template.split('{context}')[0].split('Judul:')[0].strip()
+                    
+                    # Add RAG examples as previous turns
+                    for i, ex in enumerate(examples):
+                        ex_content = ex.get('content', '')[:150].replace('\n', ' ')
+                        ex_label = ex.get('label', 'unknown')
+                        ex_reasoning = ex.get('reasoning', 'No reasoning available')
+                        
+                        if i == 0:
+                            # First message carries the instructions
+                            user_msg = f"{instructions}\n\nCONTOH 1:\nKonten: {ex_content}"
+                        else:
+                            user_msg = f"CONTOH {i+1}:\nKonten: {ex_content}"
+                        
+                        messages.append({"role": "user", "content": user_msg})
+                        
+                        # Assistant provides the label (shows the model the pattern)
+                        if self.model_tier == "micro":
+                            # Micro models get flat labels to stay focused
+                            assistant_msg = ex_label
+                        else:
+                            # Small/Standard models get the JSON pattern they were trained on
+                            assistant_msg = json.dumps({
+                                "label": ex_label,
+                                "confidence": 1.0,
+                                "reasoning": ex_reasoning[:150]
+                            })
+                        messages.append({"role": "assistant", "content": assistant_msg})
+                    
+                    # Finally, add the target article
+                    target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:100]}\nKonten: {content[:400]}"
+                    messages.append({"role": "user", "content": target_msg})
+                else:
+                    # standard monolithic path
+                    messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
+                
                 templated_prompt = self.tokenizer.apply_chat_template(
                     messages, 
                     tokenize=False, 
@@ -315,7 +358,7 @@ Klasifikasi:
                 )
                 response = self.llm.invoke(templated_prompt)
             else:
-                # Use LCEL with explicit dict
+                # Use LCEL with explicit dict (API providers)
                 response = self.chain.invoke(input_data)
             
             # Parse response (response is already a string thanks to StrOutputParser)
