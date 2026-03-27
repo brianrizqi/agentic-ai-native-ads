@@ -28,7 +28,9 @@ class RetrievalAgent:
     def get_context_for_classification(
         self,
         text: str,
-        top_k: int = 3
+        top_k: int = 3,
+        max_reasoning_length: Optional[int] = None,
+        minimalist: bool = False
     ) -> str:
         """
         Get RAG context for classification.
@@ -37,6 +39,8 @@ class RetrievalAgent:
         Args:
             text: Text to find similar examples for
             top_k: Number of examples to retrieve
+            max_reasoning_length: Optional truncation length for reasoning metadata
+            minimalist: If True, use ultra-compact format for smaller models (Phase 18)
             
         Returns:
             Formatted context string
@@ -55,19 +59,33 @@ class RetrievalAgent:
                 return ""
             
             # Format context
-            context_lines = ["Berikut adalah beberapa contoh artikel serupa sebagai referensi (Beberapa mungkin memiliki label yang berbeda, gunakan sebagai pembanding):"]
-            for i, doc in enumerate(results[:top_k], 1):
-                label = doc.get('metadata', {}).get('label', 'unknown')
-                reasoning = doc.get('metadata', {}).get('reasoning', 'Tidak tersedia')
-                content = doc.get('content', '')[:200]
-                
-                context_lines.append(f"\n[CONTOH {i}]")
-                context_lines.append(f"Label: {label}")
-                context_lines.append(f"Alasan: {reasoning}")
-                context_lines.append(f"Isi Artikel: {content}...")
+            if minimalist:
+                # Phase 18: Ultra-minimalist Few-Shot format
+                context_lines = ["\n[REFERENSI CONTOH]"]
+                for i, doc in enumerate(results[:top_k], 1):
+                    label = doc.get('metadata', {}).get('label', 'unknown')
+                    content = doc.get('content', '')[:150].replace('\n', ' ')
+                    context_lines.append(f"- Konten: {content} -> Label: {label}")
+            else:
+                # Standard Expert RAG format
+                context_lines = ["Berikut adalah beberapa contoh artikel serupa sebagai referensi:"]
+                for i, doc in enumerate(results[:top_k], 1):
+                    label = doc.get('metadata', {}).get('label', 'unknown')
+                    reasoning = doc.get('metadata', {}).get('reasoning', 'Tidak tersedia')
+                    
+                    # Truncate reasoning if requested
+                    if max_reasoning_length and len(reasoning) > max_reasoning_length:
+                        reasoning = reasoning[:max_reasoning_length].strip() + "..."
+                    
+                    content = doc.get('content', '')[:200]
+                    
+                    context_lines.append(f"\n[CONTOH {i}]")
+                    context_lines.append(f"Label: {label}")
+                    context_lines.append(f"Alasan: {reasoning}")
+                    context_lines.append(f"Isi Artikel: {content}...")
             
             context = "\n".join(context_lines)
-            logger.info(f"Retrieved {len(results)} examples for RAG context")
+            logger.info(f"Retrieved {len(results)} examples for RAG context (minimalist: {minimalist})")
             return context
             
         except Exception as e:
