@@ -171,7 +171,8 @@ Klasifikasi:
                 tokenizer = AutoTokenizer.from_pretrained(
                     self.model_name,
                     token=hf_token,
-                    trust_remote_code=True
+                    trust_remote_code=True,
+                    fix_mistral_regex=True  # As suggested by logs
                 )
                 
                 # Setup quantization for local loading
@@ -261,7 +262,7 @@ Klasifikasi:
                     tokenizer=tokenizer,
                     max_new_tokens=n_new,
                     do_sample=False,            # greedy decode
-                    repetition_penalty=1.1,     # increase for stability
+                    repetition_penalty=1.2,     # increase for stability (Phase 5: Bumped from 1.1)
                     return_full_text=False
                 )
                 
@@ -335,31 +336,45 @@ Klasifikasi:
                             # Ensure label matches A/B if using MCQ
                             if self.model_tier == "micro":
                                 ex_label_short = "A" if "native" in ex_label.lower() else "B"
-                                assistant_content = f"Analisis: {ex_reasoning}\nJawaban: {ex_label_short}"
+                                
+                                # Phase 40: Reverting to SINGLE-TURN for Micro tier (2-turn confuses 270M)
+                                print(f"DEBUG: RAG Triggered (Dist: {top_similarity:.4f})")
+                                system_instr = "Pilih A (native ads) atau B (berita murni)."
+                                user_msg = (
+                                    f"Klasifikasikan berita berikut. {system_instr}\n\n"
+                                    f"REFERENSI ARTIKEL SERUPA:\n"
+                                    f"Teks: {ex_content}\n"
+                                    f"Analisis: {ex_reasoning}\n"
+                                    f"Jawaban: {ex_label_short}\n\n"
+                                    f"TUGAS ANDA:\n"
+                                    f"Judul: {title or content[:60]}\n"
+                                    f"Konten: {content[:400]}\n\n"
+                                    f"Analisis:"
+                                )
+                                messages = [{"role": "user", "content": user_msg}]
                             else:
                                 assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
-                            
-                            # Build 2rd turn messages (Phase 32: Multi-turn Shot-Injection)
-                            # Phase 33: RESTORED Instructions and Analisis Trigger for Turn 2
-                            print(f"DEBUG: RAG Triggered (Dist: {top_similarity:.4f})")
-                            messages = [
-                                {
-                                    "role": "user", 
-                                    "content": target_template.format(
-                                        title=ex.get('title', 'Artikel Contoh'),
-                                        content=ex_content,
-                                        context=""
-                                    ).split('Analisis:')[0].strip() + "\n\nAnalisis:"
-                                },
-                                {
-                                    "role": "assistant",
-                                    "content": assistant_content
-                                },
-                                {
-                                    "role": "user",
-                                    "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni' (Pilih A/B).\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
-                                }
-                            ]
+                                
+                                # Phase 33: Multi-turn for Standard tier (8B) remains robust
+                                print(f"DEBUG: RAG Triggered (Dist: {top_similarity:.4f})")
+                                messages = [
+                                    {
+                                        "role": "user", 
+                                        "content": target_template.format(
+                                            title=ex.get('title', 'Artikel Contoh'),
+                                            content=ex_content,
+                                            context=""
+                                        ).split('Analisis:')[0].strip() + "\n\nAnalisis:"
+                                    },
+                                    {
+                                        "role": "assistant",
+                                        "content": assistant_content
+                                    },
+                                    {
+                                        "role": "user",
+                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni' (Pilih A/B).\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
+                                    }
+                                ]
                         else:
                             # Pure Zero-Shot: verbatim training template (matches original baseline)
                             print(f"DEBUG: Using Zero-Shot (Dist: {top_similarity:.4f})")
