@@ -294,6 +294,11 @@ simple_local_prompt = PromptTemplate(
 # Training-specific prompt template (matches inference format exactly)
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
+PENTING: 
+- Jangan memilih "native ads" jika tidak ada BUKTI PROMOSI produk/brand yang nyata.
+- Berita objektif (seperti sejarah, kriminal, atau penemuan ilmiah) adalah "berita murni".
+- Jika ragu atau konten bersifat informatif belaka, pilih "berita murni".
+
 Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
 1. Nada positif/netral (tidak mengkritik subjek)
 2. Bahasa persuasif (mengajak/meyakinkan)
