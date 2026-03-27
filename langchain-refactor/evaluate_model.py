@@ -191,19 +191,24 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             # Get RAG context if enabled
             context = ""
             if retriever:
-                # Lite RAG: Adjust top_k and reasoning length for small models
+                # Phase 19: Adaptive RAG parameters based on model tier
                 eff_top_k = kwargs.get('top_k', 5)
                 max_reasoning = None
+                minimalist = False
                 
-                if agent.is_small_model:
+                tier = getattr(agent, 'model_tier', 'standard')
+                if tier == "micro":
                     eff_top_k = min(eff_top_k, 2)
-                    max_reasoning = 150
-                    
+                    minimalist = True # No JSON for micro models
+                elif tier == "small":
+                    eff_top_k = min(eff_top_k, 2)
+                    max_reasoning = 150 # Truncated reasoning for 1B-3B
+                
                 context = retriever.get_context_for_classification(
                     sample['input'], 
                     top_k=eff_top_k,
                     max_reasoning_length=max_reasoning,
-                    minimalist=agent.is_small_model
+                    minimalist=minimalist
                 )
                 
             pred = agent.classify(sample['input'], title=title, context=context)
