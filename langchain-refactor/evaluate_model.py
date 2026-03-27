@@ -138,6 +138,7 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         model_name=model_path,
         lora_path=lora_path,
         gpu_id=kwargs.get('gpu_id', 0),
+        temperature=0.0, # Phase 48: Force 0.0 for deterministic evaluation
         use_rag=kwargs.get('use_rag', False),
         is_mcq=kwargs.get('is_mcq', False) # Phase 47: Stop forcing MCQ via the caller
     )

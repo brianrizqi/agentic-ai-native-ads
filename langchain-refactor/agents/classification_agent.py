@@ -320,8 +320,8 @@ Klasifikasi:
                         from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE
                         
                         # Threshold handles noise vs signal (Phase 34: Distance-based, Lower is Better)
-                        # For FAISS L2 distance: 0.0 is perfect, >1.3 is weak.
-                        threshold = 1.1 if self.model_tier == "micro" else 1.25
+                        # Phase 48: Stricter threshold (1.1 -> 0.8) to hit 71% by reducing vague matches.
+                        threshold = 0.8 if self.model_tier == "micro" else 1.25
                         
                         target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
                         
@@ -364,6 +364,7 @@ Klasifikasi:
                                         f"\nKONTEKS TAMBAHAN DARI DOKUMEN SERUPA:\n"
                                         f"- Label yang disarankan: {ex_label_text}\n"
                                         f"- Alasan: {ex_reasoning[:150]}\n"
+                                        f"CATATAN: Gunakan label di atas sebagai referensi pola saja. Tetaplah objektif!\n"
                                     )
                                     
                                     user_msg = TRAINING_PROMPT_TEMPLATE.format(
