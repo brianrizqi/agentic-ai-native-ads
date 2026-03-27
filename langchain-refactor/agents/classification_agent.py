@@ -56,7 +56,7 @@ class ClassificationAgent:
         self.lora_path = lora_path
         self.gpu_id = gpu_id
         self.use_rag = use_rag
-        self.is_mcq = is_mcq or use_rag  # RAG optimization defaults to MCQ
+        self.is_mcq = is_mcq  # Phase 46: Decoupled from use_rag to allow JSON restoration
         
         # Phase 19: Model Tiers for scalable RAG
         self.model_tier = self._get_model_tier()
