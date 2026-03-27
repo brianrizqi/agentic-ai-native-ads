@@ -240,8 +240,9 @@ Klasifikasi:
                 # Override max_length di generation_config supaya tidak conflict
                 # dengan max_new_tokens yang kita set di pipeline
                 # Phase 33: Fixed n_new calculation - Always prioritize RAG or Reasoning requirements
+                # Phase 49: Bumped to 768 for RAG to avoid early JSON truncation.
                 if self.use_rag:
-                    n_new = 512
+                    n_new = 768
                 else:
                     is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
                     n_new = 128 if self.is_mcq else (1024 if is_reasoning else 512)
@@ -553,41 +554,28 @@ Klasifikasi:
                     else:
                         return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
             
-            # Phase 12: Fallback for raw labels (Space-insensitive)
+            # Phase 12: Strict raw label fallback (No more fuzzy keyword scoring)
             clean_resp_lower = response.lower().strip()
-            clean_no_space = clean_resp_lower.replace(' ', '').replace('_', '').replace('-', '')
             
-            if "nativeads" in clean_no_space[:100]:
-                return {'label': 'native ads', 'confidence': 0.9, 'reasoning': 'Detected via label match (lenient).'}
-            elif "beritamurni" in clean_no_space[:100]:
-                return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': 'Detected via label match (lenient).'}
-            
+            # Look for explicit anchors at the start of a line to avoid reasoning-text collisions
+            for line in response.split('\n'):
+                line_clean = line.strip().lower()
+                if any(anchor in line_clean for anchor in ["label:", "jawaban:", "hasil:", "conclusion:"]):
+                    if "berita murni" in line_clean or " b" in line_clean or line_clean.endswith(": b"):
+                        return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': f'Anchor-based: {line.strip()}'}
+                    if "native ads" in line_clean or " a" in line_clean or line_clean.endswith(": a"):
+                        return {'label': 'native ads', 'confidence': 0.9, 'reasoning': f'Anchor-based: {line.strip()}'}
+
             # Keep JSON logic as fallback for larger models or hybrid outputs
             start = response.find('{')
             if start == -1:
-                # If no JSON and no startswith, try keyword search
-                if "native ads" in clean_resp_lower[:100]:
-                    return {'label': 'native ads', 'confidence': 0.9, 'reasoning': response[:200]}
-                elif "berita murni" in clean_resp_lower[:100]:
-                    return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': response[:200]}
+                # Last resort: High-confidence keyword only if no contradictory categories are mentioned.
+                if "native ads" in clean_resp_lower and "berita murni" not in clean_resp_lower:
+                     return {'label': 'native ads', 'confidence': 0.6, 'reasoning': 'Keyword-only (strict)'}
                 
-                # --- Extreme Fallback (Fuzzy Matching for 270M Model) ---
-                native_ads_keywords = [
-                    "mempromosikan", "promosi", "persuasif", "menarik", "positif", 
-                    "memanjakan", "marketing", "copywriting"
-                ]
-                berita_murni_keywords = [
-                    "netral", "objektif", "tanpa promosi", "kinerja/risiko", 
-                    "menginformasikan"
-                ]
-                
-                native_score = sum(1 for kw in native_ads_keywords if kw in clean_resp_lower)
-                murni_score = sum(1 for kw in berita_murni_keywords if kw in clean_resp_lower)
-                
-                if native_score > murni_score:
-                    return {'label': 'native ads', 'confidence': 0.5, 'reasoning': response[:200]}
-                elif murni_score > native_score:
-                    return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': response[:200]}
+                # Safer Default for unknown:
+                logger.warning(f"Ambiguous response, defaulting to berita murni: {response[:200]}")
+                return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Safety default (ambiguous output)'}
                 
                 logger.warning(f"No label or JSON found in response: {response[:500]}")
                 raise ValueError("No JSON or label found")
