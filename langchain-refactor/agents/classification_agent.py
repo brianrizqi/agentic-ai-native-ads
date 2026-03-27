@@ -75,21 +75,9 @@ class ClassificationAgent:
         if self.use_rag:
             if self.model_tier == "micro":
                 # Phase 22: Micro-MCQ RAG for sub-500M models
-                # Strictly constrained A/B format to prevent babbling.
-                prompt = PromptTemplate.from_template(
-                    """Klasifikasikan berita berikut.
-Pilih:
-A. native ads
-B. berita murni
-
-{context}
-
-Target:
-Judul: {title}
-Konten: {content}
-
-Jawaban: """
-                )
+                # Strictly aligned with Phase 14 Reasoning-First MCQ training.
+                from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE
+                prompt = PromptTemplate.from_template(REASONING_MCQ_PROMPT_TEMPLATE)
             else:
                 # Phase 18: Harmonized RAG Prompt for larger models (1B+)
                 # Matches training format with JSON reasoning.
@@ -262,10 +250,10 @@ Klasifikasi:
                     # Explicitly set both to avoid conflict and 20-token default
                     model.config.max_length = 2048
                     model.generation_config.max_length = 2048
-                  # If model is micro, reduce tokens even more to prevent babble
-                n_new = 512 if not is_mcq else 150
+                  # RAG needs more tokens for the step-by-step analysis
+                n_new = 512 if not is_mcq else 256
                 if self.model_tier == "micro":
-                    n_new = 150
+                    n_new = 256  # Increased from 150 for Reasoning-First MCQ
                 
                 pipe = pipeline(
                     "text-generation",
@@ -328,27 +316,38 @@ Klasifikasi:
                         # For micro, inject RAG only when similarity >= 0.75 (was 0.95, too strict).
                         top_similarity = examples[0].get('similarity_score', 0.0) if examples else 0.0
                         
-                        # Lowered threshold: 0.75 for micro, 0.70 for small
+                        # Phase 30: Use Reasoning-First MCQ for 270M to match training
+                        from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE
+                        
+                        # Threshold handles noise vs signal
                         threshold = 0.75 if self.model_tier == "micro" else 0.70
                         
-                        # Use the Training Template as the base
-                        from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
+                        target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
                         
                         if top_similarity >= threshold and examples:
                             # Inject best RAG example as a single compact reference block
                             ex = examples[0]
                             ex_content = ex.get('content', '')[:120].replace('\n', ' ')
                             ex_label = ex.get('label', 'unknown')
+                            # Ensure label matches A/B if using MCQ
+                            if self.model_tier == "micro":
+                                ex_label = "A (native ads)" if "native" in ex_label.lower() else "B (berita murni)"
+                            
                             context_block = f"CONTOH REFERENSI:\nIsi: {ex_content}\nLabel: {ex_label}\n\n"
                             
-                            user_msg = f"{TRAINING_PROMPT_TEMPLATE.split('Judul:')[0].strip()}\n\n{context_block}TUGAS:\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nOutput (JSON):"
+                            user_msg = f"{target_template.split('Judul:')[0].strip()}\n\n{context_block}TUGAS:\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\n{target_template.split('Konten: {content}')[1].strip()}"
                         else:
                             # Pure Zero-Shot: use verbatim training template, no RAG boilerplate
-                            user_msg = TRAINING_PROMPT_TEMPLATE.format(
+                            user_msg = target_template.format(
                                 title=title or content[:60],
                                 content=content[:400],
                                 context=""
-                            ).split('Klasifikasi:')[0].strip() + "\n\nOutput (JSON):"
+                            )
+                            # Clean up trailing prompt anchors
+                            if self.model_tier == "micro":
+                                user_msg = user_msg.split('Analisis:')[0].strip() + "\n\nAnalisis:"
+                            else:
+                                user_msg = user_msg.split('Output (JSON):')[0].strip() + "\n\nOutput (JSON):"
                         
                         messages = [{"role": "user", "content": user_msg.strip()}]
                     else:
@@ -434,11 +433,19 @@ Klasifikasi:
                 except:
                     pass
 
-            # 2. Fallback to anchor-based search (HASIL, JAWABAN, etc)
-            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk|label)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
+            # 2. Early Phase Fallback to anchor-based search (HASIL, JAWABAN, etc)
+            # Priorities: look for "Jawaban: [AB]" first as it's the 270M standard.
+            mcq_label_match = re.search(r'Jawaban[:\s]*([AB])\b', response, re.IGNORECASE)
+            
+            if not mcq_label_match:
+                # Try generic anchor-based search
+                jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk|label)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
+            else:
+                jawaban_match = mcq_label_match
+
             if not jawaban_match and self.model_tier in ["micro", "small"]:
-                # Check for just the label code at the very beginning
-                micro_match = re.search(r'^\s*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
+                # Check for just the label code at the very beginning OR very end
+                micro_match = re.search(r'(?:^\s*|\n|:\s*)([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
                 if micro_match:
                     jawaban_match = micro_match
 

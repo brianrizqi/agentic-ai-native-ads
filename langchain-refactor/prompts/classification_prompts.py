@@ -257,6 +257,34 @@ Gunakan contoh-contoh di atas sebagai referensi pola penulisan yang serupa untuk
 Output (JSON):
 """
 
+# Phase 13: MCQ Prompt for 270M stability (Gold Standard for tiny models)
+MCQ_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
+Pilih:
+A. native ads
+B. berita murni
+
+Judul: {title}
+Konten: {content}
+
+{context}
+
+Jawaban (A/B):
+"""
+
+# Phase 14: Reasoning-First MCQ Prompt (Standard for 270M Training)
+REASONING_MCQ_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
+Pilih:
+A. native ads
+B. berita murni
+
+Judul: {title}
+Konten: {content}
+
+{context}
+
+Analisis:
+"""
+
 simple_local_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
     template=SIMPLE_LOCAL_PROMPT_TEMPLATE
