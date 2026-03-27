@@ -235,7 +235,8 @@ Klasifikasi:
                     stop_sequences = ["}\n", "} ", "\n\n", "Analisis:", "Artikel:", tokenizer.eos_token]
                 
                 # Use both name-based check and explicit flag
-                is_mcq = self.is_mcq or ("gemma" in model_name_lower and "270" in model_name_lower) or "mcq" in model_name_lower
+                # Phase 45: STOP FORCING MCQ for 270M (micro) - Reverting to JSON baseline
+                is_mcq = self.is_mcq or "mcq" in model_name_lower
                 
                 # Override max_length di generation_config supaya tidak conflict
                 # dengan max_new_tokens yang kita set di pipeline
@@ -261,7 +262,7 @@ Klasifikasi:
                     tokenizer=tokenizer,
                     max_new_tokens=n_new,
                     do_sample=False,            # greedy decode
-                    repetition_penalty=1.2,     # increase for stability (Phase 5: Bumped from 1.1)
+                    repetition_penalty=1.1,     # Reset to 1.1 for JSON stability (Phase 7)
                     return_full_text=False
                 )
                 
@@ -334,26 +335,44 @@ Klasifikasi:
                             
                             # Ensure label matches A/B if using MCQ
                             if self.model_tier == "micro":
-                                ex_label_short = "A" if "native" in ex_label.lower() else "B"
-                                
-                                # Phase 40: Transitioned to ULTRA-LIGHT RAG for Micro tier
-                                # Instead of a full article (distraction), just provide a single-line hint.
-                                print(f"DEBUG: RAG Triggered (Dist: {top_similarity:.4f})")
-                                system_instr = "Pilih A (native ads) atau B (berita murni)."
-                                
-                                # Convert ex_label to a friendly hint
-                                ex_label_text = "NATIVE ADS" if "native" in ex_label.lower() else "BERITA MURNI"
-                                ex_reasoning_brief = ex_reasoning[:120].replace('\n', ' ')
-                                hint = f"(Petunjuk RAG: Dokumen sejenis seringkali diklasifikasikan sebagai '{ex_label_text}' karena {ex_reasoning_brief})"
-                                
-                                user_msg = (
-                                    f"Klasifikasikan berita berikut. {system_instr}\n\n"
-                                    f"{hint}\n\n"
-                                    f"Judul: {title or content[:60]}\n"
-                                    f"Konten: {content[:400]}\n\n"
-                                    f"Analisis:"
-                                )
-                                messages = [{"role": "user", "content": user_msg}]
+                                if is_mcq:
+                                    # Phase 40: Transitioned to ULTRA-LIGHT RAG for Micro tier
+                                    # Instead of a full article (distraction), just provide a single-line hint.
+                                    print(f"DEBUG: RAG Triggered MCQ (Dist: {top_similarity:.4f})")
+                                    system_instr = "Pilih A (native ads) atau B (berita murni)."
+                                    
+                                    # Convert ex_label to a friendly hint
+                                    ex_label_text = "NATIVE ADS" if "native" in ex_label.lower() else "BERITA MURNI"
+                                    ex_reasoning_brief = ex_reasoning[:120].replace('\n', ' ')
+                                    hint = f"(Petunjuk RAG: Dokumen sejenis seringkali diklasifikasikan sebagai '{ex_label_text}' karena {ex_reasoning_brief})"
+                                    
+                                    user_msg = (
+                                        f"Klasifikasikan berita berikut. {system_instr}\n\n"
+                                        f"{hint}\n\n"
+                                        f"Judul: {title or content[:60]}\n"
+                                        f"Konten: {content[:400]}\n\n"
+                                        f"Analisis:"
+                                    )
+                                    messages = [{"role": "user", "content": user_msg}]
+                                else:
+                                    # Phase 45: JSON Baseline Restoration (Matches 61.5% without RAG)
+                                    # Inject RAG info as Context within the JSON template
+                                    print(f"DEBUG: RAG Triggered JSON (Dist: {top_similarity:.4f})")
+                                    from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
+                                    
+                                    ex_label_text = "native ads" if "native" in ex_label.lower() else "berita murni"
+                                    rag_context = (
+                                        f"\nKONTEKS TAMBAHAN DARI DOKUMEN SERUPA:\n"
+                                        f"- Label yang disarankan: {ex_label_text}\n"
+                                        f"- Alasan: {ex_reasoning[:150]}\n"
+                                    )
+                                    
+                                    user_msg = TRAINING_PROMPT_TEMPLATE.format(
+                                        title=title or content[:60],
+                                        content=content[:400],
+                                        context=rag_context
+                                    )
+                                    messages = [{"role": "user", "content": user_msg}]
                             else:
                                 assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
                                 
