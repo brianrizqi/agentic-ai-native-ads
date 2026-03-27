@@ -412,14 +412,16 @@ Klasifikasi:
         except Exception as e:
             logger.error(f"Classification error: {e}")
             return self._get_fallback_classification(content)
-    
+            
+    def _parse_response(self, response: str) -> Dict[str, Any]:
+        """Parse LLM response into structured format."""
+        try:
             # Phase 28: Improved Robust Parsing for local models
             import re
             
             # 1. Try JSON parsing first for the "Training Case"
             if '{' in response and '}' in response:
                 try:
-                    import json
                     json_str = response[response.find('{'):response.rfind('}')+1]
                     data = json.loads(json_str)
                     if 'label' in data:
