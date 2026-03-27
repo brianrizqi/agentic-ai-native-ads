@@ -319,13 +319,13 @@ Klasifikasi:
                         # Phase 30: Use Reasoning-First MCQ for 270M to match training
                         from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE
                         
-                        # Threshold handles noise vs signal
-                        # Phase 32: Raise to 0.82 for micro (High-purity signal only)
-                        threshold = 0.82 if self.model_tier == "micro" else 0.70
+                        # Threshold handles noise vs signal (Phase 34: Distance-based, Lower is Better)
+                        # For FAISS L2 distance: 0.0 is perfect, >1.3 is weak.
+                        threshold = 1.1 if self.model_tier == "micro" else 1.25
                         
                         target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
                         
-                        if top_similarity >= threshold and examples:
+                        if top_similarity <= threshold and examples:
                             # Split example into separate turn
                             ex = examples[0]
                             ex_content = ex.get('content', '')[:120].replace('\n', ' ')
@@ -341,7 +341,7 @@ Klasifikasi:
                             
                             # Build 2rd turn messages (Phase 32: Multi-turn Shot-Injection)
                             # Phase 33: RESTORED Instructions and Analisis Trigger for Turn 2
-                            print(f"DEBUG: RAG Triggered (Sim: {top_similarity:.4f})")
+                            print(f"DEBUG: RAG Triggered (Dist: {top_similarity:.4f})")
                             messages = [
                                 {
                                     "role": "user", 
@@ -357,12 +357,12 @@ Klasifikasi:
                                 },
                                 {
                                     "role": "user",
-                                    "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni'.\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
+                                    "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni' (Pilih A/B).\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
                                 }
                             ]
                         else:
                             # Pure Zero-Shot: verbatim training template (matches original baseline)
-                            print(f"DEBUG: Using Zero-Shot (Sim: {top_similarity:.4f})")
+                            print(f"DEBUG: Using Zero-Shot (Dist: {top_similarity:.4f})")
                             user_msg = target_template.format(
                                 title=title or content[:60],
                                 content=content[:400],
