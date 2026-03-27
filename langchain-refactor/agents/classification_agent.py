@@ -58,13 +58,13 @@ class ClassificationAgent:
         self.use_rag = use_rag
         self.is_mcq = is_mcq or use_rag  # RAG optimization defaults to MCQ
         
-        # Initialize LLM
-        self.tokenizer = None
-        self.llm = self._initialize_llm(api_key)
-        
         # Phase 19: Model Tiers for scalable RAG
         self.model_tier = self._get_model_tier()
         self.is_small_model = (self.model_tier in ["micro", "small"])
+        
+        # Initialize LLM
+        self.tokenizer = None
+        self.llm = self._initialize_llm(api_key)
         
         # Select prompt based on model/provider
         model_name_lower = self.model_name.lower()
