@@ -239,21 +239,21 @@ Klasifikasi:
                 
                 # Override max_length di generation_config supaya tidak conflict
                 # dengan max_new_tokens yang kita set di pipeline
-                is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
-                # RAG needs more tokens for the step-by-step analysis
+                # Phase 33: Fixed n_new calculation - Always prioritize RAG or Reasoning requirements
                 if self.use_rag:
                     n_new = 512
                 else:
+                    is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
                     n_new = 128 if is_mcq else (1024 if is_reasoning else 512)
-
+                
+                # Model-specific overrides
+                if self.model_tier == "micro":
+                    n_new = max(n_new, 256)
+                
                 if hasattr(model, 'generation_config'):
                     # Explicitly set both to avoid conflict and 20-token default
                     model.config.max_length = 2048
                     model.generation_config.max_length = 2048
-                  # RAG needs more tokens for the step-by-step analysis
-                n_new = 512 if not is_mcq else 256
-                if self.model_tier == "micro":
-                    n_new = 256  # Increased from 150 for Reasoning-First MCQ
                 
                 pipe = pipeline(
                     "text-generation",
@@ -335,19 +335,21 @@ Klasifikasi:
                             # Ensure label matches A/B if using MCQ
                             if self.model_tier == "micro":
                                 ex_label_short = "A" if "native" in ex_label.lower() else "B"
-                                assistant_content = f"{ex_reasoning}\nJawaban: {ex_label_short}"
+                                assistant_content = f"Analisis: {ex_reasoning}\nJawaban: {ex_label_short}"
                             else:
                                 assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
                             
                             # Build 2rd turn messages (Phase 32: Multi-turn Shot-Injection)
+                            # Phase 33: RESTORED Instructions and Analisis Trigger for Turn 2
+                            print(f"DEBUG: RAG Triggered (Sim: {top_similarity:.4f})")
                             messages = [
                                 {
                                     "role": "user", 
                                     "content": target_template.format(
-                                        title=ex.get('title', 'Conten Contoh'),
+                                        title=ex.get('title', 'Artikel Contoh'),
                                         content=ex_content,
                                         context=""
-                                    ).strip()
+                                    ).split('Analisis:')[0].strip() + "\n\nAnalisis:"
                                 },
                                 {
                                     "role": "assistant",
@@ -355,11 +357,12 @@ Klasifikasi:
                                 },
                                 {
                                     "role": "user",
-                                    "content": f"TARGET UNTUK ANDA:\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
+                                    "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni'.\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
                                 }
                             ]
                         else:
                             # Pure Zero-Shot: verbatim training template (matches original baseline)
+                            print(f"DEBUG: Using Zero-Shot (Sim: {top_similarity:.4f})")
                             user_msg = target_template.format(
                                 title=title or content[:60],
                                 content=content[:400],
