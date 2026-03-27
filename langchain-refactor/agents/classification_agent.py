@@ -241,7 +241,8 @@ Klasifikasi:
                 # Add stop sequence for JSON block and to prevent babbling
                 # Phase 22: Micro tier uses " " (space) or "\n" to force one-token MCQ
                 if self.model_tier == "micro":
-                    stop_sequences = ["\n", " ", tokenizer.eos_token]
+                    # NOTE: Do NOT include " " (space) — it cuts output before label is generated
+                    stop_sequences = ["\n\n", tokenizer.eos_token]
                 else:
                     stop_sequences = ["}\n", "} ", "\n\n", "Analisis:", "Artikel:", tokenizer.eos_token]
                 
@@ -323,18 +324,18 @@ Klasifikasi:
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
                     if self.model_tier in ["micro", "small"]:
-                        # Phase 28: Identity Mirror - Reverting to Training Format
-                        # This avoids "Label Confusion" and "Instruction Fade"
+                        # Identity Mirror: always use Training Format to avoid Instruction Fade.
+                        # For micro, inject RAG only when similarity >= 0.75 (was 0.95, too strict).
                         top_similarity = examples[0].get('similarity_score', 0.0) if examples else 0.0
                         
-                        # Threshold 0.95 for micro (Baseline protector)
-                        threshold = 0.95 if self.model_tier == "micro" else 0.85
+                        # Lowered threshold: 0.75 for micro, 0.70 for small
+                        threshold = 0.75 if self.model_tier == "micro" else 0.70
                         
                         # Use the Training Template as the base
                         from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
                         
-                        if top_similarity >= threshold:
-                            # Inject RAG as a reference block
+                        if top_similarity >= threshold and examples:
+                            # Inject best RAG example as a single compact reference block
                             ex = examples[0]
                             ex_content = ex.get('content', '')[:120].replace('\n', ' ')
                             ex_label = ex.get('label', 'unknown')
@@ -342,12 +343,12 @@ Klasifikasi:
                             
                             user_msg = f"{TRAINING_PROMPT_TEMPLATE.split('Judul:')[0].strip()}\n\n{context_block}TUGAS:\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nOutput (JSON):"
                         else:
-                            # Pure Zero-Shot Training Baseline
+                            # Pure Zero-Shot: use verbatim training template, no RAG boilerplate
                             user_msg = TRAINING_PROMPT_TEMPLATE.format(
                                 title=title or content[:60],
                                 content=content[:400],
                                 context=""
-                            ).split('Output (JSON):')[0].strip() + "\n\nOutput (JSON):"
+                            ).split('Klasifikasi:')[0].strip() + "\n\nOutput (JSON):"
                         
                         messages = [{"role": "user", "content": user_msg.strip()}]
                     else:
