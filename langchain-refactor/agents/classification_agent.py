@@ -321,17 +321,17 @@ Klasifikasi:
             if self.provider == "local" and self.tokenizer:
                 if self.use_rag and examples:
                     if self.model_tier in ["micro", "small"]:
-                        # Phase 26: Ultra-Minimalist RAG (De-Noising for 270M/1B)
-                        # Similarity Thresholding: Only use RAG if it's high-confidence.
-                        # This "protects" the baseline accuracy.
+                        # Phase 27: Safe-Baseline RAG (Adaptive Bypass)
+                        # We only use RAG if the similarity is extremely high.
+                        # Otherwise, we use the Zero-Shot baseline to protect accuracy.
                         top_similarity = examples[0].get('similarity_score', 0.0) if examples else 0.0
                         
-                        # Threshold 0.7 for micro (Need strong matches)
-                        # Threshold 0.6 for small (More robust)
-                        threshold = 0.7 if self.model_tier == "micro" else 0.6
+                        # Threshold 0.95 for micro (Near-perfect match only)
+                        # Threshold 0.85 for small 
+                        threshold = 0.95 if self.model_tier == "micro" else 0.85
                         
                         if top_similarity < threshold:
-                            # Bypass RAG: Use Zero-Shot Training Format to hit baseline accuracy
+                            # Bypass RAG: Use the high-performing Zero-Shot Baseline
                             user_msg = f"""Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
 Judul: {title or content[:60]}
@@ -339,26 +339,26 @@ Konten: {content[:250] if self.model_tier == "micro" else content[:400]}
 
 HASIL: """
                         else:
-                            # Use Ultra-Minimalist 1-Shot
+                            # High-Confidence RAG: Use ultra-compact hint
                             ex = examples[0]
-                            ex_content = ex.get('content', '')[:100].replace('\n', ' ')
+                            # Strictly strip reasoning and text for micro to avoid "Analisis:" pollution
                             ex_label = ex.get('label', 'unknown')
                             
                             user_msg = f"""Klasifikasikan berita sebagai "native ads" atau "berita murni".
 
-CONTOH REFERENSI:
-Isi: {ex_content}
-Label: {ex_label}
+PETUNJUK (Artikel serupa): {ex_label}
 
 TUGAS:
 Judul: {title or content[:60]}
 Konten: {content[:150] if self.model_tier == "micro" else content[:250]}
 
-HASIL (JAWABAN A atau B): """
+HASIL: """
                         
-                        # Phase 26: Raw Completion Mode for Micro Models
+                        # Phase 26/27: Raw Completion Mode for Micro Models
                         if self.model_tier == "micro":
                             templated_prompt = user_msg.strip()
+                            # Expand stop sequences to kill babbling
+                            self.stop_sequences += ["Analisis:", "Jawaban:", "Artikel:", "Contoh:"]
                         else:
                             messages = [{"role": "user", "content": user_msg.strip()}]
                     else:
@@ -429,8 +429,8 @@ HASIL (JAWABAN A atau B): """
             import re
             
             # Phase 14: First check for "Jawaban: A/B" pattern (MCQ fallback)
-            # Phase 22/23/24/25: Checking for labels or label codes
-            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
+            # Phase 22-27: Robust checking for labels or label codes
+            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk)[:\s]*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
             if not jawaban_match and self.model_tier in ["micro", "small"]:
                 # Check for just the label code at the very beginning
                 micro_match = re.search(r'^\s*([AB]|native ads|berita murni)\b', response, re.IGNORECASE)
