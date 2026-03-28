@@ -554,31 +554,65 @@ Klasifikasi:
                     else:
                         return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
             
-            # Phase 12: Strict raw label fallback (No more fuzzy keyword scoring)
+            # Phase 12: 'Empathetic Parser' (Emergency Regression Fix)
+            # Re-introducing smarter matching for tiny models that struggle with JSON.
             clean_resp_lower = response.lower().strip()
             
-            # Look for explicit anchors at the start of a line to avoid reasoning-text collisions
+            # 1. Broad Anchor Matching (Aligned with Training Prompt 'Klasifikasi:')
+            anchors = ["klasifikasi", "kategori", "label:", "jawaban:", "hasil:", "conclusion:", "result:"]
             for line in response.split('\n'):
                 line_clean = line.strip().lower()
-                if any(anchor in line_clean for anchor in ["label:", "jawaban:", "hasil:", "conclusion:"]):
+                if any(anchor in line_clean for anchor in anchors):
                     if "berita murni" in line_clean or " b" in line_clean or line_clean.endswith(": b"):
                         return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': f'Anchor-based: {line.strip()}'}
                     if "native ads" in line_clean or " a" in line_clean or line_clean.endswith(": a"):
                         return {'label': 'native ads', 'confidence': 0.9, 'reasoning': f'Anchor-based: {line.strip()}'}
 
+            # 2. Global Direct Start/End Match (Space-insensitive)
+            clean_tokenized = clean_resp_lower.split()
+            if clean_tokenized:
+                # Check first 5 words or last 5 words for direct labels
+                head_tail = clean_tokenized[:5] + clean_tokenized[-5:]
+                if "berita" in head_tail and "murni" in head_tail:
+                    return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'Direct label match (head/tail)'}
+                if "native" in head_tail and "ads" in head_tail:
+                    return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'Direct label match (head/tail)'}
+
             # Keep JSON logic as fallback for larger models or hybrid outputs
             start = response.find('{')
             if start == -1:
-                # Last resort: High-confidence keyword only if no contradictory categories are mentioned.
-                if "native ads" in clean_resp_lower and "berita murni" not in clean_resp_lower:
-                     return {'label': 'native ads', 'confidence': 0.6, 'reasoning': 'Keyword-only (strict)'}
+                # 3. SMARTER Keyword-based Scoring (Negation-aware fallback)
+                native_indicators = ["mempromosikan", "promosi", "persuasif", "marketing", "iklan"]
+                murni_indicators = ["netral", "objektif", "informasi", "fakta", "berita"]
                 
-                # Safer Default for unknown:
+                # Simple negation check: if "tidak" or "bukan" is 1-2 words before the indicator, subtract score
+                words = clean_resp_lower.split()
+                n_score = 0
+                m_score = 0
+                
+                for i, word in enumerate(words):
+                    clean_word = word.strip('.,?!:')
+                    if clean_word in native_indicators:
+                        # Check for negation: "bukan promosi", "tidak mempromosikan"
+                        is_negated = (i > 0 and words[i-1] in ["tidak", "bukan", "tanpa"])
+                        if is_negated: m_score += 1
+                        else: n_score += 1
+                    if clean_word in murni_indicators:
+                        n_score += 0 # Murni indicators are usually positive for murni
+                        m_score += 1
+                
+                if n_score > m_score:
+                    return {'label': 'native ads', 'confidence': 0.65, 'reasoning': f'Keyword-based score: {n_score} vs {m_score}'}
+                elif m_score > n_score:
+                    return {'label': 'berita murni', 'confidence': 0.65, 'reasoning': f'Keyword-based score: {m_score} vs {n_score}'}
+
+                # 4. Final Absolute Fallback: Default to 'berita murni' ONLY if we truly find nothing.
+                # However, many 270M models start their response with the label.
+                if "native" in clean_resp_lower[:50]:
+                    return {'label': 'native ads', 'confidence': 0.5, 'reasoning': 'Start-of-string fallback'}
+                
                 logger.warning(f"Ambiguous response, defaulting to berita murni: {response[:200]}")
-                return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Safety default (ambiguous output)'}
-                
-                logger.warning(f"No label or JSON found in response: {response[:500]}")
-                raise ValueError("No JSON or label found")
+                return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Ambiguous safety default'}
             
             # Parse character by character to find the matching closing brace
             brace_count = 0
