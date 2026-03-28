@@ -294,6 +294,7 @@ simple_local_prompt = PromptTemplate(
 # Condensed version for small models (< 3B) to avoid instruction fade
 CONDENSED_TRAINING_PROMPT_TEMPLATE = """{context}
 TUGAS: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+INGAT: Berita peluncuran produk/teknologi tetaplah BERITA MURNI jika bahasanya informatif.
 
 Judul: {title}
 Konten: {content}

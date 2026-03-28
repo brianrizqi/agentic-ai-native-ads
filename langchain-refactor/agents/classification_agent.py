@@ -324,10 +324,9 @@ Klasifikasi:
                         
                         # Phase 30: Use Reasoning-First MCQ for 270M to match training
                         from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
-                                               # Threshold handles noise vs signal (Phase 34: Distance-based, Lower is Better)
-                        # Phase 14-16: Stricter threshold (0.8) for micro to avoid noise contamination.
-                        # Phase 14-16: More lenient threshold (1.1) for small (Llama 1B).
-                        threshold = 0.8 if self.model_tier == "micro" else 1.1
+                                               # Phase 17: Precision Tuning (Target 71%+)
+                        # Tighten threshold (1.1 -> 0.9) to ensure only High-Signal RAG hints are used.
+                        threshold = 0.8 if self.model_tier == "micro" else 0.9
                         
                         target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
                         
@@ -336,12 +335,13 @@ Klasifikasi:
                             ex = examples[0]
                             ex_content = ex.get('content', '')[:120].replace('\n', ' ')
                             ex_label = ex.get('label', 'unknown')
-                            ex_reasoning = ex.get('reasoning', 'No reasoning available')[:100]
+                            # Phase 17: Strict Reasoning Cleaning
+                            ex_reasoning = ex.get('reasoning', 'No reasoning available')[:120]
+                            ex_reasoning = ex_reasoning.replace('\n', ' ').strip()
                             
-                            # Phase 16: Isolation & Prefix Forcing (For Recovery)
-                            # Both micro (270M) and small (1B) must use isolated context to avoid hijacking.
+                            # Phase 16-17: Isolation & Prefix Forcing
                             if self.model_tier in ["micro", "small"]:
-                                print(f"DEBUG: RAG Triggered (Isolasi) (Dist: {top_similarity:.4f})")
+                                print(f"DEBUG: RAG Triggered (Isolasi-Precision) (Dist: {top_similarity:.4f})")
                                 ex_label_text = "native ads" if "native" in ex_label.lower() else "berita murni"
                                 
                                 # Move context to the TOP to avoid interfering with the Output trigger
