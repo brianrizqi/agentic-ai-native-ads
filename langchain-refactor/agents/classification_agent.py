@@ -237,7 +237,8 @@ Klasifikasi:
                     # NOTE: Do NOT include " " (space) — it cuts output before label is generated
                     stop_sequences = ["\n\n", tokenizer.eos_token]
                 else:
-                    stop_sequences = ["}\n", "} ", "\n\n", "Analisis:", "Artikel:", tokenizer.eos_token]
+                    # Phase 19 RF-JSON: Stop on closing brace after full JSON, not mid-reasoning
+                    stop_sequences = ["}\n", "} \n", "}\n\n", tokenizer.eos_token]
                 
                 # Phase 45: STOP FORCING MCQ for 270M (micro) - Reverting to JSON baseline
                 self.is_mcq = self.is_mcq or "mcq" in model_name_lower
