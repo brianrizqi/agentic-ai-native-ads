@@ -554,63 +554,70 @@ Klasifikasi:
                     else:
                         return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Detected MCQ Label: {label_code}'}
             
-            # Phase 12: 'Empathetic Parser' (Emergency Regression Fix)
-            # Re-introducing smarter matching for tiny models that struggle with JSON.
+            # Phase 13: 'Ultra-Resilient' Parser (71% Target Recovery)
+            # Broaden detection for 270M/1B models that use Indonesian or unstructured formats.
             clean_resp_lower = response.lower().strip()
             
             # 1. Broad Anchor Matching (Aligned with Training Prompt 'Klasifikasi:')
-            anchors = ["klasifikasi", "kategori", "label:", "jawaban:", "hasil:", "conclusion:", "result:"]
-            for line in response.split('\n'):
+            # Multi-word anchors and Indonesian terms
+            anchors_list = [
+                "klasifikasi:", "kategori berita:", "kategori:", "label:", "hasil:", 
+                "jawaban:", "conclusion:", "result:", "tipe:"
+            ]
+            
+            resp_lines = response.split('\n')
+            for idx, line in enumerate(resp_lines):
                 line_clean = line.strip().lower()
-                if any(anchor in line_clean for anchor in anchors):
-                    if "berita murni" in line_clean or " b" in line_clean or line_clean.endswith(": b"):
-                        return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': f'Anchor-based: {line.strip()}'}
-                    if "native ads" in line_clean or " a" in line_clean or line_clean.endswith(": a"):
-                        return {'label': 'native ads', 'confidence': 0.9, 'reasoning': f'Anchor-based: {line.strip()}'}
+                for anchor in anchors_list:
+                    if anchor in line_clean:
+                        # Scan the text AFTER the anchor on the same line
+                        relevant_part = line_clean.split(anchor)[1].strip()
+                        if not relevant_part and idx + 1 < len(resp_lines): # Check next line if empty
+                            relevant_part = resp_lines[idx+1].strip().lower()
+                        
+                        # Phase 13: Multilingual Label Mapping
+                        if any(kw in relevant_part for kw in ["berita murni", "murni", "objektif", " b", "news"]):
+                            return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': f'Anchor-based: {anchor} {relevant_part}'}
+                        if any(kw in relevant_part for kw in ["native ads", "iklan", "promosi", " a", "ads"]):
+                            return {'label': 'native ads', 'confidence': 0.95, 'reasoning': f'Anchor-based: {anchor} {relevant_part}'}
 
-            # 2. Global Direct Start/End Match (Space-insensitive)
-            clean_tokenized = clean_resp_lower.split()
-            if clean_tokenized:
-                # Check first 5 words or last 5 words for direct labels
-                head_tail = clean_tokenized[:5] + clean_tokenized[-5:]
-                if "berita" in head_tail and "murni" in head_tail:
-                    return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'Direct label match (head/tail)'}
-                if "native" in head_tail and "ads" in head_tail:
-                    return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'Direct label match (head/tail)'}
+            # 2. Heuristic Start-of-Response (Tiny models often start with the label)
+            # Check first 50 chars for high-confidence Indonesian terms
+            first_block = clean_resp_lower[:50]
+            if "native ads" in first_block or "iklan" in first_block or "promosi" in first_block:
+                return {'label': 'native ads', 'confidence': 0.8, 'reasoning': 'Start-of-string heuristic'}
+            if "berita murni" in first_block or "objektif" in first_block or "murni" in first_block:
+                return {'label': 'berita murni', 'confidence': 0.8, 'reasoning': 'Start-of-string heuristic'}
 
             # Keep JSON logic as fallback for larger models or hybrid outputs
             start = response.find('{')
             if start == -1:
-                # 3. SMARTER Keyword-based Scoring (Negation-aware fallback)
-                native_indicators = ["mempromosikan", "promosi", "persuasif", "marketing", "iklan"]
-                murni_indicators = ["netral", "objektif", "informasi", "fakta", "berita"]
+                # 3. SMARTER Keyword-based Scoring (Weighted & Negation-aware)
+                native_kws = ["mempromosikan", "promosi", "persuasif", "iklan", "advertorial"]
+                murni_kws = ["netral", "objektif", "informasi", "fakta", "berita", "news"]
                 
-                # Simple negation check: if "tidak" or "bukan" is 1-2 words before the indicator, subtract score
                 words = clean_resp_lower.split()
                 n_score = 0
                 m_score = 0
                 
                 for i, word in enumerate(words):
-                    clean_word = word.strip('.,?!:')
-                    if clean_word in native_indicators:
-                        # Check for negation: "bukan promosi", "tidak mempromosikan"
-                        is_negated = (i > 0 and words[i-1] in ["tidak", "bukan", "tanpa"])
+                    clean_word = word.strip('.,?!:()')
+                    if clean_word in native_kws:
+                        # Negation check: "tidak mempromosikan"
+                        is_negated = (i > 0 and words[i-1] in ["tidak", "bukan", "tanpa", "no", "not"])
                         if is_negated: m_score += 1
-                        else: n_score += 1
-                    if clean_word in murni_indicators:
-                        n_score += 0 # Murni indicators are usually positive for murni
-                        m_score += 1
+                        else: n_score += 2 # Native keywords are more distinct
+                    if clean_word in murni_kws:
+                        is_negated = (i > 0 and words[i-1] in ["tidak", "bukan"])
+                        if is_negated: n_score += 1
+                        else: m_score += 1
                 
                 if n_score > m_score:
-                    return {'label': 'native ads', 'confidence': 0.65, 'reasoning': f'Keyword-based score: {n_score} vs {m_score}'}
+                    return {'label': 'native ads', 'confidence': 0.6, 'reasoning': f'Heuristic score N:{n_score} M:{m_score}'}
                 elif m_score > n_score:
-                    return {'label': 'berita murni', 'confidence': 0.65, 'reasoning': f'Keyword-based score: {m_score} vs {n_score}'}
+                    return {'label': 'berita murni', 'confidence': 0.6, 'reasoning': f'Heuristic score M:{m_score} N:{n_score}'}
 
-                # 4. Final Absolute Fallback: Default to 'berita murni' ONLY if we truly find nothing.
-                # However, many 270M models start their response with the label.
-                if "native" in clean_resp_lower[:50]:
-                    return {'label': 'native ads', 'confidence': 0.5, 'reasoning': 'Start-of-string fallback'}
-                
+                # 4. Final Absolute Fallback
                 logger.warning(f"Ambiguous response, defaulting to berita murni: {response[:200]}")
                 return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Ambiguous safety default'}
             
