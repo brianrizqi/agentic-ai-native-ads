@@ -13,7 +13,12 @@ import json
 import logging
 import os
 
-from prompts.classification_prompts import few_shot_classification_prompt, simple_classification_prompt
+from prompts.classification_prompts import (
+    few_shot_classification_prompt, 
+    simple_classification_prompt,
+    TRAINING_PROMPT_TEMPLATE,
+    CONDENSED_TRAINING_PROMPT_TEMPLATE
+)
 
 logger = logging.getLogger(__name__)
 
@@ -318,11 +323,10 @@ Klasifikasi:
                         top_similarity = examples[0].get('similarity_score', 0.0) if examples else 0.0
                         
                         # Phase 30: Use Reasoning-First MCQ for 270M to match training
-                        from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE
-                        
-                        # Threshold handles noise vs signal (Phase 34: Distance-based, Lower is Better)
-                        # Phase 48: Stricter threshold (1.1 -> 0.8) for micro to hit 71%.
-                        # Phase 14: 1.1 for small (Llama 1B) to balance context injection.
+                        from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
+                                               # Threshold handles noise vs signal (Phase 34: Distance-based, Lower is Better)
+                        # Phase 14-16: Stricter threshold (0.8) for micro to avoid noise contamination.
+                        # Phase 14-16: More lenient threshold (1.1) for small (Llama 1B).
                         threshold = 0.8 if self.model_tier == "micro" else 1.1
                         
                         target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
@@ -334,22 +338,21 @@ Klasifikasi:
                             ex_label = ex.get('label', 'unknown')
                             ex_reasoning = ex.get('reasoning', 'No reasoning available')[:100]
                             
-                            # Phase 15: Pure Training Parity Restoration
-                            # Both micro (270M) and small (1B) must use the exact Training Prompt structure.
-                            # We inject RAG as a context block within the single-turn JSON prompt.
+                            # Phase 16: Isolation & Prefix Forcing (For Recovery)
+                            # Both micro (270M) and small (1B) must use isolated context to avoid hijacking.
                             if self.model_tier in ["micro", "small"]:
-                                print(f"DEBUG: RAG Triggered (Pure Context) (Dist: {top_similarity:.4f})")
+                                print(f"DEBUG: RAG Triggered (Isolasi) (Dist: {top_similarity:.4f})")
                                 ex_label_text = "native ads" if "native" in ex_label.lower() else "berita murni"
                                 
-                                # High-fidelity context injection (Mirrors training context)
+                                # Move context to the TOP to avoid interfering with the Output trigger
                                 rag_context = (
-                                    f"\nKONTEKS DOKUMEN SERUPA (REFERENSI):\n"
-                                    f"- Kategori: {ex_label_text.upper()}\n"
+                                    f"DOKUMEN SERUPA (Referensi):\n"
+                                    f"- Label: {ex_label_text.upper()}\n"
                                     f"- Analisis: {ex_reasoning[:150]}\n"
-                                    f"INSTRUKSI: Gunakan referensi di atas hanya sebagai pembanding. Tetaplah objektif!\n"
+                                    "---"
                                 )
                                 
-                                user_msg = TRAINING_PROMPT_TEMPLATE.format(
+                                user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
                                     title=title or content[:60],
                                     content=content[:400],
                                     context=rag_context
@@ -380,27 +383,25 @@ Klasifikasi:
                         else:
                             # Pure Zero-Shot: verbatim training template (matches original baseline)
                             print(f"DEBUG: Using Zero-Shot (Dist: {top_similarity:.4f})")
-                            user_msg = target_template.format(
-                                title=title or content[:60],
-                                content=content[:400],
-                                context=""
-                            )
-                            # Strip literal placeholders left from formatting
-                            user_msg = user_msg.replace('{context}', '').strip()
-                            # Clean up trailing prompt anchors
-                            if self.model_tier == "micro":
-                                user_msg = user_msg.split('Analisis:')[0].strip() + "\n\nAnalisis:"
+                            
+                            # Phase 16: Use condensed prompt for zero-shot in small tiers too
+                            if self.model_tier in ["micro", "small"]:
+                                user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
+                                    title=title or content[:60],
+                                    content=content[:400],
+                                    context=""
+                                ).replace('{context}', '').strip()
                             else:
+                                user_msg = TRAINING_PROMPT_TEMPLATE.format(
+                                    title=title or content[:60],
+                                    content=content[:400],
+                                    context=""
+                                ).replace('{context}', '').strip()
+                                # Clean up trailing prompt anchors
                                 user_msg = user_msg.split('Output (JSON):')[0].strip() + "\n\nOutput (JSON):"
                             
                             messages = [{"role": "user", "content": user_msg}]
                     else:
-                        # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
-                        # Phase 20: Keep Multi-turn RAG for standard tier (8B+)
-                        messages = []
-                        full_template = self.chain.first.template
-                        instructions = full_template.split('{context}')[0].split('Judul:')[0].strip()
-                        
                         for i, ex in enumerate(examples):
                             ex_content = ex.get('content', '')[:150].replace('\n', ' ')
                             ex_label = ex.get('label', 'unknown')
@@ -422,6 +423,12 @@ Klasifikasi:
                     # standard monolithic path
                     messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
                 
+                # Phase 16: Prefix Forcing (Constrained Generation)
+                # We append '{"label": "' to the prompt to force the model into the right JSON field immediately.
+                prefix_force = ""
+                if self.model_tier in ["micro", "small"]:
+                    prefix_force = '{"label": "'
+                
                 # Use Chat Template only if it hasn't been bypassed by Raw Mode
                 if not templated_prompt:
                     templated_prompt = self.tokenizer.apply_chat_template(
@@ -430,9 +437,16 @@ Klasifikasi:
                         add_generation_prompt=True
                     )
                 
+                if prefix_force:
+                    templated_prompt += prefix_force
+                
                 # Phase 23: Explicitly pass ALL stop sequences to invoke
                 stop_seqs = getattr(self, 'stop_sequences', None)
                 response = self.llm.invoke(templated_prompt, stop=stop_seqs)
+                
+                # Prepend prefix back to response for parsing
+                if prefix_force:
+                    response = prefix_force + response
             else:
                 # Use LCEL with explicit dict (API providers)
                 response = self.chain.invoke(input_data)
