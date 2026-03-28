@@ -403,8 +403,8 @@ Klasifikasi:
                             messages = [{"role": "user", "content": user_msg}]
                     else:
                         full_template = self.chain.first.template
-                        # Extract the base instructions from the template (text before placeholders)
                         instructions = full_template.split('{title}')[0].strip()
+                        messages = []
                         
                         for i, ex in enumerate(examples):
                             ex_content = ex.get('content', '')[:150].replace('\n', ' ')
