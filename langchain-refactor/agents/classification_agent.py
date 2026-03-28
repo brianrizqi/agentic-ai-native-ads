@@ -233,12 +233,9 @@ Klasifikasi:
                 
                 # Add stop sequence for JSON block and to prevent babbling
                 # Phase 22: Micro tier uses " " (space) or "\n" to force one-token MCQ
-                if self.model_tier == "micro":
-                    # NOTE: Do NOT include " " (space) — it cuts output before label is generated
-                    stop_sequences = ["\n\n", tokenizer.eos_token]
-                else:
-                    # Phase 19 RF-JSON: Stop on closing brace after full JSON, not mid-reasoning
-                    stop_sequences = ["}\n", "} \n", "}\n\n", tokenizer.eos_token]
+                # Phase 19-20 RF-JSON: Stop on closing brace after full JSON.
+                # All local tiers now use JSON.
+                stop_sequences = ["}\n", "} \n", "}\n\n", tokenizer.eos_token]
                 
                 # Phase 45: STOP FORCING MCQ for 270M (micro) - Reverting to JSON baseline
                 self.is_mcq = self.is_mcq or "mcq" in model_name_lower
@@ -318,160 +315,67 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                if self.use_rag and examples:
-                    if self.model_tier in ["micro", "small"]:
-                        # Identity Mirror: always use Training Format to avoid Instruction Fade.
-                        # For micro, inject RAG only when similarity >= 0.75 (was 0.95, too strict).
-                        top_similarity = examples[0].get('similarity_score', 0.0) if examples else 0.0
-                        
-                        # Phase 30: Use Reasoning-First MCQ for 270M to match training
-                        from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
-                        # Phase 18-19: Tier Optimization (Target 71%/89%)
-                        # Micro (270M): Strictly Reasoning-First MCQ (A/B)
-                        # Standard (8B): 0.8 threshold for high-signal gate + RF-JSON CoT.
-                        if self.model_tier == "micro":
-                            threshold = 0.8
-                        elif self.model_tier == "small":
-                            threshold = 0.9
-                        else:  # standard
-                            threshold = 0.8  # Phase 19: Tightened from 0.9
-                        
-                        target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
-                        
-                        if top_similarity <= threshold and examples:
-                            # Split example into separate turn
-                            ex = examples[0]
-                            ex_content = ex.get('content', '')[:120].replace('\n', ' ')
-                            ex_label = ex.get('label', 'unknown')
-                            # Phase 17: Strict Reasoning Cleaning
-                            ex_reasoning = ex.get('reasoning', 'No reasoning available')[:120]
-                            ex_reasoning = ex_reasoning.replace('\n', ' ').strip()
-                            
-                            # Phase 18: Recovery for Gemma 270M (Micro tier)
-                            # Using MCQ format because tiny models struggle with JSON-prefix forcing.
-                            if self.model_tier == "micro":
-                                print(f"DEBUG: RAG Triggered (MCQ-Parity) (Dist: {top_similarity:.4f})")
-                                messages = [
-                                    {
-                                        "role": "user",
-                                        "content": REASONING_MCQ_PROMPT_TEMPLATE.format(
-                                            title=ex.get('title', 'Artikel Contoh'),
-                                            content=ex_content,
-                                            context=""
-                                        ).replace('{context}', '').strip()
-                                    },
-                                    {
-                                        "role": "assistant",
-                                        "content": f"Analisis: {ex_reasoning}\nKlasifikasi: {'A' if 'native' in ex_label.lower() else 'B'}"
-                                    },
-                                    {
-                                        "role": "user",
-                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni'.\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
-                                    }
-                                ]
-                            elif self.model_tier == "small":
-                                # Keep JSON-Isolation for Llama 1B (Proven to work at 70%)
-                                print(f"DEBUG: RAG Triggered (Isolasi-Precision) (Dist: {top_similarity:.4f})")
-                                ex_label_text = "native ads" if "native" in ex_label.lower() else "berita murni"
-                                rag_context = (
-                                    f"DOKUMEN SERUPA (Referensi):\n"
-                                    f"- Label: {ex_label_text.upper()}\n"
-                                    f"- Analisis: {ex_reasoning}\n"
-                                    "---"
-                                )
-                                user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
-                                    title=title or content[:60],
-                                    content=content[:400],
-                                    context=rag_context
-                                )
-                                messages = [{"role": "user", "content": user_msg}]
-                            else:
-                                # Standard (8B+) models: Maintain Multi-turn with high-signal gate (0.9)
-                                assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
-                                print(f"DEBUG: RAG Triggered (Standard-Multi) (Dist: {top_similarity:.4f})")
-                                messages = [
-                                    {
-                                        "role": "user", 
-                                        "content": target_template.format(
-                                            title=ex.get('title', 'Artikel Contoh'),
-                                            content=ex_content,
-                                            context=""
-                                        ).split('Analisis:')[0].strip() + "\n\nAnalisis:"
-                                    },
-                                    {
-                                        "role": "assistant",
-                                        "content": assistant_content
-                                    },
-                                    {
-                                        "role": "user",
-                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni'.\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
-                                    }
-                                ]
-                        else:
-                            # Zero-Shot Path
-                            print(f"DEBUG: Using Zero-Shot (Dist: {top_similarity:.4f})")
-                            
-                            if self.model_tier == "micro":
-                                user_msg = REASONING_MCQ_PROMPT_TEMPLATE.format(
-                                    title=title or content[:60],
-                                    content=content[:400],
-                                    context=""
-                                ).replace('{context}', '').strip()
-                                # Clean up prompt anchor
-                                user_msg = user_msg.split('Analisis:')[0].strip() + "\n\nAnalisis:"
-                            elif self.model_tier == "small":
-                                user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
-                                    title=title or content[:60],
-                                    content=content[:400],
-                                    context=""
-                                ).replace('{context}', '').strip()
-                            else:
-                                # Standard Tier Zero-Shot
-                                user_msg = TRAINING_PROMPT_TEMPLATE.format(
-                                    title=title or content[:60],
-                                    content=content[:400],
-                                    context=""
-                                ).replace('{context}', '').strip()
-                                user_msg = user_msg.split('Output (JSON):')[0].strip() + "\n\nOutput (JSON):"
-                            
-                            messages = [{"role": "user", "content": user_msg}]
-                    else:
-                        full_template = self.chain.first.template
-                        instructions = full_template.split('{title}')[0].strip()
-                        messages = []
-                        
-                        # Phase 18: Limit Top-K to 3 for standard few-shot to reduce noise
-                        max_examples = 3 if self.model_tier == "standard" else 5
-                        for i, ex in enumerate(examples[:max_examples]):
-                            ex_content = ex.get('content', '')[:150].replace('\n', ' ')
-                            ex_label = ex.get('label', 'unknown')
-                            ex_reasoning = ex.get('reasoning', 'No reasoning available')
-                            
-                            if i == 0:
-                                user_msg = f"{instructions}\n\nCONTOH 1:\nKonten: {ex_content}"
-                            else:
-                                user_msg = f"CONTOH {i+1}:\nKonten: {ex_content}"
-                            
-                            messages.append({"role": "user", "content": user_msg})
-                            messages.append({"role": "assistant", "content": json.dumps({
-                                "reasoning": ex_reasoning[:150], "label": ex_label, "confidence": 1.0
-                            })})
-                        
-                        target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:100]}\nKonten: {content[:400]}"
-                        messages.append({"role": "user", "content": target_msg})
-                else:
-                    # standard monolithic path
-                    messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
+                # Phase 20: Universal Alignment (Recovery & 89% Push)
+                # We are unifying all local models to a single high-performance path.
+                # Using 0.8 threshold + Context Isolation + RF-JSON for all tiers.
+                threshold = 0.8
+                top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
                 
-                # Phase 16-19: Prefix Forcing (Constrained Generation)
-                # DISABLE for micro (Gemma 270M) as it uses MCQ format.
-                # Phase 19: Use Reasoning-First prefix to unlock CoT for 8B.
-                prefix_force = ""
-                if self.model_tier == "small":
-                    prefix_force = '{"reasoning": "'
-                elif self.model_tier == "standard":
-                    # Phase 19: Reasoning-first to unlock Chain-of-Thought before label.
-                    prefix_force = '{"reasoning": "'
+                from prompts.classification_prompts import CONDENSED_TRAINING_PROMPT_TEMPLATE
+                
+                if self.use_rag and examples and top_similarity <= threshold:
+                    # Context Isolation (Single-Turn RAG)
+                    ex = examples[0]
+                    ex_label_text = "native ads" if "native" in ex.get('label', '').lower() else "berita murni"
+                    ex_reasoning = ex.get('reasoning', '')[:150].replace('\n', ' ').strip()
+                    
+                    rag_context = (
+                        f"DOKUMEN SERUPA (Referensi):\n"
+                        f"- Label: {ex_label_text.upper()}\n"
+                        f"- Analisis: {ex_reasoning}\n"
+                        "---"
+                    )
+                    print(f"DEBUG: RAG Triggered (Universal-Isolasi) (Dist: {top_similarity:.4f})")
+                elif self.use_few_shot and examples:
+                    # Standard few-shot (non-RAG or RAG below threshold)
+                    instructions = CONDENSED_TRAINING_PROMPT_TEMPLATE.split('{title}')[0].strip()
+                    messages = []
+                    
+                    # Limit to 3 examples maximum for better signal density
+                    for i, ex in enumerate(examples[:3]):
+                        ex_content = ex.get('content', '')[:150].replace('\n', ' ')
+                        ex_label = ex.get('label', 'unknown')
+                        ex_reasoning = ex.get('reasoning', 'No reasoning available')
+                        
+                        if i == 0:
+                            user_msg = f"{instructions}\n\nCONTOH 1:\nKonten: {ex_content}"
+                        else:
+                            user_msg = f"CONTOH {i+1}:\nKonten: {ex_content}"
+                        
+                        messages.append({"role": "user", "content": user_msg})
+                        messages.append({"role": "assistant", "content": json.dumps({
+                            "reasoning": ex_reasoning[:150], "label": ex_label, "confidence": 1.0
+                        })})
+                    
+                    target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:100]}\nKonten: {content[:400]}"
+                    messages.append({"role": "user", "content": target_msg})
+                    rag_context = None # Flag to skip single-turn prompt construction below
+                else:
+                    rag_context = ""
+                    print(f"DEBUG: Using Universal Zero-Shot (Dist: {top_similarity:.4f})")
+                
+                # Construct single-turn message if not already done in few-shot branch
+                if 'messages' not in locals() or not messages:
+                    user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
+                        title=title or content[:60],
+                        content=content[:400],
+                        context=rag_context if rag_context is not None else ""
+                    ).replace('{context}', '').strip()
+                    messages = [{"role": "user", "content": user_msg}]
+                
+                # Phase 16-20: Universal Prefix Forcing (Constrained Generation)
+                # All local tiers (micro, small, standard) now use Reasoning-First JSON.
+                prefix_force = '{"reasoning": "'
                 
                 # Use Chat Template only if it hasn't been bypassed by Raw Mode
                 if not templated_prompt:
