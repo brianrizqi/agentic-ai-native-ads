@@ -311,39 +311,51 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 24: Signal Purity & Micro-Reset (70% & 90% Push)
+                # Phase 25: Reliability & Schema Restoration (70% & 90% Push)
                 if self.model_tier == "micro":
-                    # MICRO (Gemma 270M): Zero-Shot English (Normalisasi dari 45% ke 70%)
-                    # Menghapus RAG/Reasoning karena justru jadi noise buat model tiny.
-                    print(f"DEBUG: Using Micro-Specialist Zero-Shot English (Signal Recovery)")
-                    from prompts.classification_prompts import TINY_ZERO_SHOT_PROMPT_TEMPLATE
+                    # MICRO (Gemma 270M): Compact Indonesian JSON (Recovery 70%)
+                    # Balik ke Bahasa Indonesia karena model 270M terlalu bias ke loRA Indonesian.
+                    print(f"DEBUG: Using Micro-Specialist Compact Indonesian JSON (Stability Recovery)")
+                    from prompts.classification_prompts import STABLE_COMPACT_JSON_TEMPLATE
                     
-                    user_msg = TINY_ZERO_SHOT_PROMPT_TEMPLATE.format(
-                        title=title or content[:60],
-                        content=content[:400]
-                    ).strip()
-                    messages = [{"role": "user", "content": user_msg}]
-                    prefix_force = None # Let it be pure Zero-Shot
-                else:
-                    # STANDARD/SMALL (Llama 8B/1B): Normalisasi Realisme (90% Push)
-                    # Mengganti RAG Dinamis ke Fixed Few-Shot untuk hilangkan 'leakage' 99.5%.
-                    print(f"DEBUG: Using Standard Specialist Fixed Few-Shot (Normalization Push)")
-                    from prompts.classification_prompts import CLASSIFICATION_EXAMPLES, TRAINING_PROMPT_TEMPLATE
-                    
-                    # Buat Few-Shot context secara manual
-                    few_shot_context = "CONTOH KLASIFIKASI SEBELUMNYA:\n"
-                    for i, ex in enumerate(CLASSIFICATION_EXAMPLES[:2]): # Pakai 2 contoh fix
-                        few_shot_context += f"Judul: {ex.get('title', 'Berita')}\n"
-                        few_shot_context += f"Konten: {ex.get('content', '')[:100]}...\n"
-                        few_shot_context += f"Label: {ex.get('label')}\n---\n"
-                    
-                    user_msg = TRAINING_PROMPT_TEMPLATE.format(
+                    user_msg = STABLE_COMPACT_JSON_TEMPLATE.format(
                         title=title or content[:60],
                         content=content[:400],
-                        context=few_shot_context
+                        context=""
                     ).replace('{context}', '').strip()
-                    
                     messages = [{"role": "user", "content": user_msg}]
+                    prefix_force = '{"reasoning": "'
+                else:
+                    # STANDARD/SMALL (Llama 8B/1B): Normalisasi Purity (90% Push)
+                    # Revert ke RAG Top-1 tapi dengan Leakage Shield (Similarity < 0.05)
+                    print(f"DEBUG: Using Standard Specialist RAG-Shield (Acc: 90% Target)")
+                    from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
+                    
+                    # Leakage Shield: Hitung apakah referensi RAG terlalu identik
+                    top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
+                    use_this_rag = self.use_rag and examples and top_score > 0.05 # Skip if too identical (~leakage)
+                    
+                    target_template = TRAINING_PROMPT_TEMPLATE if self.model_tier == "standard" else CONDENSED_TRAINING_PROMPT_TEMPLATE
+                    # Split template to avoid 'Double JSON' prompt bug
+                    prompt_instructions = target_template.split('Output (JSON):')[0].strip()
+                    
+                    if use_this_rag:
+                        ex = examples[0]
+                        ex_label = ex.get('label', 'unknown')
+                        ex_reasoning = ex.get('reasoning', 'No reasoning available')[:150]
+                        
+                        rag_context = (
+                            f"REFERENSI ANALISIS (SIMILARITY={top_score:.2f}):\n"
+                            f"- Label: {ex_label}\n"
+                            f"- Analisis: {ex_reasoning}\n"
+                            f"- Konten: {ex.get('content', '')[:100]}\n"
+                            "---"
+                        )
+                        full_msg = f"{prompt_instructions}\n\n{rag_context}\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nOutput (JSON):"
+                    else:
+                        full_msg = f"{prompt_instructions}\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nOutput (JSON):"
+                    
+                    messages = [{"role": "user", "content": full_msg}]
                     prefix_force = '{"reasoning": "'
                 
                 # Apply chat template
@@ -356,7 +368,7 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Phase 24: Explicitly pass ALL stop sequences to invoke
+                # Phase 25: Unified Invoke with Stop Sequences
                 stop_seqs = getattr(self, 'stop_sequences', None)
                 response = self.llm.invoke(templated_prompt, stop=stop_seqs)
                 
