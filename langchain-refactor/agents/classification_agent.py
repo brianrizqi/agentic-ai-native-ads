@@ -247,7 +247,8 @@ Klasifikasi:
                 # Phase 33: Fixed n_new calculation - Always prioritize RAG or Reasoning requirements
                 # Phase 49: Bumped to 768 for RAG to avoid early JSON truncation.
                 if self.use_rag:
-                    n_new = 768
+                    # Phase 19: RF-JSON reasoning field needs more tokens to complete
+                    n_new = 512 if self.model_tier == "micro" else 1024
                 else:
                     is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
                     n_new = 128 if self.is_mcq else (1024 if is_reasoning else 512)
@@ -324,15 +325,15 @@ Klasifikasi:
                         
                         # Phase 30: Use Reasoning-First MCQ for 270M to match training
                         from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
-                        # Phase 18: Tier Optimization (Target 71%/89%)
+                        # Phase 18-19: Tier Optimization (Target 71%/89%)
                         # Micro (270M): Strictly Reasoning-First MCQ (A/B)
-                        # Standard (8B): Multi-turn RAG with 0.9 Signal Gate.
+                        # Standard (8B): 0.8 threshold for high-signal gate + RF-JSON CoT.
                         if self.model_tier == "micro":
                             threshold = 0.8
                         elif self.model_tier == "small":
                             threshold = 0.9
                         else:  # standard
-                            threshold = 0.9
+                            threshold = 0.8  # Phase 19: Tightened from 0.9
                         
                         target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
                         
@@ -452,7 +453,7 @@ Klasifikasi:
                             
                             messages.append({"role": "user", "content": user_msg})
                             messages.append({"role": "assistant", "content": json.dumps({
-                                "label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning[:150]
+                                "reasoning": ex_reasoning[:150], "label": ex_label, "confidence": 1.0
                             })})
                         
                         target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:100]}\nKonten: {content[:400]}"
@@ -461,14 +462,15 @@ Klasifikasi:
                     # standard monolithic path
                     messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
                 
-                # Phase 16-18: Prefix Forcing (Constrained Generation)
+                # Phase 16-19: Prefix Forcing (Constrained Generation)
                 # DISABLE for micro (Gemma 270M) as it uses MCQ format.
+                # Phase 19: Use Reasoning-First prefix to unlock CoT for 8B.
                 prefix_force = ""
                 if self.model_tier == "small":
-                    prefix_force = '{"label": "'
+                    prefix_force = '{"reasoning": "'
                 elif self.model_tier == "standard":
-                    # Llama 8B can use it to ensure JSON formatting
-                    prefix_force = '{"label": "'
+                    # Phase 19: Reasoning-first to unlock Chain-of-Thought before label.
+                    prefix_force = '{"reasoning": "'
                 
                 # Use Chat Template only if it hasn't been bypassed by Raw Mode
                 if not templated_prompt:
