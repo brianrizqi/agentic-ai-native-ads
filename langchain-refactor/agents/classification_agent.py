@@ -311,68 +311,69 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 22: Hyper-specialization (The final push for 70% & 90% targets)
-                # Diverging paths based on parameter density and training style.
+                # Phase 23: Reality Calibration (Normalisasi 90% dan Recovery 70%)
                 if self.model_tier == "micro":
-                    # MICRO (Gemma 270M): Reasoning-First MCQ (A/B)
+                    # MICRO (Gemma 270M): Label-First MCQ (Stabilisasi dari 33% ke 70%)
                     threshold = 0.8
-                    print(f"DEBUG: Using Micro-Specialist MCQ Specialist (Acc: 70% Target)")
-                    from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE
+                    print(f"DEBUG: Using Micro-Specialist Label-First MCQ (Recovery Push)")
+                    from prompts.classification_prompts import LABEL_FIRST_MCQ_PROMPT_TEMPLATE
                     top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
                     
                     if self.use_rag and examples and top_similarity <= threshold:
                         ex = examples[0]
                         ex_label = "A" if "native" in ex.get('label', '').lower() else "B"
                         rag_context = (
-                            f"DOKUMEN SERUPA:\n"
-                            f"- Label: {ex_label} ({ex.get('label', '').upper()})\n"
-                            f"- Alasan: {ex.get('reasoning', '')[:120]}\n"
+                            f"REFERENSI KONTEN SERUPA:\n"
+                            f"- Prediksi: {ex_label} ({ex.get('label', '').upper()})\n"
+                            f"- Analisis Singkat: {ex.get('reasoning', '')[:120]}\n"
                             "---"
                         )
                     else:
                         rag_context = ""
                         
-                    user_msg = REASONING_MCQ_PROMPT_TEMPLATE.format(
+                    user_msg = LABEL_FIRST_MCQ_PROMPT_TEMPLATE.format(
                         title=title or content[:60],
                         content=content[:400],
                         context=rag_context
                     ).replace('{context}', '').strip()
                     messages = [{"role": "user", "content": user_msg}]
-                    prefix_force = "Analisis: "
+                    prefix_force = "Jawaban: "
                 else:
-                    # STANDARD/SMALL (Llama 8B/1B): Reasoning-First JSON
-                    # Using 0.85 threshold + Full Instruction + RF-JSON
-                    threshold = 0.85
-                    print(f"DEBUG: Using Standard Specialist RF-JSON (Acc: 90% Target)")
+                    # STANDARD/SMALL (Llama 8B/1B): Normalisasi Purity (Strict 0.9)
+                    # Mengurangi leakage/bias 'chat' yang bikin angka 99.5% (terlalu palsu).
+                    threshold = 0.9
+                    print(f"DEBUG: Using Standard Specialist Normalization (90% Push)")
                     from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
                     top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
                     
-                    # Logic: Use Full Prompt for Standard (8B), use Condensed for Small (1B)
                     target_template = TRAINING_PROMPT_TEMPLATE if self.model_tier == "standard" else CONDENSED_TRAINING_PROMPT_TEMPLATE
                     
                     if self.use_rag and examples and top_similarity <= threshold:
-                        # Specialist: Multi-Turn RAG for 8B/1B analytical signal
+                        # Isolation RAG format (Single Turn) to prevent Assistant role bias.
                         ex = examples[0]
-                        ex_content = ex.get('content', '')[:150].replace('\n', ' ')
                         ex_label = ex.get('label', 'unknown')
                         ex_reasoning = ex.get('reasoning', 'No reasoning available')[:150]
                         
-                        instructions = target_template.split('{title}')[0].strip()
-                        messages = [
-                            {"role": "user", "content": f"{instructions}\n\nREFERENSI:\nKonten: {ex_content}"},
-                            {"role": "assistant", "content": json.dumps({"reasoning": ex_reasoning, "label": ex_label, "confidence": 1.0})}
-                        ]
-                        target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
-                        messages.append({"role": "user", "content": target_msg})
+                        rag_context = (
+                            f"CONTOH ANALISIS PEMBANDING:\n"
+                            f"- Label: {ex_label}\n"
+                            f"- Dasar Analisis: {ex_reasoning}\n"
+                            f"- Konten: {ex.get('content', '')[:120]}\n"
+                            "---"
+                        )
+                        user_msg = target_template.format(
+                            title=title or content[:60],
+                            content=content[:400],
+                            context=rag_context
+                        ).replace('{context}', '').strip()
                     else:
-                        # Zero-Shot or Fallback path
                         user_msg = target_template.format(
                             title=title or content[:60],
                             content=content[:400],
                             context=""
                         ).replace('{context}', '').strip()
-                        messages = [{"role": "user", "content": user_msg}]
                     
+                    messages = [{"role": "user", "content": user_msg}]
                     prefix_force = '{"reasoning": "'
                 
                 # Apply chat template

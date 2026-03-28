@@ -290,6 +290,20 @@ Konten: {content}
 Analisis:
 """
 
+# Phase 23: Label-First MCQ for sub-500M models (more robust for micro tiers)
+LABEL_FIRST_MCQ_PROMPT_TEMPLATE = """Klasifikasikan berita berikut.
+Pilih Jawaban:
+(A) Native Ads (Berbayar/Promosi)
+(B) Berita Murni (Informatif/Objektif)
+
+{context}
+
+Judul: {title}
+Konten: {content}
+
+Jawaban (A/B):
+"""
+
 simple_local_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
     template=SIMPLE_LOCAL_PROMPT_TEMPLATE
