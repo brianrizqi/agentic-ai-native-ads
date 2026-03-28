@@ -324,9 +324,15 @@ Klasifikasi:
                         
                         # Phase 30: Use Reasoning-First MCQ for 270M to match training
                         from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
-                                               # Phase 17: Precision Tuning (Target 71%+)
-                        # Tighten threshold (1.1 -> 0.9) to ensure only High-Signal RAG hints are used.
-                        threshold = 0.8 if self.model_tier == "micro" else 0.9
+                        # Phase 18: Tier Optimization (Target 71%/89%)
+                        # Micro (270M): Strictly Reasoning-First MCQ (A/B)
+                        # Standard (8B): Multi-turn RAG with 0.9 Signal Gate.
+                        if self.model_tier == "micro":
+                            threshold = 0.8
+                        elif self.model_tier == "small":
+                            threshold = 0.9
+                        else:  # standard
+                            threshold = 0.9
                         
                         target_template = REASONING_MCQ_PROMPT_TEMPLATE if self.model_tier == "micro" else TRAINING_PROMPT_TEMPLATE
                         
@@ -339,19 +345,38 @@ Klasifikasi:
                             ex_reasoning = ex.get('reasoning', 'No reasoning available')[:120]
                             ex_reasoning = ex_reasoning.replace('\n', ' ').strip()
                             
-                            # Phase 16-17: Isolation & Prefix Forcing
-                            if self.model_tier in ["micro", "small"]:
+                            # Phase 18: Recovery for Gemma 270M (Micro tier)
+                            # Using MCQ format because tiny models struggle with JSON-prefix forcing.
+                            if self.model_tier == "micro":
+                                print(f"DEBUG: RAG Triggered (MCQ-Parity) (Dist: {top_similarity:.4f})")
+                                messages = [
+                                    {
+                                        "role": "user",
+                                        "content": REASONING_MCQ_PROMPT_TEMPLATE.format(
+                                            title=ex.get('title', 'Artikel Contoh'),
+                                            content=ex_content,
+                                            context=""
+                                        ).replace('{context}', '').strip()
+                                    },
+                                    {
+                                        "role": "assistant",
+                                        "content": f"Analisis: {ex_reasoning}\nKlasifikasi: {'A' if 'native' in ex_label.lower() else 'B'}"
+                                    },
+                                    {
+                                        "role": "user",
+                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni'.\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
+                                    }
+                                ]
+                            elif self.model_tier == "small":
+                                # Keep JSON-Isolation for Llama 1B (Proven to work at 70%)
                                 print(f"DEBUG: RAG Triggered (Isolasi-Precision) (Dist: {top_similarity:.4f})")
                                 ex_label_text = "native ads" if "native" in ex_label.lower() else "berita murni"
-                                
-                                # Move context to the TOP to avoid interfering with the Output trigger
                                 rag_context = (
                                     f"DOKUMEN SERUPA (Referensi):\n"
                                     f"- Label: {ex_label_text.upper()}\n"
-                                    f"- Analisis: {ex_reasoning[:150]}\n"
+                                    f"- Analisis: {ex_reasoning}\n"
                                     "---"
                                 )
-                                
                                 user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
                                     title=title or content[:60],
                                     content=content[:400],
@@ -359,9 +384,9 @@ Klasifikasi:
                                 )
                                 messages = [{"role": "user", "content": user_msg}]
                             else:
-                                # Multi-turn examples for Standard (8B+) models
+                                # Standard (8B+) models: Maintain Multi-turn with high-signal gate (0.9)
                                 assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
-                                print(f"DEBUG: RAG Triggered (Multi-turn) (Dist: {top_similarity:.4f})")
+                                print(f"DEBUG: RAG Triggered (Standard-Multi) (Dist: {top_similarity:.4f})")
                                 messages = [
                                     {
                                         "role": "user", 
@@ -377,27 +402,34 @@ Klasifikasi:
                                     },
                                     {
                                         "role": "user",
-                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni' (JSON Format).\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
+                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni'.\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
                                     }
                                 ]
                         else:
-                            # Pure Zero-Shot: verbatim training template (matches original baseline)
+                            # Zero-Shot Path
                             print(f"DEBUG: Using Zero-Shot (Dist: {top_similarity:.4f})")
                             
-                            # Phase 16: Use condensed prompt for zero-shot in small tiers too
-                            if self.model_tier in ["micro", "small"]:
+                            if self.model_tier == "micro":
+                                user_msg = REASONING_MCQ_PROMPT_TEMPLATE.format(
+                                    title=title or content[:60],
+                                    content=content[:400],
+                                    context=""
+                                ).replace('{context}', '').strip()
+                                # Clean up prompt anchor
+                                user_msg = user_msg.split('Analisis:')[0].strip() + "\n\nAnalisis:"
+                            elif self.model_tier == "small":
                                 user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
                                     title=title or content[:60],
                                     content=content[:400],
                                     context=""
                                 ).replace('{context}', '').strip()
                             else:
+                                # Standard Tier Zero-Shot
                                 user_msg = TRAINING_PROMPT_TEMPLATE.format(
                                     title=title or content[:60],
                                     content=content[:400],
                                     context=""
                                 ).replace('{context}', '').strip()
-                                # Clean up trailing prompt anchors
                                 user_msg = user_msg.split('Output (JSON):')[0].strip() + "\n\nOutput (JSON):"
                             
                             messages = [{"role": "user", "content": user_msg}]
@@ -406,7 +438,9 @@ Klasifikasi:
                         instructions = full_template.split('{title}')[0].strip()
                         messages = []
                         
-                        for i, ex in enumerate(examples):
+                        # Phase 18: Limit Top-K to 3 for standard few-shot to reduce noise
+                        max_examples = 3 if self.model_tier == "standard" else 5
+                        for i, ex in enumerate(examples[:max_examples]):
                             ex_content = ex.get('content', '')[:150].replace('\n', ' ')
                             ex_label = ex.get('label', 'unknown')
                             ex_reasoning = ex.get('reasoning', 'No reasoning available')
@@ -427,10 +461,13 @@ Klasifikasi:
                     # standard monolithic path
                     messages = [{"role": "user", "content": self.chain.first.format(**input_data)}]
                 
-                # Phase 16: Prefix Forcing (Constrained Generation)
-                # We append '{"label": "' to the prompt to force the model into the right JSON field immediately.
+                # Phase 16-18: Prefix Forcing (Constrained Generation)
+                # DISABLE for micro (Gemma 270M) as it uses MCQ format.
                 prefix_force = ""
-                if self.model_tier in ["micro", "small"]:
+                if self.model_tier == "small":
+                    prefix_force = '{"label": "'
+                elif self.model_tier == "standard":
+                    # Llama 8B can use it to ensure JSON formatting
                     prefix_force = '{"label": "'
                 
                 # Use Chat Template only if it hasn't been bypassed by Raw Mode
