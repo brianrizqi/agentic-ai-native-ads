@@ -315,96 +315,76 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 21: Tier Specialist Restoration (Pushing 89%+)
-                # Standard (8B): Full Prompt + Multi-Turn RAG (Top-2) + 0.9 Threshold
-                # Micro/Small (270M/1B): Condensed Prompt + Isolation RAG + 0.8 Threshold
-                if self.model_tier == "standard":
-                    threshold = 0.9
-                    max_rag = 2
-                else:
+                # Phase 22: Hyper-specialization (The final push for 70% & 90% targets)
+                # Diverging paths based on parameter density and training style.
+                if self.model_tier == "micro":
+                    # MICRO (Gemma 270M): Reasoning-First MCQ (A/B)
                     threshold = 0.8
-                    max_rag = 1
-                
-                top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
-                
-                from prompts.classification_prompts import CONDENSED_TRAINING_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE
-                
-                if self.use_rag and examples and top_similarity <= threshold:
-                    if self.model_tier == "standard":
-                        # Specialist: Multi-Turn RAG for 8B Power
-                        print(f"DEBUG: RAG Triggered (Standard-Multi-Restored) (Dist: {top_similarity:.4f})")
-                        messages = []
-                        # Start with instructions (using full template)
-                        instructions = TRAINING_PROMPT_TEMPLATE.split('{title}')[0].strip()
-                        
-                        for i, ex in enumerate(examples[:max_rag]):
-                            ex_content = ex.get('content', '')[:150].replace('\n', ' ')
-                            ex_label = ex.get('label', 'unknown')
-                            ex_reasoning = ex.get('reasoning', 'No reasoning available')[:150]
-                            
-                            if i == 0:
-                                user_msg = f"{instructions}\n\nREFERENSI {i+1}:\nKonten: {ex_content}"
-                            else:
-                                user_msg = f"REFERENSI {i+1}:\nKonten: {ex_content}"
-                            
-                            messages.append({"role": "user", "content": user_msg})
-                            # Phase 21: Restoring Label-First Order
-                            messages.append({"role": "assistant", "content": json.dumps({
-                                "label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning
-                            })})
-                        
-                        target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
-                        messages.append({"role": "user", "content": target_msg})
-                        rag_context = None # Prevent single-turn collision
-                    else:
-                        # Micro/Small Recovery: Isolation RAG (Context at top)
+                    print(f"DEBUG: Using Micro-Specialist MCQ Specialist (Acc: 70% Target)")
+                    from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE
+                    top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
+                    
+                    if self.use_rag and examples and top_similarity <= threshold:
                         ex = examples[0]
-                        ex_label_text = "native ads" if "native" in ex.get('label', '').lower() else "berita murni"
+                        ex_label = "A" if "native" in ex.get('label', '').lower() else "B"
                         rag_context = (
-                            f"DOKUMEN SERUPA (Referensi):\n"
-                            f"- Label: {ex_label_text.upper()}\n"
-                            f"- Analisis: {ex.get('reasoning', '')[:120]}\n"
+                            f"DOKUMEN SERUPA:\n"
+                            f"- Label: {ex_label} ({ex.get('label', '').upper()})\n"
+                            f"- Alasan: {ex.get('reasoning', '')[:120]}\n"
                             "---"
                         )
-                        print(f"DEBUG: RAG Triggered (Micro/Small-Isolasi) (Dist: {top_similarity:.4f})")
-                elif self.use_few_shot and examples:
-                    # Generic few-shot (non-RAG)
-                    instructions = CONDENSED_TRAINING_PROMPT_TEMPLATE.split('{title}')[0].strip()
-                    messages = []
-                    for i, ex in enumerate(examples[:2]):
-                        ex_content = ex.get('content', '')[:120].replace('\n', ' ')
-                        messages.append({"role": "user", "content": f"{instructions if i==0 else ''}\n\nCONTOH {i+1}:\n{ex_content}"})
-                        messages.append({"role": "assistant", "content": json.dumps({
-                            "label": ex.get('label', 'unknown'), "confidence": 1.0, "reasoning": ex.get('reasoning', '')[:120]
-                        })})
-                    
-                    target_msg = f"TUGAS: Klasifikasikan.\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
-                    messages.append({"role": "user", "content": target_msg})
-                    rag_context = None
-                else:
-                    rag_context = ""
-                    print(f"DEBUG: Using Tiered Zero-Shot (Dist: {top_similarity:.4f})")
-                
-                # Single-turn constructor
-                if 'messages' not in locals() or not messages:
-                    template_to_use = TRAINING_PROMPT_TEMPLATE if self.model_tier == "standard" else CONDENSED_TRAINING_PROMPT_TEMPLATE
-                    user_msg = template_to_use.format(
+                    else:
+                        rag_context = ""
+                        
+                    user_msg = REASONING_MCQ_PROMPT_TEMPLATE.format(
                         title=title or content[:60],
                         content=content[:400],
-                        context=rag_context if rag_context is not None else ""
+                        context=rag_context
                     ).replace('{context}', '').strip()
                     messages = [{"role": "user", "content": user_msg}]
+                    prefix_force = "Analisis: "
+                else:
+                    # STANDARD/SMALL (Llama 8B/1B): Reasoning-First JSON
+                    # Using 0.85 threshold + Full Instruction + RF-JSON
+                    threshold = 0.85
+                    print(f"DEBUG: Using Standard Specialist RF-JSON (Acc: 90% Target)")
+                    from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
+                    top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
+                    
+                    # Logic: Use Full Prompt for Standard (8B), use Condensed for Small (1B)
+                    target_template = TRAINING_PROMPT_TEMPLATE if self.model_tier == "standard" else CONDENSED_TRAINING_PROMPT_TEMPLATE
+                    
+                    if self.use_rag and examples and top_similarity <= threshold:
+                        # Specialist: Multi-Turn RAG for 8B/1B analytical signal
+                        ex = examples[0]
+                        ex_content = ex.get('content', '')[:150].replace('\n', ' ')
+                        ex_label = ex.get('label', 'unknown')
+                        ex_reasoning = ex.get('reasoning', 'No reasoning available')[:150]
+                        
+                        instructions = target_template.split('{title}')[0].strip()
+                        messages = [
+                            {"role": "user", "content": f"{instructions}\n\nREFERENSI:\nKonten: {ex_content}"},
+                            {"role": "assistant", "content": json.dumps({"reasoning": ex_reasoning, "label": ex_label, "confidence": 1.0})}
+                        ]
+                        target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
+                        messages.append({"role": "user", "content": target_msg})
+                    else:
+                        # Zero-Shot or Fallback path
+                        user_msg = target_template.format(
+                            title=title or content[:60],
+                            content=content[:400],
+                            context=""
+                        ).replace('{context}', '').strip()
+                        messages = [{"role": "user", "content": user_msg}]
+                    
+                    prefix_force = '{"reasoning": "'
                 
-                # Phase 21: Global Reversion to Label-First Prefix
-                prefix_force = '{"label": "'
-                
-                # Use Chat Template only if it hasn't been bypassed by Raw Mode
-                if not templated_prompt:
-                    templated_prompt = self.tokenizer.apply_chat_template(
-                        messages, 
-                        tokenize=False, 
-                        add_generation_prompt=True
-                    )
+                # Apply chat template
+                templated_prompt = self.tokenizer.apply_chat_template(
+                    messages, 
+                    tokenize=False, 
+                    add_generation_prompt=True
+                )
                 
                 if prefix_force:
                     templated_prompt += prefix_force
@@ -416,6 +396,7 @@ Klasifikasi:
                 # Prepend prefix back to response for parsing
                 if prefix_force:
                     response = prefix_force + response
+                
             else:
                 # Use LCEL with explicit dict (API providers)
                 response = self.chain.invoke(input_data)
