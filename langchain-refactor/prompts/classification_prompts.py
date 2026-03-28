@@ -315,6 +315,17 @@ Content: {content}
 Label (native ads/pure news):
 """
 
+# Phase 25: Stable Compact JSON for Models with High Instruction Fade
+# (Best for Gemma 270M/Llama 1B in Indonesian)
+STABLE_COMPACT_JSON_TEMPLATE = """Klasifikasikan berita ini:
+{context}
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+"""
+
 simple_local_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
     template=SIMPLE_LOCAL_PROMPT_TEMPLATE
