@@ -305,7 +305,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": """
+{{"reasoning": """
 
 # Training-specific prompt template (matches inference format exactly)
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
@@ -338,7 +338,7 @@ Konten: {content}
 {context}
 
 Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
+{{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
 training_prompt = PromptTemplate(
