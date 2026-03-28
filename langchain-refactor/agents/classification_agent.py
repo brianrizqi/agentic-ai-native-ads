@@ -311,67 +311,37 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 23: Reality Calibration (Normalisasi 90% dan Recovery 70%)
+                # Phase 24: Signal Purity & Micro-Reset (70% & 90% Push)
                 if self.model_tier == "micro":
-                    # MICRO (Gemma 270M): Label-First MCQ (Stabilisasi dari 33% ke 70%)
-                    threshold = 0.8
-                    print(f"DEBUG: Using Micro-Specialist Label-First MCQ (Recovery Push)")
-                    from prompts.classification_prompts import LABEL_FIRST_MCQ_PROMPT_TEMPLATE
-                    top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
+                    # MICRO (Gemma 270M): Zero-Shot English (Normalisasi dari 45% ke 70%)
+                    # Menghapus RAG/Reasoning karena justru jadi noise buat model tiny.
+                    print(f"DEBUG: Using Micro-Specialist Zero-Shot English (Signal Recovery)")
+                    from prompts.classification_prompts import TINY_ZERO_SHOT_PROMPT_TEMPLATE
                     
-                    if self.use_rag and examples and top_similarity <= threshold:
-                        ex = examples[0]
-                        ex_label = "A" if "native" in ex.get('label', '').lower() else "B"
-                        rag_context = (
-                            f"REFERENSI KONTEN SERUPA:\n"
-                            f"- Prediksi: {ex_label} ({ex.get('label', '').upper()})\n"
-                            f"- Analisis Singkat: {ex.get('reasoning', '')[:120]}\n"
-                            "---"
-                        )
-                    else:
-                        rag_context = ""
-                        
-                    user_msg = LABEL_FIRST_MCQ_PROMPT_TEMPLATE.format(
+                    user_msg = TINY_ZERO_SHOT_PROMPT_TEMPLATE.format(
+                        title=title or content[:60],
+                        content=content[:400]
+                    ).strip()
+                    messages = [{"role": "user", "content": user_msg}]
+                    prefix_force = None # Let it be pure Zero-Shot
+                else:
+                    # STANDARD/SMALL (Llama 8B/1B): Normalisasi Realisme (90% Push)
+                    # Mengganti RAG Dinamis ke Fixed Few-Shot untuk hilangkan 'leakage' 99.5%.
+                    print(f"DEBUG: Using Standard Specialist Fixed Few-Shot (Normalization Push)")
+                    from prompts.classification_prompts import CLASSIFICATION_EXAMPLES, TRAINING_PROMPT_TEMPLATE
+                    
+                    # Buat Few-Shot context secara manual
+                    few_shot_context = "CONTOH KLASIFIKASI SEBELUMNYA:\n"
+                    for i, ex in enumerate(CLASSIFICATION_EXAMPLES[:2]): # Pakai 2 contoh fix
+                        few_shot_context += f"Judul: {ex.get('title', 'Berita')}\n"
+                        few_shot_context += f"Konten: {ex.get('content', '')[:100]}...\n"
+                        few_shot_context += f"Label: {ex.get('label')}\n---\n"
+                    
+                    user_msg = TRAINING_PROMPT_TEMPLATE.format(
                         title=title or content[:60],
                         content=content[:400],
-                        context=rag_context
+                        context=few_shot_context
                     ).replace('{context}', '').strip()
-                    messages = [{"role": "user", "content": user_msg}]
-                    prefix_force = "Jawaban: "
-                else:
-                    # STANDARD/SMALL (Llama 8B/1B): Normalisasi Purity (Strict 0.9)
-                    # Mengurangi leakage/bias 'chat' yang bikin angka 99.5% (terlalu palsu).
-                    threshold = 0.9
-                    print(f"DEBUG: Using Standard Specialist Normalization (90% Push)")
-                    from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
-                    top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
-                    
-                    target_template = TRAINING_PROMPT_TEMPLATE if self.model_tier == "standard" else CONDENSED_TRAINING_PROMPT_TEMPLATE
-                    
-                    if self.use_rag and examples and top_similarity <= threshold:
-                        # Isolation RAG format (Single Turn) to prevent Assistant role bias.
-                        ex = examples[0]
-                        ex_label = ex.get('label', 'unknown')
-                        ex_reasoning = ex.get('reasoning', 'No reasoning available')[:150]
-                        
-                        rag_context = (
-                            f"CONTOH ANALISIS PEMBANDING:\n"
-                            f"- Label: {ex_label}\n"
-                            f"- Dasar Analisis: {ex_reasoning}\n"
-                            f"- Konten: {ex.get('content', '')[:120]}\n"
-                            "---"
-                        )
-                        user_msg = target_template.format(
-                            title=title or content[:60],
-                            content=content[:400],
-                            context=rag_context
-                        ).replace('{context}', '').strip()
-                    else:
-                        user_msg = target_template.format(
-                            title=title or content[:60],
-                            content=content[:400],
-                            context=""
-                        ).replace('{context}', '').strip()
                     
                     messages = [{"role": "user", "content": user_msg}]
                     prefix_force = '{"reasoning": "'
@@ -386,7 +356,7 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Phase 23: Explicitly pass ALL stop sequences to invoke
+                # Phase 24: Explicitly pass ALL stop sequences to invoke
                 stop_seqs = getattr(self, 'stop_sequences', None)
                 response = self.llm.invoke(templated_prompt, stop=stop_seqs)
                 
@@ -485,6 +455,14 @@ Klasifikasi:
             
             # Phase 13: MCQ Detection — single A or B (only if response is very short)
             clean_resp = response.strip()
+            # Phase 24: Direct English Label Matching (Highest Priority for Zero-Shot Micro)
+            if len(clean_resp) <= 15:
+                clean_lower = clean_resp.lower()
+                if "native ads" in clean_lower or clean_lower == "a":
+                    return {'label': 'native ads', 'confidence': 0.99, 'reasoning': 'Direct English label match'}
+                if "pure news" in clean_lower or "berita murni" in clean_lower or clean_lower == "b":
+                    return {'label': 'berita murni', 'confidence': 0.99, 'reasoning': 'Direct English label match'}
+
             if len(clean_resp) <= 5:
                 clean_upper = clean_resp.upper()
                 mcq_match = re.match(r'^[^A-Za-z]*([AB])[^A-Za-z]*$', clean_upper)
@@ -527,7 +505,7 @@ Klasifikasi:
             first_block = clean_resp_lower[:50]
             if "native ads" in first_block or "iklan" in first_block or "promosi" in first_block:
                 return {'label': 'native ads', 'confidence': 0.8, 'reasoning': 'Start-of-string heuristic'}
-            if "berita murni" in first_block or "objektif" in first_block or "murni" in first_block:
+            if "berita murni" in first_block or "pure news" in first_block or "objektif" in first_block or "murni" in first_block:
                 return {'label': 'berita murni', 'confidence': 0.8, 'reasoning': 'Start-of-string heuristic'}
 
             # Keep JSON logic as fallback for larger models or hybrid outputs
