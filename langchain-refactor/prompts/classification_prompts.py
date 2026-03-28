@@ -291,11 +291,18 @@ simple_local_prompt = PromptTemplate(
 )
 
 
+# Condensed version for small models (< 3B) to avoid instruction fade
+CONDENSED_TRAINING_PROMPT_TEMPLATE = """{context}
+TUGAS: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+{{"label": """
+
 # Training-specific prompt template (matches inference format exactly)
 TRAINING_PROMPT_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-PENTING: 
-- Jangan memilih "native ads" jika tidak ada BUKTI PROMOSI produk/brand yang nyata.
 - Berita objektif (seperti sejarah, kriminal, atau penemuan ilmiah) adalah "berita murni".
 - Jika ragu atau konten bersifat informatif belaka, pilih "berita murni".
 
