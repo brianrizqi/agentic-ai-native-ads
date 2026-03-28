@@ -334,10 +334,10 @@ Klasifikasi:
                             ex_label = ex.get('label', 'unknown')
                             ex_reasoning = ex.get('reasoning', 'No reasoning available')[:100]
                             
-                            # Ensure label matches A/B if using MCQ
-                            if self.model_tier == "micro":
-                                if self.is_mcq:
-                                    # Phase 40: Transitioned to ULTRA-LIGHT RAG for Micro tier
+                            # Phase 14: Both micro (270M) and small (1B) tiers excel with Single-Turn Hints.
+                            if self.model_tier in ["micro", "small"]:
+                                if self.is_mcq or self.model_tier == "small":
+                                    # Phase 40: Transitioned to ULTRA-LIGHT RAG for Micro/Small tiers
                                     # Instead of a full article (distraction), just provide a single-line hint.
                                     print(f"DEBUG: RAG Triggered MCQ (Dist: {top_similarity:.4f})")
                                     system_instr = "Pilih A (native ads) atau B (berita murni)."
