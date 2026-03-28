@@ -334,52 +334,31 @@ Klasifikasi:
                             ex_label = ex.get('label', 'unknown')
                             ex_reasoning = ex.get('reasoning', 'No reasoning available')[:100]
                             
-                            # Phase 14: Both micro (270M) and small (1B) tiers excel with Single-Turn Hints.
+                            # Phase 15: Pure Training Parity Restoration
+                            # Both micro (270M) and small (1B) must use the exact Training Prompt structure.
+                            # We inject RAG as a context block within the single-turn JSON prompt.
                             if self.model_tier in ["micro", "small"]:
-                                if self.is_mcq or self.model_tier == "small":
-                                    # Phase 40: Transitioned to ULTRA-LIGHT RAG for Micro/Small tiers
-                                    # Instead of a full article (distraction), just provide a single-line hint.
-                                    print(f"DEBUG: RAG Triggered MCQ (Dist: {top_similarity:.4f})")
-                                    system_instr = "Pilih A (native ads) atau B (berita murni)."
-                                    
-                                    # Convert ex_label to a friendly hint
-                                    ex_label_text = "NATIVE ADS" if "native" in ex_label.lower() else "BERITA MURNI"
-                                    ex_reasoning_brief = ex_reasoning[:120].replace('\n', ' ')
-                                    hint = f"(Petunjuk RAG: Dokumen sejenis seringkali diklasifikasikan sebagai '{ex_label_text}' karena {ex_reasoning_brief})"
-                                    
-                                    user_msg = (
-                                        f"Klasifikasikan berita berikut. {system_instr}\n\n"
-                                        f"{hint}\n\n"
-                                        f"Judul: {title or content[:60]}\n"
-                                        f"Konten: {content[:400]}\n\n"
-                                        f"Analisis:"
-                                    )
-                                    messages = [{"role": "user", "content": user_msg}]
-                                else:
-                                    # Phase 45: JSON Baseline Restoration (Matches 61.5% without RAG)
-                                    # Inject RAG info as Context within the JSON template
-                                    print(f"DEBUG: RAG Triggered JSON (Dist: {top_similarity:.4f})")
-                                    from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE
-                                    
-                                    ex_label_text = "native ads" if "native" in ex_label.lower() else "berita murni"
-                                    rag_context = (
-                                        f"\nKONTEKS TAMBAHAN DARI DOKUMEN SERUPA:\n"
-                                        f"- Label yang disarankan: {ex_label_text}\n"
-                                        f"- Alasan: {ex_reasoning[:150]}\n"
-                                        f"CATATAN: Gunakan label di atas sebagai referensi pola saja. Tetaplah objektif!\n"
-                                    )
-                                    
-                                    user_msg = TRAINING_PROMPT_TEMPLATE.format(
-                                        title=title or content[:60],
-                                        content=content[:400],
-                                        context=rag_context
-                                    )
-                                    messages = [{"role": "user", "content": user_msg}]
-                            else:
-                                assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
+                                print(f"DEBUG: RAG Triggered (Pure Context) (Dist: {top_similarity:.4f})")
+                                ex_label_text = "native ads" if "native" in ex_label.lower() else "berita murni"
                                 
-                                # Phase 33: Multi-turn for Standard tier (8B) remains robust
-                                print(f"DEBUG: RAG Triggered (Dist: {top_similarity:.4f})")
+                                # High-fidelity context injection (Mirrors training context)
+                                rag_context = (
+                                    f"\nKONTEKS DOKUMEN SERUPA (REFERENSI):\n"
+                                    f"- Kategori: {ex_label_text.upper()}\n"
+                                    f"- Analisis: {ex_reasoning[:150]}\n"
+                                    f"INSTRUKSI: Gunakan referensi di atas hanya sebagai pembanding. Tetaplah objektif!\n"
+                                )
+                                
+                                user_msg = TRAINING_PROMPT_TEMPLATE.format(
+                                    title=title or content[:60],
+                                    content=content[:400],
+                                    context=rag_context
+                                )
+                                messages = [{"role": "user", "content": user_msg}]
+                            else:
+                                # Multi-turn examples for Standard (8B+) models
+                                assistant_content = json.dumps({"label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning})
+                                print(f"DEBUG: RAG Triggered (Multi-turn) (Dist: {top_similarity:.4f})")
                                 messages = [
                                     {
                                         "role": "user", 
@@ -395,7 +374,7 @@ Klasifikasi:
                                     },
                                     {
                                         "role": "user",
-                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni' (Pilih A/B).\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
+                                        "content": f"TUGAS: Klasifikasikan sebagai 'native ads' atau 'berita murni' (JSON Format).\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nAnalisis:"
                                     }
                                 ]
                         else:
