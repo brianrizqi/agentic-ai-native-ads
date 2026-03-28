@@ -304,6 +304,17 @@ Konten: {content}
 Jawaban (A/B):
 """
 
+# Phase 24: Minimal English Zero-Shot for Micro models (<500M params)
+# Designed to prevent 'multilingual collapse' seen in previous runs.
+TINY_ZERO_SHOT_PROMPT_TEMPLATE = """Task: Classify news as "native ads" or "pure news".
+Definition: "native ads" promote a brand/product with a positive tone. "pure news" is objective information.
+
+Title: {title}
+Content: {content}
+
+Label (native ads/pure news):
+"""
+
 simple_local_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
     template=SIMPLE_LOCAL_PROMPT_TEMPLATE
