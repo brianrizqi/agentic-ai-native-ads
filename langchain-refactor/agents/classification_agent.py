@@ -231,11 +231,13 @@ Klasifikasi:
 
                 self.tokenizer = tokenizer
                 
-                # Add stop sequence for JSON block and to prevent babbling
-                # Phase 22: Micro tier uses " " (space) or "\n" to force one-token MCQ
-                # Phase 19-20 RF-JSON: Stop on closing brace after full JSON.
-                # All local tiers now use JSON.
-                stop_sequences = ["}\n", "} \n", "}\n\n", tokenizer.eos_token]
+                # Phase 22: Tier-Specific Initialization
+                if self.model_tier == "micro":
+                    # Micro (MCQ): Stop after the A/B label (don't stop on the trigger itself!)
+                    stop_sequences = ["\n\n\n", tokenizer.eos_token]
+                else:
+                    # Standard/Small (JSON): Stop after closing brace
+                    stop_sequences = ["}\n", "} \n", "}\n\n", "}", tokenizer.eos_token]
                 
                 # Phase 45: STOP FORCING MCQ for 270M (micro) - Reverting to JSON baseline
                 self.is_mcq = self.is_mcq or "mcq" in model_name_lower
@@ -244,16 +246,10 @@ Klasifikasi:
                 # dengan max_new_tokens yang kita set di pipeline
                 # Phase 33: Fixed n_new calculation - Always prioritize RAG or Reasoning requirements
                 # Phase 49: Bumped to 768 for RAG to avoid early JSON truncation.
-                if self.use_rag:
-                    # Phase 19: RF-JSON reasoning field needs more tokens to complete
-                    n_new = 512 if self.model_tier == "micro" else 1024
-                else:
-                    is_reasoning = "deepseek-r1" in model_name_lower or "qwen3-" in model_name_lower
-                    n_new = 128 if self.is_mcq else (1024 if is_reasoning else 512)
-                
-                # Model-specific overrides
                 if self.model_tier == "micro":
-                    n_new = max(n_new, 256)
+                    n_new = 384 
+                else:
+                    n_new = 1024 
                 
                 if hasattr(model, 'generation_config'):
                     # Explicitly set both to avoid conflict and 20-token default
