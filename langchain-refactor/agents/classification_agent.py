@@ -315,67 +315,88 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 20: Universal Alignment (Recovery & 89% Push)
-                # We are unifying all local models to a single high-performance path.
-                # Using 0.8 threshold + Context Isolation + RF-JSON for all tiers.
-                threshold = 0.8
+                # Phase 21: Tier Specialist Restoration (Pushing 89%+)
+                # Standard (8B): Full Prompt + Multi-Turn RAG (Top-2) + 0.9 Threshold
+                # Micro/Small (270M/1B): Condensed Prompt + Isolation RAG + 0.8 Threshold
+                if self.model_tier == "standard":
+                    threshold = 0.9
+                    max_rag = 2
+                else:
+                    threshold = 0.8
+                    max_rag = 1
+                
                 top_similarity = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
                 
-                from prompts.classification_prompts import CONDENSED_TRAINING_PROMPT_TEMPLATE
+                from prompts.classification_prompts import CONDENSED_TRAINING_PROMPT_TEMPLATE, TRAINING_PROMPT_TEMPLATE
                 
                 if self.use_rag and examples and top_similarity <= threshold:
-                    # Context Isolation (Single-Turn RAG)
-                    ex = examples[0]
-                    ex_label_text = "native ads" if "native" in ex.get('label', '').lower() else "berita murni"
-                    ex_reasoning = ex.get('reasoning', '')[:150].replace('\n', ' ').strip()
-                    
-                    rag_context = (
-                        f"DOKUMEN SERUPA (Referensi):\n"
-                        f"- Label: {ex_label_text.upper()}\n"
-                        f"- Analisis: {ex_reasoning}\n"
-                        "---"
-                    )
-                    print(f"DEBUG: RAG Triggered (Universal-Isolasi) (Dist: {top_similarity:.4f})")
+                    if self.model_tier == "standard":
+                        # Specialist: Multi-Turn RAG for 8B Power
+                        print(f"DEBUG: RAG Triggered (Standard-Multi-Restored) (Dist: {top_similarity:.4f})")
+                        messages = []
+                        # Start with instructions (using full template)
+                        instructions = TRAINING_PROMPT_TEMPLATE.split('{title}')[0].strip()
+                        
+                        for i, ex in enumerate(examples[:max_rag]):
+                            ex_content = ex.get('content', '')[:150].replace('\n', ' ')
+                            ex_label = ex.get('label', 'unknown')
+                            ex_reasoning = ex.get('reasoning', 'No reasoning available')[:150]
+                            
+                            if i == 0:
+                                user_msg = f"{instructions}\n\nREFERENSI {i+1}:\nKonten: {ex_content}"
+                            else:
+                                user_msg = f"REFERENSI {i+1}:\nKonten: {ex_content}"
+                            
+                            messages.append({"role": "user", "content": user_msg})
+                            # Phase 21: Restoring Label-First Order
+                            messages.append({"role": "assistant", "content": json.dumps({
+                                "label": ex_label, "confidence": 1.0, "reasoning": ex_reasoning
+                            })})
+                        
+                        target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
+                        messages.append({"role": "user", "content": target_msg})
+                        rag_context = None # Prevent single-turn collision
+                    else:
+                        # Micro/Small Recovery: Isolation RAG (Context at top)
+                        ex = examples[0]
+                        ex_label_text = "native ads" if "native" in ex.get('label', '').lower() else "berita murni"
+                        rag_context = (
+                            f"DOKUMEN SERUPA (Referensi):\n"
+                            f"- Label: {ex_label_text.upper()}\n"
+                            f"- Analisis: {ex.get('reasoning', '')[:120]}\n"
+                            "---"
+                        )
+                        print(f"DEBUG: RAG Triggered (Micro/Small-Isolasi) (Dist: {top_similarity:.4f})")
                 elif self.use_few_shot and examples:
-                    # Standard few-shot (non-RAG or RAG below threshold)
+                    # Generic few-shot (non-RAG)
                     instructions = CONDENSED_TRAINING_PROMPT_TEMPLATE.split('{title}')[0].strip()
                     messages = []
-                    
-                    # Limit to 3 examples maximum for better signal density
-                    for i, ex in enumerate(examples[:3]):
-                        ex_content = ex.get('content', '')[:150].replace('\n', ' ')
-                        ex_label = ex.get('label', 'unknown')
-                        ex_reasoning = ex.get('reasoning', 'No reasoning available')
-                        
-                        if i == 0:
-                            user_msg = f"{instructions}\n\nCONTOH 1:\nKonten: {ex_content}"
-                        else:
-                            user_msg = f"CONTOH {i+1}:\nKonten: {ex_content}"
-                        
-                        messages.append({"role": "user", "content": user_msg})
+                    for i, ex in enumerate(examples[:2]):
+                        ex_content = ex.get('content', '')[:120].replace('\n', ' ')
+                        messages.append({"role": "user", "content": f"{instructions if i==0 else ''}\n\nCONTOH {i+1}:\n{ex_content}"})
                         messages.append({"role": "assistant", "content": json.dumps({
-                            "reasoning": ex_reasoning[:150], "label": ex_label, "confidence": 1.0
+                            "label": ex.get('label', 'unknown'), "confidence": 1.0, "reasoning": ex.get('reasoning', '')[:120]
                         })})
                     
-                    target_msg = f"TARGET UNTUK DIKLASIFIKASI:\nJudul: {title or content[:100]}\nKonten: {content[:400]}"
+                    target_msg = f"TUGAS: Klasifikasikan.\nJudul: {title or content[:60]}\nKonten: {content[:400]}"
                     messages.append({"role": "user", "content": target_msg})
-                    rag_context = None # Flag to skip single-turn prompt construction below
+                    rag_context = None
                 else:
                     rag_context = ""
-                    print(f"DEBUG: Using Universal Zero-Shot (Dist: {top_similarity:.4f})")
+                    print(f"DEBUG: Using Tiered Zero-Shot (Dist: {top_similarity:.4f})")
                 
-                # Construct single-turn message if not already done in few-shot branch
+                # Single-turn constructor
                 if 'messages' not in locals() or not messages:
-                    user_msg = CONDENSED_TRAINING_PROMPT_TEMPLATE.format(
+                    template_to_use = TRAINING_PROMPT_TEMPLATE if self.model_tier == "standard" else CONDENSED_TRAINING_PROMPT_TEMPLATE
+                    user_msg = template_to_use.format(
                         title=title or content[:60],
                         content=content[:400],
                         context=rag_context if rag_context is not None else ""
                     ).replace('{context}', '').strip()
                     messages = [{"role": "user", "content": user_msg}]
                 
-                # Phase 16-20: Universal Prefix Forcing (Constrained Generation)
-                # All local tiers (micro, small, standard) now use Reasoning-First JSON.
-                prefix_force = '{"reasoning": "'
+                # Phase 21: Global Reversion to Label-First Prefix
+                prefix_force = '{"label": "'
                 
                 # Use Chat Template only if it hasn't been bypassed by Raw Mode
                 if not templated_prompt:
