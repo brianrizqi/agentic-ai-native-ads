@@ -383,14 +383,16 @@ Output (JSON):
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
-PANDUAN PENTING:
-- Jika artikel berisi LAYANAN PUBLIK atau informasi edukasi, pilih "berita murni".
-- Jika ragu atau tidak ada AJAKAN BELI yang nyata, pilih "berita murni".
+PANDUAN:
+- Jika isinya EDUKASI atau LAYANAN PUBLIK (SIM Online, Libur, Hibah), pilih "berita murni".
+- Jika ragu atau tidak ada AJAKAN BELI yang jelas, pilih "berita murni".
 
 Judul: {title}
 Konten: {content}
 
-Output (JSON):"""
+Output (JSON):
+{{"alasan": """
+
 
 
 
