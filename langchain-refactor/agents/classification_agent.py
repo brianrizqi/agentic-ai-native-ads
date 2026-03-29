@@ -74,15 +74,11 @@ class ClassificationAgent:
         
         # Select prompt based on model/provider
         model_name_lower = self.model_name.lower()
-        # Phase 18: All models now use a Harmonized RAG Prompt that matches the training format
-        # but with simplified context injection for smaller models to reduce noise.
         if self.use_rag:
             if self.model_tier == "micro":
-                # Phase 22: Micro-MCQ RAG for sub-500M models
                 from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE
                 prompt = PromptTemplate.from_template(REASONING_MCQ_PROMPT_TEMPLATE)
             else:
-                # Phase 18: Harmonized RAG Prompt for larger models (1B+)
                 prompt = PromptTemplate.from_template(
                     """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
@@ -103,20 +99,17 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads" atau "berita murni", "confidence": 0.0-1.0, "reasoning": "alasan singkat (max 150 karakter)"}}
+{{"reasoning": "alasan singkat", "label": "native ads" atau "berita murni"}}
 
 Klasifikasi:
 """
                 )
         elif self.provider == "local":
-            # Use simplified prompt for local models
             from prompts.classification_prompts import simple_local_prompt
             prompt = simple_local_prompt
         else:
-            # Use few-shot or simple prompt for API models
             prompt = few_shot_classification_prompt if use_few_shot else simple_classification_prompt
         
-        # Create chain using LCEL
         self.chain = prompt | self.llm | StrOutputParser()
         
         logger.info(f"Classification Agent initialized with {model_name} ({provider})")
@@ -132,10 +125,6 @@ Klasifikasi:
             return "standard"
         return "standard"
 
-    def _is_small_model(self) -> bool:
-        """Deprecated: Use self.model_tier instead."""
-        return self.model_tier in ["micro", "small"]
-    
     def _initialize_llm(self, api_key: Optional[str]):
         """Initialize LLM based on provider."""
         if self.provider == "openai":
@@ -223,15 +212,8 @@ Klasifikasi:
 
                 self.tokenizer = tokenizer
                 
-                # Default token limit logic
-                if self.model_tier == "micro":
-                    n_new = 384 
-                    stop_sequences = ["\n\n\n", tokenizer.eos_token]
-                else:
-                    n_new = 1024 
-                    stop_sequences = ["}\n", "} \n", "}\n\n", "}", tokenizer.eos_token]
-                
-                self.is_mcq = self.is_mcq or "mcq" in model_name_lower
+                # Phase 34: Universal Stop Sequences (Wait for JSON or EOS)
+                stop_sequences = ["}\n", "} \n", "}\n\n", "}", tokenizer.eos_token]
                 
                 if hasattr(model, 'generation_config'):
                     model.config.max_length = 2048
@@ -241,7 +223,7 @@ Klasifikasi:
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=n_new,
+                    max_new_tokens=512, # Phase 34: Standard limit for all local models
                     do_sample=False,
                     repetition_penalty=1.1,
                     return_full_text=False
@@ -277,40 +259,32 @@ Klasifikasi:
                 "context": context
             }
             
-            # Phase 33: Selective Fidelity (Standard vs Micro Tiering)
+            # Phase 34: Ultimate Gold Standard Alignment (Reasoning-First)
             if self.provider == "local" and self.tokenizer:
-                from prompts.classification_prompts import STANDARD_VACCINE_TEMPLATE, MICRO_ULTRA_MINIMAL_TEMPLATE
+                from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 
+                # High-Confidence RAG (Threshold: 0.35)
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
                 use_this_rag = self.use_rag and examples and top_score > 0.35
                 
                 rag_context = ""
                 if use_this_rag:
                     ex = examples[0]
-                    content_limit = 200 if self.model_tier == "micro" else 400
-                    ex_content = ex.get('content', '')[:content_limit].replace('\n', ' ')
+                    ex_content = ex.get('content', '')[:300].replace('\n', ' ')
                     rag_context = (
                         f"CONTOH RAG (Sim={top_score:.2f}):\n"
                         f"- Konten: {ex_content}...\n"
                         f"- Label: {ex.get('label')}\n"
                     )
 
-                if self.model_tier == "micro":
-                    user_msg = MICRO_ULTRA_MINIMAL_TEMPLATE.format(
-                        title=title or "",
-                        content=content[:150],
-                        context=rag_context
-                    ).strip()
-                    prefix_force = ""
-                    max_tokens = 25 
-                else:
-                    user_msg = STANDARD_VACCINE_TEMPLATE.format(
-                        title=title or content[:60],
-                        content=content[:400],
-                        context=rag_context
-                    ).strip()
-                    prefix_force = '{"label": "' 
-                    max_tokens = 400
+                user_msg = ULTIMATE_GOLD_STANDARD_TEMPLATE.format(
+                    title=title or content[:60],
+                    content=content[:400],
+                    context=rag_context
+                ).strip()
+                
+                # Restore original training-fidelity prefix
+                prefix_force = '{"reasoning": "' 
 
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(
@@ -320,8 +294,7 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                self.llm.pipeline.model_kwargs = {"max_new_tokens": max_tokens}
-                stop_seqs = ["}", "\n", self.tokenizer.eos_token]
+                stop_seqs = ["}", "\n\n", self.tokenizer.eos_token]
                 response = self.llm.invoke(templated_prompt, stop=stop_seqs)
                 
                 if prefix_force:
@@ -349,12 +322,12 @@ Klasifikasi:
             return self._get_fallback_classification(content)
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Parse LLM response into structured format (Phase 33 Multi-Tier)."""
+        """Parse LLM response into structured format (Phase 34 Gold Reset)."""
         try:
             import re
             resp_lower = response.lower()
             
-            # 1. Primary: JSON Parsing (Decision-First)
+            # 1. Primary: JSON Parsing (Training-Fidelity Reset)
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
@@ -363,33 +336,22 @@ Klasifikasi:
                     
                     raw_label = ""
                     if 'label' in data: raw_label = str(data['label']).lower()
-                    elif 'Hasil' in data: raw_label = str(data['Hasil']).lower()
                     
                     if raw_label:
                         label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
                         return {
                             'label': label,
-                            'confidence': data.get('confidence', 0.98),
-                            'reasoning': data.get('reasoning', data.get('analisis', 'JSON execution'))
+                            'confidence': data.get('confidence', 0.95),
+                            'reasoning': data.get('reasoning', 'JSON extraction')
                         }
                 except:
                     pass
 
-            # 2. Secondary: Keyword / Micro-Tier Fallback
-            if any(kw in resp_lower for kw in ["native ads", "iklan", "label: native ads"]):
-                return {'label': 'native ads', 'confidence': 0.9, 'reasoning': 'Keyword match (Micro)'}
-            elif any(kw in resp_lower for kw in ["berita murni", "murni", "label: berita murni"]):
-                return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': 'Keyword match (Micro)'}
-
-            # 3. Anchor-based extraction for ambiguous cases
-            jawaban_match = re.search(r'(?:Jawaban|HASIL|Answer|JAWABAN|Klasifikasi|Petunjuk|label)[:\s]*([AB]|native ads|berita murni)', response, re.IGNORECASE)
-            if jawaban_match:
-                match_text = jawaban_match.group(1).upper()
-                reasoning = response[:jawaban_match.start()].strip()
-                if match_text in ["A", "NATIVE ADS"]:
-                    return {'label': 'native ads', 'confidence': 0.95, 'reasoning': reasoning[:300]}
-                else:
-                    return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': reasoning[:300]}
+            # 2. Secondary: Keyword Fallback
+            if any(kw in resp_lower for kw in ["native ads", "iklan"]):
+                return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'Keyword match fallback'}
+            elif any(kw in resp_lower for kw in ["berita murni", "news"]):
+                return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'Keyword match fallback'}
 
             return self._get_fallback_classification(response)
                 
@@ -400,20 +362,20 @@ Klasifikasi:
     def _get_fallback_classification(self, text: str) -> Dict[str, Any]:
         """Fallback classification using keywords."""
         text_lower = text.lower()
-        promo_keywords = ['promo', 'diskon', 'gratis', 'beli', 'dapatkan', 'penawaran', 'spesial', 'iklan', 'ads']
+        promo_keywords = ['promo', 'diskon', 'gratis', 'beli', 'dapatkan', 'penawaran', 'spesial', 'iklan']
         promo_count = sum(1 for kw in promo_keywords if kw in text_lower)
         
         if promo_count >= 1:
             return {
                 'label': 'native ads',
-                'confidence': 0.65,
-                'reasoning': f'Keyword-based fallback: detected {promo_count} promotional terms'
+                'confidence': 0.60,
+                'reasoning': 'Keyword fallback'
             }
         else:
             return {
                 'label': 'berita murni',
                 'confidence': 0.60,
-                'reasoning': 'Keyword-based fallback: default to pure news'
+                'reasoning': 'Keyword fallback default'
             }
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
@@ -424,24 +386,12 @@ Klasifikasi:
             import torch
             model = self.llm.pipeline.model
             tokenizer = self.tokenizer
-            if prompt:
-                full_text = prompt + text
-                encoding = tokenizer(full_text, return_tensors="pt")
-                input_ids = encoding["input_ids"].to(model.device)
-                prompt_len = tokenizer(prompt, return_tensors="pt")["input_ids"].shape[1]
-                labels = input_ids.clone()
-                labels[:, :prompt_len] = -100
-                with torch.no_grad():
-                    outputs = model(input_ids, labels=labels)
-                    loss = outputs.loss
-                    perplexity = torch.exp(loss).item()
-            else:
-                inputs = tokenizer(text, return_tensors="pt")
-                input_ids = inputs["input_ids"].to(model.device)
-                with torch.no_grad():
-                    outputs = model(input_ids, labels=input_ids)
-                    loss = outputs.loss
-                    perplexity = torch.exp(loss).item()
+            inputs = tokenizer(text, return_tensors="pt")
+            input_ids = inputs["input_ids"].to(model.device)
+            with torch.no_grad():
+                outputs = model(input_ids, labels=input_ids)
+                loss = outputs.loss
+                perplexity = torch.exp(loss).item()
             return perplexity
         except Exception as e:
             logger.error(f"Perplexity calculation error: {e}")

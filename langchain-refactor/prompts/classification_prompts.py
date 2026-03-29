@@ -377,34 +377,29 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 33: Selective Fidelity (Standard Precision Vaccine)
+# Phase 34: Ultimate Gold Standard (Reasoning-First Calibration)
 # -----------------------------------------------------------------------------
-# Standard (8B+): Decision-First JSON with explicit Negative Priors.
+# Reverting to the exact logic and format that produced 88-90% accuracy.
 
-STANDARD_VACCINE_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
-VAKSIN BORDERLINE (BUKAN AD):
-- Laporan lembaga (NASA, UN, Kementerian, WHN) = BERITA MURNI.
-- Tips/Saran Umum (Cara cuci piring, tips masak) = BERITA MURNI.
-- Berita CSR/Bursa Saham tanpa ajakan beli = BERITA MURNI.
+CONTOH 1 (Berita Murni):
+Judul: KPK Tangkap Pejabat Terkait Korupsi Hibah
+Konten: Komisi Pemberantasan Korupsi (KPK) melakukan OTT terkait dugaan suap...
+Hasil: {{"reasoning": "Laporan faktual peristiwa hukum tanpa unsur promosi atau persuasi.", "label": "berita murni"}}
 
+CONTOH 2 (Native Ads):
+Judul: OPPO A55 Hadir dengan Kamera 50MP
+Konten: Dapatkan smartphone terbaru OPPO A55 dengan fitur kamera mutakhir...
+Hasil: {{"reasoning": "Konten persuasif menonjolkan fitur produk dan ajakan membeli.", "label": "native ads"}}
+
+TUGAS ANDA:
 {context}
 
 Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"label": "native ads" atau "berita murni", "reasoning": "alasan singkat"}}
-"""
-
-# Micro (270M): Ultra-Minimal Label-Only (To prevent collapse)
-MICRO_ULTRA_MINIMAL_TEMPLATE = """Pilih: "native ads" atau "berita murni".
-
-{context}
-
-Berita: {title} - {content}
-
-Jawaban:"""
+Output (JSON):"""
 
 training_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
