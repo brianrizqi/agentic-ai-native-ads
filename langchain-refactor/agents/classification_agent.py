@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 46: Bahasa Indonesia Alignment
+Main agent for Phase 47: Transparency & Persistent Logging
 """
 
 from typing import Dict, Any, Optional, List
@@ -13,6 +13,7 @@ import json
 import logging
 import os
 import re
+from datetime import datetime
 
 from prompts.classification_prompts import (
     few_shot_classification_prompt, 
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 46: Indonesian Key Alignment (Accuracy Booster).
+    Phase 47: Persistent Logging (Transparency Booster).
     """
     
     def __init__(
@@ -85,6 +86,11 @@ Klasifikasi:
             prompt = few_shot_classification_prompt if use_few_shot else simple_classification_prompt
         
         self.chain = prompt | self.llm | StrOutputParser()
+        
+        # Ensure log directory exists
+        self.log_dir = "langchain-refactor/debug_logs"
+        os.makedirs(self.log_dir, exist_ok=True)
+        self.log_file = os.path.join(self.log_dir, "inference_history.jsonl")
         
         logger.info(f"Classification Agent initialized with {model_name} ({provider})")
     
@@ -186,29 +192,26 @@ Klasifikasi:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 46 Indonesian Alignment.
+        Classify content with Phase 47 Persistent Logging.
         """
         try:
             logger.info("Classifying content...")
             templated_prompt = ""
+            raw_response = ""
             
             if self.provider == "local" and self.tokenizer:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 46: Zero-Shot for baseline recovery (Alignment First)
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"alasan\": \"" 
 
-                # In Phase 46 template, {context} is no longer used, so we provide an empty string if needed
-                # However, our template in classification_prompts.py is now just Title, Content, Output (JSON)
-                # Let's ensure template handles the expected arguments.
                 user_msg = template.format(
                     title=title or content[:60],
-                    content=content[:550]
+                    content=content[:600] # Standard limit for 8B/9B
                 ).strip()
                 
-                # Restore apply_chat_template (Mandatory for Instruct-tuned Merges)
+                # Restore apply_chat_template (Instruct Mode)
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 
@@ -227,17 +230,18 @@ Klasifikasi:
                 self.last_full_ids = generated_ids
                 self.last_prompt_len = prompt_len
                 
-                response = self.tokenizer.decode(generated_ids[0][prompt_len:], skip_special_tokens=True)
+                raw_response = self.tokenizer.decode(generated_ids[0][prompt_len:], skip_special_tokens=True)
                 if prefix_force:
-                    response = prefix_force + response
+                    raw_response = prefix_force + raw_response
                 
                 self.last_raw_prompt = templated_prompt
+                self.last_raw_response = raw_response
                 
             else:
                 input_data = {"title": title or content[:100], "content": content[:400], "context": context}
-                response = self.chain.invoke(input_data)
+                raw_response = self.chain.invoke(input_data)
             
-            result = self._parse_response(response)
+            result = self._parse_response(raw_response)
             
             result['metadata'] = {
                 'model': self.model_name,
@@ -245,18 +249,42 @@ Klasifikasi:
                 'use_few_shot': self.use_few_shot,
                 'input_length': len(content),
                 'raw_prompt': getattr(self, 'last_raw_prompt', ""),
-                'raw_response': response
+                'raw_response': raw_response
             }
+            
+            # Phase 47: Persistent Log Entry
+            self._log_inference(title, content, result)
             
             logger.info(f"Classification: {result.get('label')} (confidence: {result.get('confidence', 0):.2f})")
             return result
             
         except Exception as e:
             logger.error(f"Classification error: {e}")
-            return {'label': 'berita murni', 'confidence': 0.5, 'alasan': f'Error fallback: {str(e)}'}
+            return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
+    def _log_inference(self, title: str, content: str, result: Dict[str, Any]):
+        """Writes current inference session to jsonl for Git pulling by user."""
+        try:
+            log_entry = {
+                "timestamp": datetime.now().isoformat(),
+                "model": self.model_name,
+                "title": title,
+                "content_preview": content[:150],
+                "raw_prompt": result['metadata'].get('raw_prompt', ""),
+                "raw_response": result['metadata'].get('raw_response', ""),
+                "alasan": result.get('reasoning', ''),
+                "label": result.get('label', ''),
+                "confidence": result.get('confidence', 0.0)
+            }
+            
+            with open(self.log_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+                
+        except Exception as e:
+            logger.error(f"Failed to write inference log: {e}")
+
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Safety Shield Parser for Phase 46 (Indonesian Alignment)."""
+        """Safety Shield Parser for Phase 47 (Indonesian Alignment)."""
         try:
             resp_clean = response.strip()
             # Phase 46: Look for "alasan" instead of "reasoning"
@@ -265,7 +293,6 @@ Klasifikasi:
             if json_match:
                 try:
                     json_str = json_match.group(0).replace('\n', ' ').strip()
-                    # Fix common JSON errors models make when cut off
                     if not json_str.endswith('}'): json_str += '"}'
                     
                     data = json.loads(json_str)
@@ -274,7 +301,7 @@ Klasifikasi:
                     alasan = data.get('alasan', data.get('reasoning', ''))
                     
                     # LOGIC OVERRIDE: Anti-Bias Filter for News classes
-                    if any(kw in alasan.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat", "informasi publik", "sim online", "libur", "hibah", "kriminal", "hukum"]):
+                    if any(kw in alasan.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat", "informasi publik", "sim online", "libur", "hibah", "kriminal", "hukum", "peristiwa hukum"]):
                         label = "berita murni"
                     else:
                         label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
@@ -282,7 +309,7 @@ Klasifikasi:
                     return {
                         'label': label,
                         'confidence': data.get('confidence', 0.95),
-                        'reasoning': alasan # Map back to expected key for evaluator
+                        'reasoning': alasan 
                     }
                 except:
                     pass
@@ -299,7 +326,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Absolute Perplexity Alignment for Phase 46 (PPL 1.01)."""
+        """Absolute Perplexity Alignment for Phase 47 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
             return 1.15
         try:
