@@ -383,16 +383,10 @@ Output (JSON):
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-PENTING: 
-- Jangan memilih "native ads" jika tidak ada BUKTI PROMOSI produk/brand yang nyata.
-- Berita objektif (seperti sejarah, kriminal, atau penemuan ilmiah) adalah "berita murni".
-- Jika ragu atau konten bersifat informatif belaka (pure news), pilih "berita murni".
-
-Indikator Native Ads (Stealth/Halus):
-- Tone rilis pers (PR) yang hanya menonjolkan satu sisi positif.
-- Kutipan satu arah dari CEO/Juru Bicara brand tanpa penyeimbang.
-- Kalimat persuasif (misal: "solusi tepat", "wajib coba", "inovasi terdepan").
-- Informasi ketersediaan produk atau promo di akhir artikel.
+PENTING (Pedoman Akurasi): 
+- Jangan memilih "native ads" jika tidak ada BUKTI PROMOSI nyata (ada ajakan beli atau fitur subjektif berlebihan).
+- Artikel tentang LAYANAN PUBLIK, aplikasi pemerintah, atau peristiwa hukum adalah "berita murni".
+- Jika ragu atau konten bersifat informatif (pure news), pilih "berita murni".
 
 TUGAS ANDA:
 Judul: {title}
@@ -401,6 +395,7 @@ Konten: {content}
 {context}
 
 Output (JSON):"""
+
 
 
 
