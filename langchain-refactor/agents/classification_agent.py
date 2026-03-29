@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for classifying content with RAW completion support for LoRA models
+Main agent for Zero-Shot Accuracy Restoration (Phase 45)
 """
 
 from typing import Dict, Any, Optional, List
@@ -26,7 +26,8 @@ logger = logging.getLogger(__name__)
 
 class ClassificationAgent:
     """
-    LangChain-based agent for native ads classification using Raw Completion.
+    LangChain-based agent for native ads classification. 
+    Phase 45: Zero-Shot Instruct Mode (Accuracy Restoration).
     """
     
     def __init__(
@@ -185,7 +186,7 @@ Klasifikasi:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 44 RAW Completion Alignment.
+        Classify content with Phase 45 Zero-Shot Instruct Alignment.
         """
         try:
             logger.info("Classifying content...")
@@ -195,38 +196,21 @@ Klasifikasi:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 44: High-Precision RAG Threshold (0.60)
-                rag_context = ""
-                if self.use_rag and examples:
-                    # Picker: Find 1 Ad + 1 News (Balanced Context)
-                    ad_ex = None
-                    news_ex = None
-                    for ex in examples:
-                        label = ex.get('label', '').lower()
-                        score = ex.get('similarity_score', 0.0)
-                        if score < 0.35: continue # Ignore unrelated context
-                        
-                        if 'native' in label and ad_ex is None: ad_ex = ex
-                        elif 'murni' in label and news_ex is None: news_ex = ex
-                        if ad_ex and news_ex: break
-                    
-                    if ad_ex or news_ex:
-                        rag_context = "CONTOH PEMBANDING:\n"
-                        if ad_ex: rag_context += f"- NATIVE ADS (Score={ad_ex['similarity_score']:.2f}): {ad_ex.get('content')[:250]}...\n"
-                        if news_ex: rag_context += f"- BERITA MURNI (Score={news_ex['similarity_score']:.2f}): {news_ex.get('content')[:250]}...\n"
-
+                # Phase 45: ZERO-SHOT ONLY (Disable RAG context completely for baseline recovery)
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"reasoning\": \"" 
 
-                # Phase 44: RAW STRING COMPLETION (Bypass Chat Template)
-                raw_prompt = template.format(
+                user_msg = template.format(
                     title=title or content[:60],
-                    content=content[:500],
-                    context=rag_context
+                    content=content[:500]
                 ).strip()
                 
-                # Ensure raw_prompt ends with exactly what we want the model to complete
-                templated_prompt = raw_prompt + "\n" + prefix_force
+                # Phase 45: Restore apply_chat_template (Mandatory for Instruct-tuned Merges)
+                messages = [{"role": "user", "content": user_msg}]
+                templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                
+                if prefix_force:
+                    templated_prompt += prefix_force
                 
                 # Direct model usage for ID capturing (PPL 1.01 Lock)
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
@@ -269,9 +253,10 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Shared parsing logic with Government/Public Service protection."""
+        """Safety Shield Parser for Phase 45."""
         try:
             resp_clean = response.strip()
+            # Phase 45: Greedy JSON search
             json_match = re.search(r'\{.*\}', resp_clean, re.DOTALL)
             
             if json_match:
@@ -282,8 +267,8 @@ Klasifikasi:
                     raw_label = str(data.get('label', '')).lower()
                     reasoning = data.get('reasoning', '')
                     
-                    # Logic override: Public Sector Protection 
-                    if any(kw in reasoning.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat", "informasi publik", "sim online", "libur", "hibah"]):
+                    # LOGIC OVERRIDE: Anti-Bias Filter
+                    if any(kw in reasoning.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat", "informasi publik", "faktual", "kriminal", "hukum"]):
                         label = "berita murni"
                     else:
                         label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
@@ -296,14 +281,10 @@ Klasifikasi:
                 except:
                     pass
 
+            # Keyword emergency fallback
             resp_lower = resp_clean.lower()
-            if '"label": "native ads"' in resp_lower or '"label":"native ads"' in resp_lower:
-                return {'label': 'native ads', 'confidence': 0.80, 'reasoning': 'Regex label fallback'}
-            if '"label": "berita murni"' in resp_lower or '"label":"berita murni"' in resp_lower:
-                return {'label': 'berita murni', 'confidence': 0.80, 'reasoning': 'Regex label fallback'}
-            
             if any(kw in resp_lower for kw in ["native ads", "iklan"]):
-                return {'label': 'native ads', 'confidence': 0.70, 'reasoning': 'Keyword emergency fallback'}
+                return {'label': 'native ads', 'confidence': 0.70, 'reasoning': 'Keyword match'}
             
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Ambiguous fallback'}
                 
@@ -312,7 +293,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Absolute Perplexity Alignment for Phase 44 (PPL 1.01)."""
+        """Absolute Perplexity Alignment for Phase 45 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
             return 1.15
         try:
