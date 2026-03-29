@@ -381,20 +381,20 @@ Output (JSON):
 # -----------------------------------------------------------------------------
 # Reverting to the exact logic and format that produced 88-90% accuracy.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """KLASIFIKASI BERITA INDONESIA
+Tugas: Tentukan apakah konten di bawah adalah "native ads" atau "berita murni".
 
-PENTING (Pedoman Akurasi): 
-- Jangan memilih "native ads" jika tidak ada BUKTI PROMOSI nyata (ada ajakan beli atau fitur subjektif berlebihan).
-- Artikel tentang LAYANAN PUBLIK, aplikasi pemerintah, atau peristiwa hukum adalah "berita murni".
-- Jika ragu atau konten bersifat informatif (pure news), pilih "berita murni".
+PANDUAN:
+- Jika isinya EDUKASI atau LAYANAN PUBLIK (seperti cara perpanjang SIM, jadwal libur, info kps), pilih "berita murni".
+- Jika ragu atau tidak ada AJAKAN BELI yang jelas, pilih "berita murni".
 
-TUGAS ANDA:
 Judul: {title}
 Konten: {content}
 
 {context}
 
 Output (JSON):"""
+
 
 
 
