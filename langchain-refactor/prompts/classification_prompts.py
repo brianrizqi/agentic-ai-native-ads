@@ -377,40 +377,12 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 29: Pattern-First Calibration (Final Squeeze)
+# Phase 30: "The Training-Fidelity Reset"
 # -----------------------------------------------------------------------------
-# MICRO: 3-Shot MCQ (To teach 270M models the output format)
-MICRO_MCQ_TEMPLATE = """Klasifikasikan berita ke dalam kategori [A] atau [B].
+# Reverting to the exact format used during LoRA fine-tuning to maximize
+# instruction adherence for all models (270M, 2B, 8B, 9B).
 
-CONTOH 1 (Berita Murni):
-Judul: Penangkapan Koruptor oleh KPK
-Konten: Komisi Pemberantasan Korupsi (KPK) menangkap seorang pejabat tinggi...
-Jawaban: [B]
-
-CONTOH 2 (Native Ads):
-Judul: HP Murah Kualitas Mewah
-Konten: Dapatkan smartphone terbaru dari Merk X yang memiliki kamera super...
-Jawaban: [A]
-
-CONTOH 3 (Berita Murni):
-Judul: Kecelakaan Bus di Tol Cipularang
-Konten: Sebuah bus PO ALS mengalami kecelakaan di KM 90 jalur Tol Cipularang...
-Jawaban: [B]
-
-TUGAS ANDA:
-Judul: {title}
-Konten: {content}
-
-Pilihan Jawaban: [A] native ads, [B] berita murni
-
-Jawaban:"""
-
-# STANDARD: Precision-Focus (To close the 2% gap for Llama 8B)
-STANDARD_PRECISION_TEMPLATE = """Tugas: Klasifikasikan berita sebagai "native ads" atau "berita murni".
-
-KEBIJAKAN KETAT:
-- Berita Murni [B]: Laporan kecelakaan, politik, ekonomi, atau tips UMUM tanpa promosi brand. Menyebut nama instansi/brand BUKAN otomatis iklan.
-- Native Ads [A]: Konten persuasif yang mempromosikan keuntungan fitur/produk secara aktif.
+GOLD_STANDARD_JSON_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
 {context}
 
@@ -418,7 +390,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads" atau "berita murni", "reasoning": "alasan singkat (max 100 karakter)"}}
+{{"reasoning": "analisis singkat", "label": "native ads" atau "berita murni"}}
 """
 
 training_prompt = PromptTemplate(
