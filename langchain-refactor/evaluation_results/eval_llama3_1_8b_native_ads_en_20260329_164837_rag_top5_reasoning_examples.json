@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 22,
+    "borderline_count": 0,
+    "bad_count": 78,
+    "avg_judge_score": 2.54
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that aligns with the content, identifying it as a factual report on a sports injury without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Indikator Iklan: Tidak ada. Indikator Berita: Ada (Peristiwa hukum/korupsi). Kesimpulan: Laporan faktual peristiwa hukum murni.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that aligns with the characteristics of news reporting, specifically noting the absence of promotional content and the presence of factual reporting on a significant event.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Indikator Iklan: Tidak ada (tidak ada promosi produk). Indikator Berita: Ada (peristiwa hukum/korupsi). Kesimpulan: Laporan faktual peristiwa hukum murni.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that identifies it as a factual sports event without promotional content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Indikator Iklan: Tidak ada. Indikator Berita: Ada (Peristiwa olahraga). Kesimpulan: Laporan faktual peristiwa olahraga murni.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' While the reasoning points out the absence of product promotion, it fails to recognize that the signing of a Memorandum of Understanding (MOU) between a company and universities can be considered a promotional activity, thus indicating a native ad context.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Indikator Iklan: Tidak ada (Tidak ada promosi produk). Indikator Berita: Ada (Peristiwa umum). Kesimpulan: Laporan faktual peristiwa umum murni.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided lacks depth and fails to recognize the promotional nature of the content, which is about a unique dining place rather than purely informative news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Kampung Mataraman yang terletak di Desa Panggungharjo, Kecamatan Sewon, Kabupaten Bantul, Daerah Istimewa Yogyakarta (DIY) bukan kampung tempat tinggal warga, melainkan sebuah tempat makan unik yang j",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Indikator Iklan: Tidak ada (Aplikasi pemerintah bukan produk komersial). Indikator Berita: Ada (Edukasi layanan publik). Kesimpulan: Informasi edukasi masyarakat tanpa niat jualan.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model's prediction is incorrect as the ground truth is 'native ads'. The reasoning provided does not adequately support the classification, as it fails to recognize the promotional nature of the content related to tax regulation, which is typical in native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Indikator Iklan: Tidak ada (Tidak ada promosi produk). Indikator Berita: Ada (Peristiwa hukum/korupsi). Kesimpulan: Laporan faktual peristiwa hukum murni.",
+      "confidence": 0.95
+    }
+  ]
+}
