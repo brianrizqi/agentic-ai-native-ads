@@ -398,7 +398,7 @@ Konten: {content}
 Output (JSON):
 {{"alasan": """
 
-SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" (iklan) atau "berita murni".
+SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
 {context}
 
