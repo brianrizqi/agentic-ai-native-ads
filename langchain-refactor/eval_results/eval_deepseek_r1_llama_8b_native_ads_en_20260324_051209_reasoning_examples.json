@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 80,
+    "good_count": 63,
+    "borderline_count": 7,
+    "bad_count": 10,
+    "avg_judge_score": 3.862
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'beritamurni' based on its neutral and objective tone, providing factual information without any promotional content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "beritamurni",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikelbersifatnetraldanobjektif,menyajikaninformasitanpapromosiproduk/brand.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'beritamurni' and provided logical reasoning that highlights the neutral and objective nature of the content, which is characteristic of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "beritamurni",
+      "correct": false,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikelbersifatnetraldanobjektif,menyajikaninformasitanpapromosiproduk/brand.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'beritamurni' and provided logical reasoning that highlights the neutral and objective nature of the content, effectively identifying it as news rather than promotional material.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "beritamurni",
+      "correct": false,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikelbersifatnetraldanobjektif,menyajikaninformasitanpapromosiproduk/brand.",
+      "confidence": 0.85
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. It mentions promotional elements but does not clearly articulate how the content specifically promotes a product or brand.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "nativeads",
+      "correct": false,
+      "article_preview": "Selain itu, konektivitas antarmoda yang baik juga diharapkan dapat meningkatkan jumlah pengguna transportasi umum.Salah satu upaya yang dilakukan KAI untuk mewujudkan hal tersebut adalah dengan melaku",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. It mentions promotional elements without specific examples from the text, making it less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "nativeads",
+      "correct": false,
+      "article_preview": "PDAM berbentuk badan usaha milik daerah (BUMD) dan beroperasi di daerah bersangkutan saja. Hampir semua kabupaten dan kota di Indonesia terdapat PDAM yang bisa diakses oleh masyarakat.Sebagai sarana p",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The article presents factual data about UMKM in Indonesia without clear promotional intent, which suggests it could be classified as news. Therefore, while the label is correct, the reasoning does not adequately support the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "nativeads",
+      "correct": false,
+      "article_preview": "Menurut data Kementerian Koperasi dan Usaha Kecil Menengah (UKM) pada 2017, UMKM menguasai sekitar 62,9 juta unit atau 99,99 persen pangsa pasar dari total keseluruhan pelaku usaha di Indonesia. Tak h",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.85
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is shallow and does not convincingly support the classification. The article content appears to be news-related, discussing cybersecurity, which suggests it should be classified as 'pure news' rather than 'native ads.'",
+      "ground_truth_label": "native ads",
+      "predicted_label": "nativeads",
+      "correct": false,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided is not applicable as the article does not promote a specific product or brand, indicating a misunderstanding of the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "nativeads",
+      "correct": false,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it discussing a legal regulation, which is more aligned with news content. The reasoning provided is shallow and does not adequately support the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "nativeads",
+      "correct": false,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.85
+    }
+  ]
+}
