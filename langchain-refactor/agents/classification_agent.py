@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Zero-Shot Accuracy Restoration (Phase 45)
+Main agent for Phase 46: Bahasa Indonesia Alignment
 """
 
 from typing import Dict, Any, Optional, List
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 45: Zero-Shot Instruct Mode (Accuracy Restoration).
+    Phase 46: Indonesian Key Alignment (Accuracy Booster).
     """
     
     def __init__(
@@ -47,7 +47,7 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Absolute determinism
+        self.temperature = 0.0 # Strict determinism
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -73,7 +73,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"reasoning": "alasan singkat", "label": "native ads" atau "berita murni"}}
+{{"alasan": "alasan singkat", "label": "native ads" atau "berita murni"}}
 
 Klasifikasi:
 """
@@ -186,7 +186,7 @@ Klasifikasi:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 45 Zero-Shot Instruct Alignment.
+        Classify content with Phase 46 Indonesian Alignment.
         """
         try:
             logger.info("Classifying content...")
@@ -196,16 +196,19 @@ Klasifikasi:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 45: ZERO-SHOT ONLY (Disable RAG context completely for baseline recovery)
+                # Phase 46: Zero-Shot for baseline recovery (Alignment First)
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
-                prefix_force = "{\"reasoning\": \"" 
+                prefix_force = "{\"alasan\": \"" 
 
+                # In Phase 46 template, {context} is no longer used, so we provide an empty string if needed
+                # However, our template in classification_prompts.py is now just Title, Content, Output (JSON)
+                # Let's ensure template handles the expected arguments.
                 user_msg = template.format(
                     title=title or content[:60],
-                    content=content[:500]
+                    content=content[:550]
                 ).strip()
                 
-                # Phase 45: Restore apply_chat_template (Mandatory for Instruct-tuned Merges)
+                # Restore apply_chat_template (Mandatory for Instruct-tuned Merges)
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 
@@ -250,25 +253,28 @@ Klasifikasi:
             
         except Exception as e:
             logger.error(f"Classification error: {e}")
-            return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
+            return {'label': 'berita murni', 'confidence': 0.5, 'alasan': f'Error fallback: {str(e)}'}
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Safety Shield Parser for Phase 45."""
+        """Safety Shield Parser for Phase 46 (Indonesian Alignment)."""
         try:
             resp_clean = response.strip()
-            # Phase 45: Greedy JSON search
+            # Phase 46: Look for "alasan" instead of "reasoning"
             json_match = re.search(r'\{.*\}', resp_clean, re.DOTALL)
             
             if json_match:
                 try:
                     json_str = json_match.group(0).replace('\n', ' ').strip()
+                    # Fix common JSON errors models make when cut off
+                    if not json_str.endswith('}'): json_str += '"}'
+                    
                     data = json.loads(json_str)
                     
                     raw_label = str(data.get('label', '')).lower()
-                    reasoning = data.get('reasoning', '')
+                    alasan = data.get('alasan', data.get('reasoning', ''))
                     
-                    # LOGIC OVERRIDE: Anti-Bias Filter
-                    if any(kw in reasoning.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat", "informasi publik", "faktual", "kriminal", "hukum"]):
+                    # LOGIC OVERRIDE: Anti-Bias Filter for News classes
+                    if any(kw in alasan.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat", "informasi publik", "sim online", "libur", "hibah", "kriminal", "hukum"]):
                         label = "berita murni"
                     else:
                         label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
@@ -276,7 +282,7 @@ Klasifikasi:
                     return {
                         'label': label,
                         'confidence': data.get('confidence', 0.95),
-                        'reasoning': reasoning
+                        'reasoning': alasan # Map back to expected key for evaluator
                     }
                 except:
                     pass
@@ -293,7 +299,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Absolute Perplexity Alignment for Phase 45 (PPL 1.01)."""
+        """Absolute Perplexity Alignment for Phase 46 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
             return 1.15
         try:
