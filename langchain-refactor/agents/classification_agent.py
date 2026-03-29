@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 47: Transparency & Persistent Logging
+Main agent for Phase 47.1: Robust Visibility Fix
 """
 
 from typing import Dict, Any, Optional, List
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 47: Persistent Logging (Transparency Booster).
+    Phase 47.1: Robust Path Construction for Log Visibility.
     """
     
     def __init__(
@@ -87,12 +87,14 @@ Klasifikasi:
         
         self.chain = prompt | self.llm | StrOutputParser()
         
-        # Ensure log directory exists
-        self.log_dir = "langchain-refactor/debug_logs"
+        # Phase 47.1: Robust log directory construction
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.log_dir = os.path.abspath(os.path.join(current_dir, "..", "debug_logs"))
         os.makedirs(self.log_dir, exist_ok=True)
         self.log_file = os.path.join(self.log_dir, "inference_history.jsonl")
         
         logger.info(f"Classification Agent initialized with {model_name} ({provider})")
+        logger.info(f"Logging inferences to: {self.log_file}")
     
     def _get_model_tier(self) -> str:
         """Categorize model by scale for prompt optimization."""
@@ -192,7 +194,7 @@ Klasifikasi:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 47 Persistent Logging.
+        Classify content with Phase 47.1 Visibility Correction.
         """
         try:
             logger.info("Classifying content...")
@@ -208,7 +210,7 @@ Klasifikasi:
 
                 user_msg = template.format(
                     title=title or content[:60],
-                    content=content[:600] # Standard limit for 8B/9B
+                    content=content[:550]
                 ).strip()
                 
                 # Restore apply_chat_template (Instruct Mode)
@@ -252,7 +254,7 @@ Klasifikasi:
                 'raw_response': raw_response
             }
             
-            # Phase 47: Persistent Log Entry
+            # Phase 47.1: Persistent Log Entry
             self._log_inference(title, content, result)
             
             logger.info(f"Classification: {result.get('label')} (confidence: {result.get('confidence', 0):.2f})")
@@ -287,7 +289,6 @@ Klasifikasi:
         """Safety Shield Parser for Phase 47 (Indonesian Alignment)."""
         try:
             resp_clean = response.strip()
-            # Phase 46: Look for "alasan" instead of "reasoning"
             json_match = re.search(r'\{.*\}', resp_clean, re.DOTALL)
             
             if json_match:
@@ -326,7 +327,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Absolute Perplexity Alignment for Phase 47 (PPL 1.01)."""
+        """Absolute Perplexity Alignment for Phase 47.1 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
             return 1.15
         try:
