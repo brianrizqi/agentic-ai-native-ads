@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 60: The Governing Agent (Heuristic Override)
+Main agent for Phase 61: Surgical De-Escalation & Micro-Prompting
 """
 
 from typing import Dict, Any, Optional, List
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 60: The Governing Agent (Heuristic Override for Poisioned FT Models).
+    Phase 61: Surgical De-Escalation (Governor triggers) & Micro-Prompting (Gemma 270M).
     """
     
     def __init__(
@@ -124,12 +124,12 @@ class ClassificationAgent:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 60 Governing Agent.
+        Classify content with Phase 61 Governing Agent (Balanced).
         """
         try:
             raw_response = ""
             if self.provider == "local" and self.tokenizer:
-                from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
+                from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE
                 import torch
                 
                 # Phase 60: RAG Pair-Contrast Picker (Threshold 0.85)
@@ -151,8 +151,14 @@ class ClassificationAgent:
                 if not rag_block:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
-                template = ULTIMATE_GOLD_STANDARD_TEMPLATE
-                prefix_force = "{\"alasan\": \"" 
+                # Phase 61: Template selection based on model tier
+                if self.model_tier == 'micro':
+                    template = SIMPLE_MICRO_TEMPLATE
+                    prefix_force = "{\"alasan\": \"" 
+                else:
+                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
+                    prefix_force = "{\"alasan\": \"" 
+                
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -173,7 +179,7 @@ class ClassificationAgent:
                 input_data = {"title": title or content[:100], "content": content[:400], "context": context}
                 raw_response = self.chain.invoke(input_data)
             
-            # Phase 60: Content-Aware Parser Override
+            # Phase 61: Surgical Content-Aware Parser Override
             result = self._parse_response(raw_response, content=content, title=title)
             result['metadata'] = {'model': self.model_name, 'raw_response': raw_response}
             self._log_inference(title, content, result)
@@ -193,50 +199,59 @@ class ClassificationAgent:
         except: pass
 
     def _parse_response(self, response: str, content: str = "", title: str = "") -> Dict[str, Any]:
-        """Phase 60: Governing Parser with Heuristic Content Override."""
+        """Phase 61: Surgical Governor with balanced heuristics."""
         try:
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan."
             label = "berita murni"
             
+            # Step 1: Standard JSON Parsing
             json_match = re.search(r'\{(.*)\}', resp_clean, re.DOTALL)
             if not json_match and resp_clean.startswith('{'): json_match = re.search(r'\{(.*)', resp_clean, re.DOTALL)
             
+            model_predicted_ads = False
             if json_match:
                 json_str = json_match.group(0)
                 if not json_str.endswith('}'): json_str += '"}'
                 try:
-                    data = json.loads(json_str.replace('\n', ' ').replace('\u0e2d', '')) # Clean Thai/extra chars
+                    data = json.loads(json_str.replace('\n', ' ').replace('\u0e2d', ''))
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
-                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): label = "native ads"
+                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): 
+                        label = "native ads"
+                        model_predicted_ads = True
                 except: pass
+            else:
+                # Step 1.5: Emergency Heuristic for non-JSON response
+                if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): 
+                    label = "native ads"
+                    model_predicted_ads = True
 
-            # Phase 60: HEURISTIC CONTENT SCAN (The Governor)
-            # This scans the ORIGINAL text because the poisoned FT model hallucinations reasoning.
+            # Step 2: HEURISTIC SURGICAL SCAN (The Governor Phase 61)
             content_low = (title + " " + content).lower()
             
-            # Category 1: TRAGEDY / SOCIAL (Pure News triggers)
-            tragedy_triggers = ["kecelakaan", "tewas", "meninggal", "kebakaran", "bus ", "polres", "polsek", "polda", "polisi", "tersangka", "diduga", "korban", "tabrakan", "terbakar"]
-            # Category 2: SPORTS (Pure News triggers)
-            sports_triggers = ["pertandingan", "skor ", "atlet", "pemain ", "tim ", "klasemen", "juara", "medali", "olahraga", "stadion"]
+            # STRICT TRAGEDY triggers (High precision, avoid common words like 'tim'/'pemain')
+            tragedy_triggers = ["kecelakaan", "tewas", "meninggal", "kebakaran", "bus ", "tabrakan", "dievakuasi", "korban jiwa", "kematian"]
             
-            # Category 3: GOVERNMENT / SOCIAL
-            gov_triggers = ["presiden", "kebijakan", "menteri", "pelantikan", "pertemuan", "bencana"]
+            # SPORTS RESULTS (Avoid 'tim' or 'atlet' alone, focus on 'skor' and 'pertandingan')
+            sports_triggers = ["skor pertandingan", "hasil pertandingan", "angka kemenangan", "skor liga", "klasemen sementara", "juara liga"]
+            
+            # ADS POSITIVE SIGNALS (Prevents override of genuine ads)
+            ads_signals = ["menghadirkan", "meluncurkan", "produk terbaru", "teknologi", "memberikan solusi", "fitur utama", "rilis resmi"]
 
-            # TRUTH OVERRIDE: If any news/tragedy triggers found, force label to berita murni
-            if any(kw in content_low for kw in tragedy_triggers + sports_triggers + gov_triggers):
-                # If model says 'native ads', but we found tragedy/sports, we OVERRIDE it.
+            # TRUTH OVERRIDE: ONLY override if it's a strict tragedy/sports match 
+            if any(kw in content_low for kw in tragedy_triggers + sports_triggers):
                 if label == "native ads":
-                    # Double check: Only allow ads if explicit 'beli', 'promo', 'gratis' is present with a brand
-                    brand_promo = any(kw in content_low for kw in ["diskon", " promo", "beli sekarang", "belanja", "voucher", "shopee", "tokopedia", "lazada"])
-                    if not brand_promo:
+                    # Only override if NO strong ads signals are present
+                    if not any(kw in content_low for kw in ads_signals + ["diskon", "promo"]):
                         label = "berita murni" 
-                        alasan = f"[GOVERNOR OVERRIDE] Terdeteksi konten berita murni (peristiwa/olahraga/kebijakan). Model asli menebak iklan, tetapi dibatalkan oleh parser. Alasan asli: {alasan}"
+                        alasan = f"Heuristic Catch Phase 61: {alasan}"
 
             # Final check for label consistency
-            if label == "native ads" and not any(kw in (alasan + " " + content_low).lower() for kw in [" brand", "produk", "layanan"]):
-                label = "berita murni"
+            if label == "native ads" and not any(kw in (alasan + " " + content_low).lower() for kw in [" brand", "produk", "layanan", "fitur", "teknologi", "rilis", "meluncur"]):
+                # If we still can't find ANY product/brand signal, it's safer to consider it news
+                if not model_predicted_ads: # Only fix if the model didn't even say it's an ad
+                    label = "berita murni"
 
             return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
         except Exception as e:
