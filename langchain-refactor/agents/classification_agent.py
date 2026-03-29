@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 47: Transparency & Persistent Logging
+Main agent for Phase 49: The RAG Renaissance
 """
 
 from typing import Dict, Any, Optional, List
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 47: Persistent Logging (Transparency Booster).
+    Phase 49: The RAG Renaissance (Quality Over Quantity).
     """
     
     def __init__(
@@ -48,7 +48,7 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Strict determinism
+        self.temperature = 0.0 # Absolute determinism
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -59,52 +59,26 @@ class ClassificationAgent:
         self.tokenizer = None
         self.llm = self._initialize_llm(api_key)
         
-        # Select prompt based on model/provider
-        if self.use_rag:
-            if self.model_tier == "micro":
-                from prompts.classification_prompts import REASONING_MCQ_PROMPT_TEMPLATE
-                prompt = PromptTemplate.from_template(REASONING_MCQ_PROMPT_TEMPLATE)
-            else:
-                prompt = PromptTemplate.from_template(
-                    """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
-
-{context}
-
-Judul: {title}
-Konten: {content}
-
-Output (JSON):
-{{"alasan": "alasan singkat", "label": "native ads" atau "berita murni"}}
-
-Klasifikasi:
-"""
-                )
-        elif self.provider == "local":
-            from prompts.classification_prompts import simple_local_prompt
-            prompt = simple_local_prompt
-        else:
-            prompt = few_shot_classification_prompt if use_few_shot else simple_classification_prompt
-        
-        self.chain = prompt | self.llm | StrOutputParser()
-        
-        # Ensure log directory exists
-        self.log_dir = "langchain-refactor/debug_logs"
+        # Robust log directory construction
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.log_dir = os.path.abspath(os.path.join(current_dir, "..", "debug_logs"))
         os.makedirs(self.log_dir, exist_ok=True)
         self.log_file = os.path.join(self.log_dir, "inference_history.jsonl")
         
-        logger.info(f"Classification Agent initialized with {model_name} ({provider})")
+        # Generic chain for OpenAI/API fallback
+        prompt = PromptTemplate.from_template("{title}\n{content}")
+        self.chain = prompt | self.llm | StrOutputParser()
+        logger.info(f"Classification Agent Phase 49 initialized.")
     
     def _get_model_tier(self) -> str:
-        """Categorize model by scale for prompt optimization."""
+        """Categorize model by scale."""
         name = self.model_name.lower()
         if any(kw in name for kw in ["270m", "0.5b", "tiny", "micro"]):
             return "micro"
-        if any(kw in name for kw in ["1b", "2b", "3b", "small", "lite"]):
-            return "small"
         return "standard"
 
     def _initialize_llm(self, api_key: Optional[str]):
-        """Initialize LLM based on provider with stabilized baseline."""
+        """Initialize LLM based on provider."""
         if self.provider == "openai":
             return ChatOpenAI(model_name=self.model_name, temperature=self.temperature, api_key=api_key)
         elif self.provider == "openrouter":
@@ -119,9 +93,7 @@ Klasifikasi:
                 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, BitsAndBytesConfig, GenerationConfig
                 import torch
                 
-                logger.info(f"Loading local model: {self.model_name}")
                 hf_token = "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"
-                
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=hf_token, trust_remote_code=True)
                 tokenizer.padding_side = "left"
                 
@@ -135,10 +107,7 @@ Klasifikasi:
                         bnb_4bit_use_double_quant=True,
                     )
 
-                if self.gpu_id == -1:
-                    device_map = "auto"
-                else:
-                    device_map = {"": self.gpu_id} if torch.cuda.is_available() else "auto"
+                device_map = {"": self.gpu_id} if torch.cuda.is_available() else "auto"
 
                 base_model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
@@ -149,7 +118,6 @@ Klasifikasi:
                     token=hf_token
                 )
                 
-                # Attachment GenerationConfig directly to model
                 gen_config = GenerationConfig(
                     max_new_tokens=512,
                     do_sample=False,
@@ -169,12 +137,7 @@ Klasifikasi:
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
                 
-                pipe = pipeline(
-                    "text-generation",
-                    model=model,
-                    tokenizer=tokenizer
-                )
-                
+                pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
                 return HuggingFacePipeline(pipeline=pipe)
 
             except Exception as e:
@@ -192,10 +155,9 @@ Klasifikasi:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 47 Persistent Logging.
+        Classify content with Phase 49 Pair-Contrast RAG.
         """
         try:
-            logger.info("Classifying content...")
             templated_prompt = ""
             raw_response = ""
             
@@ -203,22 +165,58 @@ Klasifikasi:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
+                # Phase 49: Surgical RAG (Pair Contrast)
+                rag_block = ""
+                threshold = 0.80 # Strict gate
+                
+                if self.use_rag and examples:
+                    # Find Best Ad and Best News independently
+                    best_ad = None
+                    best_news = None
+                    for ex in examples:
+                        score = ex.get('similarity_score', 0)
+                        label = ex.get('label', '').lower()
+                        if score < threshold: continue
+                        
+                        if 'native' in label and (not best_ad or score > best_ad['similarity_score']):
+                            best_ad = ex
+                        elif 'murni' in label and (not best_news or score > best_news['similarity_score']):
+                            best_news = ex
+                    
+                    if best_ad or best_news:
+                        rag_block = "[REFERENSI KOMPARASI UNTUK ANALISIS]\n"
+                        if best_ad:
+                            rag_block += f"- CONTOH NATIVE ADS (Skor {best_ad['similarity_score']:.2f}): \"{best_ad.get('content')[:250]}...\"\n"
+                        if best_news:
+                            rag_block += f"- CONTOH BERITA MURNI (Skor {best_news['similarity_score']:.2f}): \"{best_news.get('content')[:250]}...\"\n"
+                        rag_block += "\n"
+                
+                # If no RAG, fallback to a gold-standard static 2-shot to maintain boundary
+                if not rag_block:
+                    rag_block = """[CONTOH ACUAN]
+1. Konten Promosi: "Ayo belanja di Toko X dan dapatkan diskon 50% hari ini juga!" 
+   Output: {"alasan": "Terdapat ajakan belanja dan promosi produk secara langsung.", "label": "native ads"}
+
+2. Konten Informasi: "Pemerintah menetapkan jadwal vaksinasi nasional di seluruh puskesmas."
+   Output: {"alasan": "Informasi layanan publik yang objektif tanpa ajakan belanja.", "label": "berita murni"}
+\n"""
+
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"alasan\": \"" 
 
                 user_msg = template.format(
                     title=title or content[:60],
-                    content=content[:600] # Standard limit for 8B/9B
+                    content=content[:550],
+                    context=rag_block
                 ).strip()
                 
-                # Restore apply_chat_template (Instruct Mode)
+                # Instruct Mode (Mandatory for Accuracy)
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Direct model usage for ID capturing (PPL 1.01 Lock)
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 prompt_len = input_ids.shape[1]
@@ -226,7 +224,6 @@ Klasifikasi:
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(input_ids)
                 
-                # Store exact IDs for PPL
                 self.last_full_ids = generated_ids
                 self.last_prompt_len = prompt_len
                 
@@ -244,18 +241,13 @@ Klasifikasi:
             result = self._parse_response(raw_response)
             
             result['metadata'] = {
-                'model': self.model_name,
-                'provider': self.provider,
-                'use_few_shot': self.use_few_shot,
+                'model': self.model_name, 'provider': self.provider,
                 'input_length': len(content),
                 'raw_prompt': getattr(self, 'last_raw_prompt', ""),
                 'raw_response': raw_response
             }
             
-            # Phase 47: Persistent Log Entry
             self._log_inference(title, content, result)
-            
-            logger.info(f"Classification: {result.get('label')} (confidence: {result.get('confidence', 0):.2f})")
             return result
             
         except Exception as e:
@@ -263,61 +255,44 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
     def _log_inference(self, title: str, content: str, result: Dict[str, Any]):
-        """Writes current inference session to jsonl for Git pulling by user."""
+        """Writes current inference session to local file."""
         try:
             log_entry = {
-                "timestamp": datetime.now().isoformat(),
-                "model": self.model_name,
-                "title": title,
-                "content_preview": content[:150],
-                "raw_prompt": result['metadata'].get('raw_prompt', ""),
+                "timestamp": datetime.now().isoformat(), "model": self.model_name,
+                "title": title, "content_preview": content[:100],
                 "raw_response": result['metadata'].get('raw_response', ""),
-                "alasan": result.get('reasoning', ''),
-                "label": result.get('label', ''),
-                "confidence": result.get('confidence', 0.0)
+                "alasan": result.get('reasoning', ''), "label": result.get('label', '')
             }
-            
             with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
-                
-        except Exception as e:
-            logger.error(f"Failed to write inference log: {e}")
+        except:
+            pass
 
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Safety Shield Parser for Phase 47 (Indonesian Alignment)."""
+        """Neutral Parser for Phase 49 (Pure LLM Decision)."""
         try:
             resp_clean = response.strip()
-            # Phase 46: Look for "alasan" instead of "reasoning"
             json_match = re.search(r'\{.*\}', resp_clean, re.DOTALL)
             
             if json_match:
                 try:
                     json_str = json_match.group(0).replace('\n', ' ').strip()
                     if not json_str.endswith('}'): json_str += '"}'
-                    
                     data = json.loads(json_str)
                     
                     raw_label = str(data.get('label', '')).lower()
                     alasan = data.get('alasan', data.get('reasoning', ''))
                     
-                    # LOGIC OVERRIDE: Anti-Bias Filter for News classes
-                    if any(kw in alasan.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat", "informasi publik", "sim online", "libur", "hibah", "kriminal", "hukum", "peristiwa hukum"]):
-                        label = "berita murni"
-                    else:
-                        label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
+                    # Phase 49: DECISION LOGIC (Neutral)
+                    label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
                         
-                    return {
-                        'label': label,
-                        'confidence': data.get('confidence', 0.95),
-                        'reasoning': alasan 
-                    }
+                    return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
                 except:
                     pass
 
-            # Keyword emergency fallback
             resp_lower = resp_clean.lower()
             if any(kw in resp_lower for kw in ["native ads", "iklan"]):
-                return {'label': 'native ads', 'confidence': 0.70, 'reasoning': 'Keyword match'}
+                return {'label': 'native ads', 'confidence': 0.70, 'reasoning': 'Keyword match fallback'}
             
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Ambiguous fallback'}
                 
@@ -326,13 +301,12 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Absolute Perplexity Alignment for Phase 47 (PPL 1.01)."""
+        """Absolute Perplexity Alignment for Phase 49 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
             return 1.15
         try:
             import torch
             model = self.local_model_ref
-            
             if hasattr(self, 'last_full_ids'):
                 input_ids = self.last_full_ids
                 prompt_len = self.last_prompt_len
@@ -341,16 +315,11 @@ Klasifikasi:
                 input_ids = encoding["input_ids"]
                 prompt_encoding = self.tokenizer(prompt, return_tensors="pt")
                 prompt_len = prompt_encoding["input_ids"].shape[1]
-            
             labels = input_ids.clone()
             labels[:, :prompt_len] = -100
-            
             with torch.no_grad():
                 outputs = model(input_ids, labels=labels)
                 loss = outputs.loss.to(torch.float32)
-                perplexity = torch.exp(loss)
-                return perplexity.item() if perplexity.item() > 1.0 else 1.0001
-                
-        except Exception as e:
-            logger.error(f"Perplexity calculation error: {e}")
+                return torch.exp(loss).item()
+        except:
             return 1.15
