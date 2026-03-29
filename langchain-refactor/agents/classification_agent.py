@@ -311,42 +311,33 @@ Klasifikasi:
                 "context": context
             }
             
-            # Use chat template for local models (Phase 29: Pattern-First Calibration)
+            # Use chat template for local models (Phase 30: Training-Fidelity Reset)
             if self.provider == "local" and self.tokenizer:
-                from prompts.classification_prompts import MICRO_MCQ_TEMPLATE, STANDARD_PRECISION_TEMPLATE
+                from prompts.classification_prompts import GOLD_STANDARD_JSON_TEMPLATE
                 
-                # 1. Leakage Shield (Similarity < 0.05) - Ensuring realistic metrics
+                # 1. High-Confidence RAG (Threshold: 0.35)
+                # Lower similarity RAG often confuses smaller models.
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
-                use_this_rag = self.use_rag and examples and top_score > 0.05
+                use_this_rag = self.use_rag and examples and top_score > 0.35
                 
-                # 2. Tier Selection
-                if self.model_tier == "micro":
-                    # MICRO (270M/2B): 3-Shot MCQ for Pattern Induction
-                    template = MICRO_MCQ_TEMPLATE
-                    prefix_force = "[" # Force the start of the choice [A] or [B]
-                    user_msg = template.format(
-                        title=title or content[:60],
-                        content=content[:400]
-                    ).strip()
-                else:
-                    # STANDARD (8B/9B): Precision-Focus with RAG
-                    template = STANDARD_PRECISION_TEMPLATE
-                    rag_context = ""
-                    if use_this_rag:
-                        ex = examples[0]
-                        rag_context = (
-                            f"REFERENSI KONTEKSTUAL (Sim={top_score:.2f}):\n"
-                            f"- Label: {ex.get('label')}\n"
-                            f"- Konten: {ex.get('content', '')[:100]}\n"
-                            "---"
-                        )
-                    
-                    user_msg = template.format(
-                        title=title or content[:60],
-                        content=content[:400],
-                        context=rag_context
-                    ).strip()
-                    prefix_force = '{"label": "'
+                rag_context = ""
+                if use_this_rag:
+                    ex = examples[0]
+                    rag_context = (
+                        f"REFERENSI ANALISIS (Sim={top_score:.2f}):\n"
+                        f"- Konten: {ex.get('content', '')[:100]}...\n"
+                        f"- Label: {ex.get('label')}\n"
+                        "---"
+                    )
+
+                user_msg = GOLD_STANDARD_JSON_TEMPLATE.format(
+                    title=title or content[:60],
+                    content=content[:400],
+                    context=rag_context
+                ).strip()
+                
+                # Standard training-time prefix
+                prefix_force = '{"reasoning": "'
 
                 messages = [{"role": "user", "content": user_msg}]
 
@@ -360,8 +351,8 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Use standard JSON stop sequences for standard, MCQ for micro
-                stop_seqs = ["]", "}", "}\n", "\n\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
+                # Use standard JSON stop sequences
+                stop_seqs = ["}", "}\n", "\n\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
                 if hasattr(self, 'stop_sequences'):
                     stop_seqs.extend(self.stop_sequences)
                 
@@ -401,37 +392,32 @@ Klasifikasi:
             import re
             
             # Phase 29: MCQ Priority (Pattern-First)
-            # Detect [A] or [B] in the response
-            if re.search(r'\[A\]', response):
-                return {'label': 'native ads', 'confidence': 0.95, 'reasoning': 'MCQ Choice [A]'}
-            if re.search(r'\[B\]', response):
-                return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': 'MCQ Choice [B]'}
-
-            # Phase 28: Forensic Calibration Parser
-            # 1. Try JSON parsing
+            # Phase 30: Training Fidelity Parser (Unified)
+            # 1. Primary: JSON Parsing (High Precision)
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
                     json_str = json_str.replace('\n', ' ').strip()
                     data = json.loads(json_str)
                     if 'label' in data:
-                        label = data['label'].lower()
-                        if "native" in label or "ads" in label:
-                            return {'label': 'native ads', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', 'JSON parsing')}
-                        else:
-                            return {'label': 'berita murni', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', 'JSON parsing')}
+                        raw_label = str(data['label']).lower()
+                        label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "[a]" in raw_label) else 'berita murni'
+                        return {
+                            'label': label,
+                            'confidence': data.get('confidence', 0.9),
+                            'reasoning': data.get('reasoning', 'JSON extraction')
+                        }
                 except:
                     pass
 
-            # 2. Micro-Tier Flat String Parsing
-            # If no JSON, look for keywords in the raw response
+            # 2. Secondary: String / MCQ Fallback (Stability)
             resp_lower = response.lower()
-            if "native ads" in resp_lower or "iklan" in resp_lower:
-                return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'Flat string matching'}
-            elif "berita murni" in resp_lower or "news" in resp_lower or "murni" in resp_lower:
-                return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'Flat string matching'}
+            if "native ads" in resp_lower or "iklan" in resp_lower or "[a]" in resp_lower:
+                return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'String match fallback'}
+            elif "berita murni" in resp_lower or "news" in resp_lower or "murni" in resp_lower or "[b]" in resp_lower:
+                return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'String match fallback'}
 
-            # Phase 26 XML Fallback
+            # 3. Tertiary: XML legacy fallback
             hasil_match = re.search(r'<hasil>(.*?)</hasil>', response, re.IGNORECASE | re.DOTALL)
             analisis_match = re.search(r'<analisis>(.*?)</analisis>', response, re.IGNORECASE | re.DOTALL)
             
