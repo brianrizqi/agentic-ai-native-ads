@@ -383,10 +383,11 @@ Output (JSON):
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah secara OBJEKTIF sebagai "native ads" atau "berita murni".
 
-PANDUAN (PERBEDAAN BRAND VS ENTITAS):
-1. NATIVE ADS (Press Release): Isinya promosi SATU brand korporat/produk komersial (ex: Oppo, Bitget, Shopee) dengan niatan pemasaran.
-2. BERITA MURNI: Informasi tentang ENTITAS PUBLIK (ex: Tim olahraga, Atlet, Pemerintah, Tokoh Politik). Kemenangan pertandingan, cedera atlet, atau kebijakan publik adalah Berita Murni.
-- Pengecualian: Berita hasil Olahraga, Musibah, dan Kemanusiaan selalu "berita murni".
+ATURAN ANTI-BIAS (PENTING):
+1. BERITA MURNI HARUS TETAP BERITA MURNI: Jangan terjebak jika ada nama instansi atau produk. 
+2. TRAGEDI & SOSIAL: Berita kecelakaan, kematian, kebijakan publik, dan bencana alam adalah BERITA MURNI 100%. 
+3. OLAHRAGA: Skor pertandingan, cedera atlet, dan hasil juara adalah BERITA MURNI.
+- IKLAN (Native Ads): Hanya jika isinya murni promosi komersial satu brand tertentu (PR rilis).
 
 {context}
 
