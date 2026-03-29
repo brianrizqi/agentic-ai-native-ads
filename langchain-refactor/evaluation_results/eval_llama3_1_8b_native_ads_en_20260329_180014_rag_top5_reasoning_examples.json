@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 17,
+    "borderline_count": 3,
+    "bad_count": 80,
+    "avg_judge_score": 2.33
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the content, which is a straightforward sports news report without promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni",
+      "confidence": 0.84
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the content as 'berita murni' and provided reasoning that aligns with the nature of the article, which discusses a public inquiry about CPNS 2022 without any promotional tone or intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "KOMPAS.com - Warganet di media sosial ramai menanyakan soal pengadaan calon pegawai negeri sipil (CPNS) 2022. Salah satunya akun ini, yang menanyakan apakah 2022 ada seleksi CPNS melalui jalur umum. \"",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni",
+      "confidence": 0.83
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which discusses a literary award without any promotional tone or intent. The reasoning provided aligns well with the classification, demonstrating an understanding of the article's objective nature.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TORONTO - Books by Amanda Leduc, Megha Majumdar and Katie Kitamura are among the 15 titles longlisted for the Carol Shields Prize for Fiction.\n\nThe US$150,000 award is the world’s largest literary pur",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "berita murni",
+      "confidence": 0.831
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as 'berita murni', but its reasoning incorrectly categorized it as 'native ads', which indicates a misunderstanding of the content's promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads",
+      "confidence": 0.83
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as 'berita murni' (pure news), but its reasoning incorrectly categorized the content as native ads, which does not apply here. The article is straightforward news reporting on a sports event without promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "native ads",
+      "confidence": 0.75
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth. However, the reasoning provided ('Keyword emergency fallback') is weak and generic, lacking a clear connection to promotional content or a specific identification of a native ad tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Keyword emergency fallback",
+      "confidence": 0.7
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about an injury to a baseball player. The reasoning provided does not logically support the label, as there is no promotional tone or advertising content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Regex label fallback",
+      "confidence": 0.8
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model prediction is completely wrong as it classified the content as 'berita murni' (pure news) instead of 'native ads', which is the ground truth. The reasoning provided does not support the prediction, as it contradicts the classification. The content appears promotional in nature, indicating it should be classified as native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia and BOSTON, March 10, 2026 (GLOBE NEWSWIRE) — Xenon Pharmaceuticals Inc. (Nasdaq: XENE), a neuroscience-focused biopharmaceutical company dedicated to drug discovery, clini",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "native ads",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly predicted 'berita murni' instead of 'native ads', and the reasoning provided does not support the prediction, as the content is promotional in nature.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, Feb. 19, 2026 (GLOBE NEWSWIRE) — Fortuna Mining Corp. (NYSE: FSM | TSX: FVI) is pleased to announce an updated Mineral Resource estimate for the Diamba Sud Gold Project, e",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "native ads",
+      "confidence": 0.85
+    }
+  ]
+}
