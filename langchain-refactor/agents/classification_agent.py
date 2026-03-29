@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 51: The Accuracy Lock (Invincible Parser)
+Main agent for Phase 52: The Brand Advocacy Gating
 """
 
 from typing import Dict, Any, Optional, List
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 51: The Accuracy Lock (Invincible Heuristic Parser).
+    Phase 52: The Brand Advocacy Gating (1200ch Window).
     """
     
     def __init__(
@@ -41,7 +41,7 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Extreme Determinism
+        self.temperature = 0.0 # Absolute Determinism
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -59,7 +59,7 @@ class ClassificationAgent:
         # Generic chain for API providers
         prompt = PromptTemplate.from_template("{title}\n{content}")
         self.chain = prompt | self.llm | StrOutputParser()
-        logger.info(f"Classification Agent Phase 51 (Invincible Parser) initialized.")
+        logger.info(f"Classification Agent Phase 52 (Advocacy Gating) initialized.")
     
     def _initialize_llm(self, api_key: Optional[str]):
         """Initialize LLM based on provider."""
@@ -96,8 +96,8 @@ class ClassificationAgent:
                 if self.lora_path:
                     from peft import PeftModel
                     model = PeftModel.from_pretrained(base_model, self.lora_path)
-                else:
-                    model = base_model
+                else: model = base_model
+                
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
                 pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
@@ -117,7 +117,7 @@ class ClassificationAgent:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 51 Robust Extraction.
+        Classify content with Phase 52 Brand Advocacy Recognition.
         """
         try:
             templated_prompt = ""
@@ -127,10 +127,11 @@ class ClassificationAgent:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 51: Robust RAG Picker (Contrast Pairs)
+                # Phase 52: Surgical RAG (Threshold 0.85)
                 rag_block = ""
-                threshold = 0.80 
+                threshold = 0.85 
                 if self.use_rag and examples:
+                    # Find Best Ad and Best News independently
                     best_ad = None
                     best_news = None
                     for ex in examples:
@@ -144,26 +145,33 @@ class ClassificationAgent:
                         if best_ad: rag_block += f"- NATIVE ADS: \"{best_ad.get('content')[:200]}...\"\n"
                         if best_news: rag_block += f"- BERITA MURNI: \"{best_news.get('content')[:200]}...\"\n"
                 
-                # Default Calibration
+                # Calibration Default
                 if not rag_block:
-                    rag_block = """[ACUAN]
-1. Iklan: "Brand X meluncurkan koleksi terbaru." -> {"alasan": "PR tone dominan.", "label": "native ads"}
-2. Berita: "Pemerintah menetapkan hari libur." -> {"alasan": "Layanan publik objektif.", "label": "berita murni"}
+                    rag_block = """[CONTOH ACUAN]
+1. Iklan: "Brand X meluncurkan koleksi terbaru yang futuristik." -> {"alasan": "Memuji satu brand tanpa penyeimbang.", "label": "native ads"}
+2. Berita: "Pemerintah meresmikan bandara infrastruktur nasional." -> {"alasan": "Informasi layanan publik netral.", "label": "berita murni"}
 \n"""
 
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"alasan\": \"" 
-                user_msg = template.format(title=title or content[:70], content=content[:800], context=rag_block).strip()
+                
+                # Phase 52: DEEP WINDOW (1200 Chars)
+                user_msg = template.format(
+                    title=title or content[:70],
+                    content=content[:1200], # Catch the distal PR tone
+                    context=rag_block
+                ).strip()
+                
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 if prefix_force: templated_prompt += prefix_force
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
-                input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
+                ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 with torch.no_grad():
-                    generated_ids = self.local_model_ref.generate(input_ids)
+                    generated_ids = self.local_model_ref.generate(ids)
                 
-                raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
+                raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
                 if prefix_force: raw_response = prefix_force + raw_response
                 self.last_raw_prompt = templated_prompt
                 self.last_raw_response = raw_response
@@ -191,61 +199,38 @@ class ClassificationAgent:
         except: pass
 
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Phase 51: Invincible Heuristic Parser."""
+        """Phase 52: Invincible Parser with Brand Advocacy Guard."""
         try:
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan."
             label = "berita murni"
-            confidence = 0.95
             
-            # Step 1: Try JSON parsing with Multi-Key Support
             json_match = re.search(r'\{(.*)\}', resp_clean, re.DOTALL)
-            if not json_match and resp_clean.startswith('{'):
-                # Handle unclosed JSON
-                json_match = re.search(r'\{(.*)', resp_clean, re.DOTALL)
-                
+            if not json_match and resp_clean.startswith('{'): json_match = re.search(r'\{(.*)', resp_clean, re.DOTALL)
+            
             if json_match:
                 json_str = json_match.group(0)
                 if not json_str.endswith('}'): json_str += '"}'
                 try:
-                    # Clean common JSON errors
-                    json_str = json_str.replace('\n', ' ').strip()
-                    data = json.loads(json_str)
-                    
+                    data = json.loads(json_str.replace('\n', ' '))
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
+                    raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
+                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): label = "native ads"
                     
-                    # Detect label across multiple possible keys from Phase 50 logs
-                    raw_label = str(data.get('label', data.get('kelas', data.get('target', data.get('classification', ''))))).lower()
-                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]):
+                    # Phase 52 advocacy check
+                    if any(kw in alasan.lower() for kw in ["promosi", " brand", "rilis pers", "press release", "menghadirkan", "peluncuran"]):
                         label = "native ads"
-                    else:
-                        label = "berita murni"
-                    
-                    # IF MODEL SAYS ADS IN ALASAN, BELIEVE IT OVER THE LABEL KEY
-                    if any(kw in alasan.lower() for kw in ["promosi", " brand", "rilis pers", "press release", "iklan"]):
-                        label = "native ads"
-                        
-                    return {'label': label, 'confidence': confidence, 'reasoning': alasan}
-                except:
-                    pass
+                    return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
+                except: pass
 
-            # Step 2: HEURISTIC KEYWORD SCAN (Keyword-First Fallback)
-            # If JSON failed, look at the whole text
+            # Heuristic match phase
             resp_lower = resp_clean.lower()
-            if any(kw in resp_lower for kw in ["native ads", "iklan", "promosi", "peluncuran produk", "rilis pers"]):
+            if any(kw in resp_lower for kw in ["native ads", "iklan", "promosi", "peluncuran product", "rilis pers", "menghadirkan"]):
                 label = "native ads"
-                alasan = "Heuristic match: " + resp_clean[:100]
-                confidence = 0.85
-            else:
-                label = "berita murni"
-                alasan = "Heuristic fallback: " + resp_clean[:100]
-                confidence = 0.60
-                
-            return {'label': label, 'confidence': confidence, 'reasoning': alasan}
+            return {'label': label, 'confidence': 0.75, 'reasoning': "Heuristic: " + resp_clean[:100]}
                 
         except Exception as e:
-            logger.error(f"Invincible Parser error: {e}")
+            logger.error(f"Parser error: {e}")
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Emergency fallback'}
 
-    def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        return 1.15
+    def compute_perplexity(self, text: str, prompt: str = "") -> float: return 1.15
