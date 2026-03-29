@@ -383,10 +383,9 @@ Output (JSON):
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah secara OBJEKTIF sebagai "native ads" atau "berita murni".
 
-PANDUAN (INDIKATOR NATIVE ADS):
-- Artikel adalah Rilis Pers (Press Release), Peluncuran Produk, atau Promosi Event.
-- Berita yang isinya hanya menonjolkan keunggulan satu brand/produk tanpa penyeimbang.
-- Kalimat persuasif yang halus (ex: "menghadirkan solusi", "fitur memikat", "inovasi terbaru").
+PANDUAN (NATIVE ADS):
+- Rilis Pers, Peluncuran Produk, Promosi Brand, atau Berita satu-sisi yang menonjolkan fitur produk.
+- Kalimat persuasif ("menghadirkan", "solusi baru", "inovasi", "promo").
 
 {context}
 
@@ -396,6 +395,7 @@ Konten: {content}
 
 Output (JSON):
 {{"alasan": """
+
 
 
 
