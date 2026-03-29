@@ -383,10 +383,10 @@ Output (JSON):
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah secara OBJEKTIF sebagai "native ads" atau "berita murni".
 
-PANDUAN (ONE-SIDED BRAND PRESENCE):
-- Jika artikel HANYA menonjolkan keunggulan SATU brand/produk tanpa penyeimbang, maka itu NATIVE ADS (Press Release).
-- Abaikan gaya bahasa informatif jika isinya promosi (ex: "X menghadirkan solusi", "fitur X yang memikat", "inovasi terbaru X").
-- Berita Murni harus bersifat netral, umum, atau mencakup banyak pihak.
+PANDUAN (PERBEDAAN BRAND VS ENTITAS):
+1. NATIVE ADS (Press Release): Isinya promosi SATU brand korporat/produk komersial (ex: Oppo, Bitget, Shopee) dengan niatan pemasaran.
+2. BERITA MURNI: Informasi tentang ENTITAS PUBLIK (ex: Tim olahraga, Atlet, Pemerintah, Tokoh Politik). Kemenangan pertandingan, cedera atlet, atau kebijakan publik adalah Berita Murni.
+- Pengecualian: Berita hasil Olahraga, Musibah, dan Kemanusiaan selalu "berita murni".
 
 {context}
 
