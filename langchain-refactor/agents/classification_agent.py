@@ -311,12 +311,9 @@ Klasifikasi:
                 "context": context
             }
             
-            # Use chat template for local models to ensure instruction following
-            # Use chat template for local models to ensure instruction following
-            # Use chat template for local models to ensure instruction following
+            # Use chat template for local models (Phase 29: Pattern-First Calibration)
             if self.provider == "local" and self.tokenizer:
-                # Phase 28: Forensic Calibration (Divergence & Stability)
-                from prompts.classification_prompts import MICRO_LABEL_ONLY_TEMPLATE, STANDARD_LABEL_FIRST_TEMPLATE
+                from prompts.classification_prompts import MICRO_MCQ_TEMPLATE, STANDARD_PRECISION_TEMPLATE
                 
                 # 1. Leakage Shield (Similarity < 0.05) - Ensuring realistic metrics
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
@@ -324,22 +321,21 @@ Klasifikasi:
                 
                 # 2. Tier Selection
                 if self.model_tier == "micro":
-                    # MICRO (270M/2B): No reasoning, No RAG (Stability Reset)
-                    template = MICRO_LABEL_ONLY_TEMPLATE
-                    prefix_force = "" # Let it blab "Jawaban: ..." or just one word
+                    # MICRO (270M/2B): 3-Shot MCQ for Pattern Induction
+                    template = MICRO_MCQ_TEMPLATE
+                    prefix_force = "[" # Force the start of the choice [A] or [B]
                     user_msg = template.format(
                         title=title or content[:60],
-                        content=content[:400],
-                        context=""
+                        content=content[:400]
                     ).strip()
                 else:
-                    # STANDARD (8B/9B): Label-First JSON (Precision Calibration)
-                    template = STANDARD_LABEL_FIRST_TEMPLATE
+                    # STANDARD (8B/9B): Precision-Focus with RAG
+                    template = STANDARD_PRECISION_TEMPLATE
                     rag_context = ""
                     if use_this_rag:
                         ex = examples[0]
                         rag_context = (
-                            f"REFERENSI ANALISIS:\n"
+                            f"REFERENSI KONTEKSTUAL (Sim={top_score:.2f}):\n"
                             f"- Label: {ex.get('label')}\n"
                             f"- Konten: {ex.get('content', '')[:100]}\n"
                             "---"
@@ -364,8 +360,8 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Use standard JSON stop sequences for standard, simpler for micro
-                stop_seqs = ["}", "}\n", "\n\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
+                # Use standard JSON stop sequences for standard, MCQ for micro
+                stop_seqs = ["]", "}", "}\n", "\n\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
                 if hasattr(self, 'stop_sequences'):
                     stop_seqs.extend(self.stop_sequences)
                 
@@ -404,8 +400,15 @@ Klasifikasi:
         try:
             import re
             
+            # Phase 29: MCQ Priority (Pattern-First)
+            # Detect [A] or [B] in the response
+            if re.search(r'\[A\]', response):
+                return {'label': 'native ads', 'confidence': 0.95, 'reasoning': 'MCQ Choice [A]'}
+            if re.search(r'\[B\]', response):
+                return {'label': 'berita murni', 'confidence': 0.95, 'reasoning': 'MCQ Choice [B]'}
+
             # Phase 28: Forensic Calibration Parser
-            # 1. Try JSON parsing (Handles both Reasoning-First and Label-First)
+            # 1. Try JSON parsing
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
