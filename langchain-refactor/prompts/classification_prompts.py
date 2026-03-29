@@ -401,6 +401,21 @@ Konten: {content}
 
 Output (JSON):"""
 
+# Phase 35: Zero-Shot Gold Standard (For Micro Tiers 270M-500M)
+# -----------------------------------------------------------------------------
+# Resolving catastrophic PPL (612) by removing instruction overload.
+
+ZERO_SHOT_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+
+(PENTING: Gunakan format JSON di bawah.)
+
+{context}
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):"""
+
 training_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
     template=TRAINING_PROMPT_TEMPLATE
