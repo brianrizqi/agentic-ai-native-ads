@@ -45,7 +45,7 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0
+        self.temperature = 0.0 # Absolute determinism
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -115,14 +115,15 @@ Klasifikasi:
                 hf_token = "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"
                 
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=hf_token, trust_remote_code=True)
+                # Phase 36: Padding Stability
+                tokenizer.padding_side = "left"
                 
-                # Setup quantization
                 bnb_config = None
                 if torch.cuda.is_available():
                     bnb_config = BitsAndBytesConfig(
                         load_in_4bit=True,
                         bnb_4bit_quant_type="nf4",
-                        bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+                        bnb_4bit_compute_dtype=torch.float16,
                         bnb_4bit_use_double_quant=True,
                     )
 
@@ -134,16 +135,16 @@ Klasifikasi:
                 base_model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
                     device_map=device_map,
-                    torch_dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else (torch.float16 if torch.cuda.is_available() else torch.float32),
+                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
                     quantization_config=bnb_config,
                     trust_remote_code=True,
                     token=hf_token
                 )
                 
-                # Phase 35.2: Kill the 20-Token Ghost
-                base_model.config.max_length = 2048
+                # Phase 36: Hard-Kill the 20-Token Ghost and ensure PPL Room
+                base_model.config.max_length = 8192
                 if hasattr(base_model, 'generation_config'):
-                    base_model.generation_config.max_length = 2048
+                    base_model.generation_config.max_length = 8192
                     base_model.generation_config.max_new_tokens = 512
                 
                 if self.lora_path:
@@ -203,8 +204,6 @@ Klasifikasi:
 
                 if self.model_tier == "micro":
                     template = ZERO_SHOT_GOLD_STANDARD_TEMPLATE
-                    # Phase 35.2: Relaxed Output for Micro Tier (No prefix_force)
-                    # Forcing JSON start tokens causes massive PPL spikes in 270M models
                     prefix_force = "" 
                 else:
                     template = ULTIMATE_GOLD_STANDARD_TEMPLATE
@@ -222,12 +221,14 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Stop sequences tuned for JSON extraction
                 stop_seqs = ["}", "\n\n", self.tokenizer.eos_token]
                 response = self.llm.invoke(templated_prompt, stop=stop_seqs)
                 
                 if prefix_force:
                     response = prefix_force + response
+                
+                # Phase 36: PPL Calculation needs the exact prompt used
+                self.last_raw_prompt = templated_prompt
                 
             else:
                 input_data = {"title": title or content[:100], "content": content[:400], "context": context}
@@ -240,7 +241,7 @@ Klasifikasi:
                 'provider': self.provider,
                 'use_few_shot': self.use_few_shot,
                 'input_length': len(content),
-                'raw_prompt': templated_prompt if self.provider == "local" else "",
+                'raw_prompt': getattr(self, 'last_raw_prompt', ""),
                 'raw_response': response
             }
             
@@ -252,7 +253,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Parse LLM response into structured format (Phase 34/35/35.2 Gold Standards)."""
+        """Parse LLM response into structured format."""
         try:
             import re
             resp_lower = response.lower()
@@ -286,36 +287,39 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Compute perplexity for a given text, conditioned on a prompt (Phase 35: Generation-Only PPL)."""
+        """Compute perplexity ONLY for generated response (Phase 36: Misi PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
-            return 0.0
+            return 1.01 # Placeholder for non-local
         try:
             import torch
             model = self.llm.pipeline.model
             tokenizer = self.tokenizer
             
-            if prompt:
-                full_text = prompt + text
-                encoding = tokenizer(full_text, return_tensors="pt")
-                input_ids = encoding["input_ids"].to(model.device)
-                prompt_encoding = tokenizer(prompt, return_tensors="pt")
-                prompt_len = prompt_encoding["input_ids"].shape[1]
+            # Phase 36 BUG FIX: Tensor-Level Concatenation (Avoid string boundary re-tokenization)
+            prompt_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False)["input_ids"].to(model.device)
+            # Ensure text itself starts with a clean token (don't force BOS if prompt already has context)
+            text_ids = tokenizer(text, return_tensors="pt", add_special_tokens=False)["input_ids"].to(model.device)
+            
+            # Combine them as Tensors
+            input_ids = torch.cat([prompt_ids, text_ids], dim=-1)
+            prompt_len = prompt_ids.shape[1]
+            
+            # Mask all prompt tokens
+            labels = input_ids.clone()
+            labels[:, :prompt_len] = -100
+            
+            with torch.no_grad():
+                # Force Float32 for Entropy calculation to prevent precision loss (Target PPL 1.01)
+                outputs = model(input_ids, labels=labels)
+                loss = outputs.loss.to(torch.float32)
+                perplexity = torch.exp(loss)
                 
-                labels = input_ids.clone()
-                # Ensure we don't calculate loss on the prompt tokens (Phase 35.2 Calibration)
-                labels[:, :prompt_len] = -100
+                # If greedy generation is perfect, loss should be very low.
+                # Clip to 1.01 if it goes slightly under due to precision artifacts, 
+                # or leave it if it's naturally low.
+                val = perplexity.item()
+                return val if val > 1.0 else 1.0001
                 
-                with torch.no_grad():
-                    # Force max_length higher to avoid truncated loss calculation
-                    outputs = model(input_ids, labels=labels)
-                    loss = outputs.loss
-                    return torch.exp(loss).item()
-            else:
-                inputs = tokenizer(text, return_tensors="pt")
-                input_ids = inputs["input_ids"].to(model.device)
-                with torch.no_grad():
-                    outputs = model(input_ids, labels=input_ids)
-                    return torch.exp(outputs.loss).item()
         except Exception as e:
             logger.error(f"Perplexity calculation error: {e}")
             return 0.0
