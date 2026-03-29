@@ -169,8 +169,9 @@ class ClassificationAgent:
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
                 if prefix_force: raw_response = prefix_force + raw_response
                 
-                # Phase 56: VISIBILITY Check
-                print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {raw_response[:120].replace('\n', ' ')}...")
+                # Phase 57: Fix SyntaxError for Python < 3.12
+                clean_peek = raw_response[:120].replace('\n', ' ')
+                print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")
             else:
                 input_data = {"title": title or content[:100], "content": content[:400], "context": context}
                 raw_response = self.chain.invoke(input_data)
