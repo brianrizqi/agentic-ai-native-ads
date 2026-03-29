@@ -122,6 +122,17 @@ Klasifikasi:
                 
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=hf_token, trust_remote_code=True)
                 
+                # Setup quantization (Phase 35.1 Fix)
+                bnb_config = None
+                if torch.cuda.is_available():
+                    from transformers import BitsAndBytesConfig
+                    bnb_config = BitsAndBytesConfig(
+                        load_in_4bit=True,
+                        bnb_4bit_quant_type="nf4",
+                        bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+                        bnb_4bit_use_double_quant=True,
+                    )
+
                 if self.gpu_id == -1:
                     device_map = "auto"
                 else:
@@ -131,7 +142,7 @@ Klasifikasi:
                     self.model_name,
                     device_map=device_map,
                     torch_dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else (torch.float16 if torch.cuda.is_available() else torch.float32),
-                    load_in_4bit=True if torch.cuda.is_available() else False,
+                    quantization_config=bnb_config,
                     trust_remote_code=True,
                     token=hf_token
                 )
