@@ -381,17 +381,18 @@ Output (JSON):
 # -----------------------------------------------------------------------------
 # Reverting to the exact logic and format that produced 88-90% accuracy.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah secara OBJEKTIF sebagai "native ads" atau "berita murni".
 
-PANDUAN:
-- Jika isinya EDUKASI atau LAYANAN PUBLIK (SIM Online, Libur, Hibah), pilih "berita murni".
-- Jika ragu atau tidak ada AJAKAN BELI yang jelas, pilih "berita murni".
+{context}
 
+TUGAS:
 Judul: {title}
 Konten: {content}
 
 Output (JSON):
 {{"alasan": """
+
+
 
 
 
