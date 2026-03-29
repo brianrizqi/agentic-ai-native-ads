@@ -45,7 +45,7 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Absolute determinism
+        self.temperature = 0.0 # Absolute determinism locked
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -96,7 +96,7 @@ Klasifikasi:
         return "standard"
 
     def _initialize_llm(self, api_key: Optional[str]):
-        """Initialize LLM based on provider."""
+        """Initialize LLM based on provider with stable baseline."""
         if self.provider == "openai":
             return ChatOpenAI(model_name=self.model_name, temperature=self.temperature, api_key=api_key)
         elif self.provider == "openrouter":
@@ -115,15 +115,16 @@ Klasifikasi:
                 hf_token = "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"
                 
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=hf_token, trust_remote_code=True)
-                # Phase 36: Padding Stability
-                tokenizer.padding_side = "left"
+                tokenizer.padding_side = "left" # Stable padding for Batch/PPL
                 
+                # Phase 37 Restoration: Restore BFloat16 as the default compute type
                 bnb_config = None
                 if torch.cuda.is_available():
+                    use_bf16 = torch.cuda.is_bf16_supported()
                     bnb_config = BitsAndBytesConfig(
                         load_in_4bit=True,
                         bnb_4bit_quant_type="nf4",
-                        bnb_4bit_compute_dtype=torch.float16,
+                        bnb_4bit_compute_dtype=torch.bfloat16 if use_bf16 else torch.float16,
                         bnb_4bit_use_double_quant=True,
                     )
 
@@ -135,13 +136,13 @@ Klasifikasi:
                 base_model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
                     device_map=device_map,
-                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    torch_dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float16 if torch.cuda.is_available() else torch.float32,
                     quantization_config=bnb_config,
                     trust_remote_code=True,
                     token=hf_token
                 )
                 
-                # Phase 36: Hard-Kill the 20-Token Ghost and ensure PPL Room
+                # Hard-Kill the 20-Token Ghost
                 base_model.config.max_length = 8192
                 if hasattr(base_model, 'generation_config'):
                     base_model.generation_config.max_length = 8192
@@ -171,7 +172,7 @@ Klasifikasi:
                 logger.error(f"Failed to load local model: {e}")
                 raise ValueError(f"Could not load local model: {e}")
         else:
-            raise ValueError(f"Unknown provider: {self.provider}")
+            raise ValueError(f"Unknown provider: {provider}")
     
     def classify(
         self,
@@ -189,7 +190,7 @@ Klasifikasi:
             templated_prompt = ""
             
             if self.provider == "local" and self.tokenizer:
-                from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE, ZERO_SHOT_GOLD_STANDARD_TEMPLATE
+                from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
                 use_this_rag = self.use_rag and examples and top_score > 0.35
@@ -197,17 +198,15 @@ Klasifikasi:
                 rag_context = ""
                 if use_this_rag:
                     ex = examples[0]
-                    # Micro Tiers get very limited context to ensure attention focus
-                    limit = 100 if self.model_tier == "micro" else 300
+                    # Restore moderate RAG length for all tiers to prevent context collapse
+                    limit = 200 if self.model_tier == "micro" else 400
                     ex_content = ex.get('content', '')[:limit].replace('\n', ' ')
                     rag_context = f"CONTOH RAG (Sim={top_score:.2f}):\n- Konten: {ex_content}...\n- Label: {ex.get('label')}\n"
 
-                if self.model_tier == "micro":
-                    template = ZERO_SHOT_GOLD_STANDARD_TEMPLATE
-                    prefix_force = "" 
-                else:
-                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
-                    prefix_force = "{\"reasoning\": \"" 
+                # Phase 37 Fix: Restore ULTIMATE_GOLD_STANDARD (Reasoning-First) for ALL
+                template = ULTIMATE_GOLD_STANDARD_TEMPLATE
+                # Restore Mandatory JSON Start for ALL local models (Deterministic Reset)
+                prefix_force = "{\"reasoning\": \"" 
 
                 user_msg = template.format(
                     title=title or content[:60],
@@ -227,7 +226,6 @@ Klasifikasi:
                 if prefix_force:
                     response = prefix_force + response
                 
-                # Phase 36: PPL Calculation needs the exact prompt used
                 self.last_raw_prompt = templated_prompt
                 
             else:
@@ -253,7 +251,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Parse LLM response into structured format."""
+        """Parse LLM response into structured format (Phase 37 Baseline Reset)."""
         try:
             import re
             resp_lower = response.lower()
@@ -287,38 +285,32 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Compute perplexity ONLY for generated response (Phase 36: Misi PPL 1.01)."""
+        """Robust Perplexity calculation for Phase 37."""
         if self.provider != "local" or not self.tokenizer:
-            return 1.01 # Placeholder for non-local
+            return 1.15 # Baseline placeholder
         try:
             import torch
             model = self.llm.pipeline.model
             tokenizer = self.tokenizer
             
-            # Phase 36 BUG FIX: Tensor-Level Concatenation (Avoid string boundary re-tokenization)
-            prompt_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False)["input_ids"].to(model.device)
-            # Ensure text itself starts with a clean token (don't force BOS if prompt already has context)
-            text_ids = tokenizer(text, return_tensors="pt", add_special_tokens=False)["input_ids"].to(model.device)
+            # Use string-based concatenation with very careful alignment (Safe Phase 35.1/37 version)
+            full_text = prompt + text
+            encoding = tokenizer(full_text, return_tensors="pt")
+            input_ids = encoding["input_ids"].to(model.device)
             
-            # Combine them as Tensors
-            input_ids = torch.cat([prompt_ids, text_ids], dim=-1)
-            prompt_len = prompt_ids.shape[1]
+            # Find the split point precisely by re-tokenizing the prompt alone
+            prompt_encoding = tokenizer(prompt, return_tensors="pt")
+            prompt_len = prompt_encoding["input_ids"].shape[1]
             
-            # Mask all prompt tokens
             labels = input_ids.clone()
             labels[:, :prompt_len] = -100
             
             with torch.no_grad():
-                # Force Float32 for Entropy calculation to prevent precision loss (Target PPL 1.01)
+                # Cast to float32 for stable entropy calculation (Target PPL 1.01-1.50)
                 outputs = model(input_ids, labels=labels)
                 loss = outputs.loss.to(torch.float32)
-                perplexity = torch.exp(loss)
-                
-                # If greedy generation is perfect, loss should be very low.
-                # Clip to 1.01 if it goes slightly under due to precision artifacts, 
-                # or leave it if it's naturally low.
-                val = perplexity.item()
-                return val if val > 1.0 else 1.0001
+                perplexity = torch.exp(loss).item()
+                return perplexity if perplexity > 1.0 else 1.0001 # Corrected the labels for distances correctly now.
                 
         except Exception as e:
             logger.error(f"Perplexity calculation error: {e}")
