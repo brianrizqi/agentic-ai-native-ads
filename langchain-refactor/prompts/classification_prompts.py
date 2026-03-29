@@ -377,26 +377,40 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 28: Forensic Calibration (Divergent Tiers)
+# Phase 29: Pattern-First Calibration (Final Squeeze)
 # -----------------------------------------------------------------------------
-# MICRO: Indonesian-Only Minimalist (To prevent 270M model collapse)
-MICRO_LABEL_ONLY_TEMPLATE = """Tugas: Pilih "native ads" atau "berita murni".
+# MICRO: 3-Shot MCQ (To teach 270M models the output format)
+MICRO_MCQ_TEMPLATE = """Klasifikasikan berita ke dalam kategori [A] atau [B].
 
-{context}
+CONTOH 1 (Berita Murni):
+Judul: Penangkapan Koruptor oleh KPK
+Konten: Komisi Pemberantasan Korupsi (KPK) menangkap seorang pejabat tinggi...
+Jawaban: [B]
 
+CONTOH 2 (Native Ads):
+Judul: HP Murah Kualitas Mewah
+Konten: Dapatkan smartphone terbaru dari Merk X yang memiliki kamera super...
+Jawaban: [A]
+
+CONTOH 3 (Berita Murni):
+Judul: Kecelakaan Bus di Tol Cipularang
+Konten: Sebuah bus PO ALS mengalami kecelakaan di KM 90 jalur Tol Cipularang...
+Jawaban: [B]
+
+TUGAS ANDA:
 Judul: {title}
 Konten: {content}
 
-Pilihan Jawaban: [native ads, berita murni]
+Pilihan Jawaban: [A] native ads, [B] berita murni
 
 Jawaban:"""
 
-# STANDARD: Label-First JSON (To prevent Llama 8B hallucination)
-STANDARD_LABEL_FIRST_TEMPLATE = """Tugas: Klasifikasikan berita sebagai "native ads" atau "berita murni".
+# STANDARD: Precision-Focus (To close the 2% gap for Llama 8B)
+STANDARD_PRECISION_TEMPLATE = """Tugas: Klasifikasikan berita sebagai "native ads" atau "berita murni".
 
-PENTING:
-1. Penyebutan nama brand/instansi dalam konteks berita (kecelakaan, politik, laporan faktual) BUKAN otomatis native ads.
-2. Native ads menonjolkan fitur produk atau promosi brand secara aktif.
+KEBIJAKAN KETAT:
+- Berita Murni [B]: Laporan kecelakaan, politik, ekonomi, atau tips UMUM tanpa promosi brand. Menyebut nama instansi/brand BUKAN otomatis iklan.
+- Native Ads [A]: Konten persuasif yang mempromosikan keuntungan fitur/produk secara aktif.
 
 {context}
 
@@ -404,7 +418,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads" atau "berita murni", "reasoning": "alasan singkat (max 150 karakter)"}}
+{{"label": "native ads" atau "berita murni", "reasoning": "alasan singkat (max 100 karakter)"}}
 """
 
 training_prompt = PromptTemplate(
