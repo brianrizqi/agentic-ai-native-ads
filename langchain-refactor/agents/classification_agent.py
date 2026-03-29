@@ -312,53 +312,38 @@ Klasifikasi:
             }
             
             # Use chat template for local models to ensure instruction following
+            # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 26: Unified Expert Tiering (XML Pivot)
-                name_lower = self.model_name.lower()
-                is_qwen = "qwen" in name_lower
-                is_llama = "llama" in name_lower
-                is_gemma = "gemma" in name_lower
+                # Phase 27: JSON Restoration & LoRA Alignment (90% & 70% Push)
+                from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE, STABLE_JSON_PROMPT_TEMPLATE
                 
-                from prompts.classification_prompts import XML_STANDARD_PROMPT_TEMPLATE, XML_MICRO_PROMPT_TEMPLATE
-                
-                # 1. Leakage Shield (Similarity < 0.05)
+                # 1. Leakage Shield (Similarity < 0.05) - Ensuring realistic metrics
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
                 use_this_rag = self.use_rag and examples and top_score > 0.05
                 rag_context = ""
                 if use_this_rag:
                     ex = examples[0]
                     rag_context = (
-                        f"CONTOH REFERENSI (SIMILARITY={top_score:.2f}):\n"
+                        f"REFERENSI KLASIFIKASI:\n"
                         f"- Konten: {ex.get('content', '')[:100]}...\n"
-                        f"- Hasil: <analisis>{ex.get('reasoning', '')[:100]}</analisis><hasil>{ex.get('label')}</hasil>\n"
+                        f"- Analisis: {ex.get('reasoning', '')[:100]}\n"
+                        f"- Label: {ex.get('label')}\n"
                         "---"
                     )
 
-                # 2. Family-Specific Prompt Selection
-                if self.model_tier in ["micro", "small"]:
-                    # MICRO/SMALL: Prefix-Force XML (Acc: 65-70% Target)
-                    template = XML_MICRO_PROMPT_TEMPLATE
-                    prefix_force = "<analisis>"
-                else:
-                    # STANDARD: Full XML (Acc: 90-91% Target)
-                    template = XML_STANDARD_PROMPT_TEMPLATE
-                    prefix_force = None # Let it generate the whole structure
+                # 2. Universal Gold-Standard JSON Prompt
+                # All models use the format they were trained on (Reasoning-First JSON)
+                prompt_instructions = TRAINING_PROMPT_TEMPLATE.split('Output (JSON):')[0].strip()
                 
-                user_content = template.format(
-                    title=title or content[:60],
-                    content=content[:400],
-                    context=rag_context
-                ).strip()
+                full_user_msg = (
+                    f"{prompt_instructions}\n\n"
+                    f"{rag_context}\n\n"
+                    f"Judul: {title or content[:60]}\n"
+                    f"Konten: {content[:400]}\n\n"
+                    f"Output (JSON):"
+                )
 
-                # 3. Message Assembly
-                if is_qwen:
-                    # Qwen likes explicit System Expert instructions
-                    messages = [
-                        {"role": "system", "content": "Anda adalah pakar deteksi native ads. Gunakan bahasa Indonesia. Jawab hanya dalam format XML yang diminta."},
-                        {"role": "user", "content": user_content}
-                    ]
-                else:
-                    messages = [{"role": "user", "content": user_content}]
+                messages = [{"role": "user", "content": full_user_msg}]
 
                 # Apply chat template
                 templated_prompt = self.tokenizer.apply_chat_template(
@@ -367,19 +352,19 @@ Klasifikasi:
                     add_generation_prompt=True
                 )
                 
-                if prefix_force:
-                    templated_prompt += prefix_force
+                # Force JSON start to prevent model collapse
+                prefix_force = '{"reasoning": "'
+                templated_prompt += prefix_force
                 
-                # Phase 26: Unified Invoke with Stop Sequences (including XML closers)
-                stop_seqs = ["</hasil>", "</analisis>", "]]>", "\n\n\n"]
+                # Use standard JSON stop sequences
+                stop_seqs = ["}", "}\n", tokenizer.eos_token]
                 if hasattr(self, 'stop_sequences'):
                     stop_seqs.extend(self.stop_sequences)
                 
                 response = self.llm.invoke(templated_prompt, stop=list(set(stop_seqs)))
                 
                 # Prepend prefix back to response for parsing
-                if prefix_force:
-                    response = prefix_force + response
+                response = prefix_force + response
                 
             else:
                 # Use LCEL with explicit dict (API providers)
@@ -410,8 +395,23 @@ Klasifikasi:
         try:
             import re
             
-            # Phase 26: XML Pivot Parsing (Highest Priority)
-            # Looks for <analisis> and <hasil> tags.
+            # Phase 27: Gold Standard JSON Parsing (Highest Priority)
+            if '{' in response and '}' in response:
+                try:
+                    json_str = response[response.find('{'):response.rfind('}')+1]
+                    # Simple cleanup for malformed JSON strings
+                    json_str = json_str.replace('\n', ' ').strip()
+                    data = json.loads(json_str)
+                    if 'label' in data:
+                        label = data['label'].lower()
+                        if "native" in label:
+                            return {'label': 'native ads', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', '')}
+                        else:
+                            return {'label': 'berita murni', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', '')}
+                except:
+                    pass
+
+            # Phase 26 XML Fallback (Keep during transition)
             hasil_match = re.search(r'<hasil>(.*?)</hasil>', response, re.IGNORECASE | re.DOTALL)
             analisis_match = re.search(r'<analisis>(.*?)</analisis>', response, re.IGNORECASE | re.DOTALL)
             
@@ -424,7 +424,7 @@ Klasifikasi:
                 elif "murni" in label_raw or "pure" in label_raw or "news" in label_raw:
                     return {'label': 'berita murni', 'confidence': 0.98, 'reasoning': reasoning[:300]}
 
-            # 1. Try JSON parsing as fallback for the "Training Case"
+            # 1. Try JSON parsing (generic fallback)
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
