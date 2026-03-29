@@ -45,7 +45,6 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        # Phase 31: Absolute Determinism (forced 0.0 for stability)
         self.temperature = 0.0
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
@@ -53,10 +52,7 @@ class ClassificationAgent:
         self.use_rag = use_rag
         self.is_mcq = is_mcq
         
-        # Phase 19: Model Tiers for scalable RAG
         self.model_tier = self._get_model_tier()
-        
-        # Initialize LLM
         self.tokenizer = None
         self.llm = self._initialize_llm(api_key)
         
@@ -97,8 +93,6 @@ Klasifikasi:
             return "micro"
         if any(kw in name for kw in ["1b", "2b", "3b", "small", "lite"]):
             return "small"
-        if "qwen" in name and "9b" in name: 
-            return "standard"
         return "standard"
 
     def _initialize_llm(self, api_key: Optional[str]):
@@ -114,7 +108,7 @@ Klasifikasi:
             )
         elif self.provider == "local":
             try:
-                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, BitsAndBytesConfig
                 import torch
                 
                 logger.info(f"Loading local model: {self.model_name}")
@@ -122,10 +116,9 @@ Klasifikasi:
                 
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=hf_token, trust_remote_code=True)
                 
-                # Setup quantization (Phase 35.1 Fix)
+                # Setup quantization
                 bnb_config = None
                 if torch.cuda.is_available():
-                    from transformers import BitsAndBytesConfig
                     bnb_config = BitsAndBytesConfig(
                         load_in_4bit=True,
                         bnb_4bit_quant_type="nf4",
@@ -146,6 +139,12 @@ Klasifikasi:
                     trust_remote_code=True,
                     token=hf_token
                 )
+                
+                # Phase 35.2: Kill the 20-Token Ghost
+                base_model.config.max_length = 2048
+                if hasattr(base_model, 'generation_config'):
+                    base_model.generation_config.max_length = 2048
+                    base_model.generation_config.max_new_tokens = 512
                 
                 if self.lora_path:
                     from peft import PeftModel
@@ -188,27 +187,28 @@ Klasifikasi:
             logger.info("Classifying content...")
             templated_prompt = ""
             
-            # Phase 35: Dynamic Prompt Complexity (The Low-PPL Calibrator)
             if self.provider == "local" and self.tokenizer:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE, ZERO_SHOT_GOLD_STANDARD_TEMPLATE
                 
-                # High-Confidence RAG (Threshold: 0.35)
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
                 use_this_rag = self.use_rag and examples and top_score > 0.35
                 
                 rag_context = ""
                 if use_this_rag:
                     ex = examples[0]
-                    # Micro Tiers get shorter RAG strings to prevent overload
+                    # Micro Tiers get very limited context to ensure attention focus
                     limit = 100 if self.model_tier == "micro" else 300
                     ex_content = ex.get('content', '')[:limit].replace('\n', ' ')
                     rag_context = f"CONTOH RAG (Sim={top_score:.2f}):\n- Konten: {ex_content}...\n- Label: {ex.get('label')}\n"
 
-                # TIER SELECTION: Zero-Shot for Micro, Two-Shot for Standard
                 if self.model_tier == "micro":
                     template = ZERO_SHOT_GOLD_STANDARD_TEMPLATE
+                    # Phase 35.2: Relaxed Output for Micro Tier (No prefix_force)
+                    # Forcing JSON start tokens causes massive PPL spikes in 270M models
+                    prefix_force = "" 
                 else:
                     template = ULTIMATE_GOLD_STANDARD_TEMPLATE
+                    prefix_force = "{\"reasoning\": \"" 
 
                 user_msg = template.format(
                     title=title or content[:60],
@@ -216,13 +216,13 @@ Klasifikasi:
                     context=rag_context
                 ).strip()
                 
-                prefix_force = '{"reasoning": "' 
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 
                 if prefix_force:
                     templated_prompt += prefix_force
                 
+                # Stop sequences tuned for JSON extraction
                 stop_seqs = ["}", "\n\n", self.tokenizer.eos_token]
                 response = self.llm.invoke(templated_prompt, stop=stop_seqs)
                 
@@ -252,12 +252,11 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Parse LLM response into structured format (Phase 34/35 Gold Standards)."""
+        """Parse LLM response into structured format (Phase 34/35/35.2 Gold Standards)."""
         try:
             import re
             resp_lower = response.lower()
             
-            # 1. Primary: JSON Parsing
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
@@ -275,7 +274,6 @@ Klasifikasi:
                 except:
                     pass
 
-            # 2. Secondary: Keyword Fallback
             if any(kw in resp_lower for kw in ["native ads", "iklan"]):
                 return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'Keyword match fallback'}
             elif any(kw in resp_lower for kw in ["berita murni", "news"]):
@@ -297,20 +295,18 @@ Klasifikasi:
             tokenizer = self.tokenizer
             
             if prompt:
-                # PHASE 35: Targeted PPL (only measures generation entropy)
                 full_text = prompt + text
                 encoding = tokenizer(full_text, return_tensors="pt")
                 input_ids = encoding["input_ids"].to(model.device)
-                
-                # Find where the prompt ends
                 prompt_encoding = tokenizer(prompt, return_tensors="pt")
                 prompt_len = prompt_encoding["input_ids"].shape[1]
                 
-                # Mask out the prompt tokens in labels so loss is only calculated on target text
                 labels = input_ids.clone()
+                # Ensure we don't calculate loss on the prompt tokens (Phase 35.2 Calibration)
                 labels[:, :prompt_len] = -100
                 
                 with torch.no_grad():
+                    # Force max_length higher to avoid truncated loss calculation
                     outputs = model(input_ids, labels=labels)
                     loss = outputs.loss
                     return torch.exp(loss).item()
