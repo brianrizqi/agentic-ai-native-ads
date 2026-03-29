@@ -377,21 +377,29 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 30: "The Training-Fidelity Reset"
+# Phase 31: Balanced 2-Shot Induction (The Last Stand)
 # -----------------------------------------------------------------------------
-# Reverting to the exact format used during LoRA fine-tuning to maximize
-# instruction adherence for all models (270M, 2B, 8B, 9B).
+# Static examples to break Mode-Collapse in Qwen 9B and sensitive Llama 8B.
 
-GOLD_STANDARD_JSON_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+BALANCED_2_SHOT_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
+CONTOH 1 (Berita Murni):
+Judul: KPK Tangkap Pejabat Terkait Korupsi Hibah
+Konten: Komisi Pemberantasan Korupsi (KPK) melakukan operasi tangkap tangan (OTT) terhadap seorang pejabat publik di Jawa Timur terkait dugaan suap dana hibah...
+Hasil: {{"reasoning": "Laporan faktual peristiwa hukum tanpa promosi.", "label": "berita murni"}}
+
+CONTOH 2 (Native Ads):
+Judul: OPPO A55 Hadir dengan Kamera 50MP Super Jernih
+Konten: Dapatkan smartphone terbaru OPPO A55 yang didesain elegan dengan fitur kamera mutakhir untuk menangkap momen berharga Anda. Beli sekarang di toko terdekat...
+Hasil: {{"reasoning": "Mengandung persuasi fitur produk dan ajakan membeli.", "label": "native ads"}}
+
+TUGAS ANDA:
 {context}
 
 Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"reasoning": "analisis singkat", "label": "native ads" atau "berita murni"}}
-"""
+Output (JSON):"""
 
 training_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],

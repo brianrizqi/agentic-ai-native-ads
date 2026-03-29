@@ -56,7 +56,8 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = temperature
+        # Phase 31: Absolute Determinism (forced 0.0 for stability)
+        self.temperature = 0.0
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -311,12 +312,11 @@ Klasifikasi:
                 "context": context
             }
             
-            # Use chat template for local models (Phase 30: Training-Fidelity Reset)
+            # Use chat template for local models (Phase 31: Balanced Induction)
             if self.provider == "local" and self.tokenizer:
-                from prompts.classification_prompts import GOLD_STANDARD_JSON_TEMPLATE
+                from prompts.classification_prompts import BALANCED_2_SHOT_TEMPLATE
                 
-                # 1. High-Confidence RAG (Threshold: 0.35)
-                # Lower similarity RAG often confuses smaller models.
+                # High-Confidence RAG (Threshold: 0.35)
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
                 use_this_rag = self.use_rag and examples and top_score > 0.35
                 
@@ -324,20 +324,21 @@ Klasifikasi:
                 if use_this_rag:
                     ex = examples[0]
                     rag_context = (
-                        f"REFERENSI ANALISIS (Sim={top_score:.2f}):\n"
+                        f"REFERENSI KONTEKSTUAL (Kemiripan={top_score:.2f}):\n"
                         f"- Konten: {ex.get('content', '')[:100]}...\n"
                         f"- Label: {ex.get('label')}\n"
                         "---"
                     )
 
-                user_msg = GOLD_STANDARD_JSON_TEMPLATE.format(
+                user_msg = BALANCED_2_SHOT_TEMPLATE.format(
                     title=title or content[:60],
                     content=content[:400],
                     context=rag_context
                 ).strip()
                 
-                # Standard training-time prefix
-                prefix_force = '{"reasoning": "'
+                # Phase 31: NO PREFIX FORCE. Let the model break its mode-collapse
+                # by following the induction from 2-shot examples.
+                prefix_force = "" 
 
                 messages = [{"role": "user", "content": user_msg}]
 
@@ -348,19 +349,12 @@ Klasifikasi:
                     add_generation_prompt=True
                 )
                 
-                if prefix_force:
-                    templated_prompt += prefix_force
-                
                 # Use standard JSON stop sequences
                 stop_seqs = ["}", "}\n", "\n\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
                 if hasattr(self, 'stop_sequences'):
                     stop_seqs.extend(self.stop_sequences)
                 
                 response = self.llm.invoke(templated_prompt, stop=list(set(stop_seqs)))
-                
-                # Prepend prefix back to response for parsing
-                if prefix_force:
-                    response = prefix_force + response
                 
             else:
                 # Use LCEL with explicit dict (API providers)
@@ -391,44 +385,35 @@ Klasifikasi:
         try:
             import re
             
-            # Phase 29: MCQ Priority (Pattern-First)
-            # Phase 30: Training Fidelity Parser (Unified)
+            # Phase 31: Adaptive Induction Parser (Unified)
             # 1. Primary: JSON Parsing (High Precision)
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
                     json_str = json_str.replace('\n', ' ').strip()
                     data = json.loads(json_str)
-                    if 'label' in data:
-                        raw_label = str(data['label']).lower()
-                        label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "[a]" in raw_label) else 'berita murni'
+                    
+                    # Extract label regardless of key position
+                    raw_label = ""
+                    if 'label' in data: raw_label = str(data['label']).lower()
+                    elif 'Hasil' in data: raw_label = str(data['Hasil']).lower()
+                    
+                    if raw_label:
+                        label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
                         return {
                             'label': label,
-                            'confidence': data.get('confidence', 0.9),
-                            'reasoning': data.get('reasoning', 'JSON extraction')
+                            'confidence': data.get('confidence', 0.95),
+                            'reasoning': data.get('reasoning', data.get('analisis', 'JSON extraction'))
                         }
                 except:
                     pass
 
-            # 2. Secondary: String / MCQ Fallback (Stability)
+            # 2. Secondary: String / Keyword Fallback (Stability)
             resp_lower = response.lower()
-            if "native ads" in resp_lower or "iklan" in resp_lower or "[a]" in resp_lower:
-                return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'String match fallback'}
-            elif "berita murni" in resp_lower or "news" in resp_lower or "murni" in resp_lower or "[b]" in resp_lower:
-                return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'String match fallback'}
-
-            # 3. Tertiary: XML legacy fallback
-            hasil_match = re.search(r'<hasil>(.*?)</hasil>', response, re.IGNORECASE | re.DOTALL)
-            analisis_match = re.search(r'<analisis>(.*?)</analisis>', response, re.IGNORECASE | re.DOTALL)
-            
-            if hasil_match:
-                label_raw = hasil_match.group(1).strip().lower()
-                reasoning = analisis_match.group(1).strip() if analisis_match else "Reasoning extracted from XML"
-                
-                if "native" in label_raw or "ads" in label_raw:
-                    return {'label': 'native ads', 'confidence': 0.98, 'reasoning': reasoning[:300]}
-                elif "murni" in label_raw or "pure" in label_raw or "news" in label_raw:
-                    return {'label': 'berita murni', 'confidence': 0.98, 'reasoning': reasoning[:300]}
+            if any(kw in resp_lower for kw in ["native ads", "iklan", "[a]", "hasil: native ads", "label: native ads"]):
+                return {'label': 'native ads', 'confidence': 0.9, 'reasoning': 'Keyword match fallback'}
+            elif any(kw in resp_lower for kw in ["berita murni", "murni", "[b]", "hasil: berita murni", "label: berita murni"]):
+                return {'label': 'berita murni', 'confidence': 0.9, 'reasoning': 'Keyword match fallback'}
 
             # 1. Try JSON parsing (generic fallback)
             if '{' in response and '}' in response:
