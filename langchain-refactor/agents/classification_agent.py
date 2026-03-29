@@ -131,6 +131,8 @@ Klasifikasi:
             return "micro"
         if any(kw in name for kw in ["1b", "2b", "3b", "small", "lite"]):
             return "small"
+        if "qwen" in name and "9b" in name: # Qwen 9B is standard, 2B/1.5B is small
+            return "standard"
         return "standard"
 
     def _is_small_model(self) -> bool:
@@ -311,53 +313,53 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 25: Reliability & Schema Restoration (70% & 90% Push)
-                if self.model_tier == "micro":
-                    # MICRO (Gemma 270M): Compact Indonesian JSON (Recovery 70%)
-                    # Balik ke Bahasa Indonesia karena model 270M terlalu bias ke loRA Indonesian.
-                    print(f"DEBUG: Using Micro-Specialist Compact Indonesian JSON (Stability Recovery)")
-                    from prompts.classification_prompts import STABLE_COMPACT_JSON_TEMPLATE
-                    
-                    user_msg = STABLE_COMPACT_JSON_TEMPLATE.format(
-                        title=title or content[:60],
-                        content=content[:400],
-                        context=""
-                    ).replace('{context}', '').strip()
-                    messages = [{"role": "user", "content": user_msg}]
-                    prefix_force = '{"reasoning": "'
-                else:
-                    # STANDARD/SMALL (Llama 8B/1B): Normalisasi Purity (90% Push)
-                    # Revert ke RAG Top-1 tapi dengan Leakage Shield (Similarity < 0.05)
-                    print(f"DEBUG: Using Standard Specialist RAG-Shield (Acc: 90% Target)")
-                    from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE, CONDENSED_TRAINING_PROMPT_TEMPLATE
-                    
-                    # Leakage Shield: Hitung apakah referensi RAG terlalu identik
-                    top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
-                    use_this_rag = self.use_rag and examples and top_score > 0.05 # Skip if too identical (~leakage)
-                    
-                    target_template = TRAINING_PROMPT_TEMPLATE if self.model_tier == "standard" else CONDENSED_TRAINING_PROMPT_TEMPLATE
-                    # Split template to avoid 'Double JSON' prompt bug
-                    prompt_instructions = target_template.split('Output (JSON):')[0].strip()
-                    
-                    if use_this_rag:
-                        ex = examples[0]
-                        ex_label = ex.get('label', 'unknown')
-                        ex_reasoning = ex.get('reasoning', 'No reasoning available')[:150]
-                        
-                        rag_context = (
-                            f"REFERENSI ANALISIS (SIMILARITY={top_score:.2f}):\n"
-                            f"- Label: {ex_label}\n"
-                            f"- Analisis: {ex_reasoning}\n"
-                            f"- Konten: {ex.get('content', '')[:100]}\n"
-                            "---"
-                        )
-                        full_msg = f"{prompt_instructions}\n\n{rag_context}\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nOutput (JSON):"
-                    else:
-                        full_msg = f"{prompt_instructions}\n\nJudul: {title or content[:60]}\nKonten: {content[:400]}\n\nOutput (JSON):"
-                    
-                    messages = [{"role": "user", "content": full_msg}]
-                    prefix_force = '{"reasoning": "'
+                # Phase 26: Unified Expert Tiering (XML Pivot)
+                name_lower = self.model_name.lower()
+                is_qwen = "qwen" in name_lower
+                is_llama = "llama" in name_lower
+                is_gemma = "gemma" in name_lower
                 
+                from prompts.classification_prompts import XML_STANDARD_PROMPT_TEMPLATE, XML_MICRO_PROMPT_TEMPLATE
+                
+                # 1. Leakage Shield (Similarity < 0.05)
+                top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
+                use_this_rag = self.use_rag and examples and top_score > 0.05
+                rag_context = ""
+                if use_this_rag:
+                    ex = examples[0]
+                    rag_context = (
+                        f"CONTOH REFERENSI (SIMILARITY={top_score:.2f}):\n"
+                        f"- Konten: {ex.get('content', '')[:100]}...\n"
+                        f"- Hasil: <analisis>{ex.get('reasoning', '')[:100]}</analisis><hasil>{ex.get('label')}</hasil>\n"
+                        "---"
+                    )
+
+                # 2. Family-Specific Prompt Selection
+                if self.model_tier in ["micro", "small"]:
+                    # MICRO/SMALL: Prefix-Force XML (Acc: 65-70% Target)
+                    template = XML_MICRO_PROMPT_TEMPLATE
+                    prefix_force = "<analisis>"
+                else:
+                    # STANDARD: Full XML (Acc: 90-91% Target)
+                    template = XML_STANDARD_PROMPT_TEMPLATE
+                    prefix_force = None # Let it generate the whole structure
+                
+                user_content = template.format(
+                    title=title or content[:60],
+                    content=content[:400],
+                    context=rag_context
+                ).strip()
+
+                # 3. Message Assembly
+                if is_qwen:
+                    # Qwen likes explicit System Expert instructions
+                    messages = [
+                        {"role": "system", "content": "Anda adalah pakar deteksi native ads. Gunakan bahasa Indonesia. Jawab hanya dalam format XML yang diminta."},
+                        {"role": "user", "content": user_content}
+                    ]
+                else:
+                    messages = [{"role": "user", "content": user_content}]
+
                 # Apply chat template
                 templated_prompt = self.tokenizer.apply_chat_template(
                     messages, 
@@ -368,9 +370,12 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Phase 25: Unified Invoke with Stop Sequences
-                stop_seqs = getattr(self, 'stop_sequences', None)
-                response = self.llm.invoke(templated_prompt, stop=stop_seqs)
+                # Phase 26: Unified Invoke with Stop Sequences (including XML closers)
+                stop_seqs = ["</hasil>", "</analisis>", "]]>", "\n\n\n"]
+                if hasattr(self, 'stop_sequences'):
+                    stop_seqs.extend(self.stop_sequences)
+                
+                response = self.llm.invoke(templated_prompt, stop=list(set(stop_seqs)))
                 
                 # Prepend prefix back to response for parsing
                 if prefix_force:
@@ -403,10 +408,23 @@ Klasifikasi:
     def _parse_response(self, response: str) -> Dict[str, Any]:
         """Parse LLM response into structured format."""
         try:
-            # Phase 28: Improved Robust Parsing for local models
             import re
             
-            # 1. Try JSON parsing first for the "Training Case"
+            # Phase 26: XML Pivot Parsing (Highest Priority)
+            # Looks for <analisis> and <hasil> tags.
+            hasil_match = re.search(r'<hasil>(.*?)</hasil>', response, re.IGNORECASE | re.DOTALL)
+            analisis_match = re.search(r'<analisis>(.*?)</analisis>', response, re.IGNORECASE | re.DOTALL)
+            
+            if hasil_match:
+                label_raw = hasil_match.group(1).strip().lower()
+                reasoning = analisis_match.group(1).strip() if analisis_match else "Reasoning extracted from XML"
+                
+                if "native" in label_raw or "ads" in label_raw:
+                    return {'label': 'native ads', 'confidence': 0.98, 'reasoning': reasoning[:300]}
+                elif "murni" in label_raw or "pure" in label_raw or "news" in label_raw:
+                    return {'label': 'berita murni', 'confidence': 0.98, 'reasoning': reasoning[:300]}
+
+            # 1. Try JSON parsing as fallback for the "Training Case"
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
