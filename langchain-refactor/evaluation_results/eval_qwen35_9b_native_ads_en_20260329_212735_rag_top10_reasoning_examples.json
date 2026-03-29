@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 26,
+    "borderline_count": 3,
+    "bad_count": 71,
+    "avg_judge_score": 2.34
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that accurately identifies the content as a straightforward news report about an athlete's injury, without any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat berita murni karena membahas informasi publik tentang cedera atlet (RJ Petit) tanpa promosi produk/brand tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that accurately reflects the content's focus on a sports event without any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat berita murni karena membahas informasi publik tentang tim olahraga (Vissel Kobe) tanpa promosi produk/brand tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided a logical reasoning that accurately reflects the content's focus on a public figure's health issue without any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PONTE VEDRA BEACH, Fla. (AP) — Ryan Fox of New Zealand withdrew from The Players Championship on Thursday, spending the day in a hospital to have kidney stones removed.\n\nFox cited “illness” as the rea",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat berita murni karena membahas informasi publik tentang atlet/figur publik (Ryan Fox) tanpa promosi produk/brand tertentu.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content does not clearly indicate promotional elements, and it could be interpreted as news related to cybersecurity.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi/branding",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is weak and generic. The article discusses an automotive exhibition without clear promotional intent, which could suggest it is news rather than an ad. A more nuanced analysis of the content's tone and intent is needed.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Pameran otomotif Indonesia Motorcycle Show (IMOS) tidak hanya didominasi oleh motor murah saja, tetapi juga diisi beberapa motor mahal. Hal itu dikarenakan pasar dari pameran tersebut juga kerap didat",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel bersifat berita murni karena membahas informasi publik tentang pameran otomotif dan produk kendaraan tanpa promosi brand tunggal.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not clearly indicate promotional elements, making the classification questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi/iklan",
+      "confidence": 0.95
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply, as there are no promotional elements in the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "KOMPAS.com - Warganet di media sosial ramai menanyakan soal pengadaan calon pegawai negeri sipil (CPNS) 2022. Salah satunya akun ini, yang menanyakan apakah 2022 ada seleksi CPNS melalui jalur umum. \"",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau iklan terhadap produk/brand tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news report about a bus fire. The reasoning provided does not apply, as the content does not promote any product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Bus PO Antar Lintas Sumatera (ALS) dengan jurusan Medan-Semarang terbakar di Jalan Lintas Sumatera pada Jumat (13/5/2022) Pagi. Humas ALS Alwi Matondang mengatakan, bus diisi 46 ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau iklan terhadap produk/brand tertentu",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a tax proposal. The reasoning provided does not apply, as there are no promotional elements present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Presiden Amerika Serikat (AS) Joe Biden diperkirakan bakal menaikkan pajak minimum baru, bagi sebagian besar miliarder ketika mengumumkan rancangan anggaran 2023. Hal ini disebut juga dengan \"Pajak Pe",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu",
+      "confidence": 0.95
+    }
+  ]
+}

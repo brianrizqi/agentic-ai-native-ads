@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 19,
+    "borderline_count": 0,
+    "bad_count": 81,
+    "avg_judge_score": 2.2
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, aligning with the ground truth. The reasoning about the dominant PR tone is logical and supports the classification, indicating a promotional intent. However, the reasoning could be more detailed to enhance its depth.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "PR tone dominan.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news), which aligns with the ground truth. However, the reasoning provided is misleading as it incorrectly states 'native ads' without identifying any promotional tone or content, which is not present in the article.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "native ads",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, which aligns with the ground truth. The reasoning about the PR tone being dominant is logical and supports the classification, indicating a promotional aspect. However, the reasoning could be more detailed to fully justify the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "PR tone dominan.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning about a 'PR tone' is not applicable here, as the content is a straightforward inquiry about a public service announcement, lacking any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "KOMPAS.com - Warganet di media sosial ramai menanyakan soal pengadaan calon pegawai negeri sipil (CPNS) 2022. Salah satunya akun ini, yang menanyakan apakah 2022 ada seleksi CPNS melalui jalur umum. \"",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "PR tone dominan.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a bus fire. The reasoning about a 'PR tone' is not applicable, as the content is factual and lacks promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Bus PO Antar Lintas Sumatera (ALS) dengan jurusan Medan-Semarang terbakar di Jalan Lintas Sumatera pada Jumat (13/5/2022) Pagi. Humas ALS Alwi Matondang mengatakan, bus diisi 46 ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "PR tone dominan.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a public figure's death. The reasoning about a 'PR tone' is not applicable here, as the content is straightforward news without promotional intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Putri pertama Menpan-RB Tjahjo Kumolo, Ajeng mengatakan, ayahnya meninggal dunia pada pukul 11.10 WIB, Jumat (1/7/2022). Ajeng memohon agar kesalahan Tjahjo semasa hidup dimaafka",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "PR tone dominan.",
+      "confidence": 0.95
+    }
+  ]
+}
