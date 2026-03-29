@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 83,
+    "borderline_count": 10,
+    "bad_count": 7,
+    "avg_judge_score": 3.85
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the content, which is a straightforward news report about a sports injury. The reasoning is sound as it aligns with the objective nature of news reporting, without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the content, which discusses a scientific discovery without any promotional tone. The reasoning is strong as it aligns with the objective nature of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the factual content regarding Carvana's layoffs, and the reasoning provided is appropriate and aligns with the nature of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' matching the ground truth, but the reasoning provided is weak and generic, lacking specific indicators of promotional tone or content typical of native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth. However, the reasoning provided is weak and generic, simply stating 'detected via label match' without deeper analysis of the content's promotional tone or context.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth. However, the reasoning provided is weak and generic, as it does not adequately explain why the content is promotional rather than informative news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided is shallow and does not adequately support the label, as the content discusses feng shui in a neutral manner without promotional intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Menurut feng shui, beberapa benda di rumah perlu diperhatikan secara khusus. Salah satunya adalah kompor di dapur. Dilansir Fengshuied, Kamis (14/4/2022), kompor dapat memengaruh",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided is shallow and does not adequately support the label, as the content discusses regulatory matters without a promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Badan Pengatur Jalan Tol (BPJT) menyatakan bahwa masih akan lakukan kajian terhadap penentuan pembayaran denda dalam penerapan transaks pembayaran tol nirsentuh atau Multi Lane F",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about PT Freeport Indonesia's anniversary. The reasoning based on label match is shallow and does not adequately support the prediction, as the content does not exhibit a promotional tone typical of native ads.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Menginjak usia ke-55, PT Freeport Indonesia (PTFI) merayakan hari ulang tahunnya dengan mengusung tema “Dedikasi Bagi Negeri”. Tema yang merefleksikan komitmen untuk memberikan yang terbaik dari “Ru",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ]
+}

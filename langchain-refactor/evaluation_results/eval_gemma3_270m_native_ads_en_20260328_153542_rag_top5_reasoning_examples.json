@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 22,
+    "borderline_count": 0,
+    "bad_count": 78,
+    "avg_judge_score": 2.33
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the factual reporting of an injury to a player, with no promotional tone or advertising elements present. The reasoning aligns well with the content, confirming the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "{\"reasoning\": \"This classification reflects content p\n\nAnalisis:",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as native ads, and the reasoning effectively highlights the promotional and persuasive elements related to a specific product, which aligns with the characteristics of native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "- Konsumen yang ingin membeli Vespa di 2022 kini memiliki pilihan warna-warna baru. Ini karena PT Piaggio Indonesia menyegarkan semua model Vespa dengan warna abru lewat kampanye “Live Free, Live Colo",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "{\"reasoning\": \"Artikel berisi unsur promosi dan persuasi terhadap sebuah produk/brand spesifik,\" kata analise penas\n\nAnalisis: Bahasa: Inggris provinsi Kasus: Berdasarkan deskensi kamusi",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) since it reports on a factual event regarding Ryan Fox's health without any promotional tone or advertising elements. The reasoning aligns with the nature of the content, confirming its objectivity and relevance as news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PONTE VEDRA BEACH, Fla. (AP) — Ryan Fox of New Zealand withdrew from The Players Championship on Thursday, spending the day in a hospital to have kidney stones removed.\n\nFox cited “illness” as the rea",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "{\"reasoning\": \"The content ar\n\nAnalisis:",
+      "confidence": 0.5
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a bus fire. The reasoning provided is irrelevant and does not logically support the label, indicating a complete misunderstanding of the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Bus PO Antar Lintas Sumatera (ALS) dengan jurusan Medan-Semarang terbakar di Jalan Lintas Sumatera pada Jumat (13/5/2022) Pagi. Humas ALS Alwi Matondang mengatakan, bus diisi 46 ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "{\"reasoning\": \"Artikel bersifat respons terhadap sebuah artikel ciptaan masyarakat,\" kata pengguna,\" sebagaimana dikutip dari laman resmi milik Yadi Rahardja، Rabu [9 Januari] pukul WIB.\"Artikel bersifat responsetasabagai bentuk kemampuan mengolah suatu fakta ni\n\nAnalisis: Bahasa Indonesia berdasark",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the content as 'berita murni' (pure news) when it should have identified it as 'native ads.' The reasoning provided is incomplete and does not address the promotional nature of the content, which is essential for accurate classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, Feb. 23, 2026 (GLOBE NEWSWIRE) — Ero Copper Corp. (TSX: ERO, NYSE: ERO) (“Ero” or the “Company”) is pleased to announce results of the Preliminary Economic Assessment (“PE",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "{\"reasoning\": \"This classification highlights content that is promotional and thus entitled to fa\n\nAnalisis:",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a public figure's death. The reasoning provided is nonsensical and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Putri pertama Menpan-RB Tjahjo Kumolo, Ajeng mengatakan, ayahnya meninggal dunia pada pukul 11.10 WIB, Jumat (1/7/2022). Ajeng memohon agar kesalahan Tjahjo semasa hidup dimaafka",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "{\"reasoning\": \"Artikel bersifat responsensi dengan tujuan mengolah terbitnya menjadi konten yang relevan serta\n\nAnalisis: 佐佑์ 文章 bersifat netrasa",
+      "confidence": 0.95
+    }
+  ]
+}

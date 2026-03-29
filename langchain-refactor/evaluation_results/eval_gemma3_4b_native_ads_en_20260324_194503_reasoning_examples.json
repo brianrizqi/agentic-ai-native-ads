@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 66,
+    "borderline_count": 6,
+    "bad_count": 28,
+    "avg_judge_score": 3.45
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the factual content regarding Carvana's layoffs, and the reasoning provided is appropriate as it aligns with the nature of news reporting without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the factual reporting of a sports event, and the reasoning is strong as it aligns with the objective nature of news content without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the content, which is a straightforward news report about a sports event. The reasoning is sound as it aligns with the objective nature of news reporting, without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PONTE VEDRA BEACH, Fla. (AP) — Ryan Fox of New Zealand withdrew from The Players Championship on Thursday, spending the day in a hospital to have kidney stones removed.\n\nFox cited “illness” as the rea",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the content as native ads, but the reasoning is weak and generic, lacking a clear explanation of why the content is promotional rather than informative.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic, lacking a deeper analysis of the content's promotional tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "PTJasa Raharja memperoleh duapenghargaanpadaeventGRC &Performance Excellence Award 2020yang dilaksanakan padahari Rabu(29/7). Penghargaan tersebut diberikanatas kinerja Jasa Raharjayangdinilai telah m",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning is weak and generic, lacking specific indicators of promotional tone or intent.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately support the label, as it fails to identify any promotional tone or intent in the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately support the label, as the content describes a unique dining place, which suggests a promotional tone typical of native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Kampung Mataraman yang terletak di Desa Panggungharjo, Kecamatan Sewon, Kabupaten Bantul, Daerah Istimewa Yogyakarta (DIY) bukan kampung tempat tinggal warga, melainkan sebuah tempat makan unik yang j",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have identified it as 'native ads.' The reasoning provided is shallow and does not adequately address the promotional tone of the content, which is focused on a marketing campaign for Vespa.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "- Konsumen yang ingin membeli Vespa di 2022 kini memiliki pilihan warna-warna baru. Ini karena PT Piaggio Indonesia menyegarkan semua model Vespa dengan warna abru lewat kampanye “Live Free, Live Colo",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ]
+}
