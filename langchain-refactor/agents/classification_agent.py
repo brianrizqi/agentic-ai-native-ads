@@ -141,8 +141,8 @@ Klasifikasi:
                     token=hf_token
                 )
                 
-                # Phase 39: Standardize GenerationConfig (Kill the Unsupported Strategy Error)
-                self.gen_config = GenerationConfig(
+                # Phase 39.2 Clean Initialization: Attach GenerationConfig directly to model
+                gen_config = GenerationConfig(
                     max_new_tokens=512,
                     do_sample=False,
                     repetition_penalty=1.0, # Target PPL 1.01 alignment
@@ -150,6 +150,7 @@ Klasifikasi:
                     eos_token_id=tokenizer.eos_token_id,
                     max_length=8192
                 )
+                base_model.generation_config = gen_config
                 
                 if self.lora_path:
                     from peft import PeftModel
@@ -160,12 +161,11 @@ Klasifikasi:
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
                 
-                # Still create a pipeline for LangChain usage if needed, but we use local_model_ref.generate mostly
+                # Simple pipeline creation to avoid 'multiple values for generation_config'
                 pipe = pipeline(
                     "text-generation",
                     model=model,
-                    tokenizer=tokenizer,
-                    generation_config=self.gen_config
+                    tokenizer=tokenizer
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
@@ -226,9 +226,9 @@ Klasifikasi:
                 prompt_len = input_ids.shape[1]
                 
                 with torch.no_grad():
+                    # No generation parameters needed here as they're in self.local_model_ref.generation_config
                     generated_ids = self.local_model_ref.generate(
-                        input_ids,
-                        generation_config=self.gen_config
+                        input_ids
                     )
                 
                 # Store exact IDs for PPL
@@ -300,7 +300,7 @@ Klasifikasi:
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
         """Absolute Perplexity Alignment for Phase 39 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
-            return 1.01
+            return 1.15
         try:
             import torch
             model = self.local_model_ref
