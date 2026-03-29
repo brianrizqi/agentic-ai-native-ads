@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 19,
+    "borderline_count": 1,
+    "bad_count": 80,
+    "avg_judge_score": 1.95
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'native ads' despite it being 'berita murni' because it did not contain promotional content or a brand focus. The reasoning was sound, as the article discusses a public service topic without any advertising elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "KOMPAS.com - Warganet di media sosial ramai menanyakan soal pengadaan calon pegawai negeri sipil (CPNS) 2022. Salah satunya akun ini, yang menanyakan apakah 2022 ada seleksi CPNS melalui jalur umum. \"",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "artikel mengandung unsur native ads karena menghadirkan produk/brand tertentu",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on its neutral and informative content, which does not promote any products or brands. The reasoning is clear and logically supports the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "artikel bersifat netral atau informatif tanpa promosi produk/brand tertentu",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the content, which is factual and devoid of promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content does not clearly indicate promotional elements, and it could be interpreted as news related to cybersecurity.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "artikel mengandung unsur promosi atau iklan terhadap produk/brand tertentu",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a news piece about a festival, demonstrating a lack of understanding of the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about a significant event involving layoffs at Carvana. The reasoning provided does not logically support the label and fails to recognize the article's informative nature.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a sports event. The reasoning provided does not apply, as there are no promotional elements present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu",
+      "confidence": 0.9
+    }
+  ]
+}

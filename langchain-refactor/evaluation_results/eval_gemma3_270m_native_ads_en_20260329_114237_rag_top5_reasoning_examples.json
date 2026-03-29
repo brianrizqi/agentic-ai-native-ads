@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 19,
+    "borderline_count": 1,
+    "bad_count": 80,
+    "avg_judge_score": 2.21
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning indicates an understanding of the content's nature. However, the reasoning could be more detailed to fully support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "{\"reasoning\": \"Sebagai model bahasa syarat dan as gaya wa\n\nAnalisis:",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning is mostly logical, but it lacks a direct connection to the content of the article, which could have strengthened the justification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "{\"reasoning\": \"Memakai pakaian tradisional untuk menanggapi situasi saat\n\nAnalisis: Presiden Amerika Serikat Joe Biden memprokem standar internasional atas kemampuan\n\nJawaban: good",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the objective nature of news reporting. However, the reasoning could be more detailed to strengthen its support for the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "{\"reasoning\": \"Sebagai model bahasa syarat daa\n\nArtikel bersifat netta dengan tuduhan akre\n\nAnalisis:",
+      "confidence": 0.5
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly classified the article as 'native ads' according to the ground truth, but the reasoning provided is weak and lacks clarity. It does not effectively explain why the content is promotional in nature, and it fails to address the potential for the article to be considered pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "PTJasa Raharja memperoleh duapenghargaanpadaeventGRC &Performance Excellence Award 2020yang dilaksanakan padahari Rabu(29/7). Penghargaan tersebut diberikanatas kinerja Jasa Raharjayangdinilai telah m",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "{\"reasoning\": \"Sebagai model bahasa syuting tradisional dan merupakan penghargaan terbaik dalam ajaran pendidikan nasional,\" kemudian menyisihkan seluruh kertas tangannya. Lalu ia memecah kertas dengan\n\nAnalisis: sebuah kelas menggunakan pemikirkan yang bersifat berpikir cepat seperti tugas-tulis so",
+      "confidence": 0.95
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when the ground truth is 'native ads.' The reasoning provided is vague and does not logically support the label, indicating a lack of understanding of the content's promotional nature.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "{\"reasoning\": \"This analysis is neutral and doesn't reflect experience with the data or system we are purpor\n\nAnalisis:",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a sports event. The reasoning provided is irrelevant and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "{\"reasoning\": \"Sebagai model bahasa syarat, saya dapat memprediksi konten berdasarkan keteragamannya.\", \"judul\":\"Anime dari Jepang dan Asia Tenggara,\" \"judul\":\"Anime Indonesia,\"および\n\n\nAnalisis: Sebuah artikel bersifat netral dengan tujuan mengumuskan sebuah loi yang objektif serta akuntabel.\"Artikel ",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model prediction is completely incorrect as the article is about a racing event and does not contain promotional content typical of native ads. The reasoning provided is nonsensical and unrelated to the article.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "{\"reasoning\": \"Artikel memiliki keterima dana sebesar Rp5 triliun dengan nilai total pasar transaksi Rp7 triliun dan premi total Rp9 triliun собрано за rangkaian acara tersebut adalah delapan juta rup",
+      "confidence": 0.5
+    }
+  ]
+}
