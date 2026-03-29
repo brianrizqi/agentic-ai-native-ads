@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 20,
+    "borderline_count": 0,
+    "bad_count": 80,
+    "avg_judge_score": 2.46
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi atau kampanye iklan.\n",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the objective nature of the content, which is free from promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netta dan objektif, menyajikan informasi tanpa promosi atau kampanye iklan.\n",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided a logical reasoning that aligns with the objective nature of the news content, which reports on a sports event without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan mengamini suatu pernyataan tanpa tuduhan.\n",
+      "confidence": 0.5
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it is actually a native ad. The reasoning provided does not address the promotional nature of the content, which is essential for accurate classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, Feb. 23, 2026 (GLOBE NEWSWIRE) — Ero Copper Corp. (TSX: ERO, NYSE: ERO) (“Ero” or the “Company”) is pleased to announce results of the Preliminary Economic Assessment (“PE",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netralitas karena menyajikan informasi tanpa promosi atau persuasi.\n",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not address the promotional nature of the content, which is indicative of native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONCTON, New Brunswick, Feb. 25, 2026 (GLOBE NEWSWIRE) — Major Drilling Group International Inc. (“Major Drilling” or the “Company”) (TSX: MDI), the largest provider of drilling services to the mining",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netralitas karena menyajikan informasi tanpa promosi atau persuasi.\n",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads,' and the reasoning provided does not support the label, as the content is promotional in nature.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia and BOSTON, March 10, 2026 (GLOBE NEWSWIRE) — Xenon Pharmaceuticals Inc. (Nasdaq: XENE), a neuroscience-focused biopharmaceutical company dedicated to drug discovery, clini",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netralitas karena menyajikan informasi tanpa promosi atau persuasi.\n",
+      "confidence": 0.5
+    }
+  ]
+}

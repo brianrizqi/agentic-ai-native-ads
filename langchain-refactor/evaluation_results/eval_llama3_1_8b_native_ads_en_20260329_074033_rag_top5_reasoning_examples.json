@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 18,
+    "borderline_count": 0,
+    "bad_count": 82,
+    "avg_judge_score": 2.39
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the absence of promotional content and provided a logical reasoning that aligns with the factual nature of the news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Tidak ada promosi produk atau brand tertentu, hanya informasi faktual.",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided strong reasoning by noting the absence of promotional content or specific brands, which aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Tidak ada brand/produk spesifik yang dipromosikan, hanya informasi objektif/faktual tanpa agenda jualan.",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the absence of promotional content and the presence of factual information regarding a political meeting, demonstrating strong reasoning.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Setelah menempuh perjalanan darat selama kurang lebih 11 jam dari Polandia menuju Ukraina, Presiden Jokowi Widodo mengadakan pertemuan tatap muka dengan Presiden Ukraina Volodymyr Zelensky. Apa hasil ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Tidak ada promosi produk atau brand tertentu, hanya informasi faktual.",
+      "confidence": 0.98
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news report about a bus fire. The reasoning provided does not apply, as there is no promotion of a product or brand in the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Bus PO Antar Lintas Sumatera (ALS) dengan jurusan Medan-Semarang terbakar di Jalan Lintas Sumatera pada Jumat (13/5/2022) Pagi. Humas ALS Alwi Matondang mengatakan, bus diisi 46 ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Terdapat promosi produk atau brand tertentu.",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about a tax proposal. The reasoning provided does not logically support the label, as there is no promotional tone or mention of products/brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Presiden Amerika Serikat (AS) Joe Biden diperkirakan bakal menaikkan pajak minimum baru, bagi sebagian besar miliarder ketika mengumumkan rancangan anggaran 2023. Hal ini disebut juga dengan \"Pajak Pe",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Terkait promosi produk/brand tertentu",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about a shooting incident. The reasoning provided is irrelevant and does not apply to the content of the article.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "No one was hurt after two homes and a vehicle were struck by gunfire early Monday morning in Brampton.\n\nThe shooting happened around 2:40 a.m. on March 9 near Spadina Road and Royal Orchard Drive.\n\nSH",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Terkait adanya promosi produk/brand tertentu.",
+      "confidence": 0.98
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 15,
+    "borderline_count": 2,
+    "bad_count": 83,
+    "avg_judge_score": 1.87
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, which aligns with the ground truth. The reasoning provided is logical, noting the promotional elements present in the content. However, it could be more specific in detailing how the content promotes the brand.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'native ads' based on its promotional tone regarding a partnership, which aligns with the ground truth. The reasoning is logical, indicating a promotional aspect, but could be more specific about the nature of the promotion.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "{\"label\":\"nativeads\"atau\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as 'native ads' based on its promotional tone, which aligns with the ground truth. The reasoning is logical and supports the label, but it could be more specific about the unique dining experience being promoted.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Kampung Mataraman yang terletak di Desa Panggungharjo, Kecamatan Sewon, Kabupaten Bantul, Daerah Istimewa Yogyakarta (DIY) bukan kampung tempat tinggal warga, melainkan sebuah tempat makan unik yang j",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "{\"label\":\"nativeads\"atau\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not explicitly promote a product or brand, making the reasoning less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Sebagai contoh, teori aljabar, operasi hitung bilangan, operasi hitung, bangun ruang dan geometri, fungsi, hingga kalkulus. Jangankan untuk memecahkannya, membaca rumusnya saja sudah terasa memusingka",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning is weak and generic. It mentions promotional elements without providing specific evidence from the article content to support the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Menurut data Kementerian Koperasi dan Usaha Kecil Menengah (UKM) pada 2017, UMKM menguasai sekitar 62,9 juta unit atau 99,99 persen pangsa pasar dari total keseluruhan pelaku usaha di Indonesia. Tak h",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "{\"label\":\"nativeads\"atau\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about an injury to a baseball player. The reasoning provided does not apply, as there are no promotional elements present in the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "{\"label\":\"nativeads\"atau\"beritamurni\",\"confidence\":0.0-1.0,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply, as the article does not contain promotional elements or a persuasive tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "{\"label\":\"nativeads\"atau\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not logically support the label, as the article discusses a sports event without any promotional content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}",
+      "confidence": 0.75
+    }
+  ]
+}

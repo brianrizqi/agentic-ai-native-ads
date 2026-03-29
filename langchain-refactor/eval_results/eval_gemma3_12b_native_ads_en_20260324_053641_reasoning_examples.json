@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 87,
+    "borderline_count": 5,
+    "bad_count": 8,
+    "avg_judge_score": 3.79
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the content as native ads, which aligns with the ground truth. The reasoning indicates a detection based on label start, which is logical for identifying promotional content. However, the reasoning could be more detailed in explaining the promotional tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The prediction is correct as the article discusses a sports injury, which aligns with the ground truth of 'berita murni.' The reasoning is logical but could be more specific in addressing the absence of promotional content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning is logical, indicating that it detected the content as news. However, the reasoning could be more specific in addressing the absence of promotional tone or brand mentions.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, aligning with the ground truth. However, the reasoning provided is weak and generic, lacking specific indicators of promotional content or a clear distinction from news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth. However, the reasoning provided is weak and generic, lacking specific indicators of promotional content or a clear distinction from news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic, lacking specific indicators of promotional tone or intent.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– PT Bank Negara Indonesia (Persero) Tbk. atauBNI(kode saham: BBNI) melanjutkan pertumbuhan kinerja kredit usaha rakyat (KUR) yang progresif tahun ini. Hal ini sejalan dengan tren pemulihan ekonom",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads instead of pure news. The reasoning provided is not relevant to the content, which discusses a festival and does not exhibit promotional tone typical of native ads.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when the ground truth is 'native ads'. The reasoning provided is vague and does not adequately support the prediction, as it fails to identify any promotional tone or intent in the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Badan Tenaga Nuklir Nasional (Batan) telah ditunjuk oleh Badan Tenaga Atom Internasional (International Atomic Energy Agency/IAEA) sebagai pusat acuan atau collaborating center (CC) di bidang uji tida",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not adequately support the label, failing to identify the promotional nature of the content related to zakat.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Badan Amil Zakat Nasional (Baznas) RI menetapkan standar nisab atau jumlah minimal harta yang dimiliki bagi mereka yang sudah dinyatakan wajib mengeluarkan zakat pendapatan pada 2021.Penetapan itu did",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ]
+}

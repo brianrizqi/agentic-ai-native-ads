@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 17,
+    "borderline_count": 2,
+    "bad_count": 81,
+    "avg_judge_score": 2.1
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which reports on a sports event without any promotional tone or advertising elements. The reasoning, while simple, accurately reflects the nature of the article as news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PONTE VEDRA BEACH, Fla. (AP) — Ryan Fox of New Zealand withdrew from The Players Championship on Thursday, spending the day in a hospital to have kidney stones removed.\n\nFox cited “illness” as the rea",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the content as native ads, which aligns with the ground truth. The reasoning indicates a detection based on label start, which is logical for identifying promotional content. However, the reasoning could be more detailed in explaining the promotional tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, aligning with the ground truth. The reasoning, while based on a fallback detection method, is logical in the context of distinguishing promotional content. However, it lacks depth in analyzing the tone or intent of the article, which could strengthen the justification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth. However, the reasoning provided is weak and generic, lacking specific details that would support the classification effectively.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic, lacking specific indicators of promotional content or a clear distinction from news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a sports injury. The reasoning provided does not logically support the label, as there is no promotional tone or advertising content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a pure news piece about a football match. The reasoning provided is not relevant or logical, as it fails to identify the content's promotional tone, which is absent in this case.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a sports event. The reasoning provided does not logically support the label, as there is no promotional tone or advertising content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ]
+}

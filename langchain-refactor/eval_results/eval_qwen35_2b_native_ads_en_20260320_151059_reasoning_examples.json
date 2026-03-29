@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 20,
+    "borderline_count": 0,
+    "bad_count": 80,
+    "avg_judge_score": 2.38
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which is a straightforward news report about a sports injury. The reasoning, while not deeply detailed, is logical and aligns with the nature of the content, indicating it is not promotional in tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and the reasoning is logical, as it focuses on a historical discovery without any promotional tone. However, the reasoning could be more detailed to enhance its quality.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning is logical, indicating that it detected the content as news. However, the reasoning could be more specific in addressing the absence of promotional tone or native advertising elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the content as 'berita murni' when it is clearly a native ad promoting Indonesian products. The reasoning provided does not logically support the label and fails to identify the promotional tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Gerakan tersebut merupakan bagian dari kampanye nasional untuk mempromosikan merek dan produk Indonesia.Mengusung tema “Semakin Bangga Buatan Indonesia”, penyelenggaraan Hari BBI tahun ini diadakan se",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided is not relevant or supportive of the classification, as it fails to identify the promotional nature of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "TORONTO, Feb. 19, 2026 (GLOBE NEWSWIRE) — Labrador Gold Corp. (TSX.V: LAB | FNR: 2N6) (“LabGold” or the “Corporation”) today responded to a news release issued by Kulwant (Kal) Malhi-led Coloured Ties",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have been labeled as 'native ads'. The reasoning provided is not sufficient to support the prediction, as it fails to identify the promotional tone of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label start (fallback).",
+      "confidence": 0.9
+    }
+  ]
+}
