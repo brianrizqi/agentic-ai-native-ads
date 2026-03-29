@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 53: System-Wide Alignment (Evaluator & RAG)
+Main agent for Phase 54: The Balanced Boundary (De-Paranoia)
 """
 
 from typing import Dict, Any, Optional, List
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 53: Advocacy Gating & Tier Identification.
+    Phase 54: The Balanced Boundary (Restoring Sports/Entity Logic).
     """
     
     def __init__(
@@ -41,16 +41,15 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Strict for evaluation
+        self.temperature = 0.0 # Force Determinism
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
         self.use_rag = use_rag
         self.is_mcq = is_mcq
         
-        # Tier Detection for Evaluator Alignment
+        # Tier Detection
         self.model_tier = self._get_model_tier(model_name)
-        
         self.tokenizer = None
         self.llm = self._initialize_llm(api_key)
         
@@ -59,13 +58,11 @@ class ClassificationAgent:
         os.makedirs(self.log_dir, exist_ok=True)
         self.log_file = os.path.join(self.log_dir, "inference_history.jsonl")
         
-        # Generic chain for API providers
         prompt = PromptTemplate.from_template("{title}\n{content}")
         self.chain = prompt | self.llm | StrOutputParser()
-        logger.info(f"Classification Agent Phase 53 ({self.model_tier}) initialized.")
+        logger.info(f"Classification Agent Phase 54 ({self.model_tier}) initialized.")
     
     def _get_model_tier(self, name: str) -> str:
-        """Heuristic to detect model tier for evaluator optimizations."""
         n = name.lower()
         if any(x in n for x in ['270m', '500m', '1b']): return 'micro'
         if any(x in n for x in ['3b', '7b', '8b', '9b']): return 'small'
@@ -82,13 +79,11 @@ class ClassificationAgent:
                 hf_token = "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"
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=hf_token, trust_remote_code=True)
                 tokenizer.padding_side = "left"
-                
                 bnb_config = None
                 if torch.cuda.is_available():
                     use_bf16 = torch.cuda.is_bf16_supported()
                     bnb_config = BitsAndBytesConfig(
-                        load_in_4bit=True,
-                        bnb_4bit_quant_type="nf4",
+                        load_in_4bit=True, bnb_4bit_quant_type="nf4",
                         bnb_4bit_compute_dtype=torch.bfloat16 if use_bf16 else torch.float16,
                         bnb_4bit_use_double_quant=True,
                     )
@@ -107,7 +102,6 @@ class ClassificationAgent:
                     from peft import PeftModel
                     model = PeftModel.from_pretrained(base_model, self.lora_path)
                 else: model = base_model
-                
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
                 pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
@@ -127,7 +121,7 @@ class ClassificationAgent:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 53 Advocacy Recognition.
+        Classify content with Phase 54 Balanced Entity Guard.
         """
         try:
             templated_prompt = ""
@@ -137,12 +131,12 @@ class ClassificationAgent:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 53: Enhanced RAG Contrast (Threshold 0.82)
+                # Phase 54: High-Precision RAG Picker
                 rag_block = ""
-                threshold = 0.82 
+                threshold = 0.85 
                 if self.use_rag and examples:
-                    best_ad = None
-                    best_news = None
+                    # Search for balanced contrasts
+                    best_ad, best_news = None, None
                     for ex in examples:
                         score = ex.get('similarity_score', 0)
                         label = ex.get('label', '').lower()
@@ -155,18 +149,11 @@ class ClassificationAgent:
                         if best_news: rag_block += f"- BERITA MURNI: \"{best_news.get('content')[:250]}...\"\n"
                 
                 if not rag_block:
-                    rag_block = "[ACUAN]\n1. Iklan: Peluncuran produk brand tunggal.\n2. Berita: Informasi umum/masyarakat.\n"
+                    rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand tunggal.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"alasan\": \"" 
-                
-                # Phase 53: Window 1200ch
-                user_msg = template.format(
-                    title=title or content[:70],
-                    content=content[:1200],
-                    context=rag_block
-                ).strip()
-                
+                user_msg = template.format(title=title or content[:70], content=content[:1200], context=rag_block).strip()
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 if prefix_force: templated_prompt += prefix_force
@@ -204,7 +191,7 @@ class ClassificationAgent:
         except: pass
 
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Phase 53: Invincible Parser with Brand Advocacy Guard."""
+        """Phase 54: Invincible Parser with Entity Guard."""
         try:
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan."
@@ -221,17 +208,29 @@ class ClassificationAgent:
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
                     if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): label = "native ads"
-                    if any(kw in alasan.lower() for kw in ["promosi", " brand", "rilis pers", "press release", "menghadirkan", "peluncuran"]):
-                        label = "native ads"
+                    
+                    # Phase 54: Entity Sanity Guard (prevent sports paranoia)
+                    reason_low = alasan.lower()
+                    if any(kw in reason_low for kw in ["olahraga", "pertandingan", "skor", "atlet", "pemain", "tim ", "cedera", "medali"]):
+                        # If reasoning mentions sports but labels it as ad, flag it for check
+                        if label == "native ads":
+                            # Only accept ads if there's explicit 'brand' or 'produk' mentioned as well
+                            if not any(kw in reason_low for kw in [" brand", "produk", "layanan"]):
+                                label = "berita murni" # Recalibrate away from paranoia
+                    
+                    if any(kw in reason_low for kw in ["promosi", " brand", "rilis pers", "press release", "menghadirkan", "peluncuran"]):
+                        # ONLY flag as ad if it's NOT in the exemption list
+                        if not any(kw in reason_low for kw in ["olahraga", "atlet", "pemerintah"]):
+                             label = "native ads"
                     return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
                 except: pass
 
             # Heuristic match phase
             resp_lower = resp_clean.lower()
-            if any(kw in resp_lower for kw in ["native ads", "iklan", "promosi", "peluncuran product", "rilis pers", "menghadirkan"]):
-                label = "native ads"
+            if any(kw in resp_lower for kw in ["native ads", "iklan", "promosi", "rilis pers", "menghadirkan"]):
+                if not any(kw in resp_lower for kw in ["olahraga", "atlet"]):
+                    label = "native ads"
             return {'label': label, 'confidence': 0.75, 'reasoning': "Heuristic: " + resp_clean[:100]}
-                
         except Exception as e:
             logger.error(f"Parser error: {e}")
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Emergency fallback'}
