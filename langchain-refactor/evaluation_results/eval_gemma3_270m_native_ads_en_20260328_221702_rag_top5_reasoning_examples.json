@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 19,
+    "borderline_count": 1,
+    "bad_count": 80,
+    "avg_judge_score": 2.27
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which reports on a sports injury without promotional elements. The reasoning, while somewhat generic, aligns with the objective nature of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Ambiguous safety default",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and the reasoning is logical, indicating a cautious approach. However, the reasoning could be more specific in addressing the content's newsworthiness.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Ambiguous safety default",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as 'berita murni' which aligns with the ground truth. The reasoning of 'ambiguous safety default' is somewhat vague but does not detract significantly from the accuracy of the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Setelah menempuh perjalanan darat selama kurang lebih 11 jam dari Polandia menuju Ukraina, Presiden Jokowi Widodo mengadakan pertemuan tatap muka dengan Presiden Ukraina Volodymyr Zelensky. Apa hasil ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Ambiguous safety default",
+      "confidence": 0.5
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning provided is weak and generic, lacking specific indicators of promotional tone or content that would clearly differentiate it from pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected Label: A",
+      "confidence": 0.95
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a news piece about a festival. The reasoning provided is nonsensical and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Jawaban: \nJawaban: tânชนะปาก Titik Pegal",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads instead of pure news, and the reasoning provided is irrelevant and nonsensical, failing to address the content of the article.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Jawaban:  мнение المجتمع\nJaweran: dengan nilai maksimal Rp3 juta rupiah untuk pembelian kendaraan pertama kali sebesar sepa\n\nAnalisis: Buasan adalah platform e-commerce terdepan s\n\nAnalisis: Netralaskan berdasarkan kredensum pengguna sebanyak 94% dari seluruh wilayah Indonesia serta 86 persen daftar",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a public figure's death. The reasoning provided is nonsensical and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Putri pertama Menpan-RB Tjahjo Kumolo, Ajeng mengatakan, ayahnya meninggal dunia pada pukul 11.10 WIB, Jumat (1/7/2022). Ajeng memohon agar kesalahan Tjahjo semasa hidup dimaafka",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Jawaban:  нуляastaan\nJaweran:ya\nAnalisis: adalah berdasarkan hukum dalam bentuk merahσεωνlawwannya sedernaida\n\nArtikel mengandung unsur praerba\n\nAnalisis: Vitasilan kelas middelstoisalisainganti",
+      "confidence": 0.95
+    }
+  ]
+}

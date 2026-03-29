@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 38,
+    "borderline_count": 3,
+    "bad_count": 59,
+    "avg_judge_score": 2.65
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, and the reasoning provided is logical as it highlights the promotional aspect of the content. However, the reasoning could be more detailed to enhance its depth.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel termasuk native ads karena mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which is a straightforward news report about a sports injury. The reasoning, while somewhat generic, aligns with the nature of the article and does not indicate any promotional tone, thus supporting the correct label.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, which aligns with the ground truth. However, the reasoning based on a start-of-string heuristic lacks depth and does not fully explain why the content is promotional in nature.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly classified the article as native ads, but the reasoning based on a start-of-string heuristic is weak and does not provide a strong justification for the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning based on a start-of-string heuristic is weak and does not provide a strong justification for the classification. The content appears to be newsworthy, discussing a significant event in Indonesia, which suggests it could be classified as pure news instead.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, aligning with the ground truth. However, the reasoning based on a start-of-string heuristic is weak and does not provide a deep analysis of the content's promotional tone or context, which is necessary for a robust classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– PT Bank Negara Indonesia (Persero) Tbk. atauBNI(kode saham: BBNI) melanjutkan pertumbuhan kinerja kredit usaha rakyat (KUR) yang progresif tahun ini. Hal ini sejalan dengan tren pemulihan ekonom",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning based on a start-of-string heuristic does not logically support the label, as the content is straightforward news about the postponement of the Asian Games.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "VIVA – Asian Games yang akan berlangsung di Hangzhou, China pada bulan September 2022 resmi ditunda tanpa batas waktu. Pada Jumat 6 Mei 2022, penyelenggara mengumumkan bahwa Asian Games ditunda karena",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a public figure's death. The reasoning based on a start-of-string heuristic does not apply to this context, as there is no promotional tone or content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Putri pertama Menpan-RB Tjahjo Kumolo, Ajeng mengatakan, ayahnya meninggal dunia pada pukul 11.10 WIB, Jumat (1/7/2022). Ajeng memohon agar kesalahan Tjahjo semasa hidup dimaafka",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning based on a start-of-string heuristic does not logically support the label, as the content does not exhibit promotional tone or intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Uji coba penerapan jalan tol menggunakan transaksi nontunai nirsentuh atau multi lane free flow (MLFF), akan dilakukan pada beberapa titik mulai tahun ini.  Penerapan transaksi i",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    }
+  ]
+}

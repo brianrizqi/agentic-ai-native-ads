@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 85,
+    "borderline_count": 9,
+    "bad_count": 6,
+    "avg_judge_score": 4.08
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on its neutral and objective presentation of information regarding an injury, with no promotional content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided strong reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.85
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly classified the article as native ads, but the reasoning lacks depth and specificity. The content appears to be news-related, discussing cybersecurity, which suggests it should be classified as pure news rather than native ads. The reasoning does not adequately address the nature of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content primarily discusses a tax regulation without clear promotional elements, which suggests it could be classified as news rather than native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content does not clearly indicate promotional elements or a persuasive tone, making the classification somewhat questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Sebagai contoh, teori aljabar, operasi hitung bilangan, operasi hitung, bangun ruang dan geometri, fungsi, hingga kalkulus. Jangankan untuk memecahkannya, membaca rumusnya saja sudah terasa memusingka",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.85
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately address the context of the article, which is a visit by the president to a disaster area, potentially serving a promotional or political purpose.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VIVA– Presiden Joko Widodo mengujungi Kabupaten Lembata dan Pulau Adonara di Kabupaten Flores Timur yang merupakan lokasi paling parah daribencana banjirbandang, Jumat (9/4/2021). Kunjungan Presiden d",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Tidak native ads karena tidak mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is shallow and does not convincingly support the classification. The article reports on a racing event without clear promotional intent, suggesting it should be classified as news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi produk/brand dan/atau persuasif terhadap produk tertentu.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning is not supported by the content provided. The article discusses a serious issue (COVID-19 and natural disasters) without any promotional tone or elements, indicating it should be classified as news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.85
+    }
+  ]
+}
