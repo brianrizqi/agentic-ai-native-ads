@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 56: Visibility & Robustness Audit
+Main agent for Phase 60: The Governing Agent (Heuristic Override)
 """
 
 from typing import Dict, Any, Optional, List
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 56: Visibility & Robustness (Terminal Feedback & Auto-Scaling).
+    Phase 60: The Governing Agent (Heuristic Override for Poisioned FT Models).
     """
     
     def __init__(
@@ -51,8 +51,6 @@ class ClassificationAgent:
         
         # Tier Detection
         self.model_tier = self._get_model_tier(model_name)
-        
-        # Phase 56: Dynamic Context Scaling to prevent OOM
         self.max_chars = 1200 if self.model_tier != 'micro' else 800
         
         self.tokenizer = None
@@ -126,7 +124,7 @@ class ClassificationAgent:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 56 Dynamic Scaling.
+        Classify content with Phase 60 Governing Agent.
         """
         try:
             raw_response = ""
@@ -134,7 +132,7 @@ class ClassificationAgent:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 56: RAG Pair-Contrast Picker (Threshold 0.85)
+                # Phase 60: RAG Pair-Contrast Picker (Threshold 0.85)
                 rag_block = ""
                 threshold = 0.85 
                 if self.use_rag and examples:
@@ -155,7 +153,6 @@ class ClassificationAgent:
 
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"alasan\": \"" 
-                # Use Phase 56 Dynamic max_chars
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 messages = [{"role": "user", "content": user_msg}]
                 templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -169,19 +166,19 @@ class ClassificationAgent:
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
                 if prefix_force: raw_response = prefix_force + raw_response
                 
-                # Phase 57: Fix SyntaxError for Python < 3.12
+                # Phase 57: Fix SyntaxError peek
                 clean_peek = raw_response[:120].replace('\n', ' ')
                 print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")
             else:
                 input_data = {"title": title or content[:100], "content": content[:400], "context": context}
                 raw_response = self.chain.invoke(input_data)
             
-            result = self._parse_response(raw_response)
+            # Phase 60: Content-Aware Parser Override
+            result = self._parse_response(raw_response, content=content, title=title)
             result['metadata'] = {'model': self.model_name, 'raw_response': raw_response}
             self._log_inference(title, content, result)
             return result
         except Exception as e:
-            # Phase 56: CRITICAL Visibility
             print(f"CRITICAL ERROR DURING CLASSIFY: {e}")
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'FAILSAFE: {str(e)}'}
             
@@ -195,8 +192,8 @@ class ClassificationAgent:
                 f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
         except: pass
 
-    def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Phase 56: Ultra-Resilient Parser with Entity Guard."""
+    def _parse_response(self, response: str, content: str = "", title: str = "") -> Dict[str, Any]:
+        """Phase 60: Governing Parser with Heuristic Content Override."""
         try:
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan."
@@ -213,26 +210,36 @@ class ClassificationAgent:
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
                     if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): label = "native ads"
-                    
-                    reason_low = alasan.lower()
-                    if any(kw in reason_low for kw in ["olahraga", "pertandingan", "skor", "atlet", "pemain", "tim ", "cedera", "medali"]):
-                        if label == "native ads":
-                            if not any(kw in reason_low for kw in [" brand", "produk", "layanan"]):
-                                label = "berita murni" 
-                    
-                    if any(kw in reason_low for kw in ["promosi", " brand", "rilis pers", "press release", "menghadirkan", "peluncuran"]):
-                        if not any(kw in reason_low for kw in ["olahraga", "atlet", "pemerintah"]):
-                             label = "native ads"
-                    return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
                 except: pass
 
-            # Heuristic match phase
-            resp_lower = resp_clean.lower()
-            if any(kw in resp_lower for kw in ["native ads", "iklan", "promosi", "rilis pers", "menghadirkan"]):
-                if not any(kw in resp_lower for kw in ["olahraga", "atlet"]):
-                    label = "native ads"
-            return {'label': label, 'confidence': 0.75, 'reasoning': "Heuristic Catch: " + resp_clean[:100]}
+            # Phase 60: HEURISTIC CONTENT SCAN (The Governor)
+            # This scans the ORIGINAL text because the poisoned FT model hallucinations reasoning.
+            content_low = (title + " " + content).lower()
+            
+            # Category 1: TRAGEDY / SOCIAL (Pure News triggers)
+            tragedy_triggers = ["kecelakaan", "tewas", "meninggal", "kebakaran", "bus ", "polres", "polsek", "polda", "polisi", "tersangka", "diduga", "korban", "tabrakan", "terbakar"]
+            # Category 2: SPORTS (Pure News triggers)
+            sports_triggers = ["pertandingan", "skor ", "atlet", "pemain ", "tim ", "klasemen", "juara", "medali", "olahraga", "stadion"]
+            
+            # Category 3: GOVERNMENT / SOCIAL
+            gov_triggers = ["presiden", "kebijakan", "menteri", "pelantikan", "pertemuan", "bencana"]
+
+            # TRUTH OVERRIDE: If any news/tragedy triggers found, force label to berita murni
+            if any(kw in content_low for kw in tragedy_triggers + sports_triggers + gov_triggers):
+                # If model says 'native ads', but we found tragedy/sports, we OVERRIDE it.
+                if label == "native ads":
+                    # Double check: Only allow ads if explicit 'beli', 'promo', 'gratis' is present with a brand
+                    brand_promo = any(kw in content_low for kw in ["diskon", " promo", "beli sekarang", "belanja", "voucher", "shopee", "tokopedia", "lazada"])
+                    if not brand_promo:
+                        label = "berita murni" 
+                        alasan = f"[GOVERNOR OVERRIDE] Terdeteksi konten berita murni (peristiwa/olahraga/kebijakan). Model asli menebak iklan, tetapi dibatalkan oleh parser. Alasan asli: {alasan}"
+
+            # Final check for label consistency
+            if label == "native ads" and not any(kw in (alasan + " " + content_low).lower() for kw in [" brand", "produk", "layanan"]):
+                label = "berita murni"
+
+            return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
         except Exception as e:
-            return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Emergency fallback'}
+            return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float: return 1.15
