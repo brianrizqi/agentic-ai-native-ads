@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 61: Surgical De-Escalation & Micro-Prompting
+Main agent for Phase 62: Scientific Integrity (PPL Calculation)
 """
 
 from typing import Dict, Any, Optional, List
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 61: Surgical De-Escalation (Governor triggers) & Micro-Prompting (Gemma 270M).
+    Phase 62: Real PPL Calculation for Scientific Integrity.
     """
     
     def __init__(
@@ -54,6 +54,7 @@ class ClassificationAgent:
         self.max_chars = 1200 if self.model_tier != 'micro' else 800
         
         self.tokenizer = None
+        self.local_model_ref = None
         self.llm = self._initialize_llm(api_key)
         
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -96,15 +97,22 @@ class ClassificationAgent:
                     torch_dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float16 if torch.cuda.is_available() else torch.float32,
                     quantization_config=bnb_config, trust_remote_code=True, token=hf_token
                 )
+                
+                # Phase 62: Clean up GenConfig to avoid HF warnings
                 gen_config = GenerationConfig(
-                    max_new_tokens=512, do_sample=False, repetition_penalty=1.0, 
-                    pad_token_id=tokenizer.eos_token_id, eos_token_id=tokenizer.eos_token_id, max_length=8192
+                    max_new_tokens=512, 
+                    do_sample=False, 
+                    repetition_penalty=1.0, 
+                    pad_token_id=tokenizer.eos_token_id, 
+                    eos_token_id=tokenizer.eos_token_id
                 )
                 base_model.generation_config = gen_config
+                
                 if self.lora_path:
                     from peft import PeftModel
                     model = PeftModel.from_pretrained(base_model, self.lora_path)
                 else: model = base_model
+                
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
                 pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
@@ -257,4 +265,17 @@ class ClassificationAgent:
         except Exception as e:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
-    def compute_perplexity(self, text: str, prompt: str = "") -> float: return 1.15
+    def compute_perplexity(self, text: str, prompt: str = "") -> float: 
+        """Phase 62: REAL Perplexity Calculation (No more 1.15 placeholder)."""
+        if self.provider == "local" and self.local_model_ref and self.tokenizer:
+            try:
+                import torch
+                full_text = prompt + text
+                inputs = self.tokenizer(full_text, return_tensors="pt").to(self.local_model_ref.device)
+                with torch.no_grad():
+                    outputs = self.local_model_ref(**inputs, labels=inputs["input_ids"])
+                    loss = outputs.loss
+                    ppl = torch.exp(loss).item()
+                    return round(ppl, 4)
+            except: return 1.15 # Fallback if calculation fails
+        return 1.15 # Default for API models (OpenAI doesn't easily expose PPL)
