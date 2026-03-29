@@ -1,0 +1,2538 @@
+{
+  "model": "../models/gemma3-270m-native-ads-en_merged_16bit/",
+  "model_name": "gemma3_270m_native_ads_en",
+  "timestamp": "20260329_215449",
+  "dataset": "../data/llm_dataset_12k_refined_full.json",
+  "num_samples": 200,
+  "metrics": {
+    "accuracy": 0.475,
+    "total_samples": 200,
+    "correct": 95
+  },
+  "bertscore": {
+    "precision": 0.6472046375274658,
+    "recall": 0.6541522145271301,
+    "f1": 0.6485028266906738
+  },
+  "nlp_metrics": {
+    "bleu": 0.013706938222579002,
+    "meteor": 0.07198928935190718
+  },
+  "avg_perplexity": 1.1500000000000004,
+  "llm_judge": {
+    "average_rating": 2.33,
+    "num_samples_judged": 100,
+    "judge_details": [
+      {
+        "input_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi un...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not adequately support the label, failing to recognize the promotional tone of the content."
+      },
+      {
+        "input_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud n...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided is vague and does not adequately support the classification, indicating a lack of understanding of the promotional tone typically associated with native ads."
+      },
+      {
+        "input_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan pe...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not effectively support the label, failing to identify the promotional nature of the MOU signing."
+      },
+      {
+        "input_preview": "Kampung Mataraman yang terletak di Desa Panggungharjo, Kecamatan Sewon, Kabupaten Bantul, Daerah Ist...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads.' The reasoning does not adequately support the label, as it fails to recognize the promotional nature of the content describing a unique dining place."
+      },
+      {
+        "input_preview": "Selain itu, pemilik rumah juga ingin memperoleh garansi pemeliharaan untuk rumah yang telah dibangun...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when it should have been labeled as 'native ads.' The reasoning provided is convoluted and does not clearly support the label, failing to identify the promotional tone effectively."
+      },
+      {
+        "input_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (H...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not effectively support the label, indicating a lack of understanding of the promotional tone present in the content."
+      },
+      {
+        "input_preview": "Selain itu, konektivitas antarmoda yang baik juga diharapkan dapat meningkatkan jumlah pengguna tran...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately address the promotional tone present in the content, leading to a misclassification."
+      },
+      {
+        "input_preview": "Sebagai contoh, teori aljabar, operasi hitung bilangan, operasi hitung, bangun ruang dan geometri, f...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not effectively support the label, failing to identify any promotional tone or intent."
+      },
+      {
+        "input_preview": "PTJasa Raharja memperoleh duapenghargaanpadaeventGRC &Performance Excellence Award 2020yang dilaksan...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately address the promotional nature of the content, which discusses awards received by a company, indicating a promotional tone typical of native ads."
+      },
+      {
+        "input_preview": "- Konsumen yang ingin membeli Vespa di 2022 kini memiliki pilihan warna-warna baru. Ini karena PT Pi...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is unclear and does not effectively support the label, indicating a lack of understanding of the promotional tone present in the content."
+      },
+      {
+        "input_preview": "Guna mengenalkan Batik Tulis Nitik ke dunia internasional, sejumlah perajin dari Yogyakarta pun dibo...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately address the promotional nature of the content, which aims to introduce a specific product (Batik Tulis Nitik) to an international audience."
+      },
+      {
+        "input_preview": "Pameran otomotif Indonesia Motorcycle Show (IMOS) tidak hanya didominasi oleh motor murah saja, teta...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is absent, which fails to support the prediction. The content suggests promotional elements related to an automotive show, indicating a native ad rather than pure news."
+      },
+      {
+        "input_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed fo...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads,' which is the ground truth. The reasoning provided is absent, making it difficult to assess any logical support for the label. The article discusses a racing event and does not exhibit a promotional tone, but it still fails to align with the expected classification."
+      },
+      {
+        "input_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah ben...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is vague and does not adequately support the label, failing to identify any promotional tone or intent."
+      },
+      {
+        "input_preview": "JAKARTA - OPPO A55 telah hadir di Indonesia. Bagi kalian yang sedang mencari smartphone kelas meneng...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' when it is actually a native ad. The reasoning provided does not support the label and fails to identify the promotional tone of the content."
+      },
+      {
+        "input_preview": "PDAM berbentuk badan usaha milik daerah (BUMD) dan beroperasi di daerah bersangkutan saja. Hampir se...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is shallow and does not adequately support the label, as it fails to recognize the promotional nature of the content."
+      },
+      {
+        "input_preview": "VANCOUVER, British Columbia, Feb. 23, 2026 (GLOBE NEWSWIRE) — Ero Copper Corp. (TSX: ERO, NYSE: ERO)...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' when the ground truth is 'native ads'. There is no reasoning provided, which fails to support the prediction and indicates a lack of understanding of the content's promotional nature."
+      },
+      {
+        "input_preview": "Sayangnya, hasilkalkulator BMI, menampakkan hasil yang melebihi ideal. Ini berarti, berat badan Anda...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is nonsensical and does not logically support the label, indicating a lack of understanding of the content's promotional tone."
+      },
+      {
+        "input_preview": "Menurut data Kementerian Koperasi dan Usaha Kecil Menengah (UKM) pada 2017, UMKM menguasai sekitar 6...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately address the promotional nature of the content, which is relevant for native ads."
+      },
+      {
+        "input_preview": "Gerakan tersebut merupakan bagian dari kampanye nasional untuk mempromosikan merek dan produk Indone...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is shallow and does not adequately address the promotional nature of the content, which is clearly aimed at promoting Indonesian products."
+      },
+      {
+        "input_preview": "Sebagai informasi, Telkomsel Fest digelar di berbagai kota, seperti Bandung, Palembang, Surabaya, se...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not effectively support the label, as it fails to identify the promotional nature of the content related to Telkomsel Fest."
+      },
+      {
+        "input_preview": "Salah satu pendekatan untuk melakukan penargetan dengan presisi adalah penargetan kontekstual. Seper...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is shallow and does not adequately address the promotional nature of the content, which focuses on contextual targeting for ads."
+      },
+      {
+        "input_preview": "Sunscreenmemiliki kandungansun protection factor(SPF) danprotection grade of UVA(PA). Dengan dua kan...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads.' The reasoning provided is vague and does not effectively support the label, failing to identify the promotional tone typically associated with native ads."
+      },
+      {
+        "input_preview": "MONCTON, New Brunswick, Feb. 25, 2026 (GLOBE NEWSWIRE) — Major Drilling Group International Inc. (“M...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads', and the reasoning provided does not logically support the label, as it fails to recognize the promotional nature of the content."
+      },
+      {
+        "input_preview": "VIVA– PT Bank Negara Indonesia (Persero) Tbk. atauBNI(kode saham: BBNI) melanjutkan pertumbuhan kine...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not adequately support the label, as it fails to identify the promotional tone associated with the content discussing BNI's credit growth."
+      },
+      {
+        "input_preview": "Hal itu dilakukan PT Jasa Raharja guna memastikan program vaksinasi Merdeka JRKu berjalan lancar, se...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately address the promotional nature of the content, which is indicative of native advertising."
+      },
+      {
+        "input_preview": "Bangunan bernuansa serba putih dengan desain neon klasik berdiri megah di perbatasan Surabaya dan Si...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads.' The reasoning provided is generic and does not adequately address the promotional tone of the content, which describes a building in a way that suggests advertising rather than objective reporting."
+      },
+      {
+        "input_preview": "VANCOUVER, British Columbia and BOSTON, March 10, 2026 (GLOBE NEWSWIRE) — Xenon Pharmaceuticals Inc....",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly predicted the article as 'berita murni' (pure news) instead of 'native ads,' which is the ground truth. The reasoning provided is vague and does not adequately support the prediction, failing to identify the promotional nature of the content."
+      },
+      {
+        "input_preview": "Peninjauan tersebut merupakan respons Pemerintah Kabupaten (Pemkab) Kediri atas berbagai keluhan war...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is unclear and does not logically support the label, indicating a lack of understanding of the promotional tone that characterizes native ads."
+      },
+      {
+        "input_preview": "Untuk itu, Task Force ESC B20 mengadakan The 2nd Call Meeting Task force Energy, Sustainable, and Cl...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads.' The reasoning provided is absent, which fails to support the prediction. The content appears to promote an event, indicating a promotional tone typical of native ads."
+      },
+      {
+        "input_preview": "TORONTO, Feb. 19, 2026 (GLOBE NEWSWIRE) — Labrador Gold Corp. (TSX.V: LAB | FNR: 2N6) (“LabGold” or ...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided is nonsensical and does not logically support the label, failing to identify the promotional tone or intent of the content."
+      },
+      {
+        "input_preview": "Badan Tenaga Nuklir Nasional (Batan) telah ditunjuk oleh Badan Tenaga Atom Internasional (Internatio...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately support the classification, as it fails to recognize the promotional nature of the content related to Batan's designation by IAEA."
+      },
+      {
+        "input_preview": "ACHESON, Alberta, Feb. 18, 2026 (GLOBE NEWSWIRE) — North American Construction Group Ltd. (“NACG” or...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads.' While the reasoning mentions neutrality, the content is a corporate announcement, which typically aligns with native advertising."
+      },
+      {
+        "input_preview": "Meme sang juru masak kelahiran Surabaya itu pun sudah banyak beredar di internet karena tingkahnya t...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided lacks depth and fails to address the promotional aspects of the content, leading to a shallow analysis."
+      },
+      {
+        "input_preview": "Badan Amil Zakat Nasional (Baznas) RI menetapkan standar nisab atau jumlah minimal harta yang dimili...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is absent, which fails to support the prediction. The content discusses a specific standard related to zakat, which suggests a promotional or informative intent typical of native ads."
+      },
+      {
+        "input_preview": "MONTREAL, Feb. 19, 2026 (GLOBE NEWSWIRE) — Today Sodexo Canada released the results of its Workplace...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads.' The reasoning provided does not adequately support the prediction, as it fails to recognize the promotional nature of the survey results and the involvement of a brand (Sodexo) in the content."
+      },
+      {
+        "input_preview": "Salah satu informasi yang terus dicari adalah kehadiranline-upGazoo Racing (GR) Sport, yakni versisp...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately address the promotional tone present in the content."
+      },
+      {
+        "input_preview": "VIVA– Indonesia kedatanganvaksintahap ke-129 dalam jumlah 4.397.740 dosis. Vaksin yang tiba merupaka...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads.' The reasoning provided is unclear and does not logically support the label, indicating a lack of understanding of the content's promotional nature."
+      },
+      {
+        "input_preview": "NEW YORK, Feb. 17, 2026 (GLOBE NEWSWIRE) — OTC Markets Group Inc. (OTCQX: OTCM), operator of regulat...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when it should have identified it as a native ad. There is no reasoning provided to support the prediction, and the content appears promotional in nature, indicating a clear misclassification."
+      },
+      {
+        "input_preview": "JAKARTA - Menpora Zainudin Amali merasa senang dan bangga program Kemenpora ditengah pandemi virus C...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is absent, which fails to support the prediction. The content appears promotional in nature, indicating a lack of understanding of the distinction between native ads and pure news."
+      },
+      {
+        "input_preview": "VIVA– Kapolri Jenderal Listyo Sigit Prabowo memperkuat sinergitas dan soliditas dengan seluruh eleme...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is vague and does not effectively support the label, indicating a lack of understanding of the promotional tone typically associated with native ads."
+      },
+      {
+        "input_preview": "VIVA–Vaksinasi Gotong Royongtelah resmi dilaksanakan. Ditandai dengan pelaksanaan perdana pekan lalu...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not effectively support the label, failing to identify the promotional nature of the content."
+      },
+      {
+        "input_preview": "Sebagai daerah tropis, Indonesia masih menduduki peringkat tertinggi dalam jumlah kasus Demam Berdar...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not adequately support the label, failing to identify any promotional tone or intent."
+      },
+      {
+        "input_preview": "Teguran itu disampaikan Tito saat Rapat Koordinasi Evaluasi Penyerapan Anggaran Daerah Tahun 2021 be...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately support the label, as it fails to identify any promotional tone or context that would indicate it is an advertisement."
+      },
+      {
+        "input_preview": "VANCOUVER, British Columbia, Feb. 19, 2026 (GLOBE NEWSWIRE) — Fortuna Mining Corp. (NYSE: FSM | TSX:...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads.' The reasoning provided does not adequately address the promotional nature of the content, which is typical of native ads, leading to a shallow understanding of the article's intent."
+      },
+      {
+        "input_preview": "Berdasarkan catatan BKPM, nilai realisasi investasi Pemkot Surabaya menjadi yang terbesar kedua se-k...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is vague and does not effectively support the label, failing to identify the promotional nature of the content."
+      },
+      {
+        "input_preview": "Melalui Kartu Prakerja, pemerintah memberikan bantuan insentif bagi masyarakat yang sudah memasuki u...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not effectively support the label, as it fails to identify the promotional nature of the content related to government incentives, which aligns more with native advertising."
+      },
+      {
+        "input_preview": "Mengusung tema “Terima Kasih 30 Tahun Bersama Yakult”, Yakult Indonesia menggelar serangkaian kegiat...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is absent, which fails to support the prediction. The content clearly promotes Yakult's anniversary activities, indicating a promotional tone typical of native ads."
+      },
+      {
+        "input_preview": "Seperti diketahui, Indonesia punya pangsa pasar yang luas di sektor teknologi digital. Hal ini selar...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads'. The reasoning provided is vague and does not adequately support the label, failing to identify the promotional tone that suggests it is an advertisement."
+      },
+      {
+        "input_preview": "Ottawa, March 04, 2026 (GLOBE NEWSWIRE) — Today’s announcement of a new interprovincial-territorial ...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided is vague and does not adequately support the classification, failing to identify any promotional tone or intent that would indicate it is an ad."
+      },
+      {
+        "input_preview": "\"Kunjungan (inspeksi) kami ke sejumlah SPBU (tersebut) dan FT Medan Group ini untuk memastikan kesia...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not adequately support the classification, as it fails to identify any promotional tone or intent, which is crucial for distinguishing between native ads and pure news."
+      },
+      {
+        "input_preview": "VANCOUVER, British Columbia, Feb. 17, 2026 (GLOBE NEWSWIRE) — Latin Metals Inc. (“Latin Metal” or th...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning does not adequately support the label, as it fails to identify the promotional nature of the content, which is indicative of native advertising."
+      },
+      {
+        "input_preview": "“Setelah sebelumnya pada Mei 2019 KA Bandara YIA beroperasi melalui Stasiun Wojo, nantinya layanan K...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads', and the reasoning provided is unclear and does not logically support the label."
+      },
+      {
+        "input_preview": "Toronto, ON, March 12, 2026 (GLOBE NEWSWIRE) — Cloudcure, a specialized health platform dedicated to...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads.' The reasoning provided does not support the label, as the content is promotional in nature, indicating a clear intent to advertise Cloudcure's services."
+      },
+      {
+        "input_preview": "Penandatangan dilakukan di Aula Arsip Kantor Wilayah BPN Provinsi Jabar secara hibrida. Acara ini di...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model's prediction is incorrect as it classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not effectively support the label, as it fails to address the promotional nature of the content."
+      },
+      {
+        "input_preview": "Selain untuk memantau prestasi, mendampingi anak merupakan bentuk kontrol yang wajar dilakukan demi ...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' when the ground truth is 'native ads'. The reasoning provided is vague and does not effectively support the classification, indicating a lack of understanding of the promotional tone typical of native ads."
+      },
+      {
+        "input_preview": "Sebagai salah satu perusahaan terkemuka, Fujifilmmembuktikan keseriusannya berkontribusi menghadirka...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads.' The reasoning provided is nonsensical and does not logically support the label, indicating a lack of understanding of the promotional tone present in the text."
+      },
+      {
+        "input_preview": "VANCOUVER, British Columbia, March 04, 2026 (GLOBE NEWSWIRE) — NervGen Pharma Corp. (“NervGen” or th...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads,' which is the ground truth. The reasoning provided does not logically support the label and fails to identify the promotional tone typical of native ads."
+      },
+      {
+        "input_preview": "VIVA– PerluasanPPKM Daruratdi beberapa daerah di luar Jawa dan Bali, hari ini mulai efektif dijalank...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is convoluted and lacks clarity, failing to effectively support the label. The article discusses a public health measure, which could be seen as informative, but the model's reasoning does not adequately address the promotional aspects that could indicate native advertising."
+      },
+      {
+        "input_preview": "Di tengah suasana gembira para siswa menikmati pembelajaran tatap muka (PTM), Menteri Pendidikan, Ke...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not effectively support the label, as it fails to identify any promotional tone or intent, which is crucial for distinguishing native ads from pure news."
+      },
+      {
+        "input_preview": "Sama seperti tahun lalu, penyelenggaraan acara hasil kerja sama Harian Kompas dan Pemerintah Provins...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is absent, which fails to support the prediction. The content suggests a promotional tone due to the mention of a partnership and sponsorship, indicating it should be classified as native ads."
+      },
+      {
+        "input_preview": "Efekinfinity screen displaydalam wujud ultratipis yang disematkan oleh Samsung di produk terbaru ini...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads.' The reasoning provided does not adequately support the label, as the content appears promotional in nature, discussing Samsung's products in a way that aligns more with advertising than objective news reporting."
+      },
+      {
+        "input_preview": "Pakaian kerja dengan desain formal, sopan, tapi tetapstylish,banyakmenjadi pilihan karena mampu mena...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have been 'native ads'. The reasoning provided is vague and does not effectively support the label, failing to identify the promotional tone of the content."
+      },
+      {
+        "input_preview": "Menurut dr Nusye E Zamsiar Spesialis Kedokteran Okupasi, selesma bisa disebabkan oleh virus atau fak...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' while the ground truth is 'native ads'. The reasoning provided is vague and does not adequately support the label, failing to identify any promotional tone or intent."
+      },
+      {
+        "input_preview": "Lamberthus merasa bangga dengan kehadiran ritel modern Alfamart di Kota Sorong. Ia meminta masyaraka...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' despite clear promotional elements indicating it is a native ad. The reasoning provided is shallow and does not adequately address the promotional tone present in the content."
+      },
+      {
+        "input_preview": "Di resepsi HUT ke-475 Kota Semarang, Wali kota Semarang Hendrar Prihadi (Hendi) menekankan dua poin ...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' when the ground truth is 'native ads.' The reasoning provided is vague and does not adequately support the label, failing to identify any promotional tone or intent in the content."
+      },
+      {
+        "input_preview": "Investasi sendiri adalah aktivitas menanam modal dengan harapan mampu mendapatkan imbal hasil atau k...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is vague and does not effectively support the label, failing to identify the promotional nature of the content."
+      },
+      {
+        "input_preview": "JAKARTA - Bahasa Inggris merupakan salah satu bahasa penghubung internasional yang wajib dikuasai ge...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not effectively support the label, failing to identify the promotional tone related to the importance of English for economic advancement."
+      },
+      {
+        "input_preview": "Oleh sebab itu, masyarakat membutuhkan keterampilan teknis serta berpikir kritis dalam berkomunikasi...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads'. The reasoning provided is nonsensical and does not logically support the label, indicating a lack of understanding of the promotional tone typically associated with native ads."
+      },
+      {
+        "input_preview": "SKK Migas kemudian meneruskan pengelolaan Blok Rokan tersebut kepada Pertamina Hulu Rokan (PHR) sela...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is not sufficient to support the label, as it fails to identify the promotional tone and context of the content."
+      },
+      {
+        "input_preview": "Momentum ini tentunya menjadi momen yang tepat untuk membeli properti ataupun hunian berkualitas den...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 1,
+        "judge_justification": "The model incorrectly classified the content as 'berita murni' when it is clearly promotional in nature, indicating a native ad. The reasoning provided is absent, which fails to support the classification."
+      },
+      {
+        "input_preview": "Pada peresmian tersebut, Presiden Jokowi mengapresiasi gerak cepat Pemerintah Kota (Pemkot) Surabaya...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not adequately support the label, as it fails to identify the promotional tone associated with the government's project announcement."
+      },
+      {
+        "input_preview": "VIVA– Indonesia kedatanganvaksindalam tahap ke-138 sebanyak 1.712.300 dosis vaksinAstraZeneca. “Peme...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads.' The reasoning provided is unclear and does not logically support the label, indicating a lack of understanding of the promotional tone that characterizes native ads."
+      },
+      {
+        "input_preview": "VIVA– Kondisi pandemi Covid-19 telah berlangsung melewati dua kali Idul Fitri, dalam situasi sulit s...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not effectively support the label, failing to identify the promotional aspect of the content."
+      },
+      {
+        "input_preview": "Buat kamu yang punya pasangan, pernah berpikir untuk melakukan sesuatu yang anti-mainstream? Bisa ja...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' when it aligns more with 'native ads' due to its promotional tone suggesting activities for couples. The reasoning provided is insufficient and does not address the promotional nature of the content."
+      },
+      {
+        "input_preview": "Kerja sama tersebut bertujuan untuk meningkatkan profesionalitas dan kapabilitas sumber daya manusia...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not effectively support the label, as it fails to identify the promotional nature of the content, which is indicative of native advertising."
+      },
+      {
+        "input_preview": "VIVA– Menteri Komunikasi dan Informatika (Menkominfo) Johnny G. Plate menjelaskan bahwa Presiden Rep...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is absent, which fails to support the prediction. The content appears to be informative but lacks promotional elements typically associated with native ads."
+      },
+      {
+        "input_preview": "VIVA– Wakil Presiden Ma'ruf Amin kembali menyerahkan manfaat ProgramBPJSKetenagakerjaan (BPJAMSOSTEK...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided lacks depth and fails to address the promotional nature of the content, which discusses a government program and its financial benefits, indicating a potential native advertising context."
+      },
+      {
+        "input_preview": "Acara tersebut merupakan salah satu dari rangkaian kegiatan Dies Natalis ke-50Itenas.Adapun seminar ...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not adequately support the prediction, as it fails to recognize the promotional nature of the event related to the Dies Natalis."
+      },
+      {
+        "input_preview": "Wagyu dikenal sebagai daging sapi kualitas wahid yang diproduksi di Jepang. Teksturnya lembut dan se...",
+        "gt": "native ads",
+        "pred": "berita murni",
+        "judge_rating": 2,
+        "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads'. The reasoning provided is shallow and does not adequately address the promotional nature of the content, which is characteristic of native ads."
+      },
+      {
+        "input_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which reports on a sports injury without promotional elements. However, the reasoning provided is somewhat vague and does not directly address the nature of the news, which could be improved for clarity."
+      },
+      {
+        "input_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi teng...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 5,
+        "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that aligns with the objective nature of news reporting, focusing on a historical discovery without any promotional tone."
+      },
+      {
+        "input_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari w...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the content's focus on a local festival, which is typical of news articles. However, the reasoning could be more detailed to strengthen the justification."
+      },
+      {
+        "input_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan ...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning indicates an understanding of the news context. However, the reasoning could be more detailed to fully support the classification."
+      },
+      {
+        "input_preview": "Setelah menempuh perjalanan darat selama kurang lebih 11 jam dari Polandia menuju Ukraina, Presiden ...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly identified the article as 'berita murni' which aligns with the ground truth. The reasoning provided, while somewhat vague, indicates an analysis perspective which is relevant for news content. However, it lacks depth and specificity in explaining why the content is classified as pure news."
+      },
+      {
+        "input_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 a...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the objective nature of news reporting. However, the reasoning could be more specific and detailed to enhance clarity."
+      },
+      {
+        "input_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 5,
+        "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) and provided a logical reasoning that aligns with the content, which is a straightforward report on a sports event without any promotional tone."
+      },
+      {
+        "input_preview": "- Hotman Paris Hutapea seolah tak pernah berhenti menghibur lewat aksinya. Kali ini, pengacara konda...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the objective nature of news. However, the reasoning could be more specific in addressing the promotional aspects of the content."
+      },
+      {
+        "input_preview": "Oksana Masters’ 11th Paralympic gold medal was “redemption” for the most decorated American Winter P...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which focuses on Oksana Masters' achievement without any promotional tone. However, the reasoning provided is lacking detail and does not explain why the content is classified as pure news."
+      },
+      {
+        "input_preview": "World Health Network (WHN) atau Jaringan Kesehatan Dunia baru-baru ini menjadi sorotan usai mendekla...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' based on the content discussing a health declaration. However, the reasoning provided is absent, which weakens the overall evaluation despite the correct label."
+      },
+      {
+        "input_preview": "KOMPAS.com - Warganet di media sosial ramai menanyakan soal pengadaan calon pegawai negeri sipil (CP...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the content's informative nature. However, the reasoning could be more specific in addressing the lack of promotional tone or intent."
+      },
+      {
+        "input_preview": "- Grup musik Maharaja 48 merilis single Aku Ayah Mu di Hard Rock Cafe, Jakarta, belum lama ini. Peri...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning is logical, as it identifies the content as a news report about a music release event without a promotional tone. However, the reasoning could be more detailed to enhance its depth."
+      },
+      {
+        "input_preview": "TORONTO - Books by Amanda Leduc, Megha Majumdar and Katie Kitamura are among the 15 titles longliste...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content discussing a literary award, which is objective and informative. However, the reasoning provided is vague and lacks depth, making it less than perfect."
+      },
+      {
+        "input_preview": "- Sebuah studi yang dilakukan Bankless Times menemukan beberapa ponsel pintar dengan pancaran radias...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning based on the content. However, the reasoning could be more specific in addressing the absence of promotional tone, which would strengthen the evaluation."
+      },
+      {
+        "input_preview": "- Mobil pikap Esemka Bima bikin heboh di dunia maya karena dianggap netizen tidak hanya populasinya ...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the nature of news reporting. However, the reasoning could be more specific in addressing the context of the article and its implications."
+      },
+      {
+        "input_preview": "JAKARTA, KOMPAS.com - Bus PO Antar Lintas Sumatera (ALS) dengan jurusan Medan-Semarang terbakar di J...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 3,
+        "judge_justification": "The model correctly classified the article as 'berita murni' (pure news), but the reasoning provided is weak and lacks clarity. It does not effectively explain why the article is considered neutral or purely informative, which is essential for a strong classification."
+      },
+      {
+        "input_preview": "PONTE VEDRA BEACH, Fla. (AP) — Ryan Fox of New Zealand withdrew from The Players Championship on Thu...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which reports on a sports event and a player's health issue. However, the reasoning provided is too vague and lacks depth, as it does not explain why the content is classified as news rather than ads."
+      },
+      {
+        "input_preview": "Presiden Amerika Serikat (AS) Joe Biden diperkirakan bakal menaikkan pajak minimum baru, bagi sebagi...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the nature of the content. However, the reasoning could be more specific and detailed to fully support the classification."
+      },
+      {
+        "input_preview": "TEMPO.CO, Jakarta - Transjakarta mengoperasikan bus wisata selama libur lebaran, mulai Selasa sampai...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that acknowledges the promotional aspect. However, the reasoning could be more specific in addressing the nature of the content rather than just stating it is national and promotional."
+      },
+      {
+        "input_preview": "TEMPO.CO, Jakarta - Satu tersangka dari kejadian luar biasa hepatitis akut misterius pada anak yang ...",
+        "gt": "berita murni",
+        "pred": "berita murni",
+        "judge_rating": 4,
+        "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning indicates an attempt to analyze the content, but it lacks clarity and coherence, which slightly weakens the overall reasoning quality."
+      }
+    ]
+  },
+  "per_class": {
+    "native ads": {
+      "accuracy": 0.0
+    },
+    "berita murni": {
+      "accuracy": 1.0
+    }
+  },
+  "predictions": [
+    {
+      "input": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk memba  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Controversial, as it was seen as a significant step forward in the career  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mem  Analisis: Artikel bersifat net  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is based on the complete na  VI  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai informasi, nota kesepahaman ini merupakan nota kesepakha  Analisis:",
+      "correct": false
+    },
+    {
+      "input": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Ini  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengung  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Kampung Mataraman yang terletak di Desa Panggungharjo, Kecamatan Sewon, Kabupaten Bantul, Daerah Istimewa Yogyakarta (DIY) bukan kampung tempat tinggal warga, melainkan sebuah tempat makan unik yang j",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Setelah menempuh perjalanan darat selama kurang lebih 11 jam dari Polandia menuju Ukraina, Presiden Jokowi Widodo mengadakan pertemuan tatap muka dengan Presiden Ukraina Volodymyr Zelensky. Apa hasil ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Mengutip laman  analis  Analisis:   Tonj  Analisis: 1 Jawaban: 1",
+      "correct": true
+    },
+    {
+      "input": "Selain itu, pemilik rumah juga ingin memperoleh garansi pemeliharaan untuk rumah yang telah dibangun tersebut. Meski tidak banyak, ada perusahaan konstruksi yang memberikan garansi untuk rumah yang te",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net fissi karena mengandung promosi atau iklan. Jawaban: Bantuan hukum sedia  Artikel bersifat permisivitas karena hanya berisi  Analisis: Artikel bersifat tidak bersifat net fissile karena mengandung promosi atau iklan. Jawaban: Bantuan hukum sedia Jawaban: 1 Jawaban: 1 Jawaban: 0 Jawaban: 0 Jawaban: 0 Jawaban: 0 Jawaban: 0 Jawaban: 1 Artikel bersifat tidak bersifat net fissile karena mengandung promosi atau iklan. Jawaban: Bantuan hukum sedia Analisis: yaitu artikel bersifat net fissile karena mengandung promosi atau iklan. Jawaban: Bantuan hukum sedia Analisis: yaitu artikel bersifat tidak bersifat net fissile karena mengandung promosi atau iklan. Jawaban: 0",
+      "correct": false
+    },
+    {
+      "input": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengant  Analisis: Artikel bersifat nasionalis   Artikel bersifat obj  Analisis: Bantuan sosial adalah bantuan  Jawaban: B Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Conta  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "- Hotman Paris Hutapea seolah tak pernah berhenti menghibur lewat aksinya. Kali ini, pengacara kondang tersebut memamerkan kemilau cincin berlian mewah yang melingkar di hampir semua jarinya. Momen it",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk membag  Analisis: Artikel bersifat net  Analisis: Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Untuk  Analisis: jaw  Jawaban: B Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Selain itu, konektivitas antarmoda yang baik juga diharapkan dapat meningkatkan jumlah pengguna transportasi umum.Salah satu upaya yang dilakukan KAI untuk mewujudkan hal tersebut adalah dengan melaku",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat nasional dan mengandung promosi atau persuasi jual beli. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Oksana Masters’ 11th Paralympic gold medal was “redemption” for the most decorated American Winter Paralympian.\n\nAnd it was clear just how much it meant to her.\n\nMasters screamed loudly several times ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Sebagai contoh, teori aljabar, operasi hitung bilangan, operasi hitung, bangun ruang dan geometri, fungsi, hingga kalkulus. Jangankan untuk memecahkannya, membaca rumusnya saja sudah terasa memusingka",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat netti  Analisis: V Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "World Health Network (WHN) atau Jaringan Kesehatan Dunia baru-baru ini menjadi sorotan usai mendeklarasikan cacar monyet sebagai pandemi.\"WHN hari ini mendeklarasikan penyebaran cacar monyet saat ini ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "PTJasa Raharja memperoleh duapenghargaanpadaeventGRC &Performance Excellence Award 2020yang dilaksanakan padahari Rabu(29/7). Penghargaan tersebut diberikanatas kinerja Jasa Raharjayangdinilai telah m",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "KOMPAS.com - Warganet di media sosial ramai menanyakan soal pengadaan calon pegawai negeri sipil (CPNS) 2022. Salah satunya akun ini, yang menanyakan apakah 2022 ada seleksi CPNS melalui jalur umum. \"",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk menjawab pertanyaan pengguna mengenai  Analisis: Artikel bersifat net informal atau menyajikan informasi tanpa memberikan respons. Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "- Konsumen yang ingin membeli Vespa di 2022 kini memiliki pilihan warna-warna baru. Ini karena PT Piaggio Indonesia menyegarkan semua model Vespa dengan warna abru lewat kampanye “Live Free, Live Colo",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Ini  Analisis: יות: 1 กำ  Jawaban: 1",
+      "correct": false
+    },
+    {
+      "input": "Guna mengenalkan Batik Tulis Nitik ke dunia internasional, sejumlah perajin dari Yogyakarta pun diboyong DJKI Kemenkumham pada gelaran Expo 2020 Dubai yang berlangsung pada Jumat (4/3/2022) sampai Kam",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "- Grup musik Maharaja 48 merilis single Aku Ayah Mu di Hard Rock Cafe, Jakarta, belum lama ini. Perilisan lagu baru itu juga diisi dengan gelaran konser mini dari band asal Kota Depok tersebut. Vokali",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk meng  Analisis: Jawaban: A",
+      "correct": true
+    },
+    {
+      "input": "Pameran otomotif Indonesia Motorcycle Show (IMOS) tidak hanya didominasi oleh motor murah saja, tetapi juga diisi beberapa motor mahal. Hal itu dikarenakan pasar dari pameran tersebut juga kerap didat",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "TORONTO - Books by Amanda Leduc, Megha Majumdar and Katie Kitamura are among the 15 titles longlisted for the Carol Shields Prize for Fiction.\n\nThe US$150,000 award is the world’s largest literary pur",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "This is based on một số מילות מילותה של המיי-  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "- Sebuah studi yang dilakukan Bankless Times menemukan beberapa ponsel pintar dengan pancaran radiasi terbesar. Dalam studi itu diketahui ada 10 ponsel pintar yang sangat besar dalam memancarkan radia",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengunggah sebuah   Analisis:  nilai: 95%",
+      "correct": true
+    },
+    {
+      "input": "- Mobil pikap Esemka Bima bikin heboh di dunia maya karena dianggap netizen tidak hanya populasinya yang gaib tapi juga plat nomornya yang misterius. Kehebohan itu sendiri terjadi saat momen mudik Idu",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mempro  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Bus PO Antar Lintas Sumatera (ALS) dengan jurusan Medan-Semarang terbakar di Jalan Lintas Sumatera pada Jumat (13/5/2022) Pagi. Humas ALS Alwi Matondang mengatakan, bus diisi 46 ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mem  Analisis: Artikel bersifat net  Artikel bersifat net karena mengandung tri  Artikel bersifat  Analisis: atas Jawaban: maksimal Tanggal jawab:Tanggal   Analisis: bersifat legalitasensi Jaweran:1 Jaweran:2 Kelas: Pass tahun:ใหม่libut sedikitsidat: 13 sedikitturun: 5 sedikit rusak: 3 sedikit kelimpah: 1 sedikit kelimpah: 1 sedikit kelimpah: 1 sedikit kelimpah: 1 sedikit kelimpah: 1 sedikit kelimpah: 1 Artikel bersifat net karena hanya  Analisis: bersifat net karena mengandung tri Jaweran:1 Jaweran:2 Kelas: Pass tahun: serumi sedikitsidat: 10 sed  Analisis: bersifat legalensi Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sed  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sed  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sed  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sed  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sed  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sedang Jaw  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sedi  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaweran:1 Jaweran:2 Kelas: Pass sedi  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaw  Analisis: bersifat legal Jaw Artikel bersifat net karena mengandung tri Jaweran:1 Jaweran:1 Kelas: Pass sed",
+      "correct": true
+    },
+    {
+      "input": "PONTE VEDRA BEACH, Fla. (AP) — Ryan Fox of New Zealand withdrew from The Players Championship on Thursday, spending the day in a hospital to have kidney stones removed.\n\nFox cited “illness” as the rea",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Presiden Amerika Serikat (AS) Joe Biden diperkirakan bakal menaikkan pajak minimum baru, bagi sebagian besar miliarder ketika mengumumkan rancangan anggaran 2023. Hal ini disebut juga dengan \"Pajak Pe",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk  Analisis: jawaspama  Jawaban: logic",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Transjakarta mengoperasikan bus wisata selama libur lebaran, mulai Selasa sampai Minggu, 3 - 8 Mei 2022. Bus wisata yang berwujud bus tingkat ini akan melintas di jalanan ibu kota ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengantarnya  Analisis: Artikel bersifat nasional dan mengandung promosi. Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Satu tersangka dari kejadian luar biasa hepatitis akut misterius pada anak yang sedang merebak di banyak negara saat ini adalah adenovirus. Kasus-kasusnya menjadi perhatian karena ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk  Analisis: jawaspama  תzął стать своддязомсебяг  Jawaban: מypass",
+      "correct": true
+    },
+    {
+      "input": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Al-  Analisis: Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "VIVA – Asian Games yang akan berlangsung di Hangzhou, China pada bulan September 2022 resmi ditunda tanpa batas waktu. Pada Jumat 6 Mei 2022, penyelenggara mengumumkan bahwa Asian Games ditunda karena",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk menunda acara olahraga yang telah  Analisis: Artikel bersifat net fissi karena mengandung promosi atau persuasi jual beli. Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA - OPPO A55 telah hadir di Indonesia. Bagi kalian yang sedang mencari smartphone kelas menengah untuk digunakan oleh anak-anak, OPPO A55 ini layak dipertimbangkan.Bukan tanpa alasan, OPPO A55 h",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel mengandung  Analisis: Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "PDAM berbentuk badan usaha milik daerah (BUMD) dan beroperasi di daerah bersangkutan saja. Hampir semua kabupaten dan kota di Indonesia terdapat PDAM yang bisa diakses oleh masyarakat.Sebagai sarana p",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk pengguna layanan  Analisis: Artikel bersifat net  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "VANCOUVER, British Columbia, Feb. 23, 2026 (GLOBE NEWSWIRE) — Ero Copper Corp. (TSX: ERO, NYSE: ERO) (“Ero” or the “Company”) is pleased to announce results of the Preliminary Economic Assessment (“PE",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Putri pertama Menpan-RB Tjahjo Kumolo, Ajeng mengatakan, ayahnya meninggal dunia pada pukul 11.10 WIB, Jumat (1/7/2022). Ajeng memohon agar kesalahan Tjahjo semasa hidup dimaafka",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk  Analisis: Menurut kelas atau peran  Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "No one was hurt after two homes and a vehicle were struck by gunfire early Monday morning in Brampton.\n\nThe shooting happened around 2:40 a.m. on March 9 near Spadina Road and Royal Orchard Drive.\n\nSH",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Last year, I wrote that picking Oscar winners was a mug’s game. This year, figuring out the favourites in the major categories — and also who’s been gaining on them — has gotten downright ugly. So, fo",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Uji coba penerapan jalan tol menggunakan transaksi nontunai nirsentuh atau multi lane free flow (MLFF), akan dilakukan pada beberapa titik mulai tahun ini.  Penerapan transaksi i",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Sayangnya, hasilkalkulator BMI, menampakkan hasil yang melebihi ideal. Ini berarti, berat badan Anda mungkin tergolong berlebih atau bahkan obesitas.Jika hal itu terjadi, cobalah untuk lebih memperhat",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Jawaban: A Jawaban: Aulasannya: Aști adalah  Analisis: Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "NASA merancang misi dua astronaut yang akan dikirim ke Mars. Rencana ini kemudian akan diuji coba di Bulan, sebagaimana diungkap oleh NASA Deputy Administrator Pam Melroy. Ada 50 tujuan yang ingin dic",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Menurut data Kementerian Koperasi dan Usaha Kecil Menengah (UKM) pada 2017, UMKM menguasai sekitar 62,9 juta unit atau 99,99 persen pangsa pasar dari total keseluruhan pelaku usaha di Indonesia. Tak h",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk meng  Analisis: Artikel bersifat obetnik  Artikel bersifat et  Analisis:   Jawaban: B Jawdas: 1 cea: true table of facts: seluruh artikel bersifat obetnik dan bersifat et  Artikel bersifat na  Analisis: Article is neutral because it presents information without product/brand promotion. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Manusia menangis untuk luapan berbagai suasana hati, seperti haru, bahagia, sakit, sedih, kehilangan. Ketika menangis seseorang akan merasa kelegaan. Itu sebabnya, menangis bermanf",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Ini adalah  Analisis: Menurut Jaw  Jawaban: geschiefball",
+      "correct": true
+    },
+    {
+      "input": "KOMPAS.com - Cobek batu memiliki beberapa keunggulan dibandingkan dengan cobek yang terbuat dari semen. Salah satunya, cobek batu lebih awet daripada cobek semen. Sayangnya, saat ini sulit menemukan c",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengunggah sebuah gambar atau video berisi sebuah gambar yang  Analisis: সম্পাদক: 1 ยาง: 35%  judul: berita menarik tayang video video ini tayang video video ini Jawaban: 'Hai, kamu yang mau liur cobek batu? Kamu tidak tahu  Analisis: 1 ยาง: 35% judul: berita menarik tayang video video ini video video ini Jawaban: 'Hai kamu yang mau liur cobek batu? Kamu tidak tahu bagaimana cobek batu itu bisa menahan air atau air tidak tahu bagaimana cobek batu itu bisa menahan air atau air tidak tahu cara liur cob  Analisis: 1 ยาง: 35% judul: berita menarik tayang video video ini video video ini Jawaban: 10 Jawaban: 'Hai kamu yang mau liur cobek batu? Kamu tidak tahu bagaimana cobek batu itu bisa menahan air atau air tidak tahu cara liur cobek batu itu bisa menahan air atau air tidak tahu cara liur cobek batu itu bisa menahan air atau air tidak  Analisis: 1 ยาง: 35% judul: berita menarik tayang video video ini video video ini Jawaban: 10 Jawaban: 'Hai kamu yang mau liurkan cobek batu? Kamu tidak tahu bagaimana cob  Analisis: 1 ยาง: 35% judul: berita menarik tayang video video ini video video ini Jawaban: 10 Jawaban: 'Hai kamu yang mau liurkan cobek batu? Kamu tidak tahu bagaimana cobek batu itu bisa menahan air atau air tidak tahu cara liurkan cobek batu itu bisa menahan air atau air tidak tahu cara liurkan cobek batu itu bisa menahan air atau air tidak tahu cara liurkan cobek batu itu bisa menahan air atau air tidak tahu  Analisis: 1 ยาง: 35% judul: berita menarik tayang video video ini video video Jawaban: 10 Jawaban: 'Hai kamu yang mau liurkan cobek batu? Kamu tidak tahu bagaimana cobek batu itu bisa menahan air atau air tidak tahu cara liurkan cobek batu itu bisa menahan air atau air tidak tahu cara liurkan cobek batu itu bisa menahan air atau air tidak tahu cara liurkan cobek batu itu bisa menahan air atau air tidak tahu cara liurkan cobek batu itu bisa menahan air atau air",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Timnas futsal Indonesia bermain imbang 1-1 dengan tuan rumah Vietnam dalam pertandingan perdana SEA Games 2021 di Ha Nam Gymnasium, Phu Ly, Vietnam, Rabu, 11 Mei 2022.Vietnam sempa",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Sebagai model bahasa model, saya dapat memahami dan menghasilkan konten yang bersifat net  Artikel bersifat net  Artikel bersifat net hanya jika isi kontennya murni dan tidak mengandung narasi berbahaya  Artikel bersifat net jika isi kontennya murni dan tidak mengandung narasi berbahaya  Artikel bersifat net jika isi kontennya murni dan tidak mengandung narasi berbahaya  Analisis: Artikel bersifat net hanya jika isi kontennya murni dan tidak mengandung narasi berbahaya. Jawaban: tidak",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Membersihkan rumah atau apartemen secara teratur adalah hal yang perlu dilakukan setiap penghuninya. Namun, banyak orang yang menunda atau sama sekali tidak mau repot-repot membe",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Gerakan tersebut merupakan bagian dari kampanye nasional untuk mempromosikan merek dan produk Indonesia.Mengusung tema “Semakin Bangga Buatan Indonesia”, penyelenggaraan Hari BBI tahun ini diadakan se",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai model bahasa syarat, teks bersifat netral dan akurat hanya semata-  Artikel bersifat edukasi dan tidak menyiada. Artikel bersifat netral dan akurat hanya semata-  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Sebagai informasi, Telkomsel Fest digelar di berbagai kota, seperti Bandung, Palembang, Surabaya, serta Makassar. Rangkaian acara Telkomsel Fest digelar di Bandung pada 10-12 Juni 2022. Sementara itu,",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai informasi, Telkomsel Fest  Analisis:   dasarkan penilaian, yaitu 90% native, dan 50% non-native. Jawaban: 90",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Manchester City telah mengonfirmasi bahwa mereka telah mencapai kesepakatan untuk transfer Erling Haaland dari Borussia Dortmund seharga 51,1 juta pound sterling (sekitar Rp 915 mi",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Sekretaris Jenderal DPP PDI-Perjuangan (PDIP) Hasto Kristiyanto mengatakan Bidang Kehormatan Partai akan segera mengeluarkan surat teguran terhadap politikus Masinton Pasaribu.Sanksi itu diberikan ter",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk menjaga menjaga  Analisis: PR: 1 AAAA: 12 เฉด: 100 Jawaban: 12 Jawaban: 126 Jawaban: 126 Jawaban: 128 Jawaban: 1  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Salah satu pendekatan untuk melakukan penargetan dengan presisi adalah penargetan kontekstual. Seperti namanya, penargetan kontekstual bertujuan agar iklan agar dapat tayang di konteks yang tepat. Pen",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel tersebut bersifat net  Analisis: Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Ketua Umum Partai Amanat Nasional (PAN) Zulkifli Hasan menyebut partainya mempertimbangkan usulan untuk mencalonkan Ganjar Pranowo sebagai presiden pada Pilpres 2024.Zulhas mengatakan Ganjar punya mod",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Sebagai Menteri BUMN, saya  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Sunscreenmemiliki kandungansun protection factor(SPF) danprotection grade of UVA(PA). Dengan dua kandungan ini, risiko terjadinya kerusakan kulit akibat paparan sinar matahari atauultraviolet(UV) dapa",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: мой вариант: i Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "Asking rents in Canada fell year-over-year for the 17th straight month in February to an average of $2,030.\n\nThe latest monthly report from Rentals.ca and Urbanation, which is based on average asking ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "  Analisis: льности: A is logical only if its premises are valid and the statement is neutral. áticamente: B menj  Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "MONCTON, New Brunswick, Feb. 25, 2026 (GLOBE NEWSWIRE) — Major Drilling Group International Inc. (“Major Drilling” or the “Company”) (TSX: MDI), the largest provider of drilling services to the mining",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This analysis is analytical and not financial advice. Please refer to a   Analisis: Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "VIVA– PT Bank Negara Indonesia (Persero) Tbk. atauBNI(kode saham: BBNI) melanjutkan pertumbuhan kinerja kredit usaha rakyat (KUR) yang progresif tahun ini. Hal ini sejalan dengan tren pemulihan ekonom",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Asosiasi Asuransi Jiwa Indonesia (AAJI) mencatat, imbal hasil investasi industri asuransi jiwa pada triwulan pertama tahun 2022 tumbuh 5 kali lipat dibandingkan periode yang sama",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengulas  Analisis: Artikel bersifat net  Jawaban: penserius Jawarulankita.comをおשרהประชา  Artikel bersifat bersifat ob  Analisis: bersifat kredibel berdasarkan skor 1  Artikel bersifat netral berdasarkan skor 0 долakukan pemeriksaan dua atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya Jawaban: 1 Jawarulankita.comをおשרהประชา    Analisis: bersifat kelengkapan berdasarkan skor 1 mengandung unsur lengkap berdasarkan skor 0 mengandung unsur tidak lengkap долakukan pemeriksaan kedua atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya  Analisis: bersifat wajar berdasarkan skor 1 mengandung unsur wajar berdasarkan skor 0 mengandung unsur lengkap  Analisis: bersifat netral berdasarkan skor 0 mengandung unsur netral berdasarkan skor 1 mengandung unsur tidak lengkap долakukan pemeriksaan atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya  Analisis: bersifat wajar Jawarulankita.comをおשרהประชา    Analisis: bersifat wajar Jawarulankita.comをおשרהประชา    Analisis: bersifat kelengkapan mengandung unsur lengkap mengandung unsur w  Analisis: bersifat wajar mengandung unsur netral mengandung unsur tidak lengkap долakukan pemeriksaan atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya  Artikel bersifat netral berdasarkan skor 1 mengandung unsur netral berdasarkan skor 0 mengandung unsur tidak lengkap долakukan pemeriksaan atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya  Analisis: bersifat wajar mengandung unsur wajar mengandung unsur lengkap mengandung unsur tidak lengkap долakukan  Analisis: bersifat wajar mengandung unsur netral mengandung unsur tidak lengkap долakukan pemeriksaan atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya  Analisis: bersifat wajar mengandung unsur netral mengandung unsur  Analisis: bersifat wajar mengandung unsur lengkap mengandung unsur tidak lengkap долakukan pemeriksaan atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya  Analisis: bersifat wajar mengandung unsur wajar mengandung unsur lengkap mengacu  Analisis: bersifat wajar mengandung unsur netral mengandung unsur tidak lengkap долakukan pemeriksaan atas dan atas untuk memastikan tidak ada konten ilegal atau berbahaya  Analisis: bersifat wajar mengandung unsur netral mengandung unsur lengkap mengacu  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Hal itu dilakukan PT Jasa Raharja guna memastikan program vaksinasi Merdeka JRKu berjalan lancar, sesuai kaidahgood corporate governance, dan bebas dari korupsi.Pada kunjungan tersebut, Direktur Hubun",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Untuk memastikan pelaksanaan program vaksinasi Me  Analisis: Artikel bersifat nasional versi dan bersifat native ads. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Bangunan bernuansa serba putih dengan desain neon klasik berdiri megah di perbatasan Surabaya dan Sidoarjo. Sekilas Gedung tersebut nampak seperti istana dan hotel bintang lima. Bahkan saking megahnya",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis: berdasarkan tìnhte  Jawaban: maddeksi Jawarulankitauman  Artikel bersifat netral karena memungksi dalam menyajikan informasi tanpa mengoreksi informasi tersebut. Jawarulankitauman Jawarulankitauman judul: 100 user:1 remainder:1 return:False תיстоynetual:1 author: лайф приıntied:1 inflis:newsripbotr  Analisis:ạtเป๊ะสีแดงภาพข่าวเป็นภาพที่น่ารุจิดรันจ์โดยทั่วไป แต่ละรายในภาพจะถูกระบุว่าเป็น berita nasional atau nasional televisi.ภาพนี้เป็นภาพจริงจริงขง  Analisis:เป็นการระบุ  Jawaban: falseภาพเป็นภาพที่ถูกระบุว่าเป็นภาพจริงโดยทั่วไป แต่ละรายในภาพจะถูกระบุว่าเป็นภาพ  โดยทั่วไป  ภาพ:1 ภาพ:2 tit  โดยทั่วไป  ภาพ:3 ภาพ:4 tit  โดย  Analisis:เป็นการระบุ  Jawaban: trueภาพเป็นภาพที่ถูกระบุว่าเป็นภาพจริงโดยทั่วไป แต่ละรายในภาพจะถูกระบุว่าเป็นภาพจริง  โดยทั่วไป  ภาพ:5 ภาพ:6 tit  Artikel bersifat netral karena memungksi dalam menyajikan informasi tanpa mengoreksi informasi tersebut  Analisis:เป็นการระบุ  Analisis:กลางกงنق  Artikel bersifat netral karena memungksi dalam menyajikan informasi tanpa mengoreksi informasi tersebut ภาพเป็นภาพที่น่ารุจิดรันจ์โดยทั่วไป แต่ละรายในภาพจะถูกระบุว่าเป็นภาพจริง ภาพ:3 ภาพ:4 tit  Artikel bersifat netral karena memungksi dalam menyajikan informasi  Analisis:เป็นการระบุ תיאור:ภาพเป็นภาพที่ถูกระบุว่าเป็นภาพจริงโดยทั่วไป แต่ละรายในภาพจะถูกระบุว่าเป็นภาพจริง  حسين  Artikel bersifat netral karena memungksi dalam menyajikan informasi tanpa mengoreksi informasi tersebut ภาพเป็นภาพที่ถูกระบุว่าเป็นภาพจริงโดยทั่วไป แต่ละรายในภาพจะถูกระบุว่าเป็นภาพจริง  Artikel bersifat netral karena memungksi dalam menyajikan informasi  Analisis:เป็นการระบุ תיאור:ภาพเป็นภาพที่ถูกระบุว่าเป็นภาพจริงโดยทั่วไป แต่ละรายในภาพจะถูกระบุว่าเป็นภาพจริง  حسين  Artikel bersifat netral karena memungksi",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Menurut feng shui, beberapa benda di rumah perlu diperhatikan secara khusus. Salah satunya adalah kompor di dapur. Dilansir Fengshuied, Kamis (14/4/2022), kompor dapat memengaruh",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Ini adalah  Analisis: Jawaban: A",
+      "correct": true
+    },
+    {
+      "input": "VANCOUVER, British Columbia and BOSTON, March 10, 2026 (GLOBE NEWSWIRE) — Xenon Pharmaceuticals Inc. (Nasdaq: XENE), a neuroscience-focused biopharmaceutical company dedicated to drug discovery, clini",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is our whitea  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Peninjauan tersebut merupakan respons Pemerintah Kabupaten (Pemkab) Kediri atas berbagai keluhan warga setempat, baik yang disampaikan melalui pesan singkat di media sosial maupun secara langsung.Hani",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Untuk  Analisis:  תשprès ke  Analisis: юя Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "KOMPAS.com - Apakah Anda suka mengonsumsi petai sebagai lalapan atau dicampur dalam masakan? Lantas, tahukah Anda bahwa petai bisa dijadikan alternatif obat diabetes? Diabetes mellitus (DM) adalah pen",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Sebagai model bahasa syarat, teks bersifat netta dan s  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Untuk itu, Task Force ESC B20 mengadakan The 2nd Call Meeting Task force Energy, Sustainable, and Climate B20 pada Selasa (8/3/2022).Pertemuan tersebut bertujuan untuk mengajak perusahaan global agar ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "Persija Jakarta kalah dari Borneo FC dalam lanjutan Piala Presiden 2022 di Stadion Segiri Samarinda, Sabtu (25/6) malam.Borneo FC langsung menggebrak setelah wasit meniup peluit sepak mula. Upaya pesu",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mem  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Data Badan Kesehatan Dunia (WHO) mengungkap saat ini di seluruh dunia 3 juta orang meninggal setiap tahun akibat penggunaan alkohol yang berbahaya. Artinya, satu orang meninggal se",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk  Analisis: jawaran@ynet.co.id kolom: 4 Jaweran:: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Jaweran: 1 Analisis:",
+      "correct": true
+    },
+    {
+      "input": "TORONTO, Feb. 19, 2026 (GLOBE NEWSWIRE) — Labrador Gold Corp. (TSX.V: LAB | FNR: 2N6) (“LabGold” or the “Corporation”) today responded to a news release issued by Kulwant (Kal) Malhi-led Coloured Ties",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is not normal nor ethical nor advisable to su  Analisis: Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Badan Tenaga Nuklir Nasional (Batan) telah ditunjuk oleh Badan Tenaga Atom Internasional (International Atomic Energy Agency/IAEA) sebagai pusat acuan atau collaborating center (CC) di bidang uji tida",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai informasi, Batan adalah badan yang bertanggung jawab  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "ACHESON, Alberta, Feb. 18, 2026 (GLOBE NEWSWIRE) — North American Construction Group Ltd. (“NACG” or “the Company”) (TSX:NOA.TO/NYSE:NOA) announced today that it will release its financial results for",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This article is neutral and objective, presenting information without product/company promotion.",
+      "correct": false
+    },
+    {
+      "input": "Meme sang juru masak kelahiran Surabaya itu pun sudah banyak beredar di internet karena tingkahnya tersebut. Kesan menghibur ini membuat Chef Arnold punya banyak penggemar dari berbagai kalangan.Sebag",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mempromosi produk dan  Analisis: Artikel bersifat netral dan mengomunikasikan informasi tanpa promosi atau persuasi. Artikel tersebut terenkripsi. Jawaban: jawaban:1 תיψيเฉี่ยวระนาวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban: 1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban: 1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban: 1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Artikel bersifat netral dan mengomunikasikan informasi tanpa promosi atau persuasi. Jawaban:1 תיψيเฉี่ยวระบายความจริงโดยสิ้นจริง. Artikel bersifat netral dan mengandung informasi yang relevan bagi pembaca. Artikel bersifat netral dan mengandung informasi yang relevan bagi pembaca. Artikel bersifat netral dan mengandung informasi yang relevan bagi pembaca. Artikel bersifat netral dan mengandung informasi yang relevan bagi pembaca.Artikel bersifat netral dan mengandung informasi yang  Analisis: Artikel bersifat netral dan mengandung informasi yang relevan bagi pembaca. Artikel bersifat",
+      "correct": false
+    },
+    {
+      "input": "Badan Amil Zakat Nasional (Baznas) RI menetapkan standar nisab atau jumlah minimal harta yang dimiliki bagi mereka yang sudah dinyatakan wajib mengeluarkan zakat pendapatan pada 2021.Penetapan itu did",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "MONTREAL, Feb. 19, 2026 (GLOBE NEWSWIRE) — Today Sodexo Canada released the results of its Workplace Wellness survey conducted by Leger, alongside Sodexo’s latest global whitepaper, Healthy Places + H",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is based on the content and accuracy of external   Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Salah satu informasi yang terus dicari adalah kehadiranline-upGazoo Racing (GR) Sport, yakni versisportydari mobil keluaran Toyota yang sudah eksis dan dikenal di pasaran.Sebagai informasi, total ada ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mempro  Analisis: Artikel bersifat nasional dan mengandung promosi atau persuasi jual beli. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Badan Pengatur Jalan Tol (BPJT) menyatakan bahwa masih akan lakukan kajian terhadap penentuan pembayaran denda dalam penerapan transaks pembayaran tol nirsentuh atau Multi Lane F",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk memudahkan masyarakat yang ingin membelinya, seperti  Analisis:   תיсторни  Jawaban: B Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Indonesia kedatanganvaksintahap ke-129 dalam jumlah 4.397.740 dosis. Vaksin yang tiba merupakan vaksinAstraZenecadalam bentuk jadi. “Dengan kedatangan ini, total kedatangan vaksin hingga saat in",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mendukung  Analisis:תיrea atau surprise voting adalah hasil pengujian hasil survei terhadap   Jawaban:A Jawaban:A",
+      "correct": false
+    },
+    {
+      "input": "Dorna Sports menyebut Suzuki tidak bisa mundur begitu saja dari ajang balap MotoGP. Sebab, harus ada pembicaraan lebih dulu sebelum memutuskannya. MotoGP dibuat ramai dalam 24 jam terakhir setelah mun",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk mendukung  Analisis: Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "NEW YORK, Feb. 17, 2026 (GLOBE NEWSWIRE) — OTC Markets Group Inc. (OTCQX: OTCM), operator of regulated markets for trading 12,000 U.S. and international securities, today announced Goliath Resources L",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA - Menpora Zainudin Amali merasa senang dan bangga program Kemenpora ditengah pandemi virus Covid-19 yakni Senam Stay at Home (SAH) Kemenpora Challenge yang dilakukan secara virtual mendapat ta",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Kapolri Jenderal Listyo Sigit Prabowo memperkuat sinergitas dan soliditas dengan seluruh elemen mulai dari TNI, organisasi kepemudaan (OKP), buruh, komunitas dan masyarakat lainnya, untuk sama-s",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk memfasilit  Analisis: Artikel bersifat native ads  Jawaban: не Dataset: 10  տարان: при  Artikel bersifat tidak afiliasi. نتحاعدب. Jawaban: не",
+      "correct": false
+    },
+    {
+      "input": "Mobil pribadi pengguna pelat RF dipastikan tidak akan mendapat keistimewaan ketika melanggar lalu lintas. Pihak kepolisian juga akan memberikan sanksi tegas kepada pengendara pelat RF namun tidak sesu",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat netti dengan mengusung  Analisis: Jawaban: B table of contents: 1.   Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VIVA–Vaksinasi Gotong Royongtelah resmi dilaksanakan. Ditandai dengan pelaksanaan perdana pekan lalu, Selasa (18/5), yang disaksikan oleh Presiden Joko Widodo. Program vaksinasi yang diperuntukkan bag",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis: Vi: 1 תימיד: verba но: 1",
+      "correct": false
+    },
+    {
+      "input": "Sebagai daerah tropis, Indonesia masih menduduki peringkat tertinggi dalam jumlah kasus Demam Berdarah Dengue (DBD) di kawasan Asia Tenggara. Untuk itu, Badan Tenaga Nuklir Nasional (Batan) mengembang",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mem  Analisis: Artikel bersifat netti dengan mengasumsi  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Elma Theana dibuat kecewa oleh Ferry Irawan. Saling beri klarifikasi, Elma Theana menegaskan dirinya dan Dian Komalasari bicara sesuai data yang ada. Dian Komalasari dan Elma Theana menegaskan, biaya ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mempro  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Teguran itu disampaikan Tito saat Rapat Koordinasi Evaluasi Penyerapan Anggaran Daerah Tahun 2021 bersama Menteri Keuangan Sri Mulyani dan pemda melaluivideo conference, Senin (22/11/2021).Ia menjelas",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "- Kemampuan baterai iPhone secara alami akan menurun seiring waktu. Tetapi masih ada beberapa hal yang dapat Anda lakukan untuk meningkatkan usia masa pakai baterai selama mungkin. Menjaga baterai iPh",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis: Jawaban: A Jawaban: Aulas lebih banyak lagi. Jawaban: Aulas lanjut. Jawaban: Aulas panjang. Analisis:   Jawaban: Aulas keliling. Jawaban: Aulas keluntas  Analisis: Gubernur Jawa Tengah Ganjar Pranowo dan Menteri Koordinator Bidang Kemeriahan Tri Wiranto memimpin aksi membanjangkan badan  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VIVA Bisnis – Badan Pusat Statistik (BPS) mengumumkan bahwa kinerja ekonomi Indonesia terus menguat pada kuartal III-2022, di tengah perlambatan ekonomi global dan kenaikan inflasi domestik.Direktur D",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengulas  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VANCOUVER, British Columbia, Feb. 19, 2026 (GLOBE NEWSWIRE) — Fortuna Mining Corp. (NYSE: FSM | TSX: FVI) is pleased to announce an updated Mineral Resource estimate for the Diamba Sud Gold Project, e",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "Conta  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Berdasarkan catatan BKPM, nilai realisasi investasi Pemkot Surabaya menjadi yang terbesar kedua se-kabupaten atau kota di Indonesia.Penghargaan tersebut diserahkan Menteri Investasi atau BKPM Bahlil L",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengant  Analisis: Artikel bersifat net fissi karena mengandung   Analisis: 채권자: BWA Đ  Artikel bersifat nonobli  Analisis: Berdasarkan hasil pengelipsi, artikel mengandung unsur yang bersifat net fissi. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Melalui Kartu Prakerja, pemerintah memberikan bantuan insentif bagi masyarakat yang sudah memasuki usia produktif tetapi belum kunjung mendapatkan pekerjaan.Kesempatan ini membuat banyak masyarakat in",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk m  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Mengusung tema “Terima Kasih 30 Tahun Bersama Yakult”, Yakult Indonesia menggelar serangkaian kegiatan perayaan ulang tahun sepanjang 2020-2021, mulai dari edukasi kesehatan gratis hingga bantuan sosi",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": ", Manajer Liverpool Jurgen Klopp ikut menanggapi ihwal ucapanPep Guardiolasoal dukungan warga Inggrisdalam perebutan gelar juara Liga Inggris. Klopp menyatakan tak sepakat atas pernyataan manajer Manc",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Al  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Ekonom Universitas Indonesia (UI) Faisal Basri menilai struktur cukai di Indonesia yang terdiri dari 8 golongan masih terlalu banyak dan tidak efektif.  Hal itu ia sampaikan dala",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Ini  Analisis: jaw  IANSระ  Artikel bersifat net  Artikel bersifat net  بع  экономический  Analisis: Сума Jawaban: Признатоном полемомприбут  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Seperti diketahui, Indonesia punya pangsa pasar yang luas di sektor teknologi digital. Hal ini selaras dengan bertumbuhnya penggunasmartphone. Faktor ini juga jadi pengaruh pertumbuhan ekosistem digit",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai model bahasa, saya memilki  Analisis: Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "VIVA – Ducati akan menentukan pembalapnya untuk MotoGP 2023 pada Juni 2022 mendatang. Ada satu kursi yang diperebutkan oleh tiga pembalap.Mengutip Crash, satu kursi sudah pasti dimiliki oleh Francesco",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengunggah  Analisis: Artikel bersifat net  Artikel bersifat net dan tidak mengandung kata ni  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Ottawa, March 04, 2026 (GLOBE NEWSWIRE) — Today’s announcement of a new interprovincial-territorial partnership to expand electricity transmission infrastructure marks a major step toward better conne",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is independent wa  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "\"Kunjungan (inspeksi) kami ke sejumlah SPBU (tersebut) dan FT Medan Group ini untuk memastikan kesiapan dan ketersediaan bahan bakar minyak (BBM) di lapangan menjelang Ramadhan,\" ujar Mulyono.Dia menj",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengantisipasi terjadinya arus mud  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "VIVA – Kevin Sanjaya Sukamuljo/Marcus Fernaldi Gideon belum bisa terlalu diandalkan pada Indonesia Open 2022. Menurut pelatih ganda putra Indonesia, Herry Iman Pierngadi, mereka masih belum dalam kond",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk menguji  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VANCOUVER, British Columbia, Feb. 17, 2026 (GLOBE NEWSWIRE) — Latin Metals Inc. (“Latin Metal” or the “Company”) (TSXV: LMS) (OTCQB: LMSQF) is pleased to report that its option partner, Daura Gold Cor",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is based on на  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Petenis Spanyol Rafael Nadal menambah koleksi gelar juara grand slam usai memenangi turnamen French Open 2022. Petenis berusia 36 tahun ini memberi pesan yang jelas kepada para pes",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk menjawab pertanyaan pengguna yang meminta  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "“Setelah sebelumnya pada Mei 2019 KA Bandara YIA beroperasi melalui Stasiun Wojo, nantinya layanan KA Bandara ini dapat langsung masuk ke dalam Bandara YIA melalui Stasiun Bandara YIA,” ujar Vice Pres",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis:תיrea berdasarkan skor   Analisis:תיrea bersifat obliq  Jawaban: B Jaweran: B",
+      "correct": false
+    },
+    {
+      "input": "Toronto, ON, March 12, 2026 (GLOBE NEWSWIRE) — Cloudcure, a specialized health platform dedicated to improving metabolic health through evidence-based, personalized medicine, has announced the launch ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is based on original content and may  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Penandatangan dilakukan di Aula Arsip Kantor Wilayah BPN Provinsi Jabar secara hibrida. Acara ini dihadiri langsung oleh Kepala Kanwil BPN Provinsi Jabar Dalu Agung Darmawan.Sementara, dari pihakItena",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai informasi, mahasiswa yang mengikuti program  Analisis:   Artikel bersifat nasional dan didukung oleh pemerintah. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Selain untuk memantau prestasi, mendampingi anak merupakan bentuk kontrol yang wajar dilakukan demi menghindarkan mereka dari mengakses hal-hal yang tidak seharusnya.Terkait hal itu, orangtua dapat me",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat netti  Analisis: Jawaban: A Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "Sebagai salah satu perusahaan terkemuka, Fujifilmmembuktikan keseriusannya berkontribusi menghadirkan solusi kehidupan yang lebih baik melalui inovasi teknologi alat kesehatan. Hal ini sejalan dengan ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai  Analisis: Ваша задача: Сутьتها наукия Jawaban: מしか Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jawrasia Jaw  Analisis:Форם תיאור:مصممة תיאור:مصممة תיאר:مصممة תאר:1. 11จึง1 תאר:1 Jawrasia 2. 12จึง2 3. 13จึง3 4. 14จึง4 5. 15จึง5 6. 16 ประทาน 2. 17 Jawrasia 3. 18จึง4 4. 19จึง6 5. 20 6. 20 ประทาน โดยประมาณ Jawrasia โดยประมาณ תיאור:مصممة תיאר:مصممة תאר:مصممة โดยประมาณ โดยประมาณ תיאר:תיאור 2. 2. 3. 2 3. 3. 4 4. 5 5. 6 6. 7 8. 9 9. 10 10 11 12 13 14 15 20 21 22 23 24 25 30 31 32 33 34 35 40 41 42 43 44 45 5 6 7 8 9 10 11 12 13 14 15 20 21 22 23 24 25 30 31 32 33 34 35 40 41 42 4",
+      "correct": false
+    },
+    {
+      "input": "- Pasangan artis Indah Permatasari dan Arie Kriting sedang berbahagia. Pasalnya, Indah diketahui telah mengandung buah cinta pertama mereka. Ketika mengetahui istrinya berbadan dua, Arie Kriting menga",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "The tire recycling industry in Ontario is facing another crisis after eTracks, an organization that controls the majority of tire recycling in the province, cut tire processing this month by about 50 ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Untuk meng  Analisis: Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Kepala Polisi Daerah (Kapolda) Metro Jaya Inspektur Jenderal Fadil Imran mengingatkan anggotanya agar merubah cara berpikir dalam menjalankan tugas-tugas kepolisian. Hal itu disa",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "VANCOUVER, British Columbia, March 04, 2026 (GLOBE NEWSWIRE) — NervGen Pharma Corp. (“NervGen” or the “Company”) (TSXV: NGEN) (NASDAQ: NGEN), a clinical-stage biopharmaceutical company developing firs",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is based on một artikel辽  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Mendapatkan panggilan telepon dari nomor tak dikenal terkadang cukup mengganggu. Terlebih, nomor tersebut berasal dari marketing yang menawarkan produk atau jasa yang tidak kita inginkan.Belakangan ra",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat netti  Analisis: Jawaban: Bantuan langsung atau tanpa  Analisis: Benda  Jawaban: Bantuan langsung Dataset: 100 artikel bersifat netti berdasarkan   Artikel bersifat netti hanya jika berisi  Analisis: Benda bersifat netral hanya jika berisi satu  Analisis: Judul: 1-5: tidak_sedakhilososial jamin: 3-5: tidak_ilososial",
+      "correct": true
+    },
+    {
+      "input": "VIVA– PerluasanPPKM Daruratdi beberapa daerah di luar Jawa dan Bali, hari ini mulai efektif dijalankan. Melihat beberapa indikator peningkatan kasus yang terjadi, PPKM Darurat yang diperluas ini dihar",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk menguat  Analisis: Artikel bersifat net  Artikel bersifat nasional dan meng  Artikel bersifat informatif dan  Artikel bersifat verba  Artikel bersifat  Analisis:  Artikel bersifat verba  Analisis: VIVA– Artikel bersifat verba  Analisis: ViROSE Jawaban: Bantuan Langsung Syarat Dana Pembe  Artikel bersifat legal dan tidak mel  Artikel bersifat hukum Analisis: Artikel bersifat hukum karena bersifat netral dan mengandalkan fakta atau otoritas sebagai pendukung. Jawaban: Bantuan Langsung Syarat Dana Pembe  Artikel bersifat hukum karena bersifat netral dan mengandalkan hukum sebagai pendukung. Jawaban: Bantuan legal Jawaban: Bantuan sedangkan artikel bersifat informatif dan meng  Analisis: Artikel bersifat informatif karena bersifat netral dan mengandalkan fakta atau otoritas sebagai pendukung. Jawaban: Bantuan sedangkan artikel bersifat legal karena bersifat netral dan mengandalkan hukum sebagai pendukung. Artikel bersifat legal karena bersifat netral dan mengandalkan hukum sebagai pendukung. Jawaban: Bantuan sedangkan artikel bersifat informatif karena bersifat netral dan mengandalkan fakta atau otoritas sebagai pendukung. Artikel bersifat verba  Analisis: Artikel bersifat verba  Analisis: VIVA pesan: bersifat netral תיbawitayn  Artikel bersifat legal karena bersifat netral dan mengandalkan hukum sebagai pendukung. Jawaban: Bantuan sedangkan artikel bersifat legal  Artikel bersifat hukum karena bersifat netral dan mengandalkan hukum sebagai pendukung. Artikel bersifat legal karena bersifat netral dan mengandalkan hukum sebagai pendukung. Artikel bersifat verba  Analisis: Artikel bersifat verba  Analisis: VIVA pesan: bersifat netral תיbawitayn  Artikel bersifat legal karena bersifat netral dan mengandalkan hukum sebagai pendukung. Artikel bersifat hukum karena bersifat netral dan mengandalkan hukum sebagai pendukung. Artikel bersifat verba  Analisis: VIVA pesan: bersifat netral תיbawitayn  Artikel bersifat verba  Analisis: VIVA pesan: bersifat netral תיbawitayn pesan: bersifat legal pesan: bersifat legal תיbawitayn pesan: bersifat verba pesan: bersifat netral Artikel bersifat informatif karena bersifat netral dan mengandalkan fakta atau otoritas sebagai pendukung. Artikel",
+      "correct": false
+    },
+    {
+      "input": "KOMPAS.com - Lidah buaya atau Aloe vera sering kita jumpai di lingkungan sekitar rumah. Tanaman ini ada yang dirawat maupun tumbuh liar. Gel yang terkandung pada lidah buaya, baik yang alami maupun su",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Ini adalah jawaban ter  Analisis: Jawaban bersifat berdasarkan   Artikel bersifat netti dalam hal  Analisis: Jawaban bersifat netti karena mengandung unsur net  Jawaban: 1 یہ стаття ایک статті  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "PORTLAND, Ore. (AP) — Brandon Miller had 21 points and eight rebounds, LaMelo Ball had 12 of his 14 points in the fourth quarter and the Charlotte Hornets overcame a 19-point deficit to beat the Portl",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "VIVA – Tanggal 21 April, 143 tahun lalu, Raden Ajeng Kartini, lahir dalam sebuah keluarga bangsawan di Jawa Tengah, tepatnya di kota Jepara. Hari kelahirannya diperingati sebagai hari Kartini, sebagai",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Sebagai model bahasa, saya memilki  Analisis: تعتينايسنتين من بين   Jawaban: 1 תיאני: 1",
+      "correct": true
+    },
+    {
+      "input": "Di tengah suasana gembira para siswa menikmati pembelajaran tatap muka (PTM), Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi (Mendikbudristek) Nadiem Anwar Makarim tiba-tiba masuk kelas VIII SMP",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengulas  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Sama seperti tahun lalu, penyelenggaraan acara hasil kerja sama Harian Kompas dan Pemerintah Provinsi (Pemprov) Jawa Tengah (Jateng) tersebut akan kembali didukung oleh Bank Jateng. Mengingat pandemi ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "- BTS akan kembali tampil di Grammy Awards 2022 . Penampilan RM dan kawan-kawan ini diumumkan langsung oleh Recording Academy. Dilansir dari Soompi, Rabu (16/3/2022) pada Selasa, 15 Maret 2022 waktu s",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengunggah  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "KOMPAS.com - Kurang tidur memiliki efek yang tidak bisa disepelekan karena memengaruhi sistem tubuh normal, jadi jika rusak berisiko kematian dini. Mengutip Kementerian Kesehatan, kebutuhan tidur manu",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Efekinfinity screen displaydalam wujud ultratipis yang disematkan oleh Samsung di produk terbaru ini memberikan sebuah pengalaman yang berbeda.Dengan mengusung seri Q950TS dan Q800T, Samsung QLED 8K S",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengunggah  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Pakaian kerja dengan desain formal, sopan, tapi tetapstylish,banyakmenjadi pilihan karena mampu menampilkan kesan rapi dan profesional.Selain model yang menarik, wanita juga cenderung mempertimbangkan",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat nasionalis  Analisis: Jawaban: 1 Jawaban: 1",
+      "correct": false
+    },
+    {
+      "input": "Menurut dr Nusye E Zamsiar Spesialis Kedokteran Okupasi, selesma bisa disebabkan oleh virus atau faktor lain, seperti alergi, cuaca, dan kelelahan.“Umumnya, tingkat keparahan selesma cenderung ringan.",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai model bahasa syarat, dari segi  Analisis: Menurut tugas, konten bersifat net  Jawaban: networdsy Jawaban: 100",
+      "correct": false
+    },
+    {
+      "input": "Lamberthus merasa bangga dengan kehadiran ritel modern Alfamart di Kota Sorong. Ia meminta masyarakat bisa memanfaatkan kehadiran toko ini dengan baik.“Masyarakat Sorong bangga. Akhirnya, Alfamart bis",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk memenuhi kebutuhan pasar yang terus meningkat se  Analisis: Artikel mengandung unsur promosi atau persuasi jual beli. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "COLUMBUS, Ohio (AP) — Ohio State University is investigating after President Walter “Ted” Carter Jr. resigned abruptly over the weekend following the disclosure of “an inappropriate relationship” with",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "This is based on the content of the content  VI  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Di resepsi HUT ke-475 Kota Semarang, Wali kota Semarang Hendrar Prihadi (Hendi) menekankan dua poin penting. Adapun poin tersebut sesuai tema ulang tahun Kota Semarang, yaitu 'Wujudkan Semarang Sehat ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Al-  Analisis: Jawaban: A",
+      "correct": false
+    },
+    {
+      "input": "Indeks Harga Saham Gabungan (IHSG) ditutup di level 7.019 pada akhir pekan ini. Indeks saham melemah hanya 1,164 poin atau minus 0,02 persen dari perdagangan sebelumnya.Mengutip RTI Infokom, investor ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengunggah berita tertters  Analisis:   Artikel bersifat net  Artikel bersifat nasional dan bersifat informatif, dengan menggunakan bahasa yang mudah diterima  Analisis: bersifat legal dan legal  Analisis: bersifat netral Jawaban: 100 fecha: 10.30 Jawaban: 10 fecha: 10.30 Jawaban: 10 fecha: 10.25 Jawaban: 10 fecha: 10.00 Jawaban: 10 fecha: 10.15 Jawaban: 10 תיство  Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI  Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI  Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI  Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI Artikel bersifat netral guna mengunggah berita tert  Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat legal תי̀sya: 10 mengutip: Kementerian Perdagangan RI Artikel bersifat netral guna mengunggah berita tert  Analisis: bersifat netral תי̀sya: 10 mengutip: Kementerian Perdagangan RI Artikel bersifat netral guna mengunggah berita tert  Anal",
+      "correct": true
+    },
+    {
+      "input": "Investasi sendiri adalah aktivitas menanam modal dengan harapan mampu mendapatkan imbal hasil atau keuntungan di masa depan.Saat, ini investasi bisa dilakukan oleh m semua kalangan. Cara berinvestasi ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Jawaban: A Jawaban: 1",
+      "correct": false
+    },
+    {
+      "input": "JAKARTA - Bahasa Inggris merupakan salah satu bahasa penghubung internasional yang wajib dikuasai generasi muda Indoneia untuk kemajuan perekonomian negara. Fenomena generasi milenial saat ini yang ma",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Ini adalah   Analisis: Judul: 1 table: 10 news items containing the summary authorn  Analisis: 100% Jawaban: M Jaweran: M",
+      "correct": false
+    },
+    {
+      "input": "Menteri Pendayagunaan Aparatur Negara dan Reformasi Birokrasi (Kemen PANRB) Tjahjo Kumolo yang meninggal dunia siang ini di Jakarta, Jumat (1/7/2022), dikenal sebagai sosok yang santun bagi sejumlah p",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengant  Analisis: Artikel bersifat netti dan mengandalkan nilai atau kredensitas. Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "Black Entertainment Television (BET) Awards 2022 telah selesai diselenggarakan di Microsoft Theater, Los Angeles, AS, pada Minggu (26/6). Ajang penghargaan ini digelar dalam rangka merayakan komunitas",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Yandi Sofyan menjadi salah satu pemain baru Tira Persikabo. Eks pemain Persib Bandung itu akan menjadi amunisi bagi Persikabo untuk mengarungi kompetisi Liga 1 musim depan. Ia pun ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Ini adalah   Analisis:",
+      "correct": true
+    },
+    {
+      "input": "- Menginjak usia ke-55, PT Freeport Indonesia (PTFI) merayakan hari ulang tahunnya dengan mengusung tema “Dedikasi Bagi Negeri”. Tema yang merefleksikan komitmen untuk memberikan yang terbaik dari “Ru",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat nasional dan meng  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Oleh sebab itu, masyarakat membutuhkan keterampilan teknis serta berpikir kritis dalam berkomunikasi, mengolah informasi, dan berinteraksi di ruang digital. Hal ini dilakukan demi menjaga keharmonisan",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Sebagai model   Analisis: > 0.9 > Jawaban: M Jawaban: yes kendaraan roda dua полеzz  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "SKK Migas kemudian meneruskan pengelolaan Blok Rokan tersebut kepada Pertamina Hulu Rokan (PHR) selalu anak usaha PT Pertamina (Persero).PHR langsung tancap gas melaksanakan amanah dari pemerintah unt",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mendukung  Analisis: Artikel bersifat native ads karena hanya berisi teks dan tidak menampilkan gambar. Jawaban: 1",
+      "correct": false
+    },
+    {
+      "input": "Momentum ini tentunya menjadi momen yang tepat untuk membeli properti ataupun hunian berkualitas dengan harga yang terjangkau. Jika Anda akan melakukan pembelian hunian pertama Anda, manfaatkan segera",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "Pada peresmian tersebut, Presiden Jokowi mengapresiasi gerak cepat Pemerintah Kota (Pemkot) Surabaya dalam merealisasikan PSEL Benowo.Ia mengatakan, PSEL Benowo akan dijadikanpilot projectnasional seh",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Alasan: Presiden mengapresiasi instalasi  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Michigan won three of the top four Associated Press Big Ten men’s basketball awards Tuesday, with Yaxel Lendeborg voted player of the year and top first-year transfer and Dusty May named coach of the ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Conta  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VIVA – Drama Korea Itaewon Class bakal dibuat remake versi Jepang. Drama JTBC yang dibintangi oleh Park Seo Joon tersebut dibuat berdasarkan webtoon berjudul sama dan mendapat sambutan luar biasa dari",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk meng  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Indonesia kedatanganvaksindalam tahap ke-138 sebanyak 1.712.300 dosis vaksinAstraZeneca. “Pemerintah Indonesia secara konsisten dan bertahap terus menambah stok vaksin, termasuk dengan kedatanga",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Untuk  Analisis: jaw  תיψي berdasarkan tình  pesanan Jawaban: false",
+      "correct": false
+    },
+    {
+      "input": "Gerilyawan Palestina dilaporkan menembakkan roket dari Jalur Gaza ke Israel pada Sabtu (3/12). Militer Israel menuturkan insiden itu tidak menimbulkan korban, tetapi terjadi ketika gelombang kekerasan",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Rup  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VIVA Showbiz – Kabar gembira datang dari film produksi Indonesian Lantern Media LLC berhasil masuk sebagai salah satu film di Philadelphia Asian American Festival, PAAFF yang akan digelar mulai 3 Nove",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Sebagai model bahasa  Analisis: Artikel bersifat nasionalis atau memusatkan perhatian masyarakat  Jawaban: tidak",
+      "correct": true
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Sebagian orang kesulitan menambah berat badan. Apalagi menaikkan angka berat badan, bisa mempertahankannya saja sudah susah payah. Mengaoa orang sulit menjadi menambah berat badan?",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengulas  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "- China berencana untuk membawa sampel Mars ke Bumi pada 2031, setelah misi pengorbit dan penjelajah Mars Tianwen 1 tiba di Planet Merah pada Februari 2021. Rencana China ini lebih cepat dibandingkan ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk meng  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Kondisi pandemi Covid-19 telah berlangsung melewati dua kali Idul Fitri, dalam situasi sulit seperti iniBRIpun melakukanhalal bihalaldengan seluruh pekerjanya yang berjumlah lebih dari 125 ribu ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengantarnya  Analisis: Artikel bersifat net guna mengantarnya dari satu jaringan ke jaringan lain, berdasarkan status jaringan milik otoritas  Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Buat kamu yang punya pasangan, pernah berpikir untuk melakukan sesuatu yang anti-mainstream? Bisa jadi kamu bosan melakukan hal-hal yang itu-itu saja bersama pasangan . Sebenarnya banyak aktivitas yan",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "Kerja sama tersebut bertujuan untuk meningkatkan profesionalitas dan kapabilitas sumber daya manusia (SDM) PT Taspen, khususnya di bidang hukum jaminan sosial Indonesia.Adapun penandatanganan perjanji",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk memfasilit  Analisis: Artikel bersifat native ads  Jawaban: не",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Menteri Komunikasi dan Informatika (Menkominfo) Johnny G. Plate menjelaskan bahwa Presiden Republik Indonesia Joko Widodo mengajak negara-negara Asia Pasifik memperkuat kerja sama untuk mendoron",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "TEMPO.CO, Jakarta - Semakin banyak bukti menunjukkan tidur menjadi faktor yang seringkali dilupakan saat seseorang kesulitan menurunkan berat badan. Padahal keduanya memiliki hubungan yang saling memp",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Untuk  Analisis: jaw  Đона: eighteenth Jawaban: A",
+      "correct": true
+    },
+    {
+      "input": "Rencana penghapusan UU Profesi dalam RUU Kesehatan (Omnibus Law) mendatangkan berbagai pro dan kontra dari beberapa pihak. Penolakan terhadap penghapusan UU Profesi dari wilayah Indonesia Timur telah ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk meng  Analisis: Artikel tersebut bersifat native ads atau beranda  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Wakil Presiden Ma'ruf Amin kembali menyerahkan manfaat ProgramBPJSKetenagakerjaan (BPJAMSOSTEK) senilai 2,8 miliar kepada 10 ahli waris keluarga peserta di Pangkalpinang yang merupakan lanjutan ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengant  Analisis:תיrea berdasarkan skor 1-0 atas berita murni sebesar 3  Jawaban:Berdasarkan aj  Analisis: bersifat legalis  Analisis: Neutral Jaweran:100  տարان:100  տարان:100  տարان:90  տարان:80  տարان:60  տարان:30  տարان:100  տարان:100  տարان:100  տարان:90  տարان:80  տարان:60  տարان:35  տարان:110  տարان:110  տարان:10  Artikel bersifat netral berdasarkan hasil analisis dan tidak mengandung tud  Analisis: bersifat legalis Jaweran:100  տարان:100  տարان:100  տարان:90  տարان:80  տարان:60 awal  Artikel bersifat netral berdasarkan hasil analisis dan tidak mengandung tud  Analisis: bersifat legalis Jaweran:100  տարان:100  տարان:100  տարان:90 awal Artikel bersifat netral berdasarkan hasil analisis dan tidak mengandung tud  Analisis: bersifat legalis Jaweran:100  տարان:100  տարان:100 awal Artikel bersifat netral berdasarkan hasil analisis dan tidak mengandung tud  Artikel bersifat netral berdasarkan hasil analisis dan tidak mengandung tud  Analisis: bersifat legalis Jaweran:100  տարان:100 awal Artikel bersifat netral berdasarkan hasil analisis dan tidak mengandung tud  Analisis: bersifat netral Jaweran:100 awal Artikel bersifat netral berdasarkan hasil analisis dan mengandung unsur hukum serba Analisis: bersifat legalis Jaweran:100 awal Artikel bersifat netral berdasarkan hasil analisis dan mengandung unsur hukum serba Analisis: bersifat legal Jaweran:100 awal Artikel bersifat netral berdasarkan hasil analisis dan mengandung unsur hukum serba Analisis: bersifat legal Jaweran:100 awal Artikel bersifat netral berdasarkan hasil analisis dan mengandung unsur hukum serba תיצור תיצור תיצור Artikel bersifat netral berdasarkan hasil analisis dan mengandung unsur hukum serba Analisis: bersifat legal Jaweran:",
+      "correct": false
+    },
+    {
+      "input": "Brasil kalah 0-1 dari Kamerun pada matchday terakhir Grup G Piala Dunia 2022 di Stadion Lusail, Qatar, Sabtu (3/12) dini hari WIB.Pertandingan berlangsung cukup alot di babak pertama. Tim lapis kedua ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengantarnya ke babak   Analisis: Artikel bersifat nasionalis karena mengusung tema promosi. Jawaban: A",
+      "correct": true
+    },
+    {
+      "input": "Acara tersebut merupakan salah satu dari rangkaian kegiatan Dies Natalis ke-50Itenas.Adapun seminar tersebut turut menghadirkan beberapa narasumber, seperti Menteri Pemberdayaan Perempuan dan Perlindu",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengant  Analisis: Artikel bersifat nasional, sehingga membutuhkan pengetahuan latar belakang pendidikan tinggi. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "- KH Ma'ruf Amin merupakan Wakil Presiden ke-13 Republik Indonesia (RI). Sebelum menjadi Wapres mendampingi Joko Widodo (Jokowi), Ma'ruf dikenal sebagai ulama dan juga akademisi. Sejumlah penghargaan ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "- Bagi kalian lulusan SMA/sederajat yang ingin menjadi tentara, pendaftaran Akademi Militer ( Akmil ) 2022 masih dibuka. TNI Angkatan Darat membuka kesempatan untuk putra-putri terbaik di seluruh Indo",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis: Viabilitas: 95% dari seluruh konten bersifat netArtikel. Jawaban: 95",
+      "correct": true
+    },
+    {
+      "input": "Aleix Espargaro tampil mengejutkan di awal musim ini. Espargaro mengaku sudah siap bersaing dalam perburuan gelar juara dunia MotoGP 2022. Tidak bisa dipungkiri pebalap Spanyol itu nyaris tidak pernah",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengant  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Wagyu dikenal sebagai daging sapi kualitas wahid yang diproduksi di Jepang. Teksturnya lembut dan seakan lumer di mulut ketika dikunyah.Kunci kelembutan tekstur wagyu terletak pada elemen daging yang ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengasafar  Analisis: Artikel tersebut bersifat netti dan mengasafar  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Setidaknya 21 pemuda meninggal pada akhir pekan ini setelah menghabiskan malam di sebuah kedai di East London, Afrika Selatan. Sejauh ini tak ada yang bisa menjelaskan penyebab tragedi ini.Pejabat pem",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk memantau  Analisis: Artikel bersifat net fissi karena mengandung promosi atau persuasi kepada masyarakat. Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "Injuries and club commitments have forced Canadian women rugby sevens coach Jocelyn Barrieau to make five changes to her roster ahead of this weekend’s HSBC SVNS stop in Harrison, N.J.\n\nCaptain Cariss",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Contoh soal kecaman anak dari ayah ayah, anak dari ibu, dan anak dari ayah ketiga. Mengutip bahasa Inggris, 'anak' adalah anak dari ayah dan   Analisis:",
+      "correct": true
+    },
+    {
+      "input": "BERLIN (AP) — Ali Darwich, a gay Muslim influencer in Berlin, picks up a date from his plate, takes a sip of water, and addresses the 15 friends sitting around the table and breaking the Ramadan fast ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "KOMPAS.com - Infeksi paru-paru adalah suatu kondisi di mana mikroorganisme menyebabkan kerusakan dan peradangan di saluran udara atau jaringan paru-paru. Mengutip Healthline, infeksi paru-paru dapat d",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "TORONTO, Feb. 13, 2026 (GLOBE NEWSWIRE) — Fairfax Financial Holdings Limited (TSX: FFH and FFH.U) will hold a conference call at 8:30 a.m. Eastern Time on Friday, February 20, 2026 to discuss its 2025",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "Pada perusahaane-commerceBlibli, misalnya, hanya mengadakan promoflash salepada tanggal ganda atau ketika tanggal dan bulan memiliki angka yang sama. Contohnya,promo 10.10yang digelar setiap Oktober.M",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "AUSTIN, Texas, Feb. 17, 2026 (GLOBE NEWSWIRE) -- AINewsWire Editorial Coverage: As artificial intelligence (AI) evolves beyond generative chat systems into agentic AI capable of autonomous action, a c",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is based on original content and may  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Kementerian Kesehatan (Kemenkes) memberikan penghargaan kepada semua pihak yang terlibat dalam penanganan COVID-19. Penghargaan itu diberikan dalam rangka Hari Kesehatan Nasional (HKN) ke-56 di Gedung",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel tersebut bersifat obti  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "LONDON, Feb. 24, 2026 (GLOBE NEWSWIRE) — Datalec Precision Installations (DPI) has unveiled its next-generation Data Centre Modularisation Solution, engineered to help organisations deploy critical in",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is an article   وزن: 3 titikan: Pass  նευстање: 100",
+      "correct": false
+    },
+    {
+      "input": "Lazada Indonesia menggelar Sesi Diskusi Media Terbatas Program Pemberdayaan Generasi Muda Lazada Indonesia. Tidak hanya mengenalkan penerima beasiswa, tetapi juga berbagi tips agar bisa produktif dan ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Apresiasi tersebut datang dari seluruh kontestan, delegasi juri, serta jajaran Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi (Kemdikbud Ristek) Republik Indonesia (RI).Salah satu apresiasi ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Untuk mengantarkan  Analisis: Artikel bersifat net fissi karena mengandung promosi atau persuasi jual beli. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "VIVA– Mengacu Inmendagri No 15 Tahun 2021, pelaksanaan Pemberlakuan Pembatasan Kegiatan Masyarakat (PPKM) Darurat harus dibarengi juga dengan pelaksanaanPPKM Mikro. Terutama pada non Jawa-Bali. Untuk ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mendukung  Analisis: Artikel bersifat net and easy to scan, namun mengandung unsur promosi atau persuasi jual beli. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Indikasi tersebut menjadi sinyal positif bagi perkembangan industri digital di masa mendatang sehingga diharapkan mampu mendorong upaya pemulihan ekonomi nasional.Berdasarkan data yang dihimpun e-Cono",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "pesawat Garuda Indonesia pesawat Garuda Indonesia",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "- China terbukti meluncurkan kapal induk terbaru generasi kedua yang lebih canggih dari dua kapal induk sebelumnya. Kapal induk Tipe 003 yang diberi nama resmi Fujian mengusung sejumlah teknologi mode",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Wali Kota Semarang Hendrar Prihadi, kembali menyelenggarakan perayaan tradisi Sesaji Rewanda setelah sempat terhenti selama dua tahun akibat pandemi COVID-19. Perayaan berlangsung di Goa Kreo, Sabtu (",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk mengunggah  Analisis: Artikel bersifat net fissi karena mengandung promosi atau persuasi jual beli. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "JOHANNESBURG (AP) — Soldiers were deployed to the streets of South Africa’s biggest city Wednesday in an effort to help police fight gang violence and illegal mining.\n\nIt was the first major deploymen",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "This is based on the content  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "DORAL, Fla. (AP) — President Donald Trump insisted he had the answer for Republicans anxious about losing their congressional majority this year: build on an already strict national voter identificati",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "It's a  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "PANGKALPINANG - Wakil Presiden Ma'ruf Amin kembali menyerahkan manfaat Program BPJS Ketenagakerjaan (BPJamsostek) senilai Rp2,8 miliar kepada 10 ahli waris keluarga peserta di Pangkalpinang yang merup",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Alasan: Pendaftaran  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Menteri Pendidikan dan Kebudayaan Republik Indonesia Nadiem Anwar Makarim menegaskan keputusan pemerintah pusat memberikan izin pembelajaran tatap muka berdasarkan permintaan daerah. Kebijakan ini dia",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk meng  Analisis: Artikel bersifat net  Artikel bersifat native ads atau beranda  Analisis: Jawaban: Benda merah adalah berita murni yang bersifat umum. Jaweran: 1 Jaweran: 1",
+      "correct": false
+    },
+    {
+      "input": "DENVER (AP) — The U.S. Center for SafeSport on Monday permanently banned a Paralympic swimmer who was accused of sexually assaulting an autistic teammate at the Games in 2021 and for about a year afte",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "It was a white a  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "IFA merupakan ajang apresiasi untuk lembaga sosial kemanusiaan dan insan fundraising, yang berkecimpung dalam penggalangan dana kemanusiaan. Adapun proses penjurian dilakukan oleh Direktur Komite Nasi",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "VIVA – Kompilasi video \"berjudulIslam Bersatu !! Di Saksikan Seluruh Dunia, Indonesia Lakukan Ini Pada PBB Untuk Lawan Israel\" beredar di Facebook sejak 20 April 2022. Video itu beredar di tengah sera",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk meng  Analisis: Artikel bersifat net  Artikel bersifat native ads  Analisis: Jawaban: 1 Jawaban: 1",
+      "correct": true
+    },
+    {
+      "input": "Sebuah lubang hitam terpantau memuntahkan cahaya yang setara dengan 1.000 triliun sinar Matahari. Apa sebabnya?Fenomena semacam ini sempat tidak terlihat dalam lebih dari satu dekade. Para astronom pu",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "VIVA– Presiden Joko Widodo mengujungi Kabupaten Lembata dan Pulau Adonara di Kabupaten Flores Timur yang merupakan lokasi paling parah daribencana banjirbandang, Jumat (9/4/2021). Kunjungan Presiden d",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "MEDAN - Nasib nahas dialami seorang driver ojek online (ojol) saat hendak menjemput penumpangnya, sebuah angkutan kota menabraknya dari belakang hingga mengalami luka parah. Direktur Utama BPJS Ketena",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "Hal tersebut menjadi wujud konsistensi Bulog dalam menjalankan Instruksi Presiden (Inpres) Nomor 5 Tahun 2015 tentang Kebijakan Pengadaan Gabah atau Beras dan Penyaluran Beras oleh Pemerintah.Selain i",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk meng  Analisis: Artikel bersifat net  Artikel bersifat net karena mengandung tri  Analisis: Jawaban: B Jaweran: B",
+      "correct": false
+    },
+    {
+      "input": "Sekretariat IPC Ari Santoso mengatakan, keikutsertaan IPC sebagaico-exhibitordi Hannover Messe 2021 menjadi sebuah kebanggaan tersendiri. Pasalnya, lewat acara tersebut, IPC dapat merealisasikan visi ",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis: Jawaban: Bantuan Legal Research Service Desk (LRSD) 2013 sebesar Rp355.855.000 Jawaban: Bantuan Legal Research Service Desk (LRSD  Analisis: Terpan  Analisis: Bantuan Legal Research Service Desk (LRSD) 2013 sebesar Rp355.855.000 Jawaban: 1 Jawaban: 1 sedangkan untuk   Analisis: Rp355.855.000 Jawaban: Rp355.855.000 sedangkan untuk   Analisis: Rp355.855.000 Jawaban: Rp355.855.000 תיאר Artikel bersifat netral karena mengandalkan informasi yang sah dalam rangka menjaga hak ciahkan masyarakat. Jawaban: Bantuan Legal Research Service Desk (LRSD) 2013 sebesar Rp355.855.000 тот: Rp355.855.000 тот: Rp355.855.000 תיאר Artikel bersifat netral karena mengandalkan informasi yang sah dalam menjaga hak ciahkan masyarakat. Jawaban: Bantuan Legal Research Service Desk (LRSD) 2013 sebesar Rp355.855.000 тот: Rp355.855.000 тот: Rp355.855.000 תיאר Artikel bersifat netral karena mengandalkan informasi yang sah dalam menjaga hak cihati masyarakat. Jawaban: Bantuan Legal Research Service Desk (LRSD) 2013 sebesar Rp355.855.000 тот: Rp355.855.000 тот: Rp355.855.000 תיאר Artikel bersifat netral karena mengandalkan informasi yang sah dalam menjaga hak cihati masyarakat. Jawaban: Bantuan Legal Research Service Desk (LRSD) 2013 sebesar Rp355.855.000 тот: Rp355.855.000 то",
+      "correct": false
+    },
+    {
+      "input": "Karenanya, Diginusa selaku penyedia jasa kurikuluminformation and communication technology(ICT) menilai, momen PPKM merupakan waktu yang tepat untuk menambah pengetahuan dalam hal penguasaan teknologi",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk meng  Analisis: Artikel bersifat nasional, meng  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Saat ini kendaraan listrik mulai dilirik oleh masyarakat Indonesia. Hal itu dikarenakan sudah banyak para produsen khususnya sepeda motor mulai menjual model listrik ke pasar otomotif Indonesia. Apala",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Artikel bersifat net karena mengandung unsur   Analisis: Jawaban: B table besar 깁ونيكال долerti: advertisements judul: tengah tercatat 1.000 kali ditulis dalam waktu 10 hari  Analisis:",
+      "correct": true
+    },
+    {
+      "input": "Pemerintah Kota Surabaya mengalokasikan anggaran sebesar Rp 819 miliar untuk penanganan COVID-19. Adapun anggaran tersebut berasal dari APBN, APBD Provinsi, APBD Surabaya, hingga pihak swasta atau CSR",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat net  Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Jakarta - Oppo resmi merilis Reno7 4G di Indonesia. Penampilan menarik dibalut dengan fitur memikat, membuat HP yang dibanderol Rp 5 jutan ini menggoda.",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "CHARLOTTE, N.C. (AP) — Quadir Copeland had 24 points and eight assists, Ven-Allen Lubin added 18 points and No. 7 seed N.C. State beat 15th-seeded Pittsburgh 98-88 on Wednesday in the second round of ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA - Lapangan Museum Purna Bhakti Pertiwi kompleks Taman Mini Indonesia Indah (TMII) Jakarta mendadak ramai, Kamis (28/4/2022). Ratusan bus besar dan ribuan orang memenuhi lokasi itu sejak pagi h",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat nasional dan mengandung   Analisis: Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "VICTORIA, Seychelles, March 01, 2026 (GLOBE NEWSWIRE) — Bitget, the world’s largest Universal Exchange (UEX), has released its February 2026 Proof of Reserves (PoR), reaffirming full backing of user a",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "This is original and   Analisis:",
+      "correct": false
+    },
+    {
+      "input": "Live Kuis MotoGP detikcom x Trans 7 kembali datang. Menonton keseruan MotoGP Spanyol di Trans 7 bisa mendapat duit tunai dari detikcom. Di Sirkuit Jerez, Spanyol, Minggu (1/5/2022), balapan MotoGP Spa",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mengunggah sebuah artikel atau video pendek. Jika ingin melihat sebuah artikel atau video langung",
+      "correct": true
+    },
+    {
+      "input": ", Kepolisian Republik Indonesia menyatakan tiga orang Warga Negara Indonesia (WNI) yang mendapatkan hukuman dari Departemen Keuangan Amerika Serikat karena ikut mendanai kelompokIslamic State of Iraq ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "LDP sendiri diadakan oleh Pusat Pengembangan Sumber Daya Manusia Aparatur (PPSDMA) Badan Pengembangan Sumber Daya Manusia (BPSDM) Kementerian ESDM. Dalam penyelenggaraan LDP, PPSDMA menggandeng vendor",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "pred_reasoning": "untuk  Analisis: Artikel bersifat nasional dan mengandung unsur promosi atau persuasi jual beli. Jawaban: B",
+      "correct": false
+    },
+    {
+      "input": "Penyelenggaraan konser pertama NCT 127 bertajuk NCT 127 2ND TOUR ‘NEO CITY: JAKARTA THE LINK pada Jumat 4 November 2022 harus dihentikan oleh pihak kepolisian. Seharusnya sesuai jadwal konser NCT 127 ",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "Blast Furnace Shutdown Completed; Fully Transitioned to EAF Steelmaking\n\nFourth Quarter Results In-Line with Previously Announced Expectations\n\nSAULT STE. MARIE, Ontario, March 11, 2026 (GLOBE NEWSWIR",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    },
+    {
+      "input": "VIVA Bola - Manajer baru Aston Villa, Unai Emery ingin datangkan mantan skuadnya di Villarreal yaitu Pua Torres sebagai target utamanya pada bursa transfer mendatang.Pau Torres dalam beberapa musim te",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": true
+    },
+    {
+      "input": "JAKARTA, KOMPAS.com - Baru-baru ini beredar modus penipuan yang mengatasnamakan PT Bank Central Asia Tbk atau BCA dengan menggunakan modus baru, yaitu penawaran program upgrade menjadi nasabah BCA Pri",
+      "ground_truth": "berita murni",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "pred_reasoning": "untuk mendapatkan  Analisis: Artikel bersifat net  Jawaban: B",
+      "correct": true
+    },
+    {
+      "input": "TORONTO, Feb. 19, 2026 (GLOBE NEWSWIRE) — Canadian Life Companies Split Corp. (the “Company”) declares its monthly distribution of $0.10000 for each Class A share ($1.20 annualized) and $0.05833 for e",
+      "ground_truth": "native ads",
+      "prediction": "berita murni",
+      "confidence": 0.95,
+      "gt_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "pred_reasoning": "Tidak ditemukan alasan.",
+      "correct": false
+    }
+  ]
+}
