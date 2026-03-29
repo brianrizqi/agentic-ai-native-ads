@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 20,
+    "borderline_count": 0,
+    "bad_count": 80,
+    "avg_judge_score": 2.38
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which discusses a sports injury without promotional elements. The reasoning, while somewhat generic, aligns with the objective nature of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Ambiguous fallback",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning is logical, indicating an understanding of the content's nature. However, the reasoning could be more specific rather than using 'ambiguous fallback,' which makes it slightly less robust.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Ambiguous fallback",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' which aligns with the ground truth. The reasoning of 'ambiguous fallback' suggests some uncertainty, but the content does not exhibit promotional tones typical of native ads, supporting the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Ambiguous fallback",
+      "confidence": 0.5
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads,' which is the correct label according to the ground truth. The reasoning provided is vague and does not adequately support the prediction, failing to identify the promotional nature of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, March 04, 2026 (GLOBE NEWSWIRE) — NervGen Pharma Corp. (“NervGen” or the “Company”) (TSXV: NGEN) (NASDAQ: NGEN), a clinical-stage biopharmaceutical company developing firs",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Ambiguous fallback",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward sports news report. The reasoning based on keyword match does not apply here, as the content is purely informational and lacks any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "PORTLAND, Ore. (AP) — Brandon Miller had 21 points and eight rebounds, LaMelo Ball had 12 of his 14 points in the fourth quarter and the Charlotte Hornets overcame a 19-point deficit to beat the Portl",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Keyword match",
+      "confidence": 0.7
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the content as 'berita murni' instead of 'native ads.' The reasoning provided is vague and does not adequately address the promotional tone present in the article, which is indicative of native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Ambiguous fallback",
+      "confidence": 0.5
+    }
+  ]
+}
