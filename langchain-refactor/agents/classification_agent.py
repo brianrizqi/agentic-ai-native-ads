@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 52: The Brand Advocacy Gating
+Main agent for Phase 53: System-Wide Alignment (Evaluator & RAG)
 """
 
 from typing import Dict, Any, Optional, List
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 52: The Brand Advocacy Gating (1200ch Window).
+    Phase 53: Advocacy Gating & Tier Identification.
     """
     
     def __init__(
@@ -41,12 +41,15 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Absolute Determinism
+        self.temperature = 0.0 # Strict for evaluation
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
         self.use_rag = use_rag
         self.is_mcq = is_mcq
+        
+        # Tier Detection for Evaluator Alignment
+        self.model_tier = self._get_model_tier(model_name)
         
         self.tokenizer = None
         self.llm = self._initialize_llm(api_key)
@@ -59,8 +62,15 @@ class ClassificationAgent:
         # Generic chain for API providers
         prompt = PromptTemplate.from_template("{title}\n{content}")
         self.chain = prompt | self.llm | StrOutputParser()
-        logger.info(f"Classification Agent Phase 52 (Advocacy Gating) initialized.")
+        logger.info(f"Classification Agent Phase 53 ({self.model_tier}) initialized.")
     
+    def _get_model_tier(self, name: str) -> str:
+        """Heuristic to detect model tier for evaluator optimizations."""
+        n = name.lower()
+        if any(x in n for x in ['270m', '500m', '1b']): return 'micro'
+        if any(x in n for x in ['3b', '7b', '8b', '9b']): return 'small'
+        return 'standard'
+
     def _initialize_llm(self, api_key: Optional[str]):
         """Initialize LLM based on provider."""
         if self.provider == "openai":
@@ -117,7 +127,7 @@ class ClassificationAgent:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 52 Brand Advocacy Recognition.
+        Classify content with Phase 53 Advocacy Recognition.
         """
         try:
             templated_prompt = ""
@@ -127,11 +137,10 @@ class ClassificationAgent:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 52: Surgical RAG (Threshold 0.85)
+                # Phase 53: Enhanced RAG Contrast (Threshold 0.82)
                 rag_block = ""
-                threshold = 0.85 
+                threshold = 0.82 
                 if self.use_rag and examples:
-                    # Find Best Ad and Best News independently
                     best_ad = None
                     best_news = None
                     for ex in examples:
@@ -142,23 +151,19 @@ class ClassificationAgent:
                         elif 'murni' in label and (not best_news or score > best_news['similarity_score']): best_news = ex
                     if best_ad or best_news:
                         rag_block = "[REFERENSI KOMPARASI]\n"
-                        if best_ad: rag_block += f"- NATIVE ADS: \"{best_ad.get('content')[:200]}...\"\n"
-                        if best_news: rag_block += f"- BERITA MURNI: \"{best_news.get('content')[:200]}...\"\n"
+                        if best_ad: rag_block += f"- NATIVE ADS: \"{best_ad.get('content')[:250]}...\"\n"
+                        if best_news: rag_block += f"- BERITA MURNI: \"{best_news.get('content')[:250]}...\"\n"
                 
-                # Calibration Default
                 if not rag_block:
-                    rag_block = """[CONTOH ACUAN]
-1. Iklan: "Brand X meluncurkan koleksi terbaru yang futuristik." -> {"alasan": "Memuji satu brand tanpa penyeimbang.", "label": "native ads"}
-2. Berita: "Pemerintah meresmikan bandara infrastruktur nasional." -> {"alasan": "Informasi layanan publik netral.", "label": "berita murni"}
-\n"""
+                    rag_block = "[ACUAN]\n1. Iklan: Peluncuran produk brand tunggal.\n2. Berita: Informasi umum/masyarakat.\n"
 
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"alasan\": \"" 
                 
-                # Phase 52: DEEP WINDOW (1200 Chars)
+                # Phase 53: Window 1200ch
                 user_msg = template.format(
                     title=title or content[:70],
-                    content=content[:1200], # Catch the distal PR tone
+                    content=content[:1200],
                     context=rag_block
                 ).strip()
                 
@@ -199,7 +204,7 @@ class ClassificationAgent:
         except: pass
 
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Phase 52: Invincible Parser with Brand Advocacy Guard."""
+        """Phase 53: Invincible Parser with Brand Advocacy Guard."""
         try:
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan."
@@ -216,8 +221,6 @@ class ClassificationAgent:
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
                     if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): label = "native ads"
-                    
-                    # Phase 52 advocacy check
                     if any(kw in alasan.lower() for kw in ["promosi", " brand", "rilis pers", "press release", "menghadirkan", "peluncuran"]):
                         label = "native ads"
                     return {'label': label, 'confidence': 0.95, 'reasoning': alasan}

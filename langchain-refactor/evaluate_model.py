@@ -193,18 +193,10 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             context = ""
             examples = None
             if retriever:
-                # Phase 19/20: Adaptive RAG parameters based on model tier
+                # Phase 53: REMOVED throttles. Let the Agent's Pair-Contrast picker handle the full k.
                 eff_top_k = kwargs.get('top_k', 5)
                 max_reasoning = None
                 minimalist = False
-                
-                tier = getattr(agent, 'model_tier', 'standard')
-                if tier == "micro":
-                    eff_top_k = min(eff_top_k, 2)
-                    minimalist = True # No JSON for micro models
-                elif tier == "small":
-                    eff_top_k = min(eff_top_k, 2)
-                    max_reasoning = 150 # Truncated reasoning for 1B-3B
                 
                 # Phase 20: Use examples for multi-turn history-based RAG for local models
                 if agent.provider == "local" and agent.tokenizer:
@@ -712,7 +704,7 @@ def main():
                        help='Directory for FAISS vectorstore')
     parser.add_argument('--embedding-model', type=str, default='sentence-transformers/all-MiniLM-L6-v2',
                        help='Embedding model for RAG')
-    parser.add_argument('--top-k', type=int, default=5,
+    parser.add_argument('--top-k', type=int, default=10,
                        help='Number of examples to retrieve for RAG')
 
     parser.add_argument('--output-dir', type=str, default='evaluation_results',
