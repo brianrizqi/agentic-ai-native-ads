@@ -377,23 +377,24 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 31: Balanced 2-Shot Induction (The Last Stand)
+# Phase 32: Label-First RAG Calibration (Balanced Inductor)
 # -----------------------------------------------------------------------------
-# Static examples to break Mode-Collapse in Qwen 9B and sensitive Llama 8B.
+# Forcing label choice BEFORE reasoning to prevent RAG-induced drift.
 
-BALANCED_2_SHOT_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+LABEL_FIRST_RAG_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
 CONTOH 1 (Berita Murni):
 Judul: KPK Tangkap Pejabat Terkait Korupsi Hibah
-Konten: Komisi Pemberantasan Korupsi (KPK) melakukan operasi tangkap tangan (OTT) terhadap seorang pejabat publik di Jawa Timur terkait dugaan suap dana hibah...
-Hasil: {{"reasoning": "Laporan faktual peristiwa hukum tanpa promosi.", "label": "berita murni"}}
+Konten: Komisi Pemberantasan Korupsi (KPK) melakukan OTT terkait dugaan suap...
+Hasil: {{"label": "berita murni", "reasoning": "Laporan faktual peristiwa hukum tanpa unsur promosi atau persuasi."}}
 
 CONTOH 2 (Native Ads):
-Judul: OPPO A55 Hadir dengan Kamera 50MP Super Jernih
-Konten: Dapatkan smartphone terbaru OPPO A55 yang didesain elegan dengan fitur kamera mutakhir untuk menangkap momen berharga Anda. Beli sekarang di toko terdekat...
-Hasil: {{"reasoning": "Mengandung persuasi fitur produk dan ajakan membeli.", "label": "native ads"}}
+Judul: OPPO A55 Hadir dengan Kamera 50MP
+Konten: Dapatkan smartphone terbaru OPPO A55 dengan fitur kamera mutakhir...
+Hasil: {{"label": "native ads", "reasoning": "Konten persuasif menonjolkan fitur produk dan ajakan membeli."}}
 
 TUGAS ANDA:
+(PENTING: Prioritaskan isi artikel target di bawah. Dokumen referensi hanya pembanding.)
 {context}
 
 Judul: {title}

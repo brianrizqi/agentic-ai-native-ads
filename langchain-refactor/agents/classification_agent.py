@@ -312,11 +312,12 @@ Klasifikasi:
                 "context": context
             }
             
-            # Use chat template for local models (Phase 31: Balanced Induction)
+            # Use chat template for local models (Phase 32: Label-First RAG-Precision)
             if self.provider == "local" and self.tokenizer:
-                from prompts.classification_prompts import BALANCED_2_SHOT_TEMPLATE
+                from prompts.classification_prompts import LABEL_FIRST_RAG_TEMPLATE
                 
                 # High-Confidence RAG (Threshold: 0.35)
+                # Essential for research integrity while minimizing noise.
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
                 use_this_rag = self.use_rag and examples and top_score > 0.35
                 
@@ -324,21 +325,20 @@ Klasifikasi:
                 if use_this_rag:
                     ex = examples[0]
                     rag_context = (
-                        f"REFERENSI KONTEKSTUAL (Kemiripan={top_score:.2f}):\n"
+                        f"DOKUMEN REFERENSI RAG (Kemiripan={top_score:.2f}):\n"
                         f"- Konten: {ex.get('content', '')[:100]}...\n"
                         f"- Label: {ex.get('label')}\n"
                         "---"
                     )
 
-                user_msg = BALANCED_2_SHOT_TEMPLATE.format(
+                user_msg = LABEL_FIRST_RAG_TEMPLATE.format(
                     title=title or content[:60],
                     content=content[:400],
                     context=rag_context
                 ).strip()
                 
-                # Phase 31: NO PREFIX FORCE. Let the model break its mode-collapse
-                # by following the induction from 2-shot examples.
-                prefix_force = "" 
+                # Phase 32: Label-First Prefix. Forces decision before RAG-talk.
+                prefix_force = '{"label": "' 
 
                 messages = [{"role": "user", "content": user_msg}]
 
@@ -349,12 +349,19 @@ Klasifikasi:
                     add_generation_prompt=True
                 )
                 
+                if prefix_force:
+                    templated_prompt += prefix_force
+                
                 # Use standard JSON stop sequences
                 stop_seqs = ["}", "}\n", "\n\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
                 if hasattr(self, 'stop_sequences'):
                     stop_seqs.extend(self.stop_sequences)
                 
                 response = self.llm.invoke(templated_prompt, stop=list(set(stop_seqs)))
+                
+                # Prepend prefix back to response for parsing
+                if prefix_force:
+                    response = prefix_force + response
                 
             else:
                 # Use LCEL with explicit dict (API providers)
