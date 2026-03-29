@@ -82,12 +82,11 @@ class ClassificationAgent:
                 import torch
                 hf_token = "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"
                 
-                # Phase 63: Use fix_mistral_regex=True to fix tokenization warning
+                # Phase 63: Use AutoTokenizer standard loading (removed fix_mistral_regex to avoid multiple values error)
                 tokenizer = AutoTokenizer.from_pretrained(
                     self.model_name, 
                     token=hf_token, 
-                    trust_remote_code=True,
-                    fix_mistral_regex=True
+                    trust_remote_code=True
                 )
                 tokenizer.padding_side = "left"
                 bnb_config = None
