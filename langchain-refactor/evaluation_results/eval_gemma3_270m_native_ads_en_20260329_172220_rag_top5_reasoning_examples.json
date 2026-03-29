@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 20,
+    "borderline_count": 0,
+    "bad_count": 80,
+    "avg_judge_score": 2.38
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which is a straightforward news report about a sports injury. The reasoning, while labeled as 'ambiguous fallback,' is somewhat generic but does not detract from the accuracy of the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Ambiguous fallback",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' which aligns with the ground truth. The reasoning, while labeled as 'ambiguous fallback', does not provide a strong justification for the classification, but it does not indicate any promotional tone typical of native ads. Overall, the classification is mostly correct with logical reasoning.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Ambiguous fallback",
+      "confidence": 0.5
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as native ads, which aligns with the ground truth. The reasoning about 'keyword emergency fallback' suggests an attempt to identify promotional content, but it lacks depth in explaining why the content is promotional. Overall, the classification is mostly correct with logical reasoning.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Keyword emergency fallback",
+      "confidence": 0.7
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a pure news article about a basketball game. The reasoning provided is irrelevant and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "PORTLAND, Ore. (AP) — Brandon Miller had 21 points and eight rebounds, LaMelo Ball had 12 of his 14 points in the fourth quarter and the Charlotte Hornets overcame a 19-point deficit to beat the Portl",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Keyword emergency fallback",
+      "confidence": 0.7
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the content as 'berita murni' when it is clearly promotional in nature, indicating a native ad. The reasoning provided does not support the label and fails to recognize the promotional tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Momentum ini tentunya menjadi momen yang tepat untuk membeli properti ataupun hunian berkualitas dengan harga yang terjangkau. Jika Anda akan melakukan pembelian hunian pertama Anda, manfaatkan segera",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "100%",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not adequately support the label, as it fails to recognize the promotional tone and intent of the content, which is characteristic of native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Sebagai model bahasa  Jawaban: A",
+      "confidence": 0.95
+    }
+  ]
+}
