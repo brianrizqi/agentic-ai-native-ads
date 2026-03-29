@@ -357,7 +357,7 @@ Klasifikasi:
                 templated_prompt += prefix_force
                 
                 # Use standard JSON stop sequences
-                stop_seqs = ["}", "}\n", tokenizer.eos_token]
+                stop_seqs = ["}", "}\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
                 if hasattr(self, 'stop_sequences'):
                     stop_seqs.extend(self.stop_sequences)
                 
