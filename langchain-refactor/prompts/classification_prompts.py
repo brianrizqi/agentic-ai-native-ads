@@ -381,34 +381,27 @@ Output (JSON):
 # -----------------------------------------------------------------------------
 # Reverting to the exact logic and format that produced 88-90% accuracy.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-PANDUAN ANALISA:
-1. Periksa Indikator Iklan (Commercial): Apakah ada promosi produk, harga, fitur teknis subjektif, atau ajakan membeli/memakai jasa?
-2. Periksa Indikator Berita (Public Interest): Apakah konten memberikan informasi peristiwa hukum, kebijakan publik, atau edukasi masyarakat tanpa niat jualan?
+PENTING: 
+- Jangan memilih "native ads" jika tidak ada BUKTI PROMOSI produk/brand yang nyata.
+- Berita objektif (seperti sejarah, kriminal, atau penemuan ilmiah) adalah "berita murni".
+- Jika ragu atau konten bersifat informatif belaka (pure news), pilih "berita murni".
 
-CONTOH 1 (Berita Murni - Hard News):
-Judul: KPK Tangkap Pejabat Terkait Korupsi Hibah
-Konten: Komisi Pemberantasan Korupsi (KPK) melakukan OTT terkait dugaan suap...
-Hasil: {{"reasoning": "Indikator Iklan: Tidak ada. Indikator Berita: Ada (Peristiwa hukum/korupsi). Kesimpulan: Laporan faktual peristiwa hukum murni.", "label": "berita murni"}}
-
-CONTOH 2 (Native Ads - Promosi):
-Judul: OPPO A55 Hadir dengan Kamera 50MP
-Konten: Dapatkan smartphone terbaru OPPO A55 dengan fitur kamera mutakhir...
-Hasil: {{"reasoning": "Indikator Iklan: Ada (Fitur kamera, merk OPPO). Indikator Berita: Tidak ada. Kesimpulan: Konten persuasif menonjolkan fitur produk komersial.", "label": "native ads"}}
-
-CONTOH 3 (Berita Murni - Layanan Publik):
-Judul: Cara Perpanjang SIM Online Lewat Aplikasi
-Konten: Polri meluncurkan aplikasi baru untuk memudahkan masyarakat memperpanjang SIM secara digital...
-Hasil: {{"reasoning": "Indikator Iklan: Tidak ada (Aplikasi pemerintah bukan produk komersial). Indikator Berita: Ada (Edukasi layanan publik). Kesimpulan: Informasi edukasi masyarakat tanpa niat jualan.", "label": "berita murni"}}
+Indikator Native Ads (Stealth/Halus):
+- Tone rilis pers (PR) yang hanya menonjolkan satu sisi positif.
+- Kutipan satu arah dari CEO/Juru Bicara brand tanpa penyeimbang.
+- Kalimat persuasif (misal: "solusi tepat", "wajib coba", "inovasi terdepan").
+- Informasi ketersediaan produk atau promo di akhir artikel.
 
 TUGAS ANDA:
-{context}
-
 Judul: {title}
 Konten: {content}
 
+{context}
+
 Output (JSON):"""
+
 
 
 
