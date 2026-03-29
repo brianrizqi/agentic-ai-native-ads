@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for Phase 62: Scientific Integrity (PPL Calculation)
+Main agent for Phase 63: Sanity Restoration
 """
 
 from typing import Dict, Any, Optional, List
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class ClassificationAgent:
     """
     LangChain-based agent for native ads classification. 
-    Phase 62: Real PPL Calculation for Scientific Integrity.
+    Phase 63: Sanity Restoration (Removal of heuristics, trust the model).
     """
     
     def __init__(
@@ -81,7 +81,14 @@ class ClassificationAgent:
                 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, BitsAndBytesConfig, GenerationConfig
                 import torch
                 hf_token = "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"
-                tokenizer = AutoTokenizer.from_pretrained(self.model_name, token=hf_token, trust_remote_code=True)
+                
+                # Phase 63: Use fix_mistral_regex=True to fix tokenization warning
+                tokenizer = AutoTokenizer.from_pretrained(
+                    self.model_name, 
+                    token=hf_token, 
+                    trust_remote_code=True,
+                    fix_mistral_regex=True
+                )
                 tokenizer.padding_side = "left"
                 bnb_config = None
                 if torch.cuda.is_available():
@@ -98,7 +105,7 @@ class ClassificationAgent:
                     quantization_config=bnb_config, trust_remote_code=True, token=hf_token
                 )
                 
-                # Phase 62: Clean up GenConfig to avoid HF warnings
+                # Phase 62: Clean up GenConfig
                 gen_config = GenerationConfig(
                     max_new_tokens=512, 
                     do_sample=False, 
@@ -132,7 +139,7 @@ class ClassificationAgent:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content with Phase 61 Governing Agent (Balanced).
+        Classify content with Phase 63 Sanity Restoration (No more overrides).
         """
         try:
             raw_response = ""
@@ -174,20 +181,25 @@ class ClassificationAgent:
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 ids = input_encoding["input_ids"].to(self.local_model_ref.device)
+                
+                # Phase 63: Increase repetitive penalty for Gemma to stop Russian/Gibberish
+                gen_config = self.local_model_ref.generation_config
+                if self.model_tier == 'micro':
+                    gen_config.repetition_penalty = 1.2
+                
                 with torch.no_grad():
-                    generated_ids = self.local_model_ref.generate(ids)
+                    generated_ids = self.local_model_ref.generate(ids, generation_config=gen_config)
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
                 if prefix_force: raw_response = prefix_force + raw_response
                 
-                # Phase 57: Fix SyntaxError peek
                 clean_peek = raw_response[:120].replace('\n', ' ')
                 print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")
             else:
                 input_data = {"title": title or content[:100], "content": content[:400], "context": context}
                 raw_response = self.chain.invoke(input_data)
             
-            # Phase 61: Surgical Content-Aware Parser Override
+            # Phase 63: RESTORE AUTONOMY (No overrides)
             result = self._parse_response(raw_response, content=content, title=title)
             result['metadata'] = {'model': self.model_name, 'raw_response': raw_response}
             self._log_inference(title, content, result)
@@ -207,17 +219,16 @@ class ClassificationAgent:
         except: pass
 
     def _parse_response(self, response: str, content: str = "", title: str = "") -> Dict[str, Any]:
-        """Phase 61: Surgical Governor with balanced heuristics."""
+        """Phase 63: Clean & Minimal Parser. Trusting the model entirely."""
         try:
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan."
             label = "berita murni"
             
-            # Step 1: Standard JSON Parsing
+            # JSON Parsing only. NO HEURISTIC OVERRIDES.
             json_match = re.search(r'\{(.*)\}', resp_clean, re.DOTALL)
             if not json_match and resp_clean.startswith('{'): json_match = re.search(r'\{(.*)', resp_clean, re.DOTALL)
             
-            model_predicted_ads = False
             if json_match:
                 json_str = json_match.group(0)
                 if not json_str.endswith('}'): json_str += '"}'
@@ -227,46 +238,20 @@ class ClassificationAgent:
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
                     if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): 
                         label = "native ads"
-                        model_predicted_ads = True
-                except: pass
+                except:
+                    # Fallback if JSON is malformed but contains label
+                    if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): label = "native ads"
             else:
-                # Step 1.5: Emergency Heuristic for non-JSON response
+                # Emergency Heuristic only for TOTAL parsing failure (not an override)
                 if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): 
                     label = "native ads"
-                    model_predicted_ads = True
-
-            # Step 2: HEURISTIC SURGICAL SCAN (The Governor Phase 61)
-            content_low = (title + " " + content).lower()
-            
-            # STRICT TRAGEDY triggers (High precision, avoid common words like 'tim'/'pemain')
-            tragedy_triggers = ["kecelakaan", "tewas", "meninggal", "kebakaran", "bus ", "tabrakan", "dievakuasi", "korban jiwa", "kematian"]
-            
-            # SPORTS RESULTS (Avoid 'tim' or 'atlet' alone, focus on 'skor' and 'pertandingan')
-            sports_triggers = ["skor pertandingan", "hasil pertandingan", "angka kemenangan", "skor liga", "klasemen sementara", "juara liga"]
-            
-            # ADS POSITIVE SIGNALS (Prevents override of genuine ads)
-            ads_signals = ["menghadirkan", "meluncurkan", "produk terbaru", "teknologi", "memberikan solusi", "fitur utama", "rilis resmi"]
-
-            # TRUTH OVERRIDE: ONLY override if it's a strict tragedy/sports match 
-            if any(kw in content_low for kw in tragedy_triggers + sports_triggers):
-                if label == "native ads":
-                    # Only override if NO strong ads signals are present
-                    if not any(kw in content_low for kw in ads_signals + ["diskon", "promo"]):
-                        label = "berita murni" 
-                        alasan = f"Heuristic Catch Phase 61: {alasan}"
-
-            # Final check for label consistency
-            if label == "native ads" and not any(kw in (alasan + " " + content_low).lower() for kw in [" brand", "produk", "layanan", "fitur", "teknologi", "rilis", "meluncur"]):
-                # If we still can't find ANY product/brand signal, it's safer to consider it news
-                if not model_predicted_ads: # Only fix if the model didn't even say it's an ad
-                    label = "berita murni"
 
             return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
         except Exception as e:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float: 
-        """Phase 62: REAL Perplexity Calculation (No more 1.15 placeholder)."""
+        """Phase 62: REAL Perplexity Calculation."""
         if self.provider == "local" and self.local_model_ref and self.tokenizer:
             try:
                 import torch
@@ -277,5 +262,5 @@ class ClassificationAgent:
                     loss = outputs.loss
                     ppl = torch.exp(loss).item()
                     return round(ppl, 4)
-            except: return 1.15 # Fallback if calculation fails
-        return 1.15 # Default for API models (OpenAI doesn't easily expose PPL)
+            except: return 1.15 
+        return 1.15
