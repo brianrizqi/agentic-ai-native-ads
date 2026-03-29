@@ -377,11 +377,26 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 27: Gold Standard JSON (LoRA Aligned)
+# Phase 28: Forensic Calibration (Divergent Tiers)
 # -----------------------------------------------------------------------------
-# Back to the native instruction format of the fine-tuned models.
+# MICRO: Indonesian-Only Minimalist (To prevent 270M model collapse)
+MICRO_LABEL_ONLY_TEMPLATE = """Tugas: Pilih "native ads" atau "berita murni".
 
-STABLE_JSON_PROMPT_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+{context}
+
+Judul: {title}
+Konten: {content}
+
+Pilihan Jawaban: [native ads, berita murni]
+
+Jawaban:"""
+
+# STANDARD: Label-First JSON (To prevent Llama 8B hallucination)
+STANDARD_LABEL_FIRST_TEMPLATE = """Tugas: Klasifikasikan berita sebagai "native ads" atau "berita murni".
+
+PENTING:
+1. Penyebutan nama brand/instansi dalam konteks berita (kecelakaan, politik, laporan faktual) BUKAN otomatis native ads.
+2. Native ads menonjolkan fitur produk atau promosi brand secara aktif.
 
 {context}
 
@@ -389,7 +404,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"reasoning": "alasan analisis", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
+{{"label": "native ads" atau "berita murni", "reasoning": "alasan singkat (max 150 karakter)"}}
 """
 
 training_prompt = PromptTemplate(

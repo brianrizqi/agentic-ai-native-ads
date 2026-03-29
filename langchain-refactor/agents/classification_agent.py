@@ -313,37 +313,46 @@ Klasifikasi:
             
             # Use chat template for local models to ensure instruction following
             # Use chat template for local models to ensure instruction following
+            # Use chat template for local models to ensure instruction following
             if self.provider == "local" and self.tokenizer:
-                # Phase 27: JSON Restoration & LoRA Alignment (90% & 70% Push)
-                from prompts.classification_prompts import TRAINING_PROMPT_TEMPLATE, STABLE_JSON_PROMPT_TEMPLATE
+                # Phase 28: Forensic Calibration (Divergence & Stability)
+                from prompts.classification_prompts import MICRO_LABEL_ONLY_TEMPLATE, STANDARD_LABEL_FIRST_TEMPLATE
                 
                 # 1. Leakage Shield (Similarity < 0.05) - Ensuring realistic metrics
                 top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
                 use_this_rag = self.use_rag and examples and top_score > 0.05
-                rag_context = ""
-                if use_this_rag:
-                    ex = examples[0]
-                    rag_context = (
-                        f"REFERENSI KLASIFIKASI:\n"
-                        f"- Konten: {ex.get('content', '')[:100]}...\n"
-                        f"- Analisis: {ex.get('reasoning', '')[:100]}\n"
-                        f"- Label: {ex.get('label')}\n"
-                        "---"
-                    )
-
-                # 2. Universal Gold-Standard JSON Prompt
-                # All models use the format they were trained on (Reasoning-First JSON)
-                prompt_instructions = TRAINING_PROMPT_TEMPLATE.split('Output (JSON):')[0].strip()
                 
-                full_user_msg = (
-                    f"{prompt_instructions}\n\n"
-                    f"{rag_context}\n\n"
-                    f"Judul: {title or content[:60]}\n"
-                    f"Konten: {content[:400]}\n\n"
-                    f"Output (JSON):"
-                )
+                # 2. Tier Selection
+                if self.model_tier == "micro":
+                    # MICRO (270M/2B): No reasoning, No RAG (Stability Reset)
+                    template = MICRO_LABEL_ONLY_TEMPLATE
+                    prefix_force = "" # Let it blab "Jawaban: ..." or just one word
+                    user_msg = template.format(
+                        title=title or content[:60],
+                        content=content[:400],
+                        context=""
+                    ).strip()
+                else:
+                    # STANDARD (8B/9B): Label-First JSON (Precision Calibration)
+                    template = STANDARD_LABEL_FIRST_TEMPLATE
+                    rag_context = ""
+                    if use_this_rag:
+                        ex = examples[0]
+                        rag_context = (
+                            f"REFERENSI ANALISIS:\n"
+                            f"- Label: {ex.get('label')}\n"
+                            f"- Konten: {ex.get('content', '')[:100]}\n"
+                            "---"
+                        )
+                    
+                    user_msg = template.format(
+                        title=title or content[:60],
+                        content=content[:400],
+                        context=rag_context
+                    ).strip()
+                    prefix_force = '{"label": "'
 
-                messages = [{"role": "user", "content": full_user_msg}]
+                messages = [{"role": "user", "content": user_msg}]
 
                 # Apply chat template
                 templated_prompt = self.tokenizer.apply_chat_template(
@@ -352,19 +361,19 @@ Klasifikasi:
                     add_generation_prompt=True
                 )
                 
-                # Force JSON start to prevent model collapse
-                prefix_force = '{"reasoning": "'
-                templated_prompt += prefix_force
+                if prefix_force:
+                    templated_prompt += prefix_force
                 
-                # Use standard JSON stop sequences
-                stop_seqs = ["}", "}\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
+                # Use standard JSON stop sequences for standard, simpler for micro
+                stop_seqs = ["}", "}\n", "\n\n", self.tokenizer.eos_token if self.tokenizer else "</s>"]
                 if hasattr(self, 'stop_sequences'):
                     stop_seqs.extend(self.stop_sequences)
                 
                 response = self.llm.invoke(templated_prompt, stop=list(set(stop_seqs)))
                 
                 # Prepend prefix back to response for parsing
-                response = prefix_force + response
+                if prefix_force:
+                    response = prefix_force + response
                 
             else:
                 # Use LCEL with explicit dict (API providers)
@@ -395,23 +404,31 @@ Klasifikasi:
         try:
             import re
             
-            # Phase 27: Gold Standard JSON Parsing (Highest Priority)
+            # Phase 28: Forensic Calibration Parser
+            # 1. Try JSON parsing (Handles both Reasoning-First and Label-First)
             if '{' in response and '}' in response:
                 try:
                     json_str = response[response.find('{'):response.rfind('}')+1]
-                    # Simple cleanup for malformed JSON strings
                     json_str = json_str.replace('\n', ' ').strip()
                     data = json.loads(json_str)
                     if 'label' in data:
                         label = data['label'].lower()
-                        if "native" in label:
-                            return {'label': 'native ads', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', '')}
+                        if "native" in label or "ads" in label:
+                            return {'label': 'native ads', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', 'JSON parsing')}
                         else:
-                            return {'label': 'berita murni', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', '')}
+                            return {'label': 'berita murni', 'confidence': data.get('confidence', 0.9), 'reasoning': data.get('reasoning', 'JSON parsing')}
                 except:
                     pass
 
-            # Phase 26 XML Fallback (Keep during transition)
+            # 2. Micro-Tier Flat String Parsing
+            # If no JSON, look for keywords in the raw response
+            resp_lower = response.lower()
+            if "native ads" in resp_lower or "iklan" in resp_lower:
+                return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'Flat string matching'}
+            elif "berita murni" in resp_lower or "news" in resp_lower or "murni" in resp_lower:
+                return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'Flat string matching'}
+
+            # Phase 26 XML Fallback
             hasil_match = re.search(r'<hasil>(.*?)</hasil>', response, re.IGNORECASE | re.DOTALL)
             analisis_match = re.search(r'<analisis>(.*?)</analisis>', response, re.IGNORECASE | re.DOTALL)
             
