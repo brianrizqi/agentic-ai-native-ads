@@ -377,30 +377,34 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 32: Label-First RAG Calibration (Balanced Inductor)
+# Phase 33: Selective Fidelity (Standard Precision Vaccine)
 # -----------------------------------------------------------------------------
-# Forcing label choice BEFORE reasoning to prevent RAG-induced drift.
+# Standard (8B+): Decision-First JSON with explicit Negative Priors.
 
-LABEL_FIRST_RAG_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+STANDARD_VACCINE_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
-CONTOH 1 (Berita Murni):
-Judul: KPK Tangkap Pejabat Terkait Korupsi Hibah
-Konten: Komisi Pemberantasan Korupsi (KPK) melakukan OTT terkait dugaan suap...
-Hasil: {{"label": "berita murni", "reasoning": "Laporan faktual peristiwa hukum tanpa unsur promosi atau persuasi."}}
+VAKSIN BORDERLINE (BUKAN AD):
+- Laporan lembaga (NASA, UN, Kementerian, WHN) = BERITA MURNI.
+- Tips/Saran Umum (Cara cuci piring, tips masak) = BERITA MURNI.
+- Berita CSR/Bursa Saham tanpa ajakan beli = BERITA MURNI.
 
-CONTOH 2 (Native Ads):
-Judul: OPPO A55 Hadir dengan Kamera 50MP
-Konten: Dapatkan smartphone terbaru OPPO A55 dengan fitur kamera mutakhir...
-Hasil: {{"label": "native ads", "reasoning": "Konten persuasif menonjolkan fitur produk dan ajakan membeli."}}
-
-TUGAS ANDA:
-(PENTING: Prioritaskan isi artikel target di bawah. Dokumen referensi hanya pembanding.)
 {context}
 
 Judul: {title}
 Konten: {content}
 
-Output (JSON):"""
+Output (JSON):
+{{"label": "native ads" atau "berita murni", "reasoning": "alasan singkat"}}
+"""
+
+# Micro (270M): Ultra-Minimal Label-Only (To prevent collapse)
+MICRO_ULTRA_MINIMAL_TEMPLATE = """Pilih: "native ads" atau "berita murni".
+
+{context}
+
+Berita: {title} - {content}
+
+Jawaban:"""
 
 training_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
