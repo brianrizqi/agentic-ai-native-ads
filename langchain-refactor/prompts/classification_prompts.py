@@ -377,42 +377,22 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
+# Phase 27: Gold Standard JSON (LoRA Aligned)
+# -----------------------------------------------------------------------------
+# Back to the native instruction format of the fine-tuned models.
+
+STABLE_JSON_PROMPT_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+
+{context}
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+{{"reasoning": "alasan analisis", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
+"""
+
 training_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
     template=TRAINING_PROMPT_TEMPLATE
 )
-
-# Phase 26: XML-Style Prompting (Unified Expert Tiering)
-# -----------------------------------------------------------------------------
-# XML is much more robust for sub-2B models (Qwen 2B, Gemma 270M) as it 
-# provides clear structural anchors to prevent multilingual/format collapse.
-
-XML_STANDARD_PROMPT_TEMPLATE = """Tugas: Klasifikasikan berita sebagai "native ads" atau "berita murni".
-
-POIN ANALISIS:
-1. Tone PR/Positif tanpa kritik -> Native Ads.
-2. Ada brand/produk spesifik yang dipromosikan -> Native Ads.
-3. Informasi objektif/faktual tanpa agenda jualan -> Berita Murni.
-
-{context}
-
-Judul: {title}
-Konten: {content}
-
-Berikan alasan singkat di dalam tag <analisis> dan label akhir di dalam tag <hasil>.
-Pilihan Label: native ads, berita murni.
-
-Format:
-<analisis>alasan singkat</analisis>
-<hasil>label</hasil>
-"""
-
-XML_MICRO_PROMPT_TEMPLATE = """Klasifikasikan berita ini:
-{context}
-
-Judul: {title}
-Konten: {content}
-
-Pilihan Label: native ads, berita murni.
-
-<analisis>"""
