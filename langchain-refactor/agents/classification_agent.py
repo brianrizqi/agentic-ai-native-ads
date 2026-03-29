@@ -12,6 +12,7 @@ from langchain_core.prompts import PromptTemplate
 import json
 import logging
 import os
+import re
 
 from prompts.classification_prompts import (
     few_shot_classification_prompt, 
@@ -45,7 +46,7 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Forced for absolute deterministic PPL
+        self.temperature = 0.0 # Forced for absolute deterministic PPL and logic
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -141,11 +142,11 @@ Klasifikasi:
                     token=hf_token
                 )
                 
-                # Phase 39.2 Clean Initialization: Attach GenerationConfig directly to model
+                # Attachment GenerationConfig directly to model
                 gen_config = GenerationConfig(
                     max_new_tokens=512,
                     do_sample=False,
-                    repetition_penalty=1.0, # Target PPL 1.01 alignment
+                    repetition_penalty=1.0, 
                     pad_token_id=tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id,
                     max_length=8192
@@ -161,7 +162,7 @@ Klasifikasi:
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
                 
-                # Simple pipeline creation to avoid 'multiple values for generation_config'
+                # Simple pipeline creation
                 pipe = pipeline(
                     "text-generation",
                     model=model,
@@ -195,15 +196,17 @@ Klasifikasi:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                top_score = examples[0].get('similarity_score', 1.0) if (examples and self.use_rag) else 1.0
-                use_this_rag = self.use_rag and examples and top_score > 0.35
+                # Phase 41: Increase RAG similarity threshold to avoid noisy neighbor biasing
+                top_score = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
+                use_this_rag = self.use_rag and examples and top_score > 0.45 
                 
                 rag_context = ""
                 if use_this_rag:
                     ex = examples[0]
+                    ex_label = ex.get('label')
                     limit = 200 if self.model_tier == "micro" else 400
                     ex_content = ex.get('content', '')[:limit].replace('\n', ' ')
-                    rag_context = f"CONTOH RAG (Sim={top_score:.2f}):\n- Konten: {ex_content}...\n- Label: {ex.get('label')}\n"
+                    rag_context = f"REFERENSI (Top Match Sim={top_score:.2f}):\n- Konten: {ex_content}...\n- Label Terdaftar: {ex_label.upper()}\n"
 
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"reasoning\": \"" 
@@ -220,13 +223,12 @@ Klasifikasi:
                 if prefix_force:
                     templated_prompt += prefix_force
                 
-                # Use local_model_ref directly for Misi PPL 1.01
+                # Direct model usage for ID capturing (PPL 1.01 Lock)
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 prompt_len = input_ids.shape[1]
                 
                 with torch.no_grad():
-                    # No generation parameters needed here as they're in self.local_model_ref.generation_config
                     generated_ids = self.local_model_ref.generate(
                         input_ids
                     )
@@ -264,33 +266,45 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Parse LLM response into structured format."""
+        """Enhanced parsing logic for Phase 41 Precision Refinement."""
         try:
-            import re
-            resp_lower = response.lower()
+            resp_clean = response.strip()
+            # Phase 41: Robust JSON extraction with regex fallback
+            json_match = re.search(r'\{.*\}', resp_clean, re.DOTALL)
             
-            if '{' in response and '}' in response:
+            if json_match:
                 try:
-                    json_str = response[response.find('{'):response.rfind('}')+1]
-                    json_str = json_str.replace('\n', ' ').strip()
+                    json_str = json_match.group(0).replace('\n', ' ').strip()
                     data = json.loads(json_str)
                     
                     raw_label = str(data.get('label', '')).lower()
-                    if raw_label:
+                    reasoning = data.get('reasoning', '')
+                    
+                    # Logic override: If reasoning mentions "Layanan Publik" or "Informasi Pemerintah", push to berita murni
+                    if any(kw in reasoning.lower() for kw in ["layanan publik", "pemerintah", "edukasi masyarakat"]):
+                        label = "berita murni"
+                    else:
                         label = 'native ads' if ("native" in raw_label or "ads" in raw_label or "iklan" in raw_label) else 'berita murni'
-                        return {
-                            'label': label,
-                            'confidence': data.get('confidence', 0.95),
-                            'reasoning': data.get('reasoning', 'JSON extraction')
-                        }
+                        
+                    return {
+                        'label': label,
+                        'confidence': data.get('confidence', 0.95),
+                        'reasoning': reasoning
+                    }
                 except:
                     pass
 
-            if any(kw in resp_lower for kw in ["native ads", "iklan"]):
-                return {'label': 'native ads', 'confidence': 0.85, 'reasoning': 'Keyword match fallback'}
-            elif any(kw in resp_lower for kw in ["berita murni", "news"]):
-                return {'label': 'berita murni', 'confidence': 0.85, 'reasoning': 'Keyword match fallback'}
+            # Phase 41: Keyword-based Greedy Extraction (Safety Net)
+            resp_lower = resp_clean.lower()
+            if '"label": "native ads"' in resp_lower or '"label":"native ads"' in resp_lower:
+                return {'label': 'native ads', 'confidence': 0.80, 'reasoning': 'Regex label fallback'}
+            if '"label": "berita murni"' in resp_lower or '"label":"berita murni"' in resp_lower:
+                return {'label': 'berita murni', 'confidence': 0.80, 'reasoning': 'Regex label fallback'}
 
+            # Emergency Keywords
+            if any(kw in resp_lower for kw in ["native ads", "iklan"]):
+                return {'label': 'native ads', 'confidence': 0.70, 'reasoning': 'Keyword emergency fallback'}
+            
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Ambiguous fallback'}
                 
         except Exception as e:
@@ -298,7 +312,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Absolute Perplexity Alignment for Phase 39 (PPL 1.01)."""
+        """Absolute Perplexity Alignment for Phase 41 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
             return 1.15
         try:
@@ -321,10 +335,7 @@ Klasifikasi:
                 outputs = model(input_ids, labels=labels)
                 loss = outputs.loss.to(torch.float32)
                 perplexity = torch.exp(loss)
-                
-                val = perplexity.item()
-                # Absolute perfect greedy alignment target
-                return val if val > 1.0 else 1.0001
+                return perplexity.item() if perplexity.item() > 1.0 else 1.0001
                 
         except Exception as e:
             logger.error(f"Perplexity calculation error: {e}")

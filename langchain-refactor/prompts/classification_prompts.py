@@ -383,15 +383,24 @@ Output (JSON):
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
-CONTOH 1 (Berita Murni):
+PANDUAN ANALISA:
+1. Periksa Indikator Iklan (Commercial): Apakah ada promosi produk, harga, fitur teknis subjektif, atau ajakan membeli/memakai jasa?
+2. Periksa Indikator Berita (Public Interest): Apakah konten memberikan informasi peristiwa hukum, kebijakan publik, atau edukasi masyarakat tanpa niat jualan?
+
+CONTOH 1 (Berita Murni - Hard News):
 Judul: KPK Tangkap Pejabat Terkait Korupsi Hibah
 Konten: Komisi Pemberantasan Korupsi (KPK) melakukan OTT terkait dugaan suap...
-Hasil: {{"reasoning": "Laporan faktual peristiwa hukum tanpa unsur promosi atau persuasi.", "label": "berita murni"}}
+Hasil: {{"reasoning": "Indikator Iklan: Tidak ada. Indikator Berita: Ada (Peristiwa hukum/korupsi). Kesimpulan: Laporan faktual peristiwa hukum murni.", "label": "berita murni"}}
 
-CONTOH 2 (Native Ads):
+CONTOH 2 (Native Ads - Promosi):
 Judul: OPPO A55 Hadir dengan Kamera 50MP
 Konten: Dapatkan smartphone terbaru OPPO A55 dengan fitur kamera mutakhir...
-Hasil: {{"reasoning": "Konten persuasif menonjolkan fitur produk dan ajakan membeli.", "label": "native ads"}}
+Hasil: {{"reasoning": "Indikator Iklan: Ada (Fitur kamera, merk OPPO). Indikator Berita: Tidak ada. Kesimpulan: Konten persuasif menonjolkan fitur produk komersial.", "label": "native ads"}}
+
+CONTOH 3 (Berita Murni - Layanan Publik):
+Judul: Cara Perpanjang SIM Online Lewat Aplikasi
+Konten: Polri meluncurkan aplikasi baru untuk memudahkan masyarakat memperpanjang SIM secara digital...
+Hasil: {{"reasoning": "Indikator Iklan: Tidak ada (Aplikasi pemerintah bukan produk komersial). Indikator Berita: Ada (Edukasi layanan publik). Kesimpulan: Informasi edukasi masyarakat tanpa niat jualan.", "label": "berita murni"}}
 
 TUGAS ANDA:
 {context}
@@ -400,6 +409,9 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):"""
+
+
+
 
 # Phase 35: Zero-Shot Gold Standard (For Micro Tiers 270M-500M)
 # -----------------------------------------------------------------------------
