@@ -1,6 +1,6 @@
 """
 Classification Agent using LangChain
-Main agent for classifying content as native ads or pure news
+Main agent for classifying content as native ads or pure news with Contrastive RAG
 """
 
 from typing import Dict, Any, Optional, List
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class ClassificationAgent:
     """
-    LangChain-based agent for native ads classification with LoRA Alignment.
+    LangChain-based agent for native ads classification with Dual-Contrastive RAG.
     """
     
     def __init__(
@@ -46,7 +46,7 @@ class ClassificationAgent:
         """
         self.model_name = model_name
         self.provider = provider
-        self.temperature = 0.0 # Absolute determinism for LoRA inference
+        self.temperature = 0.0 # Forced for absolute deterministic PPL and logic
         self.use_few_shot = use_few_shot
         self.lora_path = lora_path
         self.gpu_id = gpu_id
@@ -142,7 +142,7 @@ Klasifikasi:
                     token=hf_token
                 )
                 
-                # Attachment GenerationConfig directly to model (LoRA Alignment)
+                # Attachment GenerationConfig directly to model
                 gen_config = GenerationConfig(
                     max_new_tokens=512,
                     do_sample=False,
@@ -162,6 +162,7 @@ Klasifikasi:
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
                 
+                # Simple pipeline creation
                 pipe = pipeline(
                     "text-generation",
                     model=model,
@@ -185,7 +186,7 @@ Klasifikasi:
         examples: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Classify content as native ads or pure news with Phase 42 Alignment.
+        Classify content with Phase 43 Dual-Contrastive RAG.
         """
         try:
             logger.info("Classifying content...")
@@ -195,25 +196,39 @@ Klasifikasi:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE
                 import torch
                 
-                # Phase 42: Simplified RAG injection to match training distribution
-                top_score = examples[0].get('similarity_score', 0.0) if (examples and self.use_rag) else 0.0
-                use_this_rag = self.use_rag and examples and top_score > 0.45 
-                
+                # Phase 43: Dual-Contrastive RAG Picker (Find 1 Ad + 1 News)
                 rag_context = ""
-                if use_this_rag:
-                    ex = examples[0]
-                    ex_label = ex.get('label')
-                    limit = 200 if self.model_tier == "micro" else 400
-                    ex_content = ex.get('content', '')[:limit].replace('\n', ' ')
-                    # Minimalist alignment: Just Konteks: [content]
-                    rag_context = f"Konteks Referensi ({ex_label}):\n{ex_content}...\n"
+                if self.use_rag and examples:
+                    ad_ex = None
+                    news_ex = None
+                    # Search through results for one of each class to provide contrast
+                    for ex in examples:
+                        label = ex.get('label', '').lower()
+                        score = ex.get('similarity_score', 0.0)
+                        if score < 0.35: continue # Ignore bad matches
+                        
+                        if 'native' in label and ad_ex is None:
+                            ad_ex = ex
+                        elif 'murni' in label and news_ex is None:
+                            news_ex = ex
+                        
+                        if ad_ex and news_ex: break
+                    
+                    if ad_ex or news_ex:
+                        rag_context = "REFERENSI PEMBANDING:\n"
+                        if ad_ex:
+                            limit = 150 if self.model_tier == "micro" else 300
+                            rag_context += f"- CONTOH NATIVE ADS (Skor={ad_ex['similarity_score']:.2f}): {ad_ex.get('content')[:limit]}...\n"
+                        if news_ex:
+                            limit = 150 if self.model_tier == "micro" else 300
+                            rag_context += f"- CONTOH BERITA MURNI (Skor={news_ex['similarity_score']:.2f}): {news_ex.get('content')[:limit]}...\n"
 
                 template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                 prefix_force = "{\"reasoning\": \"" 
 
                 user_msg = template.format(
                     title=title or content[:60],
-                    content=content[:500], # Slightly more content for standard tiers
+                    content=content[:500],
                     context=rag_context
                 ).strip()
                 
@@ -264,7 +279,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Error fallback: {str(e)}'}
             
     def _parse_response(self, response: str) -> Dict[str, Any]:
-        """Enhanced parsing logic (Unchanged from Phase 41 safety)."""
+        """Enhanced parsing logic with Phase 41+ precision."""
         try:
             resp_clean = response.strip()
             json_match = re.search(r'\{.*\}', resp_clean, re.DOTALL)
@@ -295,7 +310,7 @@ Klasifikasi:
                 return {'label': 'native ads', 'confidence': 0.80, 'reasoning': 'Regex label fallback'}
             if '"label": "berita murni"' in resp_lower or '"label":"berita murni"' in resp_lower:
                 return {'label': 'berita murni', 'confidence': 0.80, 'reasoning': 'Regex label fallback'}
-
+            
             if any(kw in resp_lower for kw in ["native ads", "iklan"]):
                 return {'label': 'native ads', 'confidence': 0.70, 'reasoning': 'Keyword emergency fallback'}
             
@@ -306,7 +321,7 @@ Klasifikasi:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': 'Parse error fallback'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float:
-        """Absolute Perplexity Alignment for Phase 42 (PPL 1.01)."""
+        """Absolute Perplexity Alignment for Phase 43 (PPL 1.01)."""
         if self.provider != "local" or not self.tokenizer:
             return 1.15
         try:
