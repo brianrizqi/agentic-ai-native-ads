@@ -377,21 +377,30 @@ Output (JSON):
 {{"reasoning": "alasan singkat (max 150 karakter)", "label": "native ads" atau "berita murni", "confidence": 0.0-1.0}}
 """
 
-# Phase 30: "The Training-Fidelity Reset"
+# Phase 32: Label-First RAG Calibration (Balanced Inductor)
 # -----------------------------------------------------------------------------
-# Reverting to the exact format used during LoRA fine-tuning to maximize
-# instruction adherence for all models (270M, 2B, 8B, 9B).
+# Forcing label choice BEFORE reasoning to prevent RAG-induced drift.
 
-GOLD_STANDARD_JSON_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+LABEL_FIRST_RAG_TEMPLATE = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
 
+CONTOH 1 (Berita Murni):
+Judul: KPK Tangkap Pejabat Terkait Korupsi Hibah
+Konten: Komisi Pemberantasan Korupsi (KPK) melakukan OTT terkait dugaan suap...
+Hasil: {{"label": "berita murni", "reasoning": "Laporan faktual peristiwa hukum tanpa unsur promosi atau persuasi."}}
+
+CONTOH 2 (Native Ads):
+Judul: OPPO A55 Hadir dengan Kamera 50MP
+Konten: Dapatkan smartphone terbaru OPPO A55 dengan fitur kamera mutakhir...
+Hasil: {{"label": "native ads", "reasoning": "Konten persuasif menonjolkan fitur produk dan ajakan membeli."}}
+
+TUGAS ANDA:
+(PENTING: Prioritaskan isi artikel target di bawah. Dokumen referensi hanya pembanding.)
 {context}
 
 Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"reasoning": "analisis singkat", "label": "native ads" atau "berita murni"}}
-"""
+Output (JSON):"""
 
 training_prompt = PromptTemplate(
     input_variables=["title", "content", "context"],
