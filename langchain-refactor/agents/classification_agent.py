@@ -233,31 +233,35 @@ class ClassificationAgent:
                         probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
                         conf = probs[0].item() if label == "native ads" else probs[1].item()
                         
-                        # Step 2: Metrics-Driven Reasoning via Pre-filling
-                        # We force the model into a JSON reasoning state based on its own choice
-                        reason_prefill = f"{{\"label\": \"{label}\", \"alasan\": \""
-                        reason_prompt = templated_prompt + reason_prefill
+                        # Step 2: Metrics-Driven Reasoning via Clean Slate (Phase 77)
+                        # We use a fresh, minimalist context to prevent "Analisis:" hallucinations
+                        reason_prompt = (
+                            f"Identifikasi Artikel:\n"
+                            f"Judul: {title or 'Tanpa Judul'}\n"
+                            f"Label Konten: {label}\n"
+                            f"Alasan singkat (1 kalimat): "
+                        )
                         
                         reason_inputs = self.tokenizer(reason_prompt, return_tensors="pt", add_special_tokens=True).to(self.local_model_ref.device)
                         
-                        # Phase 76: Short, stable reasoning completion (64 tokens max)
+                        # Use a tighter generation for the reason
                         reason_ids = self.local_model_ref.generate(
                             reason_inputs.input_ids,
                             attention_mask=reason_inputs.attention_mask,
-                            max_new_tokens=64,
+                            max_new_tokens=48,
                             do_sample=False,
                             pad_token_id=self.tokenizer.eos_token_id
                         )
                         
-                        # Extract only the completion
                         reason_text = self.tokenizer.decode(reason_ids[0][reason_inputs.input_ids.shape[1]:], skip_special_tokens=True)
-                        reason_text = reason_text.split("}")[0].strip(' "')
+                        # Strict Phase 77 cleaning: kill at first newline or hallucinated tag
+                        reason_text = reason_text.split("\n")[0].split("Analisis:")[0].split("Judul:")[0].strip(' "')
                         
-                        print(f"DEBUG: Hybrid Classifier [{self.model_tier}] -> Label: {label}, Reason: {reason_text[:50]}...")
+                        print(f"DEBUG: Hybrid Classifier [{self.model_tier}] -> Choice: {label}, Clean Reason: {reason_text[:60]}...")
                         return {
                             'label': label, 
                             'confidence': conf, 
-                            'reasoning': reason_text if reason_text else "Pilihan berdasarkan perbandingan logit"
+                            'reasoning': reason_text if reason_text else f"Artikel ini diklasifikasikan sebagai {label}."
                         }
 
                 # Standard Generation for other tiers
