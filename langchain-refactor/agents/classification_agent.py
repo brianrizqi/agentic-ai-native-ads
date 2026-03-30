@@ -198,11 +198,10 @@ class ClassificationAgent:
                     template = MICRO_HEURISTIC_PROMPT
                     prefix_force = "" 
                 else:
-                    # Phase 88: The RAG Synergy Pivot (Target >85%)
-                    # Pairing fine-tuned 8B weights with the original minimalist Anti-Bias prompt.
+                    # Phase 94: The Zero-Bias Reconstruction (Target 89%+)
+                    # Removing prefix_force to eliminate token-start bias in Llama 3.1.
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
-                    # Overriding to force Label-First for inference stability
-                    prefix_force = "{\"label\": \"" 
+                    prefix_force = "" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
@@ -270,8 +269,6 @@ class ClassificationAgent:
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
-                if prefix_force and self.model_tier != 'micro': 
-                    raw_response = prefix_force + raw_response
                 
                 clean_peek = raw_response[:120].replace('\n', ' ')
                 print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")
