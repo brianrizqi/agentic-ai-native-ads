@@ -90,13 +90,17 @@ class ClassificationAgent:
                 import torch
                 hf_token = "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"
                 
-                # Phase 65: Fix Mistral regex for Gemma 3 stability
-                tokenizer = AutoTokenizer.from_pretrained(
-                    self.model_name, 
-                    token=hf_token, 
-                    trust_remote_code=True,
-                    fix_mistral_regex=True
-                )
+                # Phase 65: Nuclear Stability Reloaded (Safe Tokenizer Loading)
+                try:
+                    tokenizer = AutoTokenizer.from_pretrained(
+                        self.model_name, token=hf_token, trust_remote_code=True, 
+                        fix_mistral_regex=True
+                    )
+                except TypeError:
+                    # Fallback for transformers versions where this is already handled or causes conflicts
+                    tokenizer = AutoTokenizer.from_pretrained(
+                        self.model_name, token=hf_token, trust_remote_code=True
+                    )
                 tokenizer.padding_side = "left"
                 bnb_config = None
                 if torch.cuda.is_available():
