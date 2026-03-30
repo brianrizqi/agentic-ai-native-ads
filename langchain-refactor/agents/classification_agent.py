@@ -90,11 +90,12 @@ class ClassificationAgent:
                 import torch
                 hf_token = "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"
                 
-                # Phase 63: Use AutoTokenizer standard loading (removed fix_mistral_regex to avoid multiple values error)
+                # Phase 65: Fix Mistral regex for Gemma 3 stability
                 tokenizer = AutoTokenizer.from_pretrained(
                     self.model_name, 
                     token=hf_token, 
-                    trust_remote_code=True
+                    trust_remote_code=True,
+                    fix_mistral_regex=True
                 )
                 tokenizer.padding_side = "left"
                 bnb_config = None
@@ -149,9 +150,12 @@ class ClassificationAgent:
         Classify content with Phase 63 Sanity Restoration (No more overrides).
         """
         try:
-            raw_response = ""
             if self.provider == "local" and self.tokenizer:
-                from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE
+                from prompts.classification_prompts import (
+                    ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE,
+                    BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
+                    ULTRA_STABLE_MICRO_TEMPLATE
+                )
                 import torch
                 
                 # Phase 64: Improved RAG (Threshold 0.70)
@@ -176,21 +180,17 @@ class ClassificationAgent:
                 if not rag_block:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
-                # Phase 64: Bilingual-aware template selection
+                # Phase 65: Nuclear PPL Fix (Label-First for Micro)
                 family = self._get_model_family(self.model_name)
                 is_bilingual = family in ['gemma', 'llama']
                 
-                from prompts.classification_prompts import (
-                    ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE,
-                    BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE
-                )
-
                 if self.model_tier == 'micro':
-                    template = BILINGUAL_MICRO_TEMPLATE if is_bilingual else SIMPLE_MICRO_TEMPLATE
+                    # Atomic stability for Sub-1B models
+                    template = ULTRA_STABLE_MICRO_TEMPLATE
+                    prefix_force = "{\"label\": \""
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
-                
-                prefix_force = "{\"alasan\": \"" 
+                    prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 messages = [{"role": "user", "content": user_msg}]
@@ -200,13 +200,20 @@ class ClassificationAgent:
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 
-                # Phase 63: Increase repetitive penalty for Gemma to stop Russian/Gibberish
+                # Phase 65: Nuclear Repetition Penalty (1.5)
                 gen_config = self.local_model_ref.generation_config
                 if self.model_tier == 'micro':
-                    gen_config.repetition_penalty = 1.2
+                    gen_config.repetition_penalty = 1.5
+                    # Stop at newline or closing brace to prevent linguistic drift
+                    stop_at = [self.tokenizer.eos_token_id]
+                    if self.tokenizer.convert_tokens_to_ids("\n"): stop_at.append(self.tokenizer.convert_tokens_to_ids("\n"))
                 
                 with torch.no_grad():
-                    generated_ids = self.local_model_ref.generate(ids, generation_config=gen_config)
+                    generated_ids = self.local_model_ref.generate(
+                        ids, 
+                        generation_config=gen_config,
+                        max_new_tokens=256 if self.model_tier == 'micro' else 512
+                    )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
                 if prefix_force: raw_response = prefix_force + raw_response
@@ -237,7 +244,7 @@ class ClassificationAgent:
         except: pass
 
     def _parse_response(self, response: str, content: str = "", title: str = "") -> Dict[str, Any]:
-        """Phase 63: Clean & Minimal Parser. Trusting the model entirely."""
+        """Phase 63+65: Clean & Minimal Parser. Optimized for Label-First."""
         try:
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan."
@@ -249,11 +256,18 @@ class ClassificationAgent:
             
             if json_match:
                 json_str = json_match.group(0)
-                if not json_str.endswith('}'): json_str += '"}'
+                # Cleanup common truncation issues from micro models
+                if not json_str.endswith('}'): 
+                    if json_str.count('"') % 2 != 0: json_str += '"'
+                    json_str += '}'
                 try:
-                    data = json.loads(json_str.replace('\n', ' ').replace('\u0e2d', ''))
+                    # Clean up Thai/Russian noise that occasionally slips through
+                    json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
+                    data = json.loads(json_str_clean.replace('\n', ' '))
+                    
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
+                    
                     if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): 
                         label = "native ads"
                 except:
