@@ -72,6 +72,14 @@ class ClassificationAgent:
         if any(x in n for x in ['3b', '7b', '8b', '9b']): return 'small'
         return 'standard'
 
+    def _get_model_family(self, name: str) -> str:
+        """Detect model family for prompt tailoring."""
+        n = name.lower()
+        if 'gemma' in n: return 'gemma'
+        if 'llama' in n: return 'llama'
+        if 'qwen' in n: return 'qwen'
+        return 'other'
+
     def _initialize_llm(self, api_key: Optional[str]):
         """Initialize LLM based on provider."""
         if self.provider == "openai":
@@ -146,32 +154,43 @@ class ClassificationAgent:
                 from prompts.classification_prompts import ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE
                 import torch
                 
-                # Phase 60: RAG Pair-Contrast Picker (Threshold 0.85)
+                # Phase 64: Improved RAG (Threshold 0.70)
                 rag_block = ""
-                threshold = 0.85 
+                threshold = 0.70
                 if self.use_rag and examples:
-                    best_ad, best_news = None, None
-                    for ex in examples:
-                        score = ex.get('similarity_score', 0)
-                        label = ex.get('label', '').lower()
-                        if score < threshold: continue
-                        if 'native' in label and (not best_ad or score > best_ad['similarity_score']): best_ad = ex
-                        elif 'murni' in label and (not best_news or score > best_news['similarity_score']): best_news = ex
-                    if best_ad or best_news:
+                    ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
+                    news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
+                    
+                    # Sort by similarity
+                    ads = sorted(ads, key=lambda x: x['similarity_score'], reverse=True)
+                    news = sorted(news, key=lambda x: x['similarity_score'], reverse=True)
+                    
+                    if ads or news:
                         rag_block = "[REFERENSI KOMPARASI]\n"
-                        if best_ad: rag_block += f"- NATIVE ADS: \"{best_ad.get('content')[:250]}...\"\n"
-                        if best_news: rag_block += f"- BERITA MURNI: \"{best_news.get('content')[:250]}...\"\n"
+                        # Limit to top 2 each to avoid context bloat in small models
+                        for i, ex in enumerate(ads[:2]):
+                            rag_block += f"- NATIVE ADS {i+1}: \"{ex.get('content')[:200]}...\"\n"
+                        for i, ex in enumerate(news[:2]):
+                            rag_block += f"- BERITA MURNI {i+1}: \"{ex.get('content')[:200]}...\"\n"
                 
                 if not rag_block:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
-                # Phase 61: Template selection based on model tier
+                # Phase 64: Bilingual-aware template selection
+                family = self._get_model_family(self.model_name)
+                is_bilingual = family in ['gemma', 'llama']
+                
+                from prompts.classification_prompts import (
+                    ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE,
+                    BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE
+                )
+
                 if self.model_tier == 'micro':
-                    template = SIMPLE_MICRO_TEMPLATE
-                    prefix_force = "{\"alasan\": \"" 
+                    template = BILINGUAL_MICRO_TEMPLATE if is_bilingual else SIMPLE_MICRO_TEMPLATE
                 else:
-                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
-                    prefix_force = "{\"alasan\": \"" 
+                    template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
+                
+                prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 messages = [{"role": "user", "content": user_msg}]
