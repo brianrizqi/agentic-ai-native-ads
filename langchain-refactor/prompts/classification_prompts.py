@@ -386,15 +386,20 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 94: The Zero-Bias Reconstruction (Target 89%+)
+# Phase 95: The Implicit Ad Expansion (Target 89%+)
 # -----------------------------------------------------------------------------
-# Balanced instructions to remove positional bias.
+# Zero-Bias with explicit Implicit-Ad signals.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Analisis artikel di bawah dan klasifikasikan sebagai "berita murni" atau "native ads".
 
 [KRITERIA]:
-- BERITA MURNI: Artikel jurnalisme objektif tentang Politik, Ekonomi, Tragedi, Sejarah, Olahraga, atau Kebijakan Publik (termasuk berita kritis tentang korporasi seperti PHK atau Kasus Hukum).
-- NATIVE ADS: Artikel promosi brand, Press Release (PR) bisnis, rilis investor, pengumuman kerjasama (MOU), atau konten yang mengagungkan keunggulan produk/jasa.
+- BERITA MURNI: Artikel jurnalisme objektif (Politik, Ekonomi, Tragedi, Sejarah, Olahraga, Kebijakan Publik, atau Berita Kritis tentang korporasi seperti PHK/Kasus Hukum).
+- NATIVE ADS: Konten yang bertujuan membangun citra positif, seperti:
+  * Promosi brand/produk/jasa secara langsung.
+  * Press Release (PR) bisnis, MOU, rilis bursa, atau pengumuman kerjasama.
+  * Laporan pencapaian/kinerja Instansi Pemerintah atau BUMN (PR Pemerintah).
+  * Artikel "Penghargaan" atau "Awards" (Corporate/Agency Recognition).
+  * Konten edukasi/tips (Kesehatan/Investasi) yang mengarahkan pembaca pada brand/layanan tertentu.
 
 {context}
 
@@ -402,8 +407,8 @@ TUGAS:
 Judul: {title}
 Konten: {content}
 
-Output (Harus JSON):
-{{"label": "berita murni/native ads", "alasan": "Analisis singkat (Indonesia)"}}"""
+Output (JSON):
+{{"label": "berita murni/native ads", "alasan": "Analisis singkat mengapa ini Berita atau Iklan (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
