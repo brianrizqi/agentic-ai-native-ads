@@ -117,14 +117,16 @@ class ClassificationAgent:
                     quantization_config=bnb_config, trust_remote_code=True, token=hf_token
                 )
                 
-                # Phase 70: Absolute Baseline Stability (Manual Reset)
-                # Let transformers handle tokens from the raw model config.
+                # Phase 71: True Stability Surgical Fix
+                # Explicitly add a PAD token and resize embeddings to stop the 12,000+ PPL
+                if tokenizer.pad_token is None:
+                    tokenizer.add_special_tokens({'pad_token': '<pad>'})
                 tokenizer.padding_side = "left"
                 
                 # Phase 62: Clean up GenConfig
                 gen_config = GenerationConfig(
-                    max_new_tokens=512, do_sample=False, repetition_penalty=1.0, 
-                    pad_token_id=tokenizer.eos_token_id, 
+                    max_new_tokens=512, do_sample=False, repetition_penalty=1.1, 
+                    pad_token_id=tokenizer.pad_token_id, 
                     eos_token_id=tokenizer.eos_token_id
                 )
                 base_model.generation_config = gen_config
@@ -133,6 +135,10 @@ class ClassificationAgent:
                     from peft import PeftModel
                     model = PeftModel.from_pretrained(base_model, self.lora_path)
                 else: model = base_model
+                
+                # RE-SYNC: Essential after LorA or pad_token changes
+                model.resize_token_embeddings(len(tokenizer))
+                model.config.pad_token_id = tokenizer.pad_token_id
                 
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
@@ -191,41 +197,41 @@ class ClassificationAgent:
                 if not rag_block:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
-                # Phase 66: Sanity Recovery (MCQ for Micro)
+                # Phase 71: Strategic Pivot to Bilingual-Reasoning
                 family = self._get_model_family(self.model_name)
                 is_bilingual = family in ['gemma', 'llama']
                 
                 if self.model_tier == 'micro':
-                    # Atomic stability for Sub-1B models: Direct MCQ
-                    template = MCQ_PROMPT_TEMPLATE
-                    prefix_force = "" # Clean end
+                    # Embrace the model's bias for reasoning since it hallucinates Analisis anyway
+                    template = BILINGUAL_MICRO_TEMPLATE
+                    prefix_force = "{\"alasan\": \""
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
-                # Phase 70: Standard Transformers Loading
-                if self.model_tier == 'micro':
-                    # Standard raw prompt without manual BOS doubling
-                    templated_prompt = user_msg
-                else:
-                    messages = [{"role": "user", "content": user_msg}]
-                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-                    if prefix_force: templated_prompt += prefix_force
+                # Phase 71: Use Standard Chat Template to ensure correct special tokens
+                messages = [{"role": "user", "content": user_msg}]
+                templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                if prefix_force: templated_prompt += prefix_force
                 
-                input_ids = self.tokenizer(templated_prompt, return_tensors="pt").input_ids.to(self.local_model_ref.device)
+                input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
+                input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
+                mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 70: Standard Generation (No manual mask/pad passing)
+                # Phase 71: Mild Penalty (1.1) to stop linguistic drift
                 gen_config = self.local_model_ref.generation_config
-                gen_config.repetition_penalty = 1.0
+                gen_config.repetition_penalty = 1.1
                 gen_config.do_sample = False
                 
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(
                         input_ids, 
+                        attention_mask=mask,
                         generation_config=gen_config,
-                        max_new_tokens=5 if self.model_tier == 'micro' else 512
+                        max_new_tokens=256 if self.model_tier == 'micro' else 512,
+                        pad_token_id=self.tokenizer.pad_token_id
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
