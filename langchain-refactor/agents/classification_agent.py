@@ -165,31 +165,22 @@ class ClassificationAgent:
                 )
                 import torch
                 
-                # Phase 87: Bernoulli Calibration (Threshold 0.75)
+                # Phase 88: RAG Synergy Pivot (Cap at 4 total: 2 Ads, 2 News)
                 rag_block = ""
                 threshold = 0.75 if self.model_tier != 'micro' else 0.70
                 if self.use_rag and examples:
                     ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
                     news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
                     
-                    # Sort by similarity
-                    ads = sorted(ads, key=lambda x: x['similarity_score'], reverse=True)
-                    news = sorted(news, key=lambda x: x['similarity_score'], reverse=True)
+                    # Highest similarity only
+                    selected_ads = sorted(ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                    selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                    selected = selected_ads + selected_news
                     
-                    if self.model_tier == 'micro':
-                        # One and only one of each category is plenty for a 270M model
-                        if ads or news:
-                            rag_block = "[REFERENSI TERKAIT (CONTOH)]\n"
-                            if ads: rag_block += f"- NATIVE ADS: \"{ads[0].get('content')[:150]}...\"\n"
-                            if news: rag_block += f"- BERITA MURNI: \"{news[0].get('content')[:150]}...\"\n"
-                    elif ads or news:
-                        # Phase 85: 8B RAG Throttle (Cap at 8 total for 8B tier)
-                        rag_block = "[REFERENSI KOMPARASI]\n"
-                        limit = 4 if self.model_tier == 'base' else 6
-                        for i, ex in enumerate(ads[:limit]):
-                            rag_block += f"- NATIVE ADS: \"{ex.get('content')[:150]}...\"\n"
-                        for i, ex in enumerate(news[:limit]):
-                            rag_block += f"- BERITA MURNI: \"{ex.get('content')[:150]}...\"\n"
+                    if selected:
+                        rag_block = "\n[REFERENSI ARTIKEL SERUPA UNTUK KONTEKS]:\n"
+                        for ex in selected:
+                            rag_block += f"- Konten: {ex.get('content')[:150]}... -> Label: {ex.get('label')}\n"
                 
                 if not rag_block:
                     # Clean heuristics for when RAG is empty
@@ -203,9 +194,9 @@ class ClassificationAgent:
                     template = MICRO_HEURISTIC_PROMPT
                     prefix_force = "" 
                 else:
-                    # Phase 86: Advanced 8B Accuracy Surge (Target 89%)
-                    # Incorporating Stealth Marketing Checklist to solve Literalism Bias.
-                    template = ADVANCED_8B_GOLD_TEMPLATE if not is_bilingual else BILINGUAL_GOLD_STANDARD_TEMPLATE
+                    # Phase 88: The RAG Synergy Pivot (Target >85%)
+                    # Pairing fine-tuned 8B weights with the original minimalist Anti-Bias prompt.
+                    template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     # Overriding to force Label-First for inference stability
                     prefix_force = "{\"label\": \"" 
                 

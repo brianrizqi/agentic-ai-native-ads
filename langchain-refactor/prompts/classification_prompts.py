@@ -381,13 +381,18 @@ Output (JSON):
 # -----------------------------------------------------------------------------
 # Reverting to the exact logic and format that produced 88-90% accuracy.
 
+# Phase 88: Ultimate Gold Standard Synergy (Label-First Pivot)
+# -----------------------------------------------------------------------------
+# Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
+# but maintaining the Label-First anchor for drifting prevention.
+
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah secara OBJEKTIF sebagai "native ads" atau "berita murni".
 
-ATURAN ANTI-BIAS (PENTING):
-1. BERITA MURNI HARUS TETAP BERITA MURNI: Jangan terjebak jika ada nama instansi atau produk. 
-2. TRAGEDI & SOSIAL: Berita kecelakaan, kematian, kebijakan publik, dan bencana alam adalah BERITA MURNI 100%. 
-3. OLAHRAGA: Skor pertandingan, cedera atlet, dan hasil juara adalah BERITA MURNI.
-- IKLAN (Native Ads): Hanya jika isinya murni promosi komersial satu brand tertentu (PR rilis).
+[ATURAN ANTI-BIAS (SANGAT PENTING)]:
+1. BERITA MURNI TETAP MURNI: Jangan terjebak hanya karena ada nama instansi, merek, atau harga. 
+2. TRAGEDI & SOSIAL: Artikel kecelakaan, kematian, kebijakan publik, dan bencana alam adalah BERITA MURNI 100%. 
+3. OLAHRAGA & TRANSPORTASI: Skor pertandingan, info rute bus/kereta, dan jadwal adalah BERITA MURNI.
+4. NATIVE ADS: Artikel yang murni mempromosikan produk/merek dengan nada rilis pers (advertorial).
 
 {context}
 
@@ -396,7 +401,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"alasan": """
+{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat secara objektif (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
