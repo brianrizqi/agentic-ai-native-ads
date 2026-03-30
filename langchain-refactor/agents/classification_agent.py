@@ -228,7 +228,7 @@ class ClassificationAgent:
                         max_new_tokens=5 if self.model_tier == 'micro' else 512
                     )
                 
-                raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
+                raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
                 if prefix_force: raw_response = prefix_force + raw_response
                 
                 clean_peek = raw_response[:120].replace('\n', ' ')
