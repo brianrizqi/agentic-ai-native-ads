@@ -171,11 +171,11 @@ class ClassificationAgent:
                 rag_block = ""
                 
                 if self.use_rag and examples:
-                    # Filter and Balanced Skew
-                    strong_ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
-                    strong_news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    # Filter and Balanced Skew (2:1 Ratio Target)
+                    strong_ads = [ex for ex in examples if 'native' in str(ex.get('label', '')).lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    strong_news = [ex for ex in examples if 'murni' in str(ex.get('label', '')).lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
-                    # Force exactly 2 Ads and 1 News (2:1 Ratio)
+                    # Force exactly 2 Ads and 1 News
                     selected_ads = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                     selected = selected_ads + selected_news
@@ -183,8 +183,9 @@ class ClassificationAgent:
                     if selected:
                         rag_block = "\n[REFERENSI KONTEKS]:\n"
                         for ex in selected:
-                            label_hint = "[NATIVE ADS]" if 'native' in ex['label'].lower() else "[BERITA MURNI]"
-                            rag_block += f"- Konten: {ex.get('content')[:160]}... -> Label: {label_hint}\n"
+                            label_val = str(ex.get('label', '')).lower()
+                            label_hint = "[NATIVE ADS]" if 'native' in label_val else "[BERITA MURNI]"
+                            rag_block += f"- Konten: {str(ex.get('content', ''))[:160]}... -> Label: {label_hint}\n"
                         rag_block += "\n"
                     else:
                         rag_block = ""
@@ -343,7 +344,7 @@ class ClassificationAgent:
                 elif "A" in resp_clean[:10].upper():
                     label = "native ads"
 
-            return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
+            return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else ""}
         except Exception as e:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
