@@ -386,19 +386,18 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 107: The Symmetric Matrix (Target 89%+)
+# Phase 108: The Supreme Logic (Target 89%+)
 # -----------------------------------------------------------------------------
-# Forced Structural Neutrality via Symmetric Redlines.
+# Unifying 94% Ad Recall with 91% News Recall.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor dengan objektifitas penuh. Tugas: Klasifikasi "berita murni" atau "native ads".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor Jurnalisme Berbasis Data. Klasifikasikan sebagai "berita murni" atau "native ads".
 
-[PROSEDUR OBLIGATORI]:
-1. Tentukan LABEL dahulu (berita murni / native ads) sebelum menulis alasan.
-2. Bandingkan konten dengan Matrix Redline di bawah ini.
+PENTING: Tentukan label ("berita murni" atau "native ads") sebelum memberikan alasan.
 
-[MATRIX REDLINE]:
-- BERITA MURNI: Laporan fakta hukum, kebijakan negara, urusan publik, diplomatik, atau ekonomi makro. Pernyataan resmi pejabat negara tentang kegiatan dinas adalah BERITA MURNI.
-- NATIVE ADS: Laporan pencapaian sepihak (Awards), kerjasama bisnis (MOU), Press Release/Newswire bursa, promosi produk/jasa, branding lokasi, atau citra positif institusi.
+[MATRIX AUDIT]:
+1. BERITA MURNI: Rekaman Publik Utama mengenai Kebijakan Negara, Urusan Publik, Diplomatik, atau Ekonomi Makro. Pelaporan kegiatan dinas resmi dan pernyataan pejabat publik tentang kebijakan adalah BERITA MURNI.
+
+2. NATIVE ADS: Promosi kepentingan institusi atau komersial di luar penyampaian kebijakan publik. Ini mencakup rilis kerjasama (MOU), laporan pencapaian sepihak (Awards), Press Release bisnis, rilis bursa, promosi produk/jasa, atau branding lokasi.
 
 {context}
 
@@ -407,7 +406,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Analisis matriks (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Validasi auditor (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
