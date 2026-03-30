@@ -175,11 +175,12 @@ class ClassificationAgent:
                     
                     if ads or news:
                         rag_block = "[REFERENSI KOMPARASI]\n"
-                        # Limit to top 2 each to avoid context bloat in small models
-                        for i, ex in enumerate(ads[:2]):
-                            rag_block += f"- NATIVE ADS {i+1}: \"{ex.get('content')[:200]}...\"\n"
-                        for i, ex in enumerate(news[:2]):
-                            rag_block += f"- BERITA MURNI {i+1}: \"{ex.get('content')[:200]}...\"\n"
+                        # Phase 67: Atomic contrast for micro (1 example each)
+                        limit = 1 if self.model_tier == 'micro' else 2
+                        for i, ex in enumerate(ads[:limit]):
+                            rag_block += f"- NATIVE ADS: \"{ex.get('content')[:150]}...\"\n"
+                        for i, ex in enumerate(news[:limit]):
+                            rag_block += f"- BERITA MURNI: \"{ex.get('content')[:150]}...\"\n"
                 
                 if not rag_block:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
@@ -197,17 +198,22 @@ class ClassificationAgent:
                     prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
-                messages = [{"role": "user", "content": user_msg}]
-                templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-                if prefix_force: templated_prompt += prefix_force
+                
+                # Phase 67: Bypass Chat Template for micro models (too small for complex tokens)
+                if self.model_tier == 'micro':
+                    templated_prompt = user_msg + "\n\n" + prefix_force
+                else:
+                    messages = [{"role": "user", "content": user_msg}]
+                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                    if prefix_force: templated_prompt += prefix_force
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 
-                # Phase 66: Sanity Penalty (1.1)
+                # Phase 67: Neutral Penalty (1.0) and ultra-short output
                 gen_config = self.local_model_ref.generation_config
                 if self.model_tier == 'micro':
-                    gen_config.repetition_penalty = 1.1
+                    gen_config.repetition_penalty = 1.0
                     # Stop at newline to prevent linguistic drift
                     stop_at = [self.tokenizer.eos_token_id]
                     if self.tokenizer.convert_tokens_to_ids("\n"): stop_at.append(self.tokenizer.convert_tokens_to_ids("\n"))
@@ -216,7 +222,7 @@ class ClassificationAgent:
                     generated_ids = self.local_model_ref.generate(
                         ids, 
                         generation_config=gen_config,
-                        max_new_tokens=64 if self.model_tier == 'micro' else 512
+                        max_new_tokens=5 if self.model_tier == 'micro' else 512
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
