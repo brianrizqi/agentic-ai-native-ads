@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 27,
+    "borderline_count": 1,
+    "bad_count": 72,
+    "avg_judge_score": 2.59
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as native ads, and the reasoning provided is strong, highlighting the promotional nature of the content and the mention of a specific brand.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "- Sebagai salah satu market leader di fashion retail industry Indonesia, Manzone terus berinovasi untuk memberikan dampak positif kepada masyarakat. Seperti di bulan Ramadhan tahun ini, Manzone mengan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Mengandung promosi produk tertentu. Brand yang disebutkan: Manzone, Setali Indonesia.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which is purely informational about a sports event without any promotional elements. The reasoning provided is logical and accurately reflects the nature of the article.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is a pure news as it contains information about a sports event or athlete, without any commercial promotion for a specific brand.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its neutral tone and lack of promotional content. The reasoning provided is logical and accurately reflects the nature of the article.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral tanpa promosi produk eksplisit",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not explicitly promote a product or brand, making the reasoning less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Selain itu, konektivitas antarmoda yang baik juga diharapkan dapat meningkatkan jumlah pengguna transportasi umum.Salah satu upaya yang dilakukan KAI untuk mewujudkan hal tersebut adalah dengan melaku",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Mengandung promosi produk eksplisit atau memuji satu brand tertentu.",
+      "confidence": 0.95
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' despite the ground truth being 'native ads'. The reasoning provided does not apply to the content, which does not contain promotional elements or keywords typically associated with native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Sebagai contoh, teori aljabar, operasi hitung bilangan, operasi hitung, bangun ruang dan geometri, fungsi, hingga kalkulus. Jangankan untuk memecahkannya, membaca rumusnya saja sudah terasa memusingka",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi produk eksplisit. Terdapat kata kunci seperti \"brand\", \"produk\", \"merupakan salah satu\", \"khusus\", \"pilihan terbaik\", \"produk terbaik\", \"produk terbaru\", \"produk terlengkap\", \"produk terpercaya\", \"produk terbukti efektif\", \"produk terbukti ampuh\", \"produk terbukti ampuh\", \"produk terbukti ampuh\", ",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it is actually a native ad. The reasoning fails to recognize the promotional nature of the content, which celebrates a specific individual's achievement in a competitive event, indicating a promotional tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model's prediction is completely wrong as the ground truth is 'native ads'. The reasoning provided does not apply to the article content, which does not contain any promotional elements or keywords associated with native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Peninjauan tersebut merupakan respons Pemerintah Kabupaten (Pemkab) Kediri atas berbagai keluhan warga setempat, baik yang disampaikan melalui pesan singkat di media sosial maupun secara langsung.Hani",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi produk eksplisit. Terdapat kata kunci seperti \"PR NEWSWIRE\", \"GLOBE NEWSWIRE\", \"PRNewswire\", \"Nasdaq\", \"TSX\", \"ERO\", \"INVESTOR RELATION/NATIVE ADS\".",
+      "confidence": 0.95
+    }
+  ]
+}
