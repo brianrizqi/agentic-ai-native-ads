@@ -1,0 +1,27 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/llama3-1-8b-native-ads-en_merged_16bit/
+Timestamp: 20260331_052403
+Dataset: ../data/llm_dataset_12k_refined_full.json
+Samples: 200
+
+Overall Metrics:
+  Accuracy: 71.00%
+  Correct: 142/200
+
+BERTScore:
+  Precision: 0.790
+  Recall: 0.803
+  F1: 0.796
+
+NLP Metrics (Reasoning Quality):
+  BLEU: 0.1328
+  METEOR: 0.3027
+
+Perplexity: 21.70
+
+Per-Class Accuracy:
+  native ads: 73.33%
+  berita murni: 68.42%
