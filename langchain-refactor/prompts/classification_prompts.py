@@ -440,6 +440,20 @@ Content: {content}
 Output JSON:
 {{"alasan": """
 
+# Phase 65: Nuclear PPL Fix (Ultra-Stable Micro)
+# -----------------------------------------------------------------------------
+# Designed for sub-1B models like Gemma 3 270M to force Label-First stability.
+
+ULTRA_STABLE_MICRO_TEMPLATE = """Task: Classify as "native ads" or "berita murni".
+
+{context}
+
+Title: {title}
+Content: {content}
+
+Output JSON (LABEL FIRST):
+{{"label": """
+
 
 
 
