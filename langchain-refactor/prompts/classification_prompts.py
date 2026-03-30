@@ -420,22 +420,20 @@ Output JSON:
 # -----------------------------------------------------------------------------
 # Using English instructions to prevent 'multilingual collapse' in small models.
 
-BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify the following Indonesian news article as "native ads" or "berita murni" (pure news).
+BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" or "native ads".
 
-ANTI-BIAS RULES (IMPORTANT):
-1. PURE NEWS STAYS PURE NEWS: Do not label as ads just because it mentions a brand or price.
-2. TRAGEDY & SOCIAL: Accidents, deaths, public policies, and natural disasters are 100% PURE NEWS.
-3. SPORTS: Match scores, athlete injuries, and tournament results are PURE NEWS.
-- NATIVE ADS: Only if the content is purely commercial promotion for a specific brand (PR release style).
+[STANDARDS]:
+- BERITA MURNI: Official state policy, diplomacy, macro-economics, or legal crisis.
+- NATIVE ADS: Branding, commercial/institutional interest, MOU/Partnership, Awards, Stock news, or Business PR.
 
 {context}
 
-ARTICLE TO CLASSIFY:
+TASK:
 Title: {title}
 Content: {content}
 
-Output (JSON):
-{{"alasan": """
+Output (JSON ONLY):
+{{"label": "berita murni/native ads"}}"""
 
 BILINGUAL_MICRO_TEMPLATE = """Task: Classify as "native ads" or "berita murni".
 
@@ -518,23 +516,17 @@ Jawaban (A/B):"""
 # Designed to restore "Berita Murni" recall by adding mandatory news 
 # safeguards for public topics (Sports, Politics, Disaster).
 
-ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan artikel di bawah sebagai "native ads" atau "berita murni".
+ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
 
-[NEWS SAFEGUARD - HARUS BERITA MURNI (KECUALI PROMOSI PRODUK EKSPLISIT)]:
-- TOPIK UMUM: Politik Nasional, Ekonomi Global, Tragedi/Kematian, Bencana Alam.
-- OLAHRAGA/HIBURAN: Transfer pemain (Haaland), skor pertandingan, info konser.
-- LAYANAN PUBLIK: Info Transjakarta, KAI, NASA, atau instansi Pemerintah.
-- ATURAN: Jika isi teks hanya "informasi operasional" tanpa ajakan membeli, pilih "berita murni".
-
-[STEALTH CHECKMARK (KHUSUS KOMERSIAL)]:
-1. PR NEWSWIRE: Hanya jika ada (GLOBE NEWSWIRE), (PRNewswire) dan memuji satu BRAND.
-2. STOCK TICKER: Simbol saham (TSX: ERO, Nasdaq) = INVESTOR RELATION/NATIVE ADS.
-3. CORPORATE PRIDE: Hanya jika artikel murni memuji inovasi/penghargaan satu "Perusahaan Swasta" tanpa kritik atau pembanding.
+[STANDAR]:
+- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi makro, atau krisis hukum (Nasional/Internasional).
+- NATIVE ADS: Konten branding, promosi kepentingan komersial/institusi, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau PR bisnis.
 
 {context}
 
+TUGAS:
 Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat (Indonesia)"}}"""
+Output (JSON ONLY):
+{{"label": "berita murni/native ads"}}"""
