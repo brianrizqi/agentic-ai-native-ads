@@ -194,6 +194,9 @@ class ClassificationAgent:
                     # Clean heuristics for when RAG is empty
                     rag_block = "[PETUNJUK]: Promosi Brand = Native Ads. Tragedi/Kematian = Berita Murni.\n"
 
+                # Language detection (Simple Heuristic for Bilingual Activation)
+                is_bilingual = any(f" {w} " in f" {content.lower()} " for w in ["the", "and", "of", "for", "which", "with"])
+                
                 if self.model_tier == 'micro':
                     # Phase 83: Micro-Heuristic Prompt (Atomic & Heuristic-First)
                     from prompts.classification_prompts import MICRO_HEURISTIC_PROMPT
