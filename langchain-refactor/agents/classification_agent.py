@@ -164,16 +164,21 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 109: The Zero-Load Task (Target 89%+)
+                # Phase 110: The Last Calibration (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Natural RAG: Top-5 without skew. Focused 100% on Label-only task.
+                # Balanced RAG: 2 Ads vs 1 News to find the 'Golden Ratio'.
                 RAG_THRESHOLD = 0.85
                 rag_block = ""
                 
                 if self.use_rag and examples:
-                    # Filter by strong matches naturally
-                    relevant_docs = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
-                    selected = sorted(relevant_docs, key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
+                    # Filter and Balanced Skew
+                    strong_ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    strong_news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    
+                    # Force exactly 2 Ads and 1 News (2:1 Ratio)
+                    selected_ads = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                    selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                    selected = selected_ads + selected_news
                     
                     if selected:
                         rag_block = "\n[REFERENSI KONTEKS]:\n"
