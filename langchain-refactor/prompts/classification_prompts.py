@@ -386,15 +386,22 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 101: The Recursive Gold Reset (Target 89%+)
+# Phase 102: The Pattern Guard (Target 89%+)
 # -----------------------------------------------------------------------------
-# Rebalancing from the most stable foundation (Phase 95).
+# Rebalancing Ads via Pattern-Specific Scrutiny.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Media Analyst yang sangat teliti. Berikan klasifikasi "berita murni" atau "native ads".
 
 [KRITERIA]:
-- BERITA MURNI: Laporan objektif tentang politik, kebijakan publik, diplomatik, tragedi, statistik industri, atau krisis korporasi (PHK/Hukum).
-- NATIVE ADS: Konten dengan tujuan promosi, branding, atau citra positif. Termasuk pelaporan pencapaian sepihak (Awards/MOU), Press Release bisnis, promosi produk/jasa, atau edukasi/tips yang mengarah pada brand tertentu.
+1. BERITA MURNI (News Standard):
+   * Laporan fakta objektif tentang Politik, Kebijakan Negara, Pajak, Diplomatik, Ekonomi Makro, IHSG, atau Bencana.
+   * Laporan kritis/objektif tentang PHK, Krisis Korporasi, atau Masalah Hukum.
+
+2. NATIVE ADS (Branding/Stealth PR):
+   * Konten dengan niat promosi, branding, atau citra positif.
+   * POLA NEWSIWIRE: Laporan hasil bursa, MOU bisnis, atau pengumuman kerjasama (Financial PR).
+   * POLA BRANDING: Deskripsi "Destinasi," "Tempat Unik," atau "Kuliner" yang bersifat mempromosikan lokasi/pengalaman.
+   * Awards/Pencapaian sepihak, edukasi produk, atau rilis layanan baru.
 
 {context}
 
@@ -404,7 +411,7 @@ Konten: {content}
 
 PENTING: Tentukan label terlebih dahulu sebelum memberikan alasan.
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Analisis singkat (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Analisis pola (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
