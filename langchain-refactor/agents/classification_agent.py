@@ -177,17 +177,26 @@ class ClassificationAgent:
                     selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     selected = selected_ads + selected_news
                     
-                    # Phase 91: 2-vs-2 Balanced Context (Target 89%)
-                    selected_ads = sorted(ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                    selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                    selected = selected_ads + selected_news
+                    # Phase 92: The Selective Similarity Shield (Threshold 0.88)
+                    RAG_THRESHOLD = 0.88
+                    
+                    # Filter by high similarity only
+                    strong_ads = [ex for ex in ads if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    strong_news = [ex for ex in news if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    
+                    # Take top 2 of each strong match
+                    selected = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2] + \
+                               sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     
                     if selected:
-                        rag_block = "\n[CONTOH UNTUK PERBANDINGAN KLASIFIKASI]:\n"
+                        rag_block = "\n[REFERENSI KONTEKS SANGAT SERUPA (>88% Match)]:\n"
                         for ex in selected:
-                            label_hint = "[CONTOH NATIVE ADS]" if 'native' in ex['label'].lower() else "[CONTOH BERITA MURNI]"
-                            rag_block += f"--- {label_hint} ---\n{ex.get('content')[:180]}...\n"
-                        rag_block += "\nGunakan pola di atas untuk membedakan target di bawah.\n"
+                            label_hint = "[NATIVE ADS]" if 'native' in ex['label'].lower() else "[BERITA MURNI]"
+                            rag_block += f"- Konten: {ex.get('content')[:140]}... -> Label: {label_hint}\n"
+                        rag_block += "\n"
+                    else:
+                        # Zero-Context fallback: Let the model rely on its fine-tuning
+                        rag_block = ""
                 
                 if not rag_block:
                     # Clean heuristics for when RAG is empty

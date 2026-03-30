@@ -386,24 +386,15 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 91: The Weighted Wisdom (Target 89%+)
+# Phase 92: The Selective Similarity Shield (Target 89%+)
 # -----------------------------------------------------------------------------
-# Balanced rules to prevent "Paranoia" while capturing "Soft Ads."
+# "Less is More" - Removing detailed rules to prevent paranoia.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan artikel secara OBJEKTIF sebagai "native ads" atau "berita murni".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Analisis artikel di bawah dan tentukan apakah ini "native ads" (iklan terselubung) atau "berita murni" (jurnalisme independen).
 
-[KRITERIA NATIVE ADS (PROMOSI)]:
-1. PRESS RELEASE & INVESTOR RELATIONS: Laporan keuangan, pengumuman bursa (GLOBE NEWSWIRE), atau aksi korporasi.
-2. MOU & KERJASAMA: Penandatanganan nota kesepahaman antara instansi/perusahaan.
-3. PENGHARGAAN (AWARD): Berita tentang satu perusahaan menerima penghargaan atau sertifikasi.
-4. EVENT BRAND: Festival, promo, atau acara yang diselenggarakan/didukung penuh oleh brand tertentu.
-5. ADVERTORIAL: Konten yang memuji keunggulan produk/jasa secara spesifik.
-
-[KRITERIA BERITA MURNI (OBJEKTIF)]:
-1. INFO PUBLIK & KEBIJAKAN: Aturan kementerian, pajak, CPNS, atau layanan masyarakat tanpa pujian brand.
-2. TRAGEDI & KRIMINAL: Kecelakaan, kebakaran, bencana alam, dan kasus hukum (100% Berita Murni).
-3. SEJARAH & ARKEOLOGI: Penemuan fosil, sejarah masa lalu, dokumentasi budaya.
-4. OLAHRAGA & HIBURAN: Skor pertandingan, jadwal konser, atau gosip selebriti tanpa muatan iklan.
+[PEDOMAN UTAMA]:
+- NATIVE ADS: Artikel yang bertujuan mempromosikan produk, mengagungkan satu brand secara spesifik (MOU, Award Korporat, atau Launching Produk), atau rilis pers resmi bursa.
+- BERITA MURNI: Artikel yang melaporkan fakta objektif seperti Politik, Ekonomi Nasional (Pajak, Kurs), Tragedi, Sejarah, Olahraga, atau BERITA TENTANG PERUSAHAAN (PHK, Kasus Hukum, atau Kejadian Luar Biasa) yang tidak berisi pujian brand.
 
 {context}
 
@@ -412,7 +403,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat berdasarkan kriteria di atas (Indonesia)"}}"""
+{{"label": "native ads/berita murni", "alasan": "Analisis singkat mengapa artikel ini masuk kategori tersebut (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
