@@ -386,27 +386,27 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 103: The Unified Scrutiny (Target 89%+)
+# Phase 104: The Surround-Sound Calibration (Target 89%+)
 # -----------------------------------------------------------------------------
-# Unifying signals by reducing cognitive load/bullet-point lists.
+# Aggressive re-balancing for model-bias compensation.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Media Analyst senior. Tugas Anda adalah membedakan antara "Jurnalisme Otoritatif" (Berita Murni) dan "Promosi Kepentingan" (Native Ads).
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor Jurnalisme. Tugas Anda adalah membedakan antara "Berita Murni" dan "Native Ads" (Iklan terselubung).
 
-[DEFINISI KONTEKS]:
-BERITA MURNI adalah jurnalisme objektif yang melaporkan fakta tentang kebijakan negara, urusan publik, ekonomi makro, atau krisis hukum/korporasi (seperti PHK). Berita positif tentang instansi negara atau kegiatan dinas resmi tetap dikategorikan sebagai BERITA MURNI selama tidak mempromosikan brand atau produk komersial secara spesifik.
+[KONTEKS KLASIFIKASI]:
+BERITA MURNI: Laporan objektif dan kritis tentang urusan publik, kebijakan negara, atau krisis korporasi (seperti PHK).
 
-NATIVE ADS adalah konten yang dirancang untuk membangun citra positif, branding, atau mempromosikan kepentingan institusi/komersial. Ini mencakup pengumuman kerjasama (MOU), laporan pencapaian sepihak (Awards), Press Release bisnis, Newswire bursa, promosi produk/jasa, serta artikel edukasi/destinasi yang mengarahkan pembaca pada entitas tertentu.
+NATIVE ADS: Konten yang bertujuan untuk mempromosikan citra positif, branding, atau kepentingan komersial. Ini mencakup segala bentuk rilis pengumuman kerjasama (MOU), laporan pencapaian sepihak (Awards), Press Release bisnis, rilis bursa (Newswire), promosi produk/jasa, serta artikel yang mendeskripsikan "destinasi/kuliner" untuk kepentingan branding.
 
 {context}
 
 TUGAS AUDIT:
-PENTING: Tentukan label ("berita murni" atau "native ads") terlebih dahulu sebelum memberikan alasan.
+PENTING: Tentukan label ("berita murni" atau "native ads") sebelum memberikan alasan.
 
 Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Analisis singkat (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Analisis pola (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
