@@ -390,18 +390,12 @@ Output (JSON):
 # -----------------------------------------------------------------------------
 # Zero-Load with sharpened Ad-intent markers.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
-
-[STANDAR]:
-- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi makro, atau krisis hukum.
-- PENTING: Politik, Kriminal, dan Bencana Alam ADALAH 100% Berita Murni.
-- NATIVE ADS: Konten branding PR, promosi kepentingan komersial, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau CSR bisnis.
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 {context}
 
-TUGAS:
 Judul: {title}
-Konten: {content}
+Isi: {content}
 
 Output (JSON ONLY):
 {{"label": "berita murni/native ads"}}"""
@@ -421,16 +415,10 @@ Output JSON:
 # -----------------------------------------------------------------------------
 # Using English instructions to prevent 'multilingual collapse' in small models.
 
-BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" or "native ads".
-
-[STANDARDS]:
-- BERITA MURNI: Official state policy, diplomacy, macro-economics, or legal crisis.
-- IMPORTANT: Politics, Crime, and Natural Disasters are 100% Berita Murni.
-- NATIVE ADS: PR Branding, commercial promotion, MOU/Partnership, Awards, Stock news, or Corporate CSR.
+BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
 
 {context}
 
-TASK:
 Title: {title}
 Content: {content}
 
@@ -518,18 +506,12 @@ Jawaban (A/B):"""
 # Designed to restore "Berita Murni" recall by adding mandatory news 
 # safeguards for public topics (Sports, Politics, Disaster).
 
-ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
-
-[STANDAR]:
-- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi makro, atau krisis hukum.
-- PENTING: Politik, Kriminal, dan Bencana Alam ADALAH 100% Berita Murni.
-- NATIVE ADS: Branding PR, promosi komersial, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau CSR bisnis.
+ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 {context}
 
-TUGAS:
 Judul: {title}
-Konten: {content}
+Isi: {content}
 
 Output (JSON ONLY):
 {{"label": "berita murni/native ads"}}"""
