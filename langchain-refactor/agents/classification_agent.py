@@ -182,8 +182,9 @@ class ClassificationAgent:
                             if ads: rag_block += f"- NATIVE ADS: \"{ads[0].get('content')[:150]}...\"\n"
                             if news: rag_block += f"- BERITA MURNI: \"{news[0].get('content')[:150]}...\"\n"
                     elif ads or news:
+                        # Phase 85: 8B RAG Throttle (Cap at 8 total for 8B tier)
                         rag_block = "[REFERENSI KOMPARASI]\n"
-                        limit = 2
+                        limit = 4 if self.model_tier == 'base' else 6
                         for i, ex in enumerate(ads[:limit]):
                             rag_block += f"- NATIVE ADS: \"{ex.get('content')[:150]}...\"\n"
                         for i, ex in enumerate(news[:limit]):
@@ -199,8 +200,11 @@ class ClassificationAgent:
                     template = MICRO_HEURISTIC_PROMPT
                     prefix_force = "" 
                 else:
+                    # Phase 85: Llama 8B Label-First Restoration
+                    # Forcing the model to decide 'label' BEFORE 'alasan' to prevent rationalization drift.
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
-                    prefix_force = "{\"alasan\": \"" 
+                    # Overriding the template's final line to force Label-First
+                    prefix_force = "{\"label\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
@@ -330,7 +334,8 @@ class ClassificationAgent:
                     data = json.loads(json_str_clean.replace('\n', ' '))
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
-                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "a"]): 
+                    # Phase 85: Removed "a" keyword landmine (False Positive risk in ID "Berita murni")
+                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "advertorial"]): 
                         label = "native ads"
                 except:
                     if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): label = "native ads"
