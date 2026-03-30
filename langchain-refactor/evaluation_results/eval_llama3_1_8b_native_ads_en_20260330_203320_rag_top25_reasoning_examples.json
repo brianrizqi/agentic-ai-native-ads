@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 17,
+    "borderline_count": 0,
+    "bad_count": 83,
+    "avg_judge_score": 2.24
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its objective content, which presents factual information without any promotional elements. The reasoning provided is logical and accurately reflects the nature of the article.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung informasi objektif tanpa promosi brand/produk.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that aligns with the objective nature of the content, which reports factual information about a sports event without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel mengandung unsur berita murni karena menginformasikan fakta objektif tentang suatu kejadian.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided a logical reasoning that highlights the objective nature of the content, which focuses on factual reporting without any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Oksana Masters’ 11th Paralympic gold medal was “redemption” for the most decorated American Winter Paralympian.\n\nAnd it was clear just how much it meant to her.\n\nMasters screamed loudly several times ",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel mengandung unsur berita murni karena menginformasikan fakta objektif tanpa promosi brand/produk tertentu.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about an injury. The reasoning provided does not apply, as there are no promotional elements present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Konten mengandung unsur promosi atau branding korporat/produk.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not logically support the label, as the content does not promote any product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "World Health Network (WHN) atau Jaringan Kesehatan Dunia baru-baru ini menjadi sorotan usai mendeklarasikan cacar monyet sebagai pandemi.\"WHN hari ini mendeklarasikan penyebaran cacar monyet saat ini ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau branding terhadap produk tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a pure news piece about a music release. The reasoning provided does not logically support the label, as the content is factual and does not promote a product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Grup musik Maharaja 48 merilis single Aku Ayah Mu di Hard Rock Cafe, Jakarta, belum lama ini. Perilisan lagu baru itu juga diisi dengan gelaran konser mini dari band asal Kota Depok tersebut. Vokali",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau branding terhadap produk/brand tertentu.",
+      "confidence": 0.95
+    }
+  ]
+}
