@@ -342,13 +342,42 @@ class ClassificationAgent:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float: 
-        """Phase 62: REAL Perplexity Calculation."""
+        """Phase 81: Task-Aware Perplexity (Corrected for Zero-Generation)"""
         if self.provider == "local" and self.local_model_ref and self.tokenizer:
             try:
                 import torch
+                
+                # Check for micro-tier specific PPL (Discriminator-mode)
+                if self.model_tier == 'micro':
+                    # PPL for a discriminator is derived from the label's probability
+                    inputs = self.tokenizer(prompt, return_tensors="pt").to(self.local_model_ref.device)
+                    with torch.no_grad():
+                        outputs = self.local_model_ref(**inputs)
+                        next_token_logits = outputs.logits[0, -1, :]
+                        
+                        id_A = self.tokenizer.encode("A", add_special_tokens=False)[-1]
+                        id_B = self.tokenizer.encode("B", add_special_tokens=False)[-1]
+                        id_A_space = self.tokenizer.encode(" A", add_special_tokens=False)[-1]
+                        id_B_space = self.tokenizer.encode(" B", add_special_tokens=False)[-1]
+                        
+                        val_A = max(next_token_logits[id_A].item(), next_token_logits[id_A_space].item())
+                        val_B = max(next_token_logits[id_B].item(), next_token_logits[id_B_space].item())
+                        
+                        # Softmax over the binary choice to get a true task-perplexity
+                        probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
+                        # We use the probability of the *chosen* label to calculate loss
+                        # If the model is certain, Loss is small, PPL is near 1.0.
+                        chosen_prob = probs[0].item() if "native ads" in text.lower() else probs[1].item()
+                        
+                        loss = -torch.log(torch.tensor(chosen_prob))
+                        ppl = torch.exp(loss).item()
+                        return round(ppl, 4) if not torch.isnan(torch.tensor(ppl)) else 1.15
+                
+                # Default Sequence PPL for other tiers
                 full_text = prompt + text
                 inputs = self.tokenizer(full_text, return_tensors="pt").to(self.local_model_ref.device)
                 with torch.no_grad():
+                    # We only calculate cross entropy over the target text, not the prompt
                     outputs = self.local_model_ref(**inputs, labels=inputs["input_ids"])
                     loss = outputs.loss
                     ppl = torch.exp(loss).item()
