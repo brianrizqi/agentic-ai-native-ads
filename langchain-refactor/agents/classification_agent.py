@@ -117,16 +117,14 @@ class ClassificationAgent:
                     quantization_config=bnb_config, trust_remote_code=True, token=hf_token
                 )
                 
-                # Phase 71: True Stability Surgical Fix
-                # Explicitly add a PAD token and resize embeddings to stop the 12,000+ PPL
-                if tokenizer.pad_token is None:
-                    tokenizer.add_special_tokens({'pad_token': '<pad>'})
+                # Phase 73: The Sanctuary Revert (No Embedding Resize on 4-bit)
+                # Resizing 4-bit embeddings causes logit explosion (9000+ PPL).
                 tokenizer.padding_side = "left"
                 
                 # Phase 62: Clean up GenConfig
                 gen_config = GenerationConfig(
-                    max_new_tokens=512, do_sample=False, repetition_penalty=1.1, 
-                    pad_token_id=tokenizer.pad_token_id, 
+                    max_new_tokens=512, do_sample=False, repetition_penalty=1.0, 
+                    pad_token_id=tokenizer.eos_token_id, 
                     eos_token_id=tokenizer.eos_token_id
                 )
                 base_model.generation_config = gen_config
@@ -135,10 +133,6 @@ class ClassificationAgent:
                     from peft import PeftModel
                     model = PeftModel.from_pretrained(base_model, self.lora_path)
                 else: model = base_model
-                
-                # RE-SYNC: Essential after LorA or pad_token changes
-                model.resize_token_embeddings(len(tokenizer))
-                model.config.pad_token_id = tokenizer.pad_token_id
                 
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
@@ -198,34 +192,32 @@ class ClassificationAgent:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
                 if self.model_tier == 'micro':
-                    # Phase 72: Label-First Commitment (Force the answer before the reasoning)
-                    template = ULTRA_STABLE_MICRO_TEMPLATE
-                    prefix_force = "{\"label\": \""
+                    # Phase 73: Hyper-Minimalist MCQ (No JSON, No RAG, No Preamble)
+                    template = MCQ_PROMPT_TEMPLATE
+                    prefix_force = "Jawaban:"
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
-                # Phase 72: Raw Prompt for Micro (Stop 'As an AI' preamble)
+                # Phase 73: Raw Prompt (Stable Start)
                 if self.model_tier == 'micro':
-                    # Prepend BOS manually for stable start without chat template overhead
                     bos = self.tokenizer.bos_token or ""
-                    templated_prompt = bos + user_msg + prefix_force
-                    # When bypassing template, we don't need to add prefix_force again later 
-                    # because it's already in the templated_prompt
+                    templated_prompt = bos + user_msg + "\n" + prefix_force
                 else:
                     messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                     if prefix_force: templated_prompt += prefix_force
                 
-                input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
+                # Phase 73: No Padding Inference (Solves PAD-EOS conflict without weight mutation)
+                input_encoding = self.tokenizer(templated_prompt, return_tensors="pt", add_special_tokens=False)
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 71: Mild Penalty (1.1) to stop linguistic drift
+                # Phase 73: Reset Penalty to 1.0 for numerical safety
                 gen_config = self.local_model_ref.generation_config
-                gen_config.repetition_penalty = 1.1
+                gen_config.repetition_penalty = 1.0
                 gen_config.do_sample = False
                 
                 with torch.no_grad():
@@ -233,8 +225,8 @@ class ClassificationAgent:
                         input_ids, 
                         attention_mask=mask,
                         generation_config=gen_config,
-                        max_new_tokens=256 if self.model_tier == 'micro' else 512,
-                        pad_token_id=self.tokenizer.pad_token_id
+                        max_new_tokens=2 if self.model_tier == 'micro' else 512,
+                        pad_token_id=self.tokenizer.eos_token_id # Safety fallback
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
