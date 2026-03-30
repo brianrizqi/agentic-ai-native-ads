@@ -164,10 +164,12 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 93: Universal Stabilization (Threshold 0.80 - Gold Baseline)
+                # Phase 97: High-Precision Thresholding (Target 89%+)
+                # ---------------------------------------------------------------------
+                # Increasing threshold to 0.85 for noise reduction.
                 rag_block = ""
                 if self.use_rag and examples:
-                    RAG_THRESHOLD = 0.80
+                    RAG_THRESHOLD = 0.85
                     
                     # Filter by strong matches only
                     strong_ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
