@@ -386,27 +386,24 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 108: The Supreme Logic (Target 89%+)
+# Phase 109: The Zero-Load Task (Target 89%+)
 # -----------------------------------------------------------------------------
-# Unifying 94% Ad Recall with 91% News Recall.
+# Eliminating cognitive overhead by removing reasoning requirement.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor Jurnalisme Berbasis Data. Klasifikasikan sebagai "berita murni" atau "native ads".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
 
-PENTING: Tentukan label ("berita murni" atau "native ads") sebelum memberikan alasan.
-
-[MATRIX AUDIT]:
-1. BERITA MURNI: Rekaman Publik Utama mengenai Kebijakan Negara, Urusan Publik, Diplomatik, atau Ekonomi Makro. Pelaporan kegiatan dinas resmi dan pernyataan pejabat publik tentang kebijakan adalah BERITA MURNI.
-
-2. NATIVE ADS: Promosi kepentingan institusi atau komersial di luar penyampaian kebijakan publik. Ini mencakup rilis kerjasama (MOU), laporan pencapaian sepihak (Awards), Press Release bisnis, rilis bursa, promosi produk/jasa, atau branding lokasi.
+[STANDAR]:
+- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi, atau krisis hukum.
+- NATIVE ADS: Konten branding, kerjasama (MOU), penghargaan (Awards), promosi produk/jasa, atau PR bisnis.
 
 {context}
 
-TUGAS AUDIT:
+TUGAS:
 Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Validasi auditor (Indonesia)"}}"""
+Output (JSON ONLY):
+{{"label": "berita murni/native ads"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
