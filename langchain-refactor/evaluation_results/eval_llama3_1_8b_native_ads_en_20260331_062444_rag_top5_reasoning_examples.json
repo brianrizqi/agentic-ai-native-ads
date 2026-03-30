@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 68,
+    "borderline_count": 0,
+    "bad_count": 32,
+    "avg_judge_score": 3.35
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the factual reporting of an injury to a player, which aligns with the ground truth. The reasoning is objective and appropriate for news content, with no promotional tone present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the factual reporting of a sports event, and the reasoning logically supports the label by focusing on the event without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the objective nature of news reporting, focusing on the announcement of the Asian Games postponement without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "VIVA – Asian Games yang akan berlangsung di Hangzhou, China pada bulan September 2022 resmi ditunda tanpa batas waktu. Pada Jumat 6 Mei 2022, penyelenggara mengumumkan bahwa Asian Games ditunda karena",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a political event. The reasoning provided is not present, and the classification does not align with the content, which is purely informational.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Sekretaris Jenderal DPP PDI-Perjuangan (PDIP) Hasto Kristiyanto mengatakan Bidang Kehormatan Partai akan segera mengeluarkan surat teguran terhadap politikus Masinton Pasaribu.Sanksi itu diberikan ter",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a news piece about a political party's consideration for a presidential candidate. The reasoning provided does not support the label and fails to identify the content as news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Ketua Umum Partai Amanat Nasional (PAN) Zulkifli Hasan menyebut partainya mempertimbangkan usulan untuk mencalonkan Ganjar Pranowo sebagai presiden pada Pilpres 2024.Zulhas mengatakan Ganjar punya mod",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about investment returns in the insurance industry. The reasoning is absent, and the prediction does not align with the ground truth.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Asosiasi Asuransi Jiwa Indonesia (AAJI) mencatat, imbal hasil investasi industri asuransi jiwa pada triwulan pertama tahun 2022 tumbuh 5 kali lipat dibandingkan periode yang sama",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "",
+      "confidence": 0.95
+    }
+  ]
+}
