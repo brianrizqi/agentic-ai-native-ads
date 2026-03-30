@@ -117,6 +117,11 @@ class ClassificationAgent:
                     quantization_config=bnb_config, trust_remote_code=True, token=hf_token
                 )
                 
+                # Phase 68: Strict Tokenizer/Config Sync (Stop the 270 PPL Noise)
+                tokenizer.pad_token = tokenizer.eos_token
+                tokenizer.pad_token_id = tokenizer.eos_token_id
+                base_model.config.pad_token_id = tokenizer.eos_token_id
+                
                 # Phase 62: Clean up GenConfig
                 gen_config = GenerationConfig(
                     max_new_tokens=512, 
@@ -173,10 +178,14 @@ class ClassificationAgent:
                     ads = sorted(ads, key=lambda x: x['similarity_score'], reverse=True)
                     news = sorted(news, key=lambda x: x['similarity_score'], reverse=True)
                     
-                    if ads or news:
+                    # Phase 68: NO RAG for Micro (< 500M)
+                    # The RAG context "poisons" the attention of the 270M model. 
+                    # Disabling to let fine-tuned weights work in Zero-G.
+                    if self.model_tier == 'micro':
+                        rag_block = ""
+                    elif ads or news:
                         rag_block = "[REFERENSI KOMPARASI]\n"
-                        # Phase 67: Atomic contrast for micro (1 example each)
-                        limit = 1 if self.model_tier == 'micro' else 2
+                        limit = 2
                         for i, ex in enumerate(ads[:limit]):
                             rag_block += f"- NATIVE ADS: \"{ex.get('content')[:150]}...\"\n"
                         for i, ex in enumerate(news[:limit]):
@@ -222,7 +231,7 @@ class ClassificationAgent:
                     generated_ids = self.local_model_ref.generate(
                         ids, 
                         generation_config=gen_config,
-                        max_new_tokens=5 if self.model_tier == 'micro' else 512
+                        max_new_tokens=2 if self.model_tier == 'micro' else 512
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
