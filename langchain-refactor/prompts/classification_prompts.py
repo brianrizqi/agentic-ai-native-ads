@@ -386,27 +386,27 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 104: The Surround-Sound Calibration (Target 89%+)
+# Phase 105: The Equilibrium Calibration (Target 89%+)
 # -----------------------------------------------------------------------------
-# Aggressive re-balancing for model-bias compensation.
+# Balanced status-hierarchy with 3-vs-2 RAG context.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor Jurnalisme. Tugas Anda adalah membedakan antara "Berita Murni" dan "Native Ads" (Iklan terselubung).
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor Jurnalisme yang sangat objektif. Klasifikasikan sebagai "berita murni" atau "native ads".
 
-[KONTEKS KLASIFIKASI]:
-BERITA MURNI: Laporan objektif dan kritis tentang urusan publik, kebijakan negara, atau krisis korporasi (seperti PHK).
+PENTING: Tentukan label ("berita murni" atau "native ads") sebelum memberikan alasan.
 
-NATIVE ADS: Konten yang bertujuan untuk mempromosikan citra positif, branding, atau kepentingan komersial. Ini mencakup segala bentuk rilis pengumuman kerjasama (MOU), laporan pencapaian sepihak (Awards), Press Release bisnis, rilis bursa (Newswire), promosi produk/jasa, serta artikel yang mendeskripsikan "destinasi/kuliner" untuk kepentingan branding.
+[STANDAR KLASIFIKASI]:
+1. BERITA MURNI: Laporan otoritatif tentang kebijakan publik, urusan negara, diplomatik, ekonomi makro, atau krisis korporasi (seperti PHK). Fakta objektif tentang kegiatan dinas resmi adalah BERITA MURNI.
+
+2. NATIVE ADS: Konten yang mempromosikan branding atau kepentingan institusi/komersial. Ini mencakup rilis kerjasama (MOU), laporan pencapaian (Awards), Press Release bisnis, Newswire bursa, promosi produk/jasa, atau artikel edukasi/destinasi untuk image building.
 
 {context}
 
 TUGAS AUDIT:
-PENTING: Tentukan label ("berita murni" atau "native ads") sebelum memberikan alasan.
-
 Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Analisis pola (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Hasil pemeriksaan auditor (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
