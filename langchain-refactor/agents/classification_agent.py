@@ -164,46 +164,34 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                
-                # Phase 88: RAG Synergy Pivot (Cap at 4 total: 2 Ads, 2 News)
+                # Phase 93: Universal Stabilization (Threshold 0.80 - Gold Baseline)
                 rag_block = ""
-                threshold = 0.75 if self.model_tier != 'micro' else 0.70
                 if self.use_rag and examples:
-                    ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
-                    news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
+                    RAG_THRESHOLD = 0.80
                     
-                    # Highest similarity only
-                    selected_ads = sorted(ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                    selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                    selected = selected_ads + selected_news
+                    # Filter by strong matches only
+                    strong_ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    strong_news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
-                    # Phase 92: The Selective Similarity Shield (Threshold 0.88)
-                    RAG_THRESHOLD = 0.88
-                    
-                    # Filter by high similarity only
-                    strong_ads = [ex for ex in ads if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
-                    strong_news = [ex for ex in news if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
-                    
-                    # Take top 2 of each strong match
+                    # Take top 2 of each to provide "Contrast"
                     selected = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2] + \
                                sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     
                     if selected:
-                        rag_block = "\n[REFERENSI KONTEKS SANGAT SERUPA (>88% Match)]:\n"
+                        rag_block = "\n[REFERENSI KONTEKS SERUPA]:\n"
                         for ex in selected:
                             label_hint = "[NATIVE ADS]" if 'native' in ex['label'].lower() else "[BERITA MURNI]"
-                            rag_block += f"- Konten: {ex.get('content')[:140]}... -> Label: {label_hint}\n"
+                            rag_block += f"- Konten: {ex.get('content')[:160]}... -> Label: {label_hint}\n"
                         rag_block += "\n"
                     else:
-                        # Zero-Context fallback: Let the model rely on its fine-tuning
                         rag_block = ""
                 
                 if not rag_block:
-                    # Clean heuristics for when RAG is empty
-                    rag_block = "[PETUNJUK]: Promosi Brand = Native Ads. Tragedi/Kematian = Berita Murni.\n"
+                    # Clean empty context for Llama weights (Zero Instruction interference)
+                    rag_block = ""
 
-                # Language detection (Simple Heuristic for Bilingual Activation)
-                is_bilingual = any(f" {w} " in f" {content.lower()} " for w in ["the", "and", "of", "for", "which", "with"])
+                # Language detection (More robust to avoid false positives in titles)
+                is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
                 if self.model_tier == 'micro':
                     # Phase 83: Micro-Heuristic Prompt (Atomic & Heuristic-First)

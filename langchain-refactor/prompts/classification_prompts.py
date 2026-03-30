@@ -386,15 +386,15 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 92: The Selective Similarity Shield (Target 89%+)
+# Phase 93: Universal Stabilization (Target 89%+)
 # -----------------------------------------------------------------------------
-# "Less is More" - Removing detailed rules to prevent paranoia.
+# Reverting to the minimalist "Media Analyst" baseline.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Analisis artikel di bawah dan tentukan apakah ini "native ads" (iklan terselubung) atau "berita murni" (jurnalisme independen).
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst independen. Analisis apakah artikel berikut adalah "native ads" (iklan terselubung/PR) atau "berita murni" (jurnalisme objektif).
 
-[PEDOMAN UTAMA]:
-- NATIVE ADS: Artikel yang bertujuan mempromosikan produk, mengagungkan satu brand secara spesifik (MOU, Award Korporat, atau Launching Produk), atau rilis pers resmi bursa.
-- BERITA MURNI: Artikel yang melaporkan fakta objektif seperti Politik, Ekonomi Nasional (Pajak, Kurs), Tragedi, Sejarah, Olahraga, atau BERITA TENTANG PERUSAHAAN (PHK, Kasus Hukum, atau Kejadian Luar Biasa) yang tidak berisi pujian brand.
+[PANDUAN]:
+- NATIVE ADS: Artikel yang mempromosikan brand secara eksplisit, pengumuman bisnis searah (Press Release/PR), rilis investor, atau pengagungan produk.
+- BERITA MURNI: Artikel yang melaporkan fakta publik (Politik, Tragedi, Olahraga, Sejarah, PHK, atau Kebijakan) secara netral tanpa tendensi memuji brand.
 
 {context}
 
@@ -403,7 +403,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads/berita murni", "alasan": "Analisis singkat mengapa artikel ini masuk kategori tersebut (Indonesia)"}}"""
+{{"label": "native ads/berita murni", "alasan": "Analisis singkat mengapa ini Iklan atau Berita (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
