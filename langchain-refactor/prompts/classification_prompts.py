@@ -386,13 +386,17 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
+# Phase 89: PR-to-Ad Re-Anchoring (Target >89%)
+# -----------------------------------------------------------------------------
+# Bridging the gap between "Corporate PR" and "Native Ads."
+
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah secara OBJEKTIF sebagai "native ads" atau "berita murni".
 
-[ATURAN ANTI-BIAS (SANGAT PENTING)]:
-1. BERITA MURNI TETAP MURNI: Jangan terjebak hanya karena ada nama instansi, merek, atau harga. 
-2. TRAGEDI & SOSIAL: Artikel kecelakaan, kematian, kebijakan publik, dan bencana alam adalah BERITA MURNI 100%. 
-3. OLAHRAGA & TRANSPORTASI: Skor pertandingan, info rute bus/kereta, dan jadwal adalah BERITA MURNI.
-4. NATIVE ADS: Artikel yang murni mempromosikan produk/merek dengan nada rilis pers (advertorial).
+[ATURAN KLASIFIKASI (SANGAT PENTING)]:
+1. NATIVE ADS: Artikel Press Release (PR), Investor Relation (misal: GLOBE NEWSWIRE), Laporan Kinerja Saham, Profil Korporat (Award/Inovasi), atau Advertorial.
+2. BERITA MURNI: Artikel yang memaparkan fakta objektif di luar kepentingan komersial satu pihak.
+3. TRAGEDI & SOSIAL: Artikel kecelakaan, kematian, kebijakan publik, dan bencana alam adalah BERITA MURNI 100%. 
+4. OLAHRAGA & TRANSPORTASI: Skor pertandingan, info rute bus/kereta, dan jadwal adalah BERITA MURNI.
 
 {context}
 
