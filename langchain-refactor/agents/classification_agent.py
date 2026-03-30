@@ -213,30 +213,52 @@ class ClassificationAgent:
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 75: Logit-Based Pivot for Micro Tier (Solves all PPL & Hallucination issues)
+                # Phase 76: Hybrid Logit-Reasoning Pivot (The Final Solution)
                 if self.model_tier == 'micro':
                     import torch
                     with torch.no_grad():
+                        # Step 1: Atomic Classification via Logits
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         next_token_logits = outputs.logits[0, -1, :]
                         
-                        # Map token IDs for Choice A and Choice B (including space-variants)
                         id_A = self.tokenizer.encode("A", add_special_tokens=False)[-1]
                         id_B = self.tokenizer.encode("B", add_special_tokens=False)[-1]
                         id_A_space = self.tokenizer.encode(" A", add_special_tokens=False)[-1]
                         id_B_space = self.tokenizer.encode(" B", add_special_tokens=False)[-1]
                         
-                        # Compare max logits for A variants vs B variants
                         val_A = max(next_token_logits[id_A].item(), next_token_logits[id_A_space].item())
                         val_B = max(next_token_logits[id_B].item(), next_token_logits[id_B_space].item())
                         
                         label = "native ads" if val_A > val_B else "berita murni"
-                        # Simple softmax for confidence score
                         probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
                         conf = probs[0].item() if label == "native ads" else probs[1].item()
                         
-                        print(f"DEBUG: Logit Classifier [{self.model_tier}] -> A: {val_A:.2f}, B: {val_B:.2f} -> Chosen: {label}")
-                        return {'label': label, 'confidence': conf, 'reasoning': "Pilihan berdasarkan perbandingan logit (Phase 75)"}
+                        # Step 2: Metrics-Driven Reasoning via Pre-filling
+                        # We force the model into a JSON reasoning state based on its own choice
+                        reason_prefill = f"{{\"label\": \"{label}\", \"alasan\": \""
+                        reason_prompt = templated_prompt + reason_prefill
+                        
+                        reason_inputs = self.tokenizer(reason_prompt, return_tensors="pt", add_special_tokens=True).to(self.local_model_ref.device)
+                        
+                        # Phase 76: Short, stable reasoning completion (64 tokens max)
+                        reason_ids = self.local_model_ref.generate(
+                            reason_inputs.input_ids,
+                            attention_mask=reason_inputs.attention_mask,
+                            max_new_tokens=64,
+                            do_sample=False,
+                            pad_token_id=self.tokenizer.eos_token_id
+                        )
+                        
+                        # Extract only the completion
+                        reason_text = self.tokenizer.decode(reason_ids[0][reason_inputs.input_ids.shape[1]:], skip_special_tokens=True)
+                        reason_text = reason_text.split("}")[0].strip(' "')
+                        
+                        print(f"DEBUG: Hybrid Classifier [{self.model_tier}] -> Label: {label}, Reason: {reason_text[:50]}...")
+                        return {
+                            'label': label, 
+                            'confidence': conf, 
+                            'reasoning': reason_text if reason_text else "Pilihan berdasarkan perbandingan logit"
+                        }
 
                 # Standard Generation for other tiers
                 gen_config = self.local_model_ref.generation_config
