@@ -164,20 +164,28 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 97: High-Precision Thresholding (Target 89%+)
+                # Phase 99: The Heuristic Hybrid (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Increasing threshold to 0.85 for noise reduction.
+                # Forcing "Contrastive" RAG context (Exactly 2 Ads, 2 News).
+                RAG_THRESHOLD = 0.80
                 rag_block = ""
+                
                 if self.use_rag and examples:
-                    RAG_THRESHOLD = 0.85
-                    
-                    # Filter by strong matches only
+                    # Filter by strong matches
                     strong_ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     strong_news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
-                    # Take top 2 of each to provide "Contrast"
-                    selected = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2] + \
-                               sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                    # Force a balanced 2-vs-2 context to create a "Decision Boundary"
+                    selected_ads = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                    selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                    selected = selected_ads + selected_news
+                    
+                    if selected:
+                        rag_block = "\n[DECISION BOUNDARY - REFERENSI KONTEKS]:\n"
+                        for ex in selected:
+                            label_hint = "[NATIVE ADS]" if 'native' in ex['label'].lower() else "[BERITA MURNI]"
+                            rag_block += f"- Konten: {ex.get('content')[:160]}... -> Label: {label_hint}\n"
+                        rag_block += "\n"
                     
                     if selected:
                         rag_block = "\n[REFERENSI KONTEKS SERUPA]:\n"
