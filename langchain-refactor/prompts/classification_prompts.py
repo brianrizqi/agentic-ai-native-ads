@@ -386,15 +386,19 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 97: The Concise Analyst (Target 89%+)
+# Phase 98: The Gold-Hybrid Restoration (Target 89%+)
 # -----------------------------------------------------------------------------
-# Minimalism to unlock 8B reasoning.
+# Rebalancing News Recall vs Commercial Branding.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Media Analyst yang objektif. Putuskan apakah ini "berita murni" atau "native ads".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Analisis artikel di bawah dan klasifikasikan sebagai "berita murni" atau "native ads".
 
-[PANDUAN]:
-- BERITA MURNI: Jurnalisme objektif tentang kebijakan publik, politik, tragedi, statistik industri, atau berita kritis. Laporkan fakta tanpa maksud promosi.
-- NATIVE ADS: Konten yang bertujuan membangun citra positif atau branding. Termasuk promosi langsung, Press Release (MOU/Kerjasama/Bursa), laporan pencapaian sepihak instansi, penghargaan korporat (awards), atau edukasi/tips yang mengarahkan pembaca pada brand/layanan tertentu.
+[KRITERIA]:
+- BERITA MURNI: Laporan jurnalisme objektif tentang Politik, Kebijakan Publik, Diplomatik, Tragedi, atau Masalah Hukum. Berita positif tentang negara atau kegiatan dinas pejabat publik adalah BERITA MURNI (bukan iklan citra).
+- NATIVE ADS: Konten yang bertujuan untuk promosi komersial atau branding korporat, seperti:
+  * Pernyataan/Pencapaian sepihak dari Brand Komersial, BUMN, atau Perusahaan.
+  * Press Release (PR) bisnis, MOU, rilis bursa, atau pengumuman kerjasama bisnis.
+  * Artikel "Penghargaan" atau "Awards" (Corporate/Company Recognition).
+  * Konten edukasi/tips yang mengarahkan pembaca pada produk atau layanan tertentu.
 
 {context}
 
@@ -403,7 +407,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Analisis singkat mengapa ini Berita atau Iklan (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Analisis singkat (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
