@@ -386,24 +386,33 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 90: The Analogical Discriminator (Target 89%+)
+# Phase 91: The Weighted Wisdom (Target 89%+)
 # -----------------------------------------------------------------------------
-# Removing "Hard Rules" that cause false positives. Using "Pattern Matching."
+# Balanced rules to prevent "Paranoia" while capturing "Soft Ads."
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Tugas Anda adalah membedakan antara "Jurnalisme Independen" (berita murni) dan "Promosi Terselubung/PR Spin" (native ads).
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan artikel secara OBJEKTIF sebagai "native ads" atau "berita murni".
 
-[PRINSIP UTAMA]:
-- NATIVE ADS: Artikel yang bertujuan memuji, mempromosikan, atau membangun citra positif satu brand/produk secara eksplisit (seperti advertorial atau rilis pers).
-- BERITA MURNI: Artikel yang melaporkan fakta (skala nasional, politik, tragedi, olahraga, atau info publik) tanpa tendensi komersial.
+[KRITERIA NATIVE ADS (PROMOSI)]:
+1. PRESS RELEASE & INVESTOR RELATIONS: Laporan keuangan, pengumuman bursa (GLOBE NEWSWIRE), atau aksi korporasi.
+2. MOU & KERJASAMA: Penandatanganan nota kesepahaman antara instansi/perusahaan.
+3. PENGHARGAAN (AWARD): Berita tentang satu perusahaan menerima penghargaan atau sertifikasi.
+4. EVENT BRAND: Festival, promo, atau acara yang diselenggarakan/didukung penuh oleh brand tertentu.
+5. ADVERTORIAL: Konten yang memuji keunggulan produk/jasa secara spesifik.
+
+[KRITERIA BERITA MURNI (OBJEKTIF)]:
+1. INFO PUBLIK & KEBIJAKAN: Aturan kementerian, pajak, CPNS, atau layanan masyarakat tanpa pujian brand.
+2. TRAGEDI & KRIMINAL: Kecelakaan, kebakaran, bencana alam, dan kasus hukum (100% Berita Murni).
+3. SEJARAH & ARKEOLOGI: Penemuan fosil, sejarah masa lalu, dokumentasi budaya.
+4. OLAHRAGA & HIBURAN: Skor pertandingan, jadwal konser, atau gosip selebriti tanpa muatan iklan.
 
 {context}
 
-TANDAI ARTIKEL BERIKUT:
+TUGAS:
 Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads/berita murni", "alasan": "Penjelasan ANALOGI mengapa artikel ini lebih mirip dengan salah satu contoh di atas (Indonesia)"}}"""
+{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat berdasarkan kriteria di atas (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 

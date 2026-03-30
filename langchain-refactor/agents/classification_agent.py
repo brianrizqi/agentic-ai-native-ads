@@ -177,17 +177,17 @@ class ClassificationAgent:
                     selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     selected = selected_ads + selected_news
                     
-                    # Phase 90: 1-vs-1 Analogical Comparison (Highest similarity only)
-                    selected_ads = sorted(ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
-                    selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                    # Phase 91: 2-vs-2 Balanced Context (Target 89%)
+                    selected_ads = sorted(ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                    selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     selected = selected_ads + selected_news
                     
                     if selected:
-                        rag_block = "\n[CONTOH ANALOGI (GUNAKAN SEBAGAI PEMBANDING UTAMA)]:\n"
+                        rag_block = "\n[CONTOH UNTUK PERBANDINGAN KLASIFIKASI]:\n"
                         for ex in selected:
-                            label_type = "NATIVE ADS (Promotional Spin)" if 'native' in ex['label'].lower() else "BERITA MURNI (Independent News)"
-                            rag_block += f"- ARTIKEL SERUPA: \"{ex.get('content')[:150]}...\"\n- LABEL DI ATAS ADALAH: {label_type}\n\n"
-                        rag_block += "[TUGAS ANDA]: Bandingkan artikel target di bawah ini dengan kedua pola contoh di atas.\n"
+                            label_hint = "[CONTOH NATIVE ADS]" if 'native' in ex['label'].lower() else "[CONTOH BERITA MURNI]"
+                            rag_block += f"--- {label_hint} ---\n{ex.get('content')[:180]}...\n"
+                        rag_block += "\nGunakan pola di atas untuk membedakan target di bawah.\n"
                 
                 if not rag_block:
                     # Clean heuristics for when RAG is empty
