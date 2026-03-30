@@ -386,32 +386,25 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 100: The Elite Journalism Anchor (Target 89%+)
+# Phase 101: The Recursive Gold Reset (Target 89%+)
 # -----------------------------------------------------------------------------
-# Final Calibration: Status-Hierarchy Pattern Matching.
+# Rebalancing from the most stable foundation (Phase 95).
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Senior Auditor Jurnalisme. Analisis artikel ini untuk membedakan antara "Jurnalisme Elit" (Berita Murni) dan "Informasi Komersial Terselubung" (Native Ads).
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Media Analyst yang sangat teliti. Berikan klasifikasi "berita murni" atau "native ads".
 
-[STANDAR AUDIT]:
-1. BERITA MURNI (Standar Tertinggi Jurnalisme):
-   * Pelaporan fakta objektif tentang Kebijakan Negara, Pajak, Diplomatik, Ekonomi Makro, atau IHSG.
-   * Berita positif tentang kemajuan negara atau kegiatan dinas resmi pejabat publik/instansi adalah BERITA MURNI (Selama bukan promosi brand/produk).
-   * Laporan kritis/objektif tentang masalah korporasi (PHK, Hukum, Krisis).
-
-2. NATIVE ADS (Penyimpangan Komersial Terselubung):
-   * Konten yang didikte oleh kepentingan komersial untuk branding korporat/produk.
-   * Penulisan yang mengagum-agumkan "Brand", "Produk", atau "Layanan" secara sepihak.
-   * Press Release bisnis, pengumuman MOU, rilis bursa, atau kerjasama strategis perusahan/BUMN.
-   * Artikel "Penghargaan/Awards" atau "Tips Konsumen" yang mengarahkan pembaca pada brand tertentu.
+[KRITERIA]:
+- BERITA MURNI: Laporan objektif tentang politik, kebijakan publik, diplomatik, tragedi, statistik industri, atau krisis korporasi (PHK/Hukum).
+- NATIVE ADS: Konten dengan tujuan promosi, branding, atau citra positif. Termasuk pelaporan pencapaian sepihak (Awards/MOU), Press Release bisnis, promosi produk/jasa, atau edukasi/tips yang mengarah pada brand tertentu.
 
 {context}
 
-TUGAS AUDIT:
+TUGAS:
 Judul: {title}
 Konten: {content}
 
+PENTING: Tentukan label terlebih dahulu sebelum memberikan alasan.
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Hasil pemeriksaan auditor (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Analisis singkat (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
