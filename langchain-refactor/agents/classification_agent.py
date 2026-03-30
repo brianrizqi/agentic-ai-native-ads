@@ -117,11 +117,9 @@ class ClassificationAgent:
                     quantization_config=bnb_config, trust_remote_code=True, token=hf_token
                 )
                 
-                # Phase 69: Final Tokenizer Stability (Sync Pad/EOS)
-                if tokenizer.pad_token is None:
-                    tokenizer.pad_token = tokenizer.eos_token
-                tokenizer.pad_token_id = tokenizer.eos_token_id
-                base_model.config.pad_token_id = tokenizer.eos_token_id
+                # Phase 70: Absolute Baseline Stability (Manual Reset)
+                # Let transformers handle tokens from the raw model config.
+                tokenizer.padding_side = "left"
                 
                 # Phase 62: Clean up GenConfig
                 gen_config = GenerationConfig(
@@ -207,34 +205,27 @@ class ClassificationAgent:
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
-                # Phase 69: Raw Prompt with BOS (Essential for stable 270M)
+                # Phase 70: Standard Transformers Loading
                 if self.model_tier == 'micro':
-                    bos = self.tokenizer.bos_token or ""
-                    templated_prompt = bos + user_msg
+                    # Standard raw prompt without manual BOS doubling
+                    templated_prompt = user_msg
                 else:
                     messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                     if prefix_force: templated_prompt += prefix_force
                 
-                input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
-                ids = input_encoding["input_ids"].to(self.local_model_ref.device)
-                mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
+                input_ids = self.tokenizer(templated_prompt, return_tensors="pt").input_ids.to(self.local_model_ref.device)
                 
-                # Phase 69: Greedy Token Limit (max_tokens=2)
+                # Phase 70: Standard Generation (No manual mask/pad passing)
                 gen_config = self.local_model_ref.generation_config
-                if self.model_tier == 'micro':
-                    gen_config.repetition_penalty = 1.0
-                    # Stop immediately after one token
-                    stop_at = [self.tokenizer.eos_token_id]
-                    if self.tokenizer.convert_tokens_to_ids("\n"): stop_at.append(self.tokenizer.convert_tokens_to_ids("\n"))
+                gen_config.repetition_penalty = 1.0
+                gen_config.do_sample = False
                 
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(
-                        ids, 
-                        attention_mask=mask,
+                        input_ids, 
                         generation_config=gen_config,
-                        max_new_tokens=2 if self.model_tier == 'micro' else 512,
-                        pad_token_id=self.tokenizer.pad_token_id
+                        max_new_tokens=5 if self.model_tier == 'micro' else 512
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
