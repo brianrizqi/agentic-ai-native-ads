@@ -192,30 +192,28 @@ class ClassificationAgent:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
                 if self.model_tier == 'micro':
-                    # Phase 73: Hyper-Minimalist MCQ (No JSON, No RAG, No Preamble)
+                    # Phase 74: Atomic MCQ (Minimal instruction at the end for recency bias)
                     template = MCQ_PROMPT_TEMPLATE
-                    prefix_force = "Jawaban:"
+                    prefix_force = "" # Let the template handle the end
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
-                # Phase 73: Raw Prompt (Stable Start)
+                # Phase 74: Let Tokenizer handle BOS/EOS automatically (Corrects 8K PPL)
                 if self.model_tier == 'micro':
-                    bos = self.tokenizer.bos_token or ""
-                    templated_prompt = bos + user_msg + "\n" + prefix_force
+                    templated_prompt = user_msg
                 else:
                     messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                     if prefix_force: templated_prompt += prefix_force
                 
-                # Phase 73: No Padding Inference (Solves PAD-EOS conflict without weight mutation)
-                input_encoding = self.tokenizer(templated_prompt, return_tensors="pt", add_special_tokens=False)
+                input_encoding = self.tokenizer(templated_prompt, return_tensors="pt", add_special_tokens=True)
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 73: Reset Penalty to 1.0 for numerical safety
+                # Phase 74: Hard 1-Token Selection
                 gen_config = self.local_model_ref.generation_config
                 gen_config.repetition_penalty = 1.0
                 gen_config.do_sample = False
@@ -225,8 +223,8 @@ class ClassificationAgent:
                         input_ids, 
                         attention_mask=mask,
                         generation_config=gen_config,
-                        max_new_tokens=2 if self.model_tier == 'micro' else 512,
-                        pad_token_id=self.tokenizer.eos_token_id # Safety fallback
+                        max_new_tokens=1 if self.model_tier == 'micro' else 512,
+                        pad_token_id=self.tokenizer.eos_token_id
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
