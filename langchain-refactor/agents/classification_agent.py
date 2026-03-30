@@ -164,21 +164,33 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 111: Harmonic Equilibrium (Target 89%+)
+                # Phase 112: The Stoic Minimalist (Absolute Balance)
                 # ---------------------------------------------------------------------
-                # Symmetric RAG: 2 Ads vs 2 News to neutralize bias from 110.1.
+                # Diversity Guard: TOP-5 with at least 1:1 class-presence protection.
                 RAG_THRESHOLD = 0.80
                 rag_block = ""
                 
                 if self.use_rag and examples:
-                    # Filter and Symmetric Split (Exactly 2:2)
-                    strong_ads = [ex for ex in examples if 'native' in str(ex.get('label', '')).lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
-                    strong_news = [ex for ex in examples if 'murni' in str(ex.get('label', '')).lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
+                    # Candidates within threshold
+                    candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
-                    # Pick exactly 2 of each
-                    selected_ads = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                    selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                    selected = selected_ads + selected_news
+                    if candidates:
+                        # 1. Force pick top 1 of each class if available
+                        forced_ad = next((ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()), None)
+                        forced_news = next((ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()), None)
+                        
+                        selected = []
+                        if forced_ad: selected.append(forced_ad)
+                        if forced_news: selected.append(forced_news)
+                        
+                        # 2. Fill the rest from the top remaining candidates (up to 5 total)
+                        remaining = [ex for ex in candidates if ex not in selected]
+                        selected += remaining[:(5 - len(selected))]
+                        
+                        # Sort by similarity score for logical flow
+                        selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
+                    else:
+                        selected = []
                     
                     if selected:
                         rag_block = "\n[REFERENSI KONTEKS]:\n"
