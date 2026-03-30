@@ -506,18 +506,23 @@ B. berita murni
 
 Jawaban (A/B):"""
 
-# Phase 86: Advanced 8B Gold Template (The Stealth Marketing Anchor)
+# Phase 87: Advanced 8B Gold Template (Bernoulli Calibration)
 # -----------------------------------------------------------------------------
-# Designed for 8B+ models to solve the "Literalism Bias." It provides a 
-# checklist for paid press releases and corporate achievement markers.
+# Designed to restore "Berita Murni" recall by adding mandatory news 
+# safeguards for public topics (Sports, Politics, Disaster).
 
 ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan artikel di bawah sebagai "native ads" atau "berita murni".
 
-[STEALTH CHECKLIST - CEK SEBELUM MEMUTUSKAN]:
-1. PENANDA PAYWALL/PR: Apakah ada (GLOBE NEWSWIRE), (PRNewswire), atau VIVA / ANTARA tanpa nama jurnalis? (Jika ya -> Potensi Native Ads 90%).
-2. STOCK TICKER: Apakah ada simbol saham (contoh: TSX: ERO, NYSE: BBNI)? (Jika ya -> Investor Relation/Native Ads 100%).
-3. NADA KORPORAT: Apakah artikel fokus pada "Pencapaian", "Penghargaan", "Inovasi", atau "Laporan Kinerja" satu perusahaan tertentu? (Jika ya -> Native Ads).
-4. TRAGEDI/OLAHRAGA: Kematian, kecelakaan, skor pertandingan = BERITA MURNI.
+[NEWS SAFEGUARD - HARUS BERITA MURNI (KECUALI PROMOSI PRODUK EKSPLISIT)]:
+- TOPIK UMUM: Politik Nasional, Ekonomi Global, Tragedi/Kematian, Bencana Alam.
+- OLAHRAGA/HIBURAN: Transfer pemain (Haaland), skor pertandingan, info konser.
+- LAYANAN PUBLIK: Info Transjakarta, KAI, NASA, atau instansi Pemerintah.
+- ATURAN: Jika isi teks hanya "informasi operasional" tanpa ajakan membeli, pilih "berita murni".
+
+[STEALTH CHECKMARK (KHUSUS KOMERSIAL)]:
+1. PR NEWSWIRE: Hanya jika ada (GLOBE NEWSWIRE), (PRNewswire) dan memuji satu BRAND.
+2. STOCK TICKER: Simbol saham (TSX: ERO, Nasdaq) = INVESTOR RELATION/NATIVE ADS.
+3. CORPORATE PRIDE: Hanya jika artikel murni memuji inovasi/penghargaan satu "Perusahaan Swasta" tanpa kritik atau pembanding.
 
 {context}
 
@@ -525,4 +530,4 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat menggunakan checklist (Indonesia)"}}"""
+{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat (Indonesia)"}}"""
