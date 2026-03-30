@@ -406,8 +406,39 @@ Judul: {title}
 Konten: {content}
 
 Output JSON:
-{{"alasan": "
-"""
+{{"alasan": """
+
+
+# Phase 64: Bilingual Templates for Gemma/Llama Stability
+# -----------------------------------------------------------------------------
+# Using English instructions to prevent 'multilingual collapse' in small models.
+
+BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify the following Indonesian news article as "native ads" or "berita murni" (pure news).
+
+ANTI-BIAS RULES (IMPORTANT):
+1. PURE NEWS STAYS PURE NEWS: Do not label as ads just because it mentions a brand or price.
+2. TRAGEDY & SOCIAL: Accidents, deaths, public policies, and natural disasters are 100% PURE NEWS.
+3. SPORTS: Match scores, athlete injuries, and tournament results are PURE NEWS.
+- NATIVE ADS: Only if the content is purely commercial promotion for a specific brand (PR release style).
+
+{context}
+
+ARTICLE TO CLASSIFY:
+Title: {title}
+Content: {content}
+
+Output (JSON):
+{{"alasan": """
+
+BILINGUAL_MICRO_TEMPLATE = """Task: Classify as "native ads" or "berita murni".
+
+{context}
+
+Title: {title}
+Content: {content}
+
+Output JSON:
+{{"alasan": """
 
 
 
