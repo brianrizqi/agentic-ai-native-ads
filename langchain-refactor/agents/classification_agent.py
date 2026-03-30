@@ -160,13 +160,14 @@ class ClassificationAgent:
                 from prompts.classification_prompts import (
                     ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE,
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
-                    ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE
+                    ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
+                    MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
                 
-                # Phase 82: Micro-RAG Throttle (Cap at 2 total)
+                # Phase 86: RAG Hardening (Threshold 0.82 for high-precision local models)
                 rag_block = ""
-                threshold = 0.70
+                threshold = 0.82 if self.model_tier != 'micro' else 0.70
                 if self.use_rag and examples:
                     ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
                     news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
@@ -199,14 +200,13 @@ class ClassificationAgent:
                 
                 if self.model_tier == 'micro':
                     # Phase 83: Micro-Heuristic Prompt (Atomic & Heuristic-First)
-                    from prompts.classification_prompts import MICRO_HEURISTIC_PROMPT
                     template = MICRO_HEURISTIC_PROMPT
                     prefix_force = "" 
                 else:
-                    # Phase 85: Llama 8B Label-First Restoration
-                    # Forcing the model to decide 'label' BEFORE 'alasan' to prevent rationalization drift.
-                    template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
-                    # Overriding the template's final line to force Label-First
+                    # Phase 86: Advanced 8B Accuracy Surge (Target 89%)
+                    # Incorporating Stealth Marketing Checklist to solve Literalism Bias.
+                    template = ADVANCED_8B_GOLD_TEMPLATE if not is_bilingual else BILINGUAL_GOLD_STANDARD_TEMPLATE
+                    # Overriding to force Label-First for inference stability
                     prefix_force = "{\"label\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()

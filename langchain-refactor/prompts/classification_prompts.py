@@ -505,3 +505,24 @@ A. native ads
 B. berita murni
 
 Jawaban (A/B):"""
+
+# Phase 86: Advanced 8B Gold Template (The Stealth Marketing Anchor)
+# -----------------------------------------------------------------------------
+# Designed for 8B+ models to solve the "Literalism Bias." It provides a 
+# checklist for paid press releases and corporate achievement markers.
+
+ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan artikel di bawah sebagai "native ads" atau "berita murni".
+
+[STEALTH CHECKLIST - CEK SEBELUM MEMUTUSKAN]:
+1. PENANDA PAYWALL/PR: Apakah ada (GLOBE NEWSWIRE), (PRNewswire), atau VIVA / ANTARA tanpa nama jurnalis? (Jika ya -> Potensi Native Ads 90%).
+2. STOCK TICKER: Apakah ada simbol saham (contoh: TSX: ERO, NYSE: BBNI)? (Jika ya -> Investor Relation/Native Ads 100%).
+3. NADA KORPORAT: Apakah artikel fokus pada "Pencapaian", "Penghargaan", "Inovasi", atau "Laporan Kinerja" satu perusahaan tertentu? (Jika ya -> Native Ads).
+4. TRAGEDI/OLAHRAGA: Kematian, kecelakaan, skor pertandingan = BERITA MURNI.
+
+{context}
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat menggunakan checklist (Indonesia)"}}"""
