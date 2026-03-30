@@ -178,9 +178,10 @@ class ClassificationAgent:
                     selected = selected_ads + selected_news
                     
                     if selected:
-                        rag_block = "\n[REFERENSI ARTIKEL SERUPA UNTUK KONTEKS]:\n"
+                        rag_block = "\n[REFERENSI KONTEKS (BANTUAN KLASIFIKASI)]:\n"
                         for ex in selected:
-                            rag_block += f"- Konten: {ex.get('content')[:150]}... -> Label: {ex.get('label')}\n"
+                            label_hint = "[ADVERTORIAL/PR/CORP-AWARD]" if 'native' in ex['label'].lower() else "[BERITA MURNI/OBJEKTIF]"
+                            rag_block += f"- Konten: {ex.get('content')[:150]}... -> Kategori: {label_hint}\n"
                 
                 if not rag_block:
                     # Clean heuristics for when RAG is empty
