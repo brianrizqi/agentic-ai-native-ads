@@ -177,11 +177,17 @@ class ClassificationAgent:
                     selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     selected = selected_ads + selected_news
                     
+                    # Phase 90: 1-vs-1 Analogical Comparison (Highest similarity only)
+                    selected_ads = sorted(ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                    selected_news = sorted(news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                    selected = selected_ads + selected_news
+                    
                     if selected:
-                        rag_block = "\n[REFERENSI KONTEKS (BANTUAN KLASIFIKASI)]:\n"
+                        rag_block = "\n[CONTOH ANALOGI (GUNAKAN SEBAGAI PEMBANDING UTAMA)]:\n"
                         for ex in selected:
-                            label_hint = "[ADVERTORIAL/PR/CORP-AWARD]" if 'native' in ex['label'].lower() else "[BERITA MURNI/OBJEKTIF]"
-                            rag_block += f"- Konten: {ex.get('content')[:150]}... -> Kategori: {label_hint}\n"
+                            label_type = "NATIVE ADS (Promotional Spin)" if 'native' in ex['label'].lower() else "BERITA MURNI (Independent News)"
+                            rag_block += f"- ARTIKEL SERUPA: \"{ex.get('content')[:150]}...\"\n- LABEL DI ATAS ADALAH: {label_type}\n\n"
+                        rag_block += "[TUGAS ANDA]: Bandingkan artikel target di bawah ini dengan kedua pola contoh di atas.\n"
                 
                 if not rag_block:
                     # Clean heuristics for when RAG is empty

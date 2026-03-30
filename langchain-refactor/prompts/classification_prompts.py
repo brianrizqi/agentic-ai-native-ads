@@ -386,26 +386,24 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 89: PR-to-Ad Re-Anchoring (Target >89%)
+# Phase 90: The Analogical Discriminator (Target 89%+)
 # -----------------------------------------------------------------------------
-# Bridging the gap between "Corporate PR" and "Native Ads."
+# Removing "Hard Rules" that cause false positives. Using "Pattern Matching."
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan berita di bawah secara OBJEKTIF sebagai "native ads" atau "berita murni".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Tugas Anda adalah membedakan antara "Jurnalisme Independen" (berita murni) dan "Promosi Terselubung/PR Spin" (native ads).
 
-[ATURAN KLASIFIKASI (SANGAT PENTING)]:
-1. NATIVE ADS: Artikel Press Release (PR), Investor Relation (misal: GLOBE NEWSWIRE), Laporan Kinerja Saham, Profil Korporat (Award/Inovasi), atau Advertorial.
-2. BERITA MURNI: Artikel yang memaparkan fakta objektif di luar kepentingan komersial satu pihak.
-3. TRAGEDI & SOSIAL: Artikel kecelakaan, kematian, kebijakan publik, dan bencana alam adalah BERITA MURNI 100%. 
-4. OLAHRAGA & TRANSPORTASI: Skor pertandingan, info rute bus/kereta, dan jadwal adalah BERITA MURNI.
+[PRINSIP UTAMA]:
+- NATIVE ADS: Artikel yang bertujuan memuji, mempromosikan, atau membangun citra positif satu brand/produk secara eksplisit (seperti advertorial atau rilis pers).
+- BERITA MURNI: Artikel yang melaporkan fakta (skala nasional, politik, tragedi, olahraga, atau info publik) tanpa tendensi komersial.
 
 {context}
 
-TUGAS:
+TANDAI ARTIKEL BERIKUT:
 Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "native ads/berita murni", "alasan": "Penjelasan singkat secara objektif (Indonesia)"}}"""
+{{"label": "native ads/berita murni", "alasan": "Penjelasan ANALOGI mengapa artikel ini lebih mirip dengan salah satu contoh di atas (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
