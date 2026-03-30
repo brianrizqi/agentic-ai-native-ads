@@ -386,18 +386,18 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 105: The Equilibrium Calibration (Target 89%+)
+# Phase 106: The Authority Safeguard (Target 89%+)
 # -----------------------------------------------------------------------------
-# Balanced status-hierarchy with 3-vs-2 RAG context.
+# Final Surgical Refinement: Policy Protection vs Institutional PR.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor Jurnalisme yang sangat objektif. Klasifikasikan sebagai "berita murni" atau "native ads".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Senior Auditor Jurnalisme yang fokus pada integritas informasi. Klasifikasikan sebagai "berita murni" atau "native ads".
 
 PENTING: Tentukan label ("berita murni" atau "native ads") sebelum memberikan alasan.
 
-[STANDAR KLASIFIKASI]:
-1. BERITA MURNI: Laporan otoritatif tentang kebijakan publik, urusan negara, diplomatik, ekonomi makro, atau krisis korporasi (seperti PHK). Fakta objektif tentang kegiatan dinas resmi adalah BERITA MURNI.
+[STANDAR AUDIT]:
+1. BERITA MURNI: Laporan fakta objektif tentang Kebijakan Negara, Urusan Publik, Diplomatik, Ekonomi Makro, atau Bencana. Pernyataan resmi pejabat publik mengenai kebijakan dan kegiatan dinas adalah BERITA MURNI, meskipun bernada positif bagi pemerintah/instansi.
 
-2. NATIVE ADS: Konten yang mempromosikan branding atau kepentingan institusi/komersial. Ini mencakup rilis kerjasama (MOU), laporan pencapaian (Awards), Press Release bisnis, Newswire bursa, promosi produk/jasa, atau artikel edukasi/destinasi untuk image building.
+2. NATIVE ADS: Konten yang mempromosikan branding atau kepentingan institusi/komersial di luar kebijakan publik. Ini mencakup rilis kerjasama bisnis (MOU), laporan pencapaian sepihak (Awards), Press Release bisnis, Newswire bursa, promosi produk/jasa, atau artikel edukasi/destinasi untuk image building.
 
 {context}
 
