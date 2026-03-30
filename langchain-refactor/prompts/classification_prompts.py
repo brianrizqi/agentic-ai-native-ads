@@ -482,7 +482,26 @@ Konten: {content}
 
 Output (JSON):"""
 
-training_prompt = PromptTemplate(
-    input_variables=["title", "content", "context"],
-    template=TRAINING_PROMPT_TEMPLATE
-)
+# Phase 83: Micro-Heuristic Prompt (The Stability Anchor)
+# -----------------------------------------------------------------------------
+# Designed for 270M models to prevent "Context Drowning." It provides 
+# ultra-compact heuristics and uses recency bias by putting the task 
+# at the very bottom.
+
+MICRO_HEURISTIC_PROMPT = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+
+[ATURAN ANTI-BIAS (PENTING)]:
+1. TRAGEDI & SOSIAL: Kecelakaan, kematian, dan bencana = BERITA MURNI 100%.
+2. OLAHRAGA & KEBIJAKAN: Skor, atlet, dan info pemerintah = BERITA MURNI.
+3. NATIVE ADS: Hanya jika isinya murni PROMOSI produk/brand (Advertorial).
+
+{context}
+
+Judul: {title}
+Konten: {content}
+
+Pilih Jawaban:
+A. native ads
+B. berita murni
+
+Jawaban (A/B):"""
