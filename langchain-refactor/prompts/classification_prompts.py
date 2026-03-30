@@ -386,20 +386,15 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 96: The Authority-News Safeguard (Target 89%+)
+# Phase 97: The Concise Analyst (Target 89%+)
 # -----------------------------------------------------------------------------
-# Precision balancing for Policy Reporting vs. Agency PR.
+# Minimalism to unlock 8B reasoning.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Analisis artikel di bawah dan klasifikasikan sebagai "berita murni" atau "native ads".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Analisis artikel ini sebagai Media Analyst yang objektif. Putuskan apakah ini "berita murni" atau "native ads".
 
-[KRITERIA]:
-- BERITA MURNI: Artikel jurnalisme objektif (Politik, Kebijakan Publik, Pajak, Tragedi, Statistik/Laporan Industri, atau Berita Kritis tentang korporasi seperti PHK/Kasus Hukum). Berita tentang kegiatan dinas pejabat publik tanpa unsur pujian berlebih adalah BERITA MURNI.
-- NATIVE ADS: Konten yang bertujuan membangun citra positif/branding, seperti:
-  * Promosi brand/produk/jasa secara langsung.
-  * Press Release (PR) bisnis, MOU, rilis bursa, atau pengumuman kerjasama.
-  * Pernyataan sepihak yang bertujuan mengagum-agumkan instansi/BUMN (PR Pemerintah).
-  * Artikel "Penghargaan" atau "Awards" (Corporate/Agency Recognition).
-  * Konten edukasi/tips (Kesehatan/Investasi) yang mengarahkan pembaca pada brand/layanan tertentu.
+[PANDUAN]:
+- BERITA MURNI: Jurnalisme objektif tentang kebijakan publik, politik, tragedi, statistik industri, atau berita kritis. Laporkan fakta tanpa maksud promosi.
+- NATIVE ADS: Konten yang bertujuan membangun citra positif atau branding. Termasuk promosi langsung, Press Release (MOU/Kerjasama/Bursa), laporan pencapaian sepihak instansi, penghargaan korporat (awards), atau edukasi/tips yang mengarahkan pembaca pada brand/layanan tertentu.
 
 {context}
 
