@@ -117,16 +117,15 @@ class ClassificationAgent:
                     quantization_config=bnb_config, trust_remote_code=True, token=hf_token
                 )
                 
-                # Phase 68: Strict Tokenizer/Config Sync (Stop the 270 PPL Noise)
-                tokenizer.pad_token = tokenizer.eos_token
+                # Phase 69: Final Tokenizer Stability (Sync Pad/EOS)
+                if tokenizer.pad_token is None:
+                    tokenizer.pad_token = tokenizer.eos_token
                 tokenizer.pad_token_id = tokenizer.eos_token_id
                 base_model.config.pad_token_id = tokenizer.eos_token_id
                 
                 # Phase 62: Clean up GenConfig
                 gen_config = GenerationConfig(
-                    max_new_tokens=512, 
-                    do_sample=False, 
-                    repetition_penalty=1.0, 
+                    max_new_tokens=512, do_sample=False, repetition_penalty=1.0, 
                     pad_token_id=tokenizer.eos_token_id, 
                     eos_token_id=tokenizer.eos_token_id
                 )
@@ -201,16 +200,17 @@ class ClassificationAgent:
                 if self.model_tier == 'micro':
                     # Atomic stability for Sub-1B models: Direct MCQ
                     template = MCQ_PROMPT_TEMPLATE
-                    prefix_force = "Pilih (A/B): "
+                    prefix_force = "" # Clean end
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
-                # Phase 67: Bypass Chat Template for micro models (too small for complex tokens)
+                # Phase 69: Raw Prompt with BOS (Essential for stable 270M)
                 if self.model_tier == 'micro':
-                    templated_prompt = user_msg + "\n\n" + prefix_force
+                    bos = self.tokenizer.bos_token or ""
+                    templated_prompt = bos + user_msg
                 else:
                     messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -218,20 +218,23 @@ class ClassificationAgent:
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 ids = input_encoding["input_ids"].to(self.local_model_ref.device)
+                mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 67: Neutral Penalty (1.0) and ultra-short output
+                # Phase 69: Greedy Token Limit (max_tokens=2)
                 gen_config = self.local_model_ref.generation_config
                 if self.model_tier == 'micro':
                     gen_config.repetition_penalty = 1.0
-                    # Stop at newline to prevent linguistic drift
+                    # Stop immediately after one token
                     stop_at = [self.tokenizer.eos_token_id]
                     if self.tokenizer.convert_tokens_to_ids("\n"): stop_at.append(self.tokenizer.convert_tokens_to_ids("\n"))
                 
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(
                         ids, 
+                        attention_mask=mask,
                         generation_config=gen_config,
-                        max_new_tokens=2 if self.model_tier == 'micro' else 512
+                        max_new_tokens=2 if self.model_tier == 'micro' else 512,
+                        pad_token_id=self.tokenizer.pad_token_id
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
