@@ -386,15 +386,15 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 93: Universal Stabilization (Target 89%+)
+# Phase 94: The Zero-Bias Reconstruction (Target 89%+)
 # -----------------------------------------------------------------------------
-# Reverting to the minimalist "Media Analyst" baseline.
+# Balanced instructions to remove positional bias.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst independen. Analisis apakah artikel berikut adalah "native ads" (iklan terselubung/PR) atau "berita murni" (jurnalisme objektif).
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Analisis artikel di bawah dan klasifikasikan sebagai "berita murni" atau "native ads".
 
-[PANDUAN]:
-- NATIVE ADS: Artikel yang mempromosikan brand secara eksplisit, pengumuman bisnis searah (Press Release/PR), rilis investor, atau pengagungan produk.
-- BERITA MURNI: Artikel yang melaporkan fakta publik (Politik, Tragedi, Olahraga, Sejarah, PHK, atau Kebijakan) secara netral tanpa tendensi memuji brand.
+[KRITERIA]:
+- BERITA MURNI: Artikel jurnalisme objektif tentang Politik, Ekonomi, Tragedi, Sejarah, Olahraga, atau Kebijakan Publik (termasuk berita kritis tentang korporasi seperti PHK atau Kasus Hukum).
+- NATIVE ADS: Artikel promosi brand, Press Release (PR) bisnis, rilis investor, pengumuman kerjasama (MOU), atau konten yang mengagungkan keunggulan produk/jasa.
 
 {context}
 
@@ -402,8 +402,8 @@ TUGAS:
 Judul: {title}
 Konten: {content}
 
-Output (JSON):
-{{"label": "native ads/berita murni", "alasan": "Analisis singkat mengapa ini Iklan atau Berita (Indonesia)"}}"""
+Output (Harus JSON):
+{{"label": "berita murni/native ads", "alasan": "Analisis singkat (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
