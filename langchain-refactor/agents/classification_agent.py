@@ -164,7 +164,7 @@ class ClassificationAgent:
                 )
                 import torch
                 
-                # Phase 64: Improved RAG (Threshold 0.70)
+                # Phase 82: Micro-RAG Throttle (Cap at 2 total)
                 rag_block = ""
                 threshold = 0.70
                 if self.use_rag and examples:
@@ -175,11 +175,12 @@ class ClassificationAgent:
                     ads = sorted(ads, key=lambda x: x['similarity_score'], reverse=True)
                     news = sorted(news, key=lambda x: x['similarity_score'], reverse=True)
                     
-                    # Phase 68: NO RAG for Micro (< 500M)
-                    # The RAG context "poisons" the attention of the 270M model. 
-                    # Disabling to let fine-tuned weights work in Zero-G.
                     if self.model_tier == 'micro':
-                        rag_block = ""
+                        # One and only one of each category is plenty for a 270M model
+                        if ads or news:
+                            rag_block = "[REFERENSI TERKAIT (CONTOH)]\n"
+                            if ads: rag_block += f"- NATIVE ADS: \"{ads[0].get('content')[:150]}...\"\n"
+                            if news: rag_block += f"- BERITA MURNI: \"{news[0].get('content')[:150]}...\"\n"
                     elif ads or news:
                         rag_block = "[REFERENSI KOMPARASI]\n"
                         limit = 2
@@ -189,12 +190,14 @@ class ClassificationAgent:
                             rag_block += f"- BERITA MURNI: \"{ex.get('content')[:150]}...\"\n"
                 
                 if not rag_block:
-                    rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
+                    # Clean heuristics for when RAG is empty
+                    rag_block = "[PETUNJUK]: Promosi Brand = Native Ads. Tragedi/Kematian = Berita Murni.\n"
 
                 if self.model_tier == 'micro':
-                    # Phase 74: Atomic MCQ (Minimal instruction at the end for recency bias)
-                    template = MCQ_PROMPT_TEMPLATE
-                    prefix_force = "" # Let the template handle the end
+                    # Phase 83: Micro-Heuristic Prompt (Atomic & Heuristic-First)
+                    from prompts.classification_prompts import MICRO_HEURISTIC_PROMPT
+                    template = MICRO_HEURISTIC_PROMPT
+                    prefix_force = "" 
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "{\"alasan\": \"" 
