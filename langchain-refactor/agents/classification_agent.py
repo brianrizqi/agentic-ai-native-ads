@@ -213,7 +213,32 @@ class ClassificationAgent:
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 74: Hard 1-Token Selection
+                # Phase 75: Logit-Based Pivot for Micro Tier (Solves all PPL & Hallucination issues)
+                if self.model_tier == 'micro':
+                    import torch
+                    with torch.no_grad():
+                        outputs = self.local_model_ref(input_ids, attention_mask=mask)
+                        next_token_logits = outputs.logits[0, -1, :]
+                        
+                        # Map token IDs for Choice A and Choice B (including space-variants)
+                        id_A = self.tokenizer.encode("A", add_special_tokens=False)[-1]
+                        id_B = self.tokenizer.encode("B", add_special_tokens=False)[-1]
+                        id_A_space = self.tokenizer.encode(" A", add_special_tokens=False)[-1]
+                        id_B_space = self.tokenizer.encode(" B", add_special_tokens=False)[-1]
+                        
+                        # Compare max logits for A variants vs B variants
+                        val_A = max(next_token_logits[id_A].item(), next_token_logits[id_A_space].item())
+                        val_B = max(next_token_logits[id_B].item(), next_token_logits[id_B_space].item())
+                        
+                        label = "native ads" if val_A > val_B else "berita murni"
+                        # Simple softmax for confidence score
+                        probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
+                        conf = probs[0].item() if label == "native ads" else probs[1].item()
+                        
+                        print(f"DEBUG: Logit Classifier [{self.model_tier}] -> A: {val_A:.2f}, B: {val_B:.2f} -> Chosen: {label}")
+                        return {'label': label, 'confidence': conf, 'reasoning': "Pilihan berdasarkan perbandingan logit (Phase 75)"}
+
+                # Standard Generation for other tiers
                 gen_config = self.local_model_ref.generation_config
                 gen_config.repetition_penalty = 1.0
                 gen_config.do_sample = False
@@ -223,16 +248,12 @@ class ClassificationAgent:
                         input_ids, 
                         attention_mask=mask,
                         generation_config=gen_config,
-                        max_new_tokens=1 if self.model_tier == 'micro' else 512,
+                        max_new_tokens=512,
                         pad_token_id=self.tokenizer.eos_token_id
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
-                # Phase 72: Prefix handling (only add if not already in prompt)
                 if prefix_force and self.model_tier != 'micro': 
-                    raw_response = prefix_force + raw_response
-                elif self.model_tier == 'micro':
-                    # For micro, the prefix was already in templated_prompt, so we just prepended it to our decoded response
                     raw_response = prefix_force + raw_response
                 
                 clean_peek = raw_response[:120].replace('\n', ' ')
