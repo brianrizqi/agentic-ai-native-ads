@@ -394,7 +394,8 @@ ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni
 
 [STANDAR]:
 - BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi makro, atau krisis hukum.
-- NATIVE ADS: Konten branding, promosi kepentingan komersial/institusi, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau PR bisnis.
+- PENTING: Politik, Kriminal, dan Bencana Alam ADALAH 100% Berita Murni.
+- NATIVE ADS: Konten branding PR, promosi kepentingan komersial, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau CSR bisnis.
 
 {context}
 
@@ -424,7 +425,8 @@ BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" or "nativ
 
 [STANDARDS]:
 - BERITA MURNI: Official state policy, diplomacy, macro-economics, or legal crisis.
-- NATIVE ADS: Branding, commercial/institutional interest, MOU/Partnership, Awards, Stock news, or Business PR.
+- IMPORTANT: Politics, Crime, and Natural Disasters are 100% Berita Murni.
+- NATIVE ADS: PR Branding, commercial promotion, MOU/Partnership, Awards, Stock news, or Corporate CSR.
 
 {context}
 
@@ -519,8 +521,9 @@ Jawaban (A/B):"""
 ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
 
 [STANDAR]:
-- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi makro, atau krisis hukum (Nasional/Internasional).
-- NATIVE ADS: Konten branding, promosi kepentingan komersial/institusi, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau PR bisnis.
+- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi makro, atau krisis hukum.
+- PENTING: Politik, Kriminal, dan Bencana Alam ADALAH 100% Berita Murni.
+- NATIVE ADS: Branding PR, promosi komersial, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau CSR bisnis.
 
 {context}
 
