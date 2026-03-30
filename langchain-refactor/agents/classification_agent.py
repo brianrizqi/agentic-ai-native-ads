@@ -165,9 +165,9 @@ class ClassificationAgent:
                 )
                 import torch
                 
-                # Phase 86: RAG Hardening (Threshold 0.82 for high-precision local models)
+                # Phase 87: Bernoulli Calibration (Threshold 0.75)
                 rag_block = ""
-                threshold = 0.82 if self.model_tier != 'micro' else 0.70
+                threshold = 0.75 if self.model_tier != 'micro' else 0.70
                 if self.use_rag and examples:
                     ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
                     news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= threshold]
