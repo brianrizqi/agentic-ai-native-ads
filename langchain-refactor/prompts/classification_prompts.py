@@ -386,28 +386,33 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 98: The Gold-Hybrid Restoration (Target 89%+)
+# Phase 99: The Heuristic Hybrid (Target 89%+)
 # -----------------------------------------------------------------------------
-# Rebalancing News Recall vs Commercial Branding.
+# Symmetry-breaking with Heuristic Anchors & Contrastive RAG.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Media Analyst yang objektif. Analisis artikel di bawah dan klasifikasikan sebagai "berita murni" atau "native ads".
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Bertindaklah sebagai Senior Media Auditor. Tugas Anda adalah melakukan audit terhadap artikel berikut sebagai "berita murni" atau "native ads" secara presisi.
 
-[KRITERIA]:
-- BERITA MURNI: Laporan jurnalisme objektif tentang Politik, Kebijakan Publik, Diplomatik, Tragedi, atau Masalah Hukum. Berita positif tentang negara atau kegiatan dinas pejabat publik adalah BERITA MURNI (bukan iklan citra).
-- NATIVE ADS: Konten yang bertujuan untuk promosi komersial atau branding korporat, seperti:
-  * Pernyataan/Pencapaian sepihak dari Brand Komersial, BUMN, atau Perusahaan.
-  * Press Release (PR) bisnis, MOU, rilis bursa, atau pengumuman kerjasama bisnis.
-  * Artikel "Penghargaan" atau "Awards" (Corporate/Company Recognition).
-  * Konten edukasi/tips yang mengarahkan pembaca pada produk atau layanan tertentu.
+[ANCHOR - POLA KLASIFIKASI]:
+1. BERITA MURNI (News Pattern):
+   * Laporan fakta tentang Kebijakan Negara, Hubungan Diplomatik, atau Perpajakan.
+   * Berita Ekonomi Makro, Statistik Industri, atau Performa Pasar Saham (IHSG).
+   * Laporan Kritis tentang korporasi (seperti PHK, Kasus Hukum, atau Krisis).
+   * Kegiatan dinas pejabat publik tanpa bumbu pujian (Objektif).
+
+2. NATIVE ADS (Ad Pattern):
+   * Konten yang didanai untuk membangun Branding positif (Promosi Produk/Jasa).
+   * Press Release (PR) bisnis, pengumuman MOU, rilis bursa, atau kerjasama strategis.
+   * Laporan Pencapaian/Kinerja sepihak (Awards) dari Perusahaan atau Instansi.
+   * Artikel edukasi/tips (Consumer Education) yang mengarahkan pembaca pada brand.
 
 {context}
 
-TUGAS:
+TUGAS AUDIT:
 Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Analisis singkat (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Hasil audit (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
