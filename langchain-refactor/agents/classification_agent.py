@@ -197,24 +197,27 @@ class ClassificationAgent:
                 if not rag_block:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
-                # Phase 71: Strategic Pivot to Bilingual-Reasoning
-                family = self._get_model_family(self.model_name)
-                is_bilingual = family in ['gemma', 'llama']
-                
                 if self.model_tier == 'micro':
-                    # Embrace the model's bias for reasoning since it hallucinates Analisis anyway
-                    template = BILINGUAL_MICRO_TEMPLATE
-                    prefix_force = "{\"alasan\": \""
+                    # Phase 72: Label-First Commitment (Force the answer before the reasoning)
+                    template = ULTRA_STABLE_MICRO_TEMPLATE
+                    prefix_force = "{\"label\": \""
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "{\"alasan\": \"" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
                 
-                # Phase 71: Use Standard Chat Template to ensure correct special tokens
-                messages = [{"role": "user", "content": user_msg}]
-                templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-                if prefix_force: templated_prompt += prefix_force
+                # Phase 72: Raw Prompt for Micro (Stop 'As an AI' preamble)
+                if self.model_tier == 'micro':
+                    # Prepend BOS manually for stable start without chat template overhead
+                    bos = self.tokenizer.bos_token or ""
+                    templated_prompt = bos + user_msg + prefix_force
+                    # When bypassing template, we don't need to add prefix_force again later 
+                    # because it's already in the templated_prompt
+                else:
+                    messages = [{"role": "user", "content": user_msg}]
+                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                    if prefix_force: templated_prompt += prefix_force
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
@@ -235,7 +238,12 @@ class ClassificationAgent:
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
-                if prefix_force: raw_response = prefix_force + raw_response
+                # Phase 72: Prefix handling (only add if not already in prompt)
+                if prefix_force and self.model_tier != 'micro': 
+                    raw_response = prefix_force + raw_response
+                elif self.model_tier == 'micro':
+                    # For micro, the prefix was already in templated_prompt, so we just prepended it to our decoded response
+                    raw_response = prefix_force + raw_response
                 
                 clean_peek = raw_response[:120].replace('\n', ' ')
                 print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")
