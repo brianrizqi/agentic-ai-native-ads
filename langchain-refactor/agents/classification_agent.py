@@ -49,9 +49,9 @@ class ClassificationAgent:
         self.use_rag = use_rag
         self.is_mcq = is_mcq
         
-        # Tier Detection
+        # Tier Detection (Phase 66: Radical Reduction for Micro)
         self.model_tier = self._get_model_tier(model_name)
-        self.max_chars = 1200 if self.model_tier != 'micro' else 800
+        self.max_chars = 500 if self.model_tier == 'micro' else 1200
         
         self.tokenizer = None
         self.local_model_ref = None
@@ -158,7 +158,7 @@ class ClassificationAgent:
                 from prompts.classification_prompts import (
                     ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE,
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
-                    ULTRA_STABLE_MICRO_TEMPLATE
+                    ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE
                 )
                 import torch
                 
@@ -184,14 +184,14 @@ class ClassificationAgent:
                 if not rag_block:
                     rag_block = "[ACUAN]\n1. Iklan: Promosi produk brand korporat.\n2. Berita: Hasil olahraga/kebijakan publik.\n"
 
-                # Phase 65: Nuclear PPL Fix (Label-First for Micro)
+                # Phase 66: Sanity Recovery (MCQ for Micro)
                 family = self._get_model_family(self.model_name)
                 is_bilingual = family in ['gemma', 'llama']
                 
                 if self.model_tier == 'micro':
-                    # Atomic stability for Sub-1B models
-                    template = ULTRA_STABLE_MICRO_TEMPLATE
-                    prefix_force = "{\"label\": \""
+                    # Atomic stability for Sub-1B models: Direct MCQ
+                    template = MCQ_PROMPT_TEMPLATE
+                    prefix_force = "Pilih (A/B): "
                 else:
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "{\"alasan\": \"" 
@@ -204,11 +204,11 @@ class ClassificationAgent:
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt")
                 ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 
-                # Phase 65: Nuclear Repetition Penalty (1.5)
+                # Phase 66: Sanity Penalty (1.1)
                 gen_config = self.local_model_ref.generation_config
                 if self.model_tier == 'micro':
-                    gen_config.repetition_penalty = 1.5
-                    # Stop at newline or closing brace to prevent linguistic drift
+                    gen_config.repetition_penalty = 1.1
+                    # Stop at newline to prevent linguistic drift
                     stop_at = [self.tokenizer.eos_token_id]
                     if self.tokenizer.convert_tokens_to_ids("\n"): stop_at.append(self.tokenizer.convert_tokens_to_ids("\n"))
                 
@@ -216,7 +216,7 @@ class ClassificationAgent:
                     generated_ids = self.local_model_ref.generate(
                         ids, 
                         generation_config=gen_config,
-                        max_new_tokens=256 if self.model_tier == 'micro' else 512
+                        max_new_tokens=64 if self.model_tier == 'micro' else 512
                     )
                 
                 raw_response = self.tokenizer.decode(generated_ids[0][ids.shape[1]:], skip_special_tokens=True)
@@ -248,38 +248,47 @@ class ClassificationAgent:
         except: pass
 
     def _parse_response(self, response: str, content: str = "", title: str = "") -> Dict[str, Any]:
-        """Phase 63+65: Clean & Minimal Parser. Optimized for Label-First."""
+        """Phase 66: Robust A/B and JSON Parser."""
         try:
             resp_clean = response.strip()
-            alasan = "Tidak ditemukan alasan."
+            alasan = "Tidak ditemukan alasan (mode MCQ)."
             label = "berita murni"
             
-            # JSON Parsing only. NO HEURISTIC OVERRIDES.
+            # 1. MCQ Parsing (Priority for micro)
+            # Find the first A or B that appears after "Jawaban" or at the start
+            mcq_match = re.search(r'(?:Jawaban|Pilih|Answer):\s*([AB])', resp_clean, re.IGNORECASE)
+            if not mcq_match:
+                # Direct check for single token A/B
+                if resp_clean.split() and resp_clean.split()[0].upper() in ['A', 'B']:
+                    label = "native ads" if resp_clean.split()[0].upper() == 'A' else "berita murni"
+                    return {'label': label, 'confidence': 0.9, 'reasoning': alasan}
+            else:
+                choice = mcq_match.group(1).upper()
+                label = "native ads" if choice == 'A' else "berita murni"
+                return {'label': label, 'confidence': 0.9, 'reasoning': alasan}
+
+            # 2. JSON Parsing fallback
             json_match = re.search(r'\{(.*)\}', resp_clean, re.DOTALL)
             if not json_match and resp_clean.startswith('{'): json_match = re.search(r'\{(.*)', resp_clean, re.DOTALL)
             
             if json_match:
                 json_str = json_match.group(0)
-                # Cleanup common truncation issues from micro models
                 if not json_str.endswith('}'): 
                     if json_str.count('"') % 2 != 0: json_str += '"'
                     json_str += '}'
                 try:
-                    # Clean up Thai/Russian noise that occasionally slips through
                     json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
                     data = json.loads(json_str_clean.replace('\n', ' '))
-                    
                     alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
-                    
-                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi"]): 
+                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "a"]): 
                         label = "native ads"
                 except:
-                    # Fallback if JSON is malformed but contains label
                     if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): label = "native ads"
             else:
-                # Emergency Heuristic only for TOTAL parsing failure (not an override)
-                if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): 
+                if any(kw in resp_clean.lower()[:50] for kw in ["native ads", "iklan", "promosi"]): 
+                    label = "native ads"
+                elif "A" in resp_clean[:10].upper():
                     label = "native ads"
 
             return {'label': label, 'confidence': 0.95, 'reasoning': alasan}
