@@ -164,20 +164,20 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 110: The Last Calibration (Target 89%+)
+                # Phase 111: Harmonic Equilibrium (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Balanced RAG: 2 Ads vs 1 News to find the 'Golden Ratio'.
-                RAG_THRESHOLD = 0.85
+                # Symmetric RAG: 2 Ads vs 2 News to neutralize bias from 110.1.
+                RAG_THRESHOLD = 0.80
                 rag_block = ""
                 
                 if self.use_rag and examples:
-                    # Filter and Balanced Skew (2:1 Ratio Target)
+                    # Filter and Symmetric Split (Exactly 2:2)
                     strong_ads = [ex for ex in examples if 'native' in str(ex.get('label', '')).lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     strong_news = [ex for ex in examples if 'murni' in str(ex.get('label', '')).lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
-                    # Force exactly 2 Ads and 1 News
+                    # Pick exactly 2 of each
                     selected_ads = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                    selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                    selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     selected = selected_ads + selected_news
                     
                     if selected:
