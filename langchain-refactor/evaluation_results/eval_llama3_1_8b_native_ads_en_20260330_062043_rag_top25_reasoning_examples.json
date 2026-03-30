@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 16,
+    "borderline_count": 2,
+    "bad_count": 82,
+    "avg_judge_score": 2.33
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which focuses on Oksana Masters' achievement without any promotional tone. The reasoning provided aligns well with the nature of the article, confirming it as pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Oksana Masters’ 11th Paralympic gold medal was “redemption” for the most decorated American Winter Paralympian.\n\nAnd it was clear just how much it meant to her.\n\nMasters screamed loudly several times ",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "berita murni",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the content's objective nature, focusing on a health issue without promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Satu tersangka dari kejadian luar biasa hepatitis akut misterius pada anak yang sedang merebak di banyak negara saat ini adalah adenovirus. Kasus-kasusnya menjadi perhatian karena ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model incorrectly labeled the article as native ads, but its reasoning correctly identified it as pure news. The content discusses a scientific discovery without any promotional tone, aligning with the characteristics of news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as 'berita murni', but its reasoning incorrectly categorized it as 'native ads', which undermines the accuracy of the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as 'berita murni' (pure news), but its reasoning incorrectly categorized it as 'native ads,' which does not apply to the content. The reasoning lacks depth and fails to address the promotional tone, leading to a weak justification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "native ads",
+      "confidence": 0.95
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. There is no reasoning provided, which fails to support the prediction, and the content does not exhibit any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "TEMPO.CO, Jakarta - Transjakarta mengoperasikan bus wisata selama libur lebaran, mulai Selasa sampai Minggu, 3 - 8 Mei 2022. Bus wisata yang berwujud bus tingkat ini akan melintas di jalanan ibu kota ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Tidak ditemukan alasan.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads, while it is clearly a news piece discussing a sports topic. There is no reasoning provided, which further undermines the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": ", Manajer Liverpool Jurgen Klopp ikut menanggapi ihwal ucapanPep Guardiolasoal dukungan warga Inggrisdalam perebutan gelar juara Liga Inggris. Klopp menyatakan tak sepakat atas pernyataan manajer Manc",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Tidak ditemukan alasan.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly predicted 'berita murni' instead of 'native ads', and the reasoning provided does not support the prediction, as it fails to identify the promotional nature of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, March 04, 2026 (GLOBE NEWSWIRE) — NervGen Pharma Corp. (“NervGen” or the “Company”) (TSXV: NGEN) (NASDAQ: NGEN), a clinical-stage biopharmaceutical company developing firs",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "native ads",
+      "confidence": 0.95
+    }
+  ]
+}
