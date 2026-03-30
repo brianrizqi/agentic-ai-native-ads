@@ -386,15 +386,15 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 109: The Zero-Load Task (Target 89%+)
+# Phase 110: The Last Calibration (Target 89%+)
 # -----------------------------------------------------------------------------
-# Eliminating cognitive overhead by removing reasoning requirement.
+# Zero-Load with sharpened Ad-intent markers.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
 
 [STANDAR]:
-- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi, atau krisis hukum.
-- NATIVE ADS: Konten branding, kerjasama (MOU), penghargaan (Awards), promosi produk/jasa, atau PR bisnis.
+- BERITA MURNI: Laporan fakta kebijakan negara, diplomatik, ekonomi makro, atau krisis hukum.
+- NATIVE ADS: Konten branding, promosi kepentingan komersial/institusi, kerjasama (MOU), penghargaan (Awards), rilis bursa, atau PR bisnis.
 
 {context}
 
