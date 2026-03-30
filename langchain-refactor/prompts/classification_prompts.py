@@ -386,24 +386,23 @@ Output (JSON):
 # Reverting to the minimalist Anti-Bias rules that produced 88% accuracy, 
 # but maintaining the Label-First anchor for drifting prevention.
 
-# Phase 99: The Heuristic Hybrid (Target 89%+)
+# Phase 100: The Elite Journalism Anchor (Target 89%+)
 # -----------------------------------------------------------------------------
-# Symmetry-breaking with Heuristic Anchors & Contrastive RAG.
+# Final Calibration: Status-Hierarchy Pattern Matching.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Bertindaklah sebagai Senior Media Auditor. Tugas Anda adalah melakukan audit terhadap artikel berikut sebagai "berita murni" atau "native ads" secara presisi.
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Bertindaklah sebagai Senior Auditor Jurnalisme. Analisis artikel ini untuk membedakan antara "Jurnalisme Elit" (Berita Murni) dan "Informasi Komersial Terselubung" (Native Ads).
 
-[ANCHOR - POLA KLASIFIKASI]:
-1. BERITA MURNI (News Pattern):
-   * Laporan fakta tentang Kebijakan Negara, Hubungan Diplomatik, atau Perpajakan.
-   * Berita Ekonomi Makro, Statistik Industri, atau Performa Pasar Saham (IHSG).
-   * Laporan Kritis tentang korporasi (seperti PHK, Kasus Hukum, atau Krisis).
-   * Kegiatan dinas pejabat publik tanpa bumbu pujian (Objektif).
+[STANDAR AUDIT]:
+1. BERITA MURNI (Standar Tertinggi Jurnalisme):
+   * Pelaporan fakta objektif tentang Kebijakan Negara, Pajak, Diplomatik, Ekonomi Makro, atau IHSG.
+   * Berita positif tentang kemajuan negara atau kegiatan dinas resmi pejabat publik/instansi adalah BERITA MURNI (Selama bukan promosi brand/produk).
+   * Laporan kritis/objektif tentang masalah korporasi (PHK, Hukum, Krisis).
 
-2. NATIVE ADS (Ad Pattern):
-   * Konten yang didanai untuk membangun Branding positif (Promosi Produk/Jasa).
-   * Press Release (PR) bisnis, pengumuman MOU, rilis bursa, atau kerjasama strategis.
-   * Laporan Pencapaian/Kinerja sepihak (Awards) dari Perusahaan atau Instansi.
-   * Artikel edukasi/tips (Consumer Education) yang mengarahkan pembaca pada brand.
+2. NATIVE ADS (Penyimpangan Komersial Terselubung):
+   * Konten yang didikte oleh kepentingan komersial untuk branding korporat/produk.
+   * Penulisan yang mengagum-agumkan "Brand", "Produk", atau "Layanan" secara sepihak.
+   * Press Release bisnis, pengumuman MOU, rilis bursa, atau kerjasama strategis perusahan/BUMN.
+   * Artikel "Penghargaan/Awards" atau "Tips Konsumen" yang mengarahkan pembaca pada brand tertentu.
 
 {context}
 
@@ -412,7 +411,7 @@ Judul: {title}
 Konten: {content}
 
 Output (JSON):
-{{"label": "berita murni/native ads", "alasan": "Hasil audit (Indonesia)"}}"""
+{{"label": "berita murni/native ads", "alasan": "Hasil pemeriksaan auditor (Indonesia)"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
