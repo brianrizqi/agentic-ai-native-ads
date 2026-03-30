@@ -164,20 +164,20 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 104: The Surround-Sound Calibration (Target 89%+)
+                # Phase 105: The Equilibrium Calibration (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Skewed RAG: 4 Ads vs 1 News to counteract 'Professionalism Bias'.
-                RAG_THRESHOLD = 0.82
+                # Equilibrium RAG: 3 Ads vs 2 News for mathematical 'Sweet Spot'.
+                RAG_THRESHOLD = 0.83
                 rag_block = ""
                 
                 if self.use_rag and examples:
-                    # Filter and Skew
+                    # Filter and Balanced Skew
                     strong_ads = [ex for ex in examples if 'native' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     strong_news = [ex for ex in examples if 'murni' in ex.get('label', '').lower() and ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
-                    # Force 4 Ads and 1 News for "Surround-Sound" effect
-                    selected_ads = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:4]
-                    selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                    # Force 3 Ads and 2 News for "Equilibrium" effect
+                    selected_ads = sorted(strong_ads, key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                    selected_news = sorted(strong_news, key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                     selected = selected_ads + selected_news
                     
                     if selected:
