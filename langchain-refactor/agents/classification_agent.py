@@ -233,35 +233,45 @@ class ClassificationAgent:
                         probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
                         conf = probs[0].item() if label == "native ads" else probs[1].item()
                         
-                        # Step 2: Metrics-Driven Reasoning via Contextual Anchoring (Phase 78)
-                        # We use a snippet of content to "anchor" the reasoning to this specific article
-                        snippet = content[:200].replace('\n', ' ')
+                        # Step 2: Metrics-Driven Reasoning via Natural Anchor (Phase 79)
+                        # Phase 79: "The Human Touch" - forcing descriptive explanation over robotic percentages
+                        snippet = content[:300].replace('\n', ' ')
                         reason_prompt = (
-                            f"Kutipan Artikel: {snippet}...\n"
-                            f"Kategori: {label}\n"
-                            f"Berdasarkan bukti di dalam kutipan artikel di atas, alasan klasifikasi ini adalah: "
+                            f"Kutipan Artikel: \"{snippet}...\"\n"
+                            f"Label: {label}\n"
+                            f"Analisis Ahli: Konten ini merupakan {label} karena secara spesifik menginformasikan tentang "
                         )
                         
                         reason_inputs = self.tokenizer(reason_prompt, return_tensors="pt", add_special_tokens=True).to(self.local_model_ref.device)
                         
-                        # Phase 78: Article-Specific Reason Completion
                         reason_ids = self.local_model_ref.generate(
                             reason_inputs.input_ids,
                             attention_mask=reason_inputs.attention_mask,
-                            max_new_tokens=48,
+                            max_new_tokens=64,
                             do_sample=False,
                             pad_token_id=self.tokenizer.eos_token_id
                         )
                         
                         reason_text = self.tokenizer.decode(reason_ids[0][reason_inputs.input_ids.shape[1]:], skip_special_tokens=True)
-                        # Phase 78: Clean any leading garbage or redundant tags
-                        reason_text = reason_text.split("\n")[0].split("Analisis:")[0].split("Kutipan:")[0].strip(' ".,')
                         
-                        print(f"DEBUG: Hybrid Classifier [{self.model_tier}] -> Choice: {label}, Anchored Reason: {reason_text[:60]}...")
+                        # Step 3: Phase 79 Numerical Suppression & Cleaning
+                        import re
+                        # 1. Kill at first newline or hallucinated tag
+                        reason_text = reason_text.split("\n")[0].split("Analisis:")[0].split("Judul:")[0].strip(' ".,')
+                        # 2. Regex to strip "100%", "10%", "1. ", "100 persen" etc.
+                        reason_text = re.sub(r'^\d+\s?%?\s?', '', reason_text)
+                        reason_text = re.sub(r'^\d+\s?persen\s?', '', reason_text)
+                        reason_text = re.sub(r'^[A-B]\.\s?', '', reason_text) 
+                        
+                        final_reason = reason_text.strip()
+                        if not final_reason or len(final_reason) < 10:
+                            final_reason = f"Konten ini membahas topik {label} berdasarkan bukti di dalam teks artikel."
+                        
+                        print(f"DEBUG: Hybrid Finisher [{self.model_tier}] -> Choice: {label}, Final Reason: {final_reason[:60]}...")
                         return {
                             'label': label, 
                             'confidence': conf, 
-                            'reasoning': reason_text if len(reason_text) > 10 else f"Konten ini menunjukkan indikasi kuat sebagai {label}."
+                            'reasoning': final_reason
                         }
 
                 # Standard Generation for other tiers
