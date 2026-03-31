@@ -391,6 +391,7 @@ Output (JSON):
 # Zero-Load with sharpened Ad-intent markers.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
+Identifikasi bukti promosi/branding jika ada sebelum menentukan label.
 
 {context}
 
@@ -398,7 +399,7 @@ Judul: {title}
 Isi: {content}
 
 Output (JSON ONLY):
-{{"label": "berita murni/native ads"}}"""
+{{"alasan": "identifikasi bukti promosi singkat", "label": "berita murni/native ads"}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
@@ -416,6 +417,7 @@ Output JSON:
 # Using English instructions to prevent 'multilingual collapse' in small models.
 
 BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
+Identify promotional/branding evidence if any before determining the label.
 
 {context}
 
@@ -423,7 +425,7 @@ Title: {title}
 Content: {content}
 
 Output (JSON ONLY):
-{{"label": "berita murni/native ads"}}"""
+{{"alasan": "short identification of branding/promo evidence", "label": "berita murni/native ads"}}"""
 
 BILINGUAL_MICRO_TEMPLATE = """Task: Classify as "native ads" or "berita murni".
 

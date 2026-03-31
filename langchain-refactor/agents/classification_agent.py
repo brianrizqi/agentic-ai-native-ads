@@ -164,9 +164,9 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 120: Harmonic Anchor (Target 89%+)
+                # Phase 121: The Reasoning Scalpel (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Harmonic RAG: Force 2 Ads + 1 News.
+                # Symmetric 1:1 RAG: Force 1 Ad + 1 News.
                 RAG_THRESHOLD = 0.80
                 rag_block = ""
                 
@@ -174,8 +174,8 @@ class ClassificationAgent:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # 1. Base Layer (2:1 Harmonic Equilibrium)
-                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                        # 1. Base Layer (1:1 Symmetric Equilibrium)
+                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         
                         selected = top_ads + top_news
