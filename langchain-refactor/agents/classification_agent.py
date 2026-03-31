@@ -164,9 +164,9 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 113: The Platinum Equilibrium (Target 89%+)
+                # Phase 114: The Perfect Equilibrium (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Hybrid-Weighted RAG: Force 2 Ads + 1 News, then natural Top-K.
+                # Hybrid-Weighted RAG: Force 1 Ad + 1 News, then natural Top-K fill.
                 RAG_THRESHOLD = 0.82
                 rag_block = ""
                 
@@ -175,7 +175,7 @@ class ClassificationAgent:
                     
                     if candidates:
                         # 1. Base Layer (Ensure presence)
-                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         
                         selected = top_ads + top_news

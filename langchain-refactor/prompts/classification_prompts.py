@@ -394,7 +394,7 @@ ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni
 
 [STANDAR]:
 - NATIVE ADS: Branding produk/PT, MOU/Kerjasama, Berita Penghargaan (Awards), rilis PR bisnis.
-- BERITA MURNI: Fakta kebijakan negara, diplomasi, krisis hukum/kriminal, atau ekonomi makro.
+- BERITA MURNI: Fakta kebijakan negara, diplomasi, krisis hukum, ekonomi makro, atau rilis Pemerintah/Lembaga Negara.
 
 {context}
 
@@ -423,7 +423,7 @@ BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" or "nativ
 
 [STANDARDS]:
 - NATIVE ADS: Product/Brand promotion, MOU/Partnership, Awards news, or Corporate PR.
-- BERITA MURNI: Official state policy, diplomacy, legal/crime facts, or macro-economics.
+- BERITA MURNI: Official state policy, diplomacy, legal/crime facts, macro-economics, or Government/State announcements.
 
 {context}
 
@@ -518,7 +518,7 @@ ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau
 
 [STANDAR]:
 - NATIVE ADS: Branding produk/PT, MOU/Kerjasama, Berita Penghargaan (Awards), rilis PR bisnis.
-- BERITA MURNI: Fakta kebijakan negara, diplomasi, krisis hukum/kriminal, atau ekonomi makro.
+- BERITA MURNI: Fakta kebijakan negara, diplomasi, krisis hukum, ekonomi makro, atau rilis Pemerintah/Lembaga Negara.
 
 {context}
 
