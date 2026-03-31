@@ -164,10 +164,10 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 136: Reasoning Resurgence (Final Drive)
+                # Phase 137: Balanced Equilibrium (Final Drive)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.78 for precision.
-                RAG_THRESHOLD = 0.78
+                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.80 for high precision.
+                RAG_THRESHOLD = 0.80
                 rag_block = ""
                 
                 if self.use_rag and examples:

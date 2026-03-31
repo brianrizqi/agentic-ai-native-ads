@@ -391,7 +391,7 @@ Output (JSON):
 # Zero-Load with sharpened Ad-intent markers.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
-Peringatan: Konten newswire (Globe Newswire, PR Newswire, dsb), rilis korporat, MOU, CSR, dan pengumuman partnership adalah Native Ads karena didorong oleh kepentingan entitas tertentu.
+Aturan: Rilis korporat (Newswire, MOU, CSR) adalah Native Ads JIKA fokus utamanya membangun citra brand. Namun, tetap klasifikasikan sebagai Berita Murni jika bersifat pengumuman kebijakan publik atau fakta peristiwa yang objektif tanpa unsur promosi.
 
 Judul: {title}
 Isi: {content}
@@ -401,7 +401,7 @@ Isi: {content}
 Output (JSON ONLY):
 {{
   "label": "berita murni/native ads",
-  "alasan": "jelaskan alasan secara singkat"
+  "alasan": "fokus pada niat utama (promosi vs informasi)"
 }}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
