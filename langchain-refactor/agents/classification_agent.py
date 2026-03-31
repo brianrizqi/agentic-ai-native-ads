@@ -51,7 +51,7 @@ class ClassificationAgent:
         
         # Tier Detection (Phase 66: Radical Reduction for Micro)
         self.model_tier = self._get_model_tier(model_name)
-        self.max_chars = 500 if self.model_tier == 'micro' else 1600
+        self.max_chars = 500 if self.model_tier == 'micro' else 1800
         
         self.tokenizer = None
         self.local_model_ref = None
@@ -123,7 +123,7 @@ class ClassificationAgent:
                 
                 # Phase 62: Clean up GenConfig
                 gen_config = GenerationConfig(
-                    max_new_tokens=512, do_sample=False, repetition_penalty=1.0, 
+                    max_new_tokens=512, do_sample=False, repetition_penalty=1.1, 
                     pad_token_id=tokenizer.eos_token_id, 
                     eos_token_id=tokenizer.eos_token_id
                 )
@@ -164,10 +164,10 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 134: Precision Scalpel (Final Move)
+                # Phase 135: Precision Engineering (Final Stand)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 4 Ads + 2 News. Threshold raised to 0.82 for high precision.
-                RAG_THRESHOLD = 0.82
+                # Platinum RAG: Force 4 Ads + 2 News. Threshold balanced at 0.76.
+                RAG_THRESHOLD = 0.76
                 rag_block = ""
                 
                 if self.use_rag and examples:
@@ -207,9 +207,9 @@ class ClassificationAgent:
                     template = MICRO_HEURISTIC_PROMPT
                     prefix_force = "" 
                 else:
-                    # Phase 94: The Zero-Bias Reconstruction (Target 89%+)
-                    # Removing prefix_force to eliminate token-start bias in Llama 3.1.
-                    template = BILINGUAL_GOLD_STANDARD_TEMPLATE if is_bilingual else ULTIMATE_GOLD_STANDARD_TEMPLATE
+                    # Phase 135: Stable Indonesian Anchor (Target 90%+)
+                    # Forced Indonesian to prevent bilingual drift in local models.
+                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
@@ -265,7 +265,7 @@ class ClassificationAgent:
 
                 # Standard Generation for other tiers
                 gen_config = self.local_model_ref.generation_config
-                gen_config.repetition_penalty = 1.0
+                gen_config.repetition_penalty = 1.1
                 gen_config.do_sample = False
                 
                 with torch.no_grad():
