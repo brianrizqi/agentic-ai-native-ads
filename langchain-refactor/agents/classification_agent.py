@@ -122,7 +122,7 @@ class ClassificationAgent:
                 tokenizer.padding_side = "left"
                 
                 # Phase 141: Automatic Qwen Detection & Optimization
-                is_qwen = "qwen" in self.model_path.lower()
+                is_qwen = "qwen" in self.model_name.lower()
                 
                 if is_qwen:
                     # Qwen specific generation params (Best for 9B/14B)
@@ -224,7 +224,7 @@ class ClassificationAgent:
 
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
-                is_qwen = "qwen" in self.model_path.lower()
+                is_qwen = "qwen" in self.model_name.lower()
                 
                 if is_qwen:
                     # Phase 141: Active Qwen Support (Target 91.5%+)
