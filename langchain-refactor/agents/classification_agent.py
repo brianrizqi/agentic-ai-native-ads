@@ -164,19 +164,20 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 139: The Precision Scalpel (Final Drive)
+                # Phase 140: Balanced Multi-Heuristic (Final Push)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.78 for precision balance.
-                RAG_THRESHOLD = 0.78
+                # Platinum RAG: Force 3 Ads + 3 News (Balanced 50:50). Threshold at 0.75.
+                RAG_THRESHOLD = 0.75
                 rag_block = ""
                 
                 if self.use_rag and examples:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # 1. Base Layer (4:2 Platinum Mix)
-                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:4]
-                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                        # 1. Base Layer (3:3 Balanced Mix)
+                        # Phase 140: Eliminating Ads bias by using a 50:50 example ratio.
+                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                         
                         selected = top_ads + top_news
                         
