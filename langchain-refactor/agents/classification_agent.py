@@ -164,19 +164,19 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 116: The Broad Pool (Forcing Target 89%+)
+                # Phase 124: Platinum Skew (Target 90%+)
                 # ---------------------------------------------------------------------
-                # Contextual Skew RAG: Force 3 Ads + 2 News.
-                RAG_THRESHOLD = 0.70
+                # Platinum RAG: Force 4 Ads + 2 News.
+                RAG_THRESHOLD = 0.78
                 rag_block = ""
                 
                 if self.use_rag and examples:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # 1. Base Layer (3:3 Master Mix)
-                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
-                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                        # 1. Base Layer (4:2 Platinum Mix)
+                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:4]
+                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                         
                         selected = top_ads + top_news
                         
