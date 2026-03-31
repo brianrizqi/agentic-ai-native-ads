@@ -189,8 +189,8 @@ class ClassificationAgent:
                         rag_block = "\n[REFERENSI KONTEKS]:\n"
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
-                            label_hint = "[NATIVE ADS]" if 'native' in label_val else "[BERITA MURNI]"
-                            rag_block += f"- Konten: {str(ex.get('content', ''))[:160]}... -> Label: {label_hint}\n"
+                            label_hint = "[NATIVE ADS (PROMOSI/PR)]" if 'native' in label_val else "[BERITA MURNI (FAKTA/KEBIJAKAN)]"
+                            rag_block += f"- Konten: {str(ex.get('content', ''))[:160]}... -> Klasifikasi: {label_hint}\n"
                         rag_block += "\n"
                     else:
                         rag_block = ""
@@ -213,6 +213,12 @@ class ClassificationAgent:
                     prefix_force = "" 
                 
                 user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
+                
+                # Phase 117: Recency Reinforcement (Forcing Focus after long content)
+                # This overcomes "Context Drowning" in 8B models.
+                if self.model_tier != 'micro':
+                    task_reminder = f"\n\nTentukan label (native ads atau berita murni):"
+                    user_msg += task_reminder
                 
                 # Phase 74: Let Tokenizer handle BOS/EOS automatically (Corrects 8K PPL)
                 if self.model_tier == 'micro':
