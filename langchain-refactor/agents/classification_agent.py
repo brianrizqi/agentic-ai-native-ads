@@ -55,6 +55,14 @@ class ClassificationAgent:
         
         self.tokenizer = None
         self.local_model_ref = None
+        
+        # Phase 142: Hyper-Discriminator Reset
+        # If Qwen, prioritize deep context window (2200 chars) over RAG noise.
+        is_qwen = "qwen" in self.model_name.lower()
+        if is_qwen:
+            self.use_rag = False
+            self.max_chars = 2200
+        
         self.llm = self._initialize_llm(api_key)
         
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -183,7 +191,7 @@ class ClassificationAgent:
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE,
-                    QWEN_ULTIMATE_TEMPLATE
+                    QWEN_HYPER_DISCRIMINATOR_V2
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
@@ -227,8 +235,8 @@ class ClassificationAgent:
                 is_qwen = "qwen" in self.model_name.lower()
                 
                 if is_qwen:
-                    # Phase 141: Active Qwen Support (Target 91.5%+)
-                    template = QWEN_ULTIMATE_TEMPLATE
+                    # Phase 142: Hyper-Discriminator Pivot (Target 91.5%+)
+                    template = QWEN_HYPER_DISCRIMINATOR_V2
                     # ChatML format:
                     prefix_force = "<|im_start|>user\n"
                     suffix_force = "<|im_end|>\n<|im_start|>assistant\n"
