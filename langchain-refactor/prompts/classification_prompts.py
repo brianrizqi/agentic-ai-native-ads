@@ -391,7 +391,7 @@ Output (JSON):
 # Zero-Load with sharpened Ad-intent markers.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
-Jika fokus utama artikel adalah branding atau promosi satu entitas/produk, klasifikasikan sebagai native ads.
+Bandingkan Judul dan Isi artikel dengan 6 referensi di bagian bawah. Jika memiliki kemiripan pola branding/promosi, labeli sebagai native ads.
 
 Judul: {title}
 Isi: {content}
@@ -417,7 +417,7 @@ Output JSON:
 # Using English instructions to prevent 'multilingual collapse' in small models.
 
 BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
-If the main focus of the article is branding or promotion of one entity/product, classify as native ads.
+Compare the Title and Content with the 6 references at the bottom. If it has branding/promo pattern similarity, label as native ads.
 
 Title: {title}
 Content: {content}
