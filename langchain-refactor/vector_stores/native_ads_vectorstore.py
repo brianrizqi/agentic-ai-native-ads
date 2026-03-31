@@ -87,7 +87,7 @@ class NativeAdsVectorStore:
             
             # Create document
             doc = Document(
-                page_content=content[:500],  # Limit length
+                page_content=content[:1500],  # Phase 138: Deeper Indexing (500 -> 1500)
                 metadata={
                     'id': i,
                     'label': label,
