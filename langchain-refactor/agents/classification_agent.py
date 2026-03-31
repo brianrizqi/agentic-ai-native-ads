@@ -121,12 +121,33 @@ class ClassificationAgent:
                 # Resizing 4-bit embeddings causes logit explosion (9000+ PPL).
                 tokenizer.padding_side = "left"
                 
+                # Phase 141: Automatic Qwen Detection & Optimization
+                is_qwen = "qwen" in self.model_path.lower()
+                
+                if is_qwen:
+                    # Qwen specific generation params (Best for 9B/14B)
+                    generation_params = {
+                        "max_new_tokens": 1024 if self.use_rag else 512,
+                        "temperature": 0.1, # Slight temperature for better reasoning flow
+                        "top_p": 0.9,
+                        "repetition_penalty": 1.05,
+                        "do_sample": True,
+                        "pad_token_id": tokenizer.pad_token_id,
+                        "eos_token_id": tokenizer.eos_token_id
+                    }
+                else:
+                    # Llama specific params
+                    generation_params = {
+                        "max_new_tokens": 512 if self.use_rag else 256,
+                        "temperature": 0.0,
+                        "repetition_penalty": 1.1,
+                        "do_sample": False,
+                        "pad_token_id": tokenizer.pad_token_id,
+                        "eos_token_id": tokenizer.eos_token_id
+                    }
+                
                 # Phase 62: Clean up GenConfig
-                gen_config = GenerationConfig(
-                    max_new_tokens=512, do_sample=False, repetition_penalty=1.1, 
-                    pad_token_id=tokenizer.eos_token_id, 
-                    eos_token_id=tokenizer.eos_token_id
-                )
+                gen_config = GenerationConfig(**generation_params)
                 base_model.generation_config = gen_config
                 
                 if self.lora_path:
@@ -161,7 +182,8 @@ class ClassificationAgent:
                     ULTIMATE_GOLD_STANDARD_TEMPLATE, SIMPLE_MICRO_TEMPLATE,
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
-                    MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
+                    MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE,
+                    QWEN_ULTIMATE_TEMPLATE
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
@@ -202,14 +224,23 @@ class ClassificationAgent:
 
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
+                is_qwen = "qwen" in self.model_path.lower()
                 
-                if self.model_tier == 'micro':
-                    # Phase 83: Micro-Heuristic Prompt (Atomic & Heuristic-First)
+                if is_qwen:
+                    # Phase 141: Active Qwen Support (Target 91.5%+)
+                    template = QWEN_ULTIMATE_TEMPLATE
+                    # ChatML format:
+                    prefix_force = "<|im_start|>user\n"
+                    suffix_force = "<|im_end|>\n<|im_start|>assistant\n"
+                elif self.model_tier == 'micro':
+                    # Heuristics for micro models if specified
                     template = MICRO_HEURISTIC_PROMPT
                     prefix_force = "" 
+                    suffix_force = ""
                 else:
                     template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "" 
+                    suffix_force = ""
                 
                 # Phase 138: Title De-duplication (Clean redundant title from content)
                 # This prevents model 8B from being 'fed' twice with the same info, missing the ad signs later.
@@ -220,14 +251,18 @@ class ClassificationAgent:
                         content_clean = content_clean[1:].strip()
                 
                 user_msg = template.format(title=title or content[:70], content=content_clean[:self.max_chars], context=rag_block).strip()
+                full_prompt = f"{prefix_force}{user_msg}{suffix_force}"
                 
-                # Phase 74: Let Tokenizer handle BOS/EOS automatically (Corrects 8K PPL)
-                if self.model_tier == 'micro':
+                # Phase 141: Prompt Dispatcher
+                if is_qwen:
+                    # Qwen uses manual ChatML wrapping for maximal control over Thinking tokens
+                    templated_prompt = full_prompt
+                elif self.model_tier == 'micro':
                     templated_prompt = user_msg
                 else:
+                    # Llama Standard
                     messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-                    if prefix_force: templated_prompt += prefix_force
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt", add_special_tokens=True)
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
@@ -272,15 +307,12 @@ class ClassificationAgent:
 
                 # Standard Generation for other tiers
                 gen_config = self.local_model_ref.generation_config
-                gen_config.repetition_penalty = 1.1
-                gen_config.do_sample = False
                 
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(
                         input_ids, 
                         attention_mask=mask,
                         generation_config=gen_config,
-                        max_new_tokens=512,
                         pad_token_id=self.tokenizer.eos_token_id
                     )
                 

@@ -518,6 +518,30 @@ Jawaban (A/B):"""
 # Designed to restore "Berita Murni" recall by adding mandatory news 
 # safeguards for public topics (Sports, Politics, Disaster).
 
+QWEN_ULTIMATE_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
+
+PERISAI BERITA MURNI:
+- Kebijakan/Instruksi Presiden, Menteri, Gubernur, atau kunjungan negara.
+- Peristiwa publik: Olahraga, Bencana, Kriminal, Hukum, Ekonomi Makro.
+- Krisis Perusahaan: PHK, Kerugian, Bangkrut, Gugatan Hukum.
+- Seni & Hiburan: Rilis lagu/film/buku tanpa muatan promosi brand berlebihan.
+
+KRITERIA NATIVE ADS:
+- Ada upaya eksplisit membangun citra brand/produk (MOU, CSR, Penghargaan).
+- Mengandung bahasa promosi (lebih unggul dari brand lain).
+
+{context}
+
+Judul: {title}
+Isi: {content}
+
+Berikan alasan analisis di dalam tag <think>...</think>, lalu berikan output JSON di akhir.
+
+Output (JSON):
+{{
+  "label": "berita murni/native ads"
+}}"""
+
 ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 {context}
