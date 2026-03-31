@@ -394,14 +394,22 @@ class ClassificationAgent:
                 try:
                     json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
                     data = json.loads(json_str_clean.replace('\n', ' '))
-                    # Phase 144: Unified reasoning extraction
+                    # Phase 144/146: Unified reasoning extraction
                     alasan = data.get('analysis_keywords', 
                                      data.get('alasan', 
                                      data.get('reason', 
-                                     data.get('reasoning', alasan))))
+                                     data.get('reasoning', 
+                                     data.get('why', alasan)))))
                     if isinstance(alasan, list): alasan = ", ".join(alasan)
                     
-                    raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
+                    # Phase 146: Hyper-Robust Label Mapping
+                    raw_label = str(data.get('label', 
+                                   data.get('kelas', 
+                                   data.get('target', 
+                                   data.get('output', 
+                                   data.get('result', 
+                                   data.get('classification', ''))))))).lower()
+                    
                     # Phase 85: Removed "a" keyword landmine (False Positive risk in ID "Berita murni")
                     if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "advertorial"]): 
                         label = "native ads"
