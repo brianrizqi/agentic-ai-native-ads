@@ -164,10 +164,10 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 137: Balanced Equilibrium (Final Drive)
+                # Phase 138: Infrastructure Pivot (Final Stand)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.80 for high precision.
-                RAG_THRESHOLD = 0.80
+                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.72 for robust retrieval.
+                RAG_THRESHOLD = 0.72
                 rag_block = ""
                 
                 if self.use_rag and examples:
@@ -207,12 +207,18 @@ class ClassificationAgent:
                     template = MICRO_HEURISTIC_PROMPT
                     prefix_force = "" 
                 else:
-                    # Phase 135: Stable Indonesian Anchor (Target 90%+)
-                    # Forced Indonesian to prevent bilingual drift in local models.
                     template = ULTIMATE_GOLD_STANDARD_TEMPLATE
                     prefix_force = "" 
                 
-                user_msg = template.format(title=title or content[:70], content=content[:self.max_chars], context=rag_block).strip()
+                # Phase 138: Title De-duplication (Clean redundant title from content)
+                # This prevents model 8B from being 'fed' twice with the same info, missing the ad signs later.
+                content_clean = content
+                if title and content.lower().startswith(title.lower()):
+                    content_clean = content[len(title):].strip()
+                    if content_clean.startswith("-") or content_clean.startswith(":"):
+                        content_clean = content_clean[1:].strip()
+                
+                user_msg = template.format(title=title or content[:70], content=content_clean[:self.max_chars], context=rag_block).strip()
                 
                 # Phase 74: Let Tokenizer handle BOS/EOS automatically (Corrects 8K PPL)
                 if self.model_tier == 'micro':
