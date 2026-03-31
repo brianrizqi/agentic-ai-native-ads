@@ -190,7 +190,7 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            rag_block += f"- Konten: {str(ex.get('content', ''))[:160]}... -> Label: {label_hint}\n"
+                            rag_block += f"- Konten: {str(ex.get('content', ''))[:500]}... -> Label: {label_hint}\n"
                         rag_block += "\n"
                     else:
                         rag_block = ""
