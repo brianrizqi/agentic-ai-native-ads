@@ -164,10 +164,10 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 115: Pure Context Breakthrough (Target 89%+)
+                # Phase 116: The Broad Pool (Forcing Target 89%+)
                 # ---------------------------------------------------------------------
                 # Contextual Skew RAG: Force 3 Ads + 2 News.
-                RAG_THRESHOLD = 0.82
+                RAG_THRESHOLD = 0.70
                 rag_block = ""
                 
                 if self.use_rag and examples:
