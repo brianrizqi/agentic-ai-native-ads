@@ -198,6 +198,8 @@ class ClassificationAgent:
                 # ---------------------------------------------------------------------
                 # Phase 143: Platinum RAG Reset (Re-enabled for Qwen)
                 # ---------------------------------------------------------------------
+                is_qwen = "qwen" in self.model_name.lower()
+                
                 # Platinum RAG: Force 3 Ads + 3 News (Balanced 50:50).
                 # 0.85 threshold for Qwen (Elite standard), 0.75 for Llama.
                 RAG_THRESHOLD = 0.85 if is_qwen else 0.75
@@ -237,7 +239,6 @@ class ClassificationAgent:
 
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
-                is_qwen = "qwen" in self.model_name.lower()
                 
                 if is_qwen:
                     # Phase 142: Hyper-Discriminator Pivot (Target 91.5%+)
