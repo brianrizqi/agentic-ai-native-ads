@@ -164,10 +164,10 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 135: Precision Engineering (Final Stand)
+                # Phase 136: Reasoning Resurgence (Final Drive)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 4 Ads + 2 News. Threshold balanced at 0.76.
-                RAG_THRESHOLD = 0.76
+                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.78 for precision.
+                RAG_THRESHOLD = 0.78
                 rag_block = ""
                 
                 if self.use_rag and examples:
@@ -190,7 +190,7 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            rag_block += f"- Konten: {str(ex.get('content', ''))[:500]}... -> Label: {label_hint}\n"
+                            rag_block += f"- Konten: {str(ex.get('content', ''))[:800]}... -> Label: {label_hint}\n"
                         rag_block += "\n"
                     else:
                         rag_block = ""
