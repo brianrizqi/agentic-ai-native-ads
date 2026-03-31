@@ -391,6 +391,7 @@ Output (JSON):
 # Zero-Load with sharpened Ad-intent markers.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
+Jangan mengategorikan rilis pemerintah atau berita murni kebijakan sebagai native ads.
 
 Judul: {title}
 Isi: {content}
@@ -416,6 +417,7 @@ Output JSON:
 # Using English instructions to prevent 'multilingual collapse' in small models.
 
 BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
+Do not categorize government releases or public policy news as native ads.
 
 Title: {title}
 Content: {content}
