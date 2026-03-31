@@ -391,7 +391,7 @@ Output (JSON):
 # Zero-Load with sharpened Ad-intent markers.
 
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
-Peringatan: Jangan terkecoh gaya bahasa formal. Native ads sering menggunakan format berita resmi untuk mempromosikan brand atau entitas tertentu.
+Peringatan: Konten newswire (Globe Newswire, PR Newswire, dsb), rilis korporat, MOU, CSR, dan pengumuman partnership adalah Native Ads karena didorong oleh kepentingan entitas tertentu.
 
 Judul: {title}
 Isi: {content}
@@ -399,7 +399,10 @@ Isi: {content}
 {context}
 
 Output (JSON ONLY):
-{{"label": "berita murni/native ads"}}"""
+{{
+  "label": "berita murni/native ads",
+  "alasan": "jelaskan alasan secara singkat"
+}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
