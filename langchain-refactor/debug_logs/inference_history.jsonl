@@ -14620,3 +14620,203 @@
 {"timestamp": "2026-03-31T08:40:50.257172", "model": "../models/qwen35-9b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral, menyajikan informasi tanpa unsur promosi atau branding."}
 {"timestamp": "2026-03-31T08:40:53.380930", "model": "../models/qwen35-9b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral dan informatif, tidak mengandung unsur promosi atau branding produk/brand tertentu."}
 {"timestamp": "2026-03-31T08:40:57.909140", "model": "../models/qwen35-9b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding karena menyebutkan 'TORONTO, Feb. 19, 2026 (GLOBE NEWSWIRE)' yang merupakan rilis resmi perusahaan."}
+{"timestamp": "2026-03-31T08:47:45.808509", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:47:47.967929", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:47:50.105123", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "tidak mengandung ajakan"}
+{"timestamp": "2026-03-31T08:47:52.118432", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:47:54.492468", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:47:57.203656", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:47:59.472189", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:01.576244", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand"}
+{"timestamp": "2026-03-31T08:48:03.987522", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:06.160825", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:48:08.222852", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan promosi/branding produk"}
+{"timestamp": "2026-03-31T08:48:10.370169", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:48:12.590338", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mempromosikan produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:14.707453", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:48:17.138883", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:19.101031", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:48:21.138901", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:48:23.538229", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:25.891614", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:48:27.907339", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:48:29.908548", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk"}
+{"timestamp": "2026-03-31T08:48:31.919586", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:48:34.325448", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:36.500068", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:38.485035", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat tag/branding"}
+{"timestamp": "2026-03-31T08:48:40.464708", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:48:42.650548", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:44.740866", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi atau ajakan"}
+{"timestamp": "2026-03-31T08:48:46.761228", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat tagline merek produk"}
+{"timestamp": "2026-03-31T08:48:48.885599", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:48:50.789174", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "tidak ada ajakan"}
+{"timestamp": "2026-03-31T08:48:53.092418", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:48:55.562850", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "tidak mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:48:57.656042", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi produk"}
+{"timestamp": "2026-03-31T08:48:58.970361", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:49:01.160326", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk tertentu"}
+{"timestamp": "2026-03-31T08:49:03.348420", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:49:05.511373", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:49:07.821653", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:49:10.129585", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat ajakan untuk menghubungi merek"}
+{"timestamp": "2026-03-31T08:49:12.306179", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:49:14.573146", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:17.268913", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung iklan atau promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:19.523076", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:21.778273", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:24.098519", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:49:26.471827", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak pembaca melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:49:28.335449", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan promosi produk"}
+{"timestamp": "2026-03-31T08:49:30.298197", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat iklan produk"}
+{"timestamp": "2026-03-31T08:49:32.520773", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung ajakan untuk produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:34.662914", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:36.709429", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi/branding"}
+{"timestamp": "2026-03-31T08:49:39.114491", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:41.375172", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:43.970705", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat ajakan atau promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:46.084435", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:49:48.139032", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand/produk"}
+{"timestamp": "2026-03-31T08:49:50.234005", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:49:52.460035", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:54.784727", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:49:57.174856", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:49:59.427886", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:01.989838", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung ungkapan persuasi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:03.983256", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:50:06.370608", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:08.826653", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "tidak mengajak untuk membeli produk tertentu"}
+{"timestamp": "2026-03-31T08:50:11.238466", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:13.411157", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:15.633446", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:17.634567", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:50:19.825108", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:50:21.862409", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat ajakan"}
+{"timestamp": "2026-03-31T08:50:23.923647", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:50:26.183682", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:28.340560", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:50:30.331109", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk"}
+{"timestamp": "2026-03-31T08:50:32.879093", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi/branding terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:35.191638", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:50:37.406612", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan referensi ke produk atau merek tertentu"}
+{"timestamp": "2026-03-31T08:50:39.244556", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "branding/produk"}
+{"timestamp": "2026-03-31T08:50:41.633117", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:44.016784", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:46.620975", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi/branding terhadap produk/instansi tertentu"}
+{"timestamp": "2026-03-31T08:50:48.761143", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:51.328554", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi/branding terhadap produk/instansi tertentu"}
+{"timestamp": "2026-03-31T08:50:53.431911", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat ajakan ke pembaca"}
+{"timestamp": "2026-03-31T08:50:55.836635", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:50:57.964577", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk tertentu"}
+{"timestamp": "2026-03-31T08:51:00.188689", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:02.186813", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat tagline/branding"}
+{"timestamp": "2026-03-31T08:51:04.580141", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:06.750396", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat ajakan pada teks"}
+{"timestamp": "2026-03-31T08:51:08.741164", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk"}
+{"timestamp": "2026-03-31T08:51:11.308262", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi/branding terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:13.549514", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:15.741509", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:17.977427", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:20.114037", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:51:22.347154", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:24.220005", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan promosi produk"}
+{"timestamp": "2026-03-31T08:51:26.192118", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:51:28.077454", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan promosi produk"}
+{"timestamp": "2026-03-31T08:51:30.299752", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:32.457822", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:51:34.855300", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:36.976543", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat ajakan pada teks"}
+{"timestamp": "2026-03-31T08:51:38.940510", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:51:41.082249", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat ajakan ke pembaca"}
+{"timestamp": "2026-03-31T08:51:43.056346", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:51:45.095322", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:51:47.218653", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:51:49.278718", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung ajakan atau promosi"}
+{"timestamp": "2026-03-31T08:51:51.638598", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:51:54.072705", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "tidak mengajak untuk membeli produk tertentu"}
+{"timestamp": "2026-03-31T08:51:56.198588", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "identifikasi bukti singkat"}
+{"timestamp": "2026-03-31T08:51:58.539196", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:00.844584", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand/ajakan promosi"}
+{"timestamp": "2026-03-31T08:52:02.149458", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:52:04.530353", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:06.774549", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:52:08.881383", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk tertentu"}
+{"timestamp": "2026-03-31T08:52:10.839698", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:52:12.814128", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk"}
+{"timestamp": "2026-03-31T08:52:14.971982", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand Alfamart"}
+{"timestamp": "2026-03-31T08:52:17.078547", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:52:19.259779", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand nama merek"}
+{"timestamp": "2026-03-31T08:52:21.135843", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan label native ads"}
+{"timestamp": "2026-03-31T08:52:23.273512", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:52:25.657172", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:27.506779", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan brand/produk"}
+{"timestamp": "2026-03-31T08:52:29.630180", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:52:31.871305", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:52:34.225240", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:36.347695", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand nama produk"}
+{"timestamp": "2026-03-31T08:52:38.742810", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:40.831152", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand"}
+{"timestamp": "2026-03-31T08:52:43.198130", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:45.330808", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:52:47.576680", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:49.952128", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:52:52.033048", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi atau ajakan"}
+{"timestamp": "2026-03-31T08:52:54.280078", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat unggahan/ajakan produk/brand"}
+{"timestamp": "2026-03-31T08:52:56.431237", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk tertentu"}
+{"timestamp": "2026-03-31T08:52:58.548820", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "tidak ada ajakan"}
+{"timestamp": "2026-03-31T08:53:00.982418", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:02.287712", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:53:04.682835", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:05.999958", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:53:08.007610", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:53:10.397615", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:12.760493", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:15.062950", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:53:17.287158", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:19.547322", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:53:21.704466", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:24.230525", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi/branding terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:26.197425", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung produk merek"}
+{"timestamp": "2026-03-31T08:53:28.364676", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan promosi produk atau merek tertentu"}
+{"timestamp": "2026-03-31T08:53:30.495118", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:53:32.659236", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:53:34.666448", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:53:36.646714", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:53:38.736368", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi atau ajakan"}
+{"timestamp": "2026-03-31T08:53:40.753217", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:53:43.160614", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:45.352265", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan teks iklan atau promosi produk"}
+{"timestamp": "2026-03-31T08:53:47.584996", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:49.992240", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:52.363572", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:54.601545", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:53:56.714700", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan brand name atau ajakan ke pembaca"}
+{"timestamp": "2026-03-31T08:53:58.892984", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand nama merek"}
+{"timestamp": "2026-03-31T08:54:01.267678", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:03.247183", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata kunci brand"}
+{"timestamp": "2026-03-31T08:54:05.367057", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:54:07.729850", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:10.080948", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:12.291953", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kata/kelompok kata brand/produk"}
+{"timestamp": "2026-03-31T08:54:14.478394", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand nama merek"}
+{"timestamp": "2026-03-31T08:54:16.748021", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak masyarakat melakukan suatu tindakan"}
+{"timestamp": "2026-03-31T08:54:18.752669", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand"}
+{"timestamp": "2026-03-31T08:54:21.152302", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi terhadap produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:23.298492", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:54:25.449887", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand nama merek"}
+{"timestamp": "2026-03-31T08:54:27.697393", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:29.898656", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:32.086415", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:33.899155", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "menampilkan tag branding"}
+{"timestamp": "2026-03-31T08:54:36.039913", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:38.165979", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat kalimat promosi/branding"}
+{"timestamp": "2026-03-31T08:54:40.349602", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mempromosikan produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:42.348718", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "merupakan konten promosi atau branding"}
+{"timestamp": "2026-03-31T08:54:44.627145", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur branding produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:46.689703", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung promosi atau ajakan"}
+{"timestamp": "2026-03-31T08:54:48.970424", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:54:51.299573", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:54:53.282071", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "terdapat brand/label"}
+{"timestamp": "2026-03-31T08:54:55.573905", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "artikel mengajak readers melakukan tindakan tertentu"}
+{"timestamp": "2026-03-31T08:54:57.764717", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung produk/brand tertentu"}
+{"timestamp": "2026-03-31T08:54:59.949309", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "mempromosikan produk/brand tertentu"}
