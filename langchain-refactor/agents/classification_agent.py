@@ -164,19 +164,19 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 122: Checklist Reasoning (Target 90%+)
+                # Phase 116: The Broad Pool (Forcing Target 89%+)
                 # ---------------------------------------------------------------------
-                # Symmetric 2:2 RAG: Force 2 Ads + 2 News.
-                RAG_THRESHOLD = 0.80
+                # Contextual Skew RAG: Force 3 Ads + 2 News.
+                RAG_THRESHOLD = 0.70
                 rag_block = ""
                 
                 if self.use_rag and examples:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # 1. Base Layer (2:2 Symmetric Equilibrium)
-                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
-                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                        # 1. Base Layer (3:3 Master Mix)
+                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                         
                         selected = top_ads + top_news
                         
@@ -189,8 +189,8 @@ class ClassificationAgent:
                         rag_block = "\n[REFERENSI KONTEKS]:\n"
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
-                            label_hint = "NATIVE ADS" if 'native' in label_val else "BERITA MURNI"
-                            rag_block += f"- Konten: {str(ex.get('content', ''))[:160]}... -> [KLASIFIKASI: {label_hint}]\n"
+                            label_hint = "[NATIVE ADS]" if 'native' in label_val else "[BERITA MURNI]"
+                            rag_block += f"- Konten: {str(ex.get('content', ''))[:160]}... -> Label: {label_hint}\n"
                         rag_block += "\n"
                     else:
                         rag_block = ""
