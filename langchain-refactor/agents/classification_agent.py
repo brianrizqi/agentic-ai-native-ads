@@ -164,10 +164,10 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 138: Infrastructure Pivot (Final Stand)
+                # Phase 139: The Precision Scalpel (Final Drive)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.72 for robust retrieval.
-                RAG_THRESHOLD = 0.72
+                # Platinum RAG: Force 4 Ads + 2 News. Threshold at 0.78 for precision balance.
+                RAG_THRESHOLD = 0.78
                 rag_block = ""
                 
                 if self.use_rag and examples:
