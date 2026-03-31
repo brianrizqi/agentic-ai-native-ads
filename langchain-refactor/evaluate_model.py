@@ -193,8 +193,10 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             context = ""
             examples = None
             if retriever:
-                # Phase 53: REMOVED throttles. Let the Agent's Pair-Contrast picker handle the full k.
-                eff_top_k = kwargs.get('top_k', 5)
+                # Phase 116: Force a broad pool (Top-20) to ensure 3:2 Skew can find enough Ads.
+                # This fixes the 85.5% plateau where Ads were starving in a Top-5 pool.
+                eff_top_k = kwargs.get('top_k', 20)
+                if eff_top_k < 20: eff_top_k = 20
                 max_reasoning = None
                 minimalist = False
                 
