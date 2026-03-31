@@ -530,6 +530,8 @@ PERISAI BERITA MURNI (Gunakan hanya jika tidak ada niat marketing):
 - Kebijakan/Instruksi Pemerintah (Presiden/Menteri/Gubernur).
 - Peristiwa Publik: Bencana, Kriminal, Hukum, Olahraga, Krisis Perusahaan (PHK/Rugi).
 
+{context}
+
 Judul: {title}
 Isi: {content}
 
