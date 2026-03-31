@@ -51,7 +51,7 @@ class ClassificationAgent:
         
         # Tier Detection (Phase 66: Radical Reduction for Micro)
         self.model_tier = self._get_model_tier(model_name)
-        self.max_chars = 500 if self.model_tier == 'micro' else 1200
+        self.max_chars = 500 if self.model_tier == 'micro' else 3000
         
         self.tokenizer = None
         self.local_model_ref = None
@@ -164,10 +164,10 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 131: Platinum Comparison (FINAL STAND)
+                # Phase 133: High-Resolution Context (Target 90%+)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 4 Ads + 2 News.
-                RAG_THRESHOLD = 0.78
+                # Platinum RAG: Force 4 Ads + 2 News. Threshold lowered to 0.70 for 100% coverage.
+                RAG_THRESHOLD = 0.70
                 rag_block = ""
                 
                 if self.use_rag and examples:
