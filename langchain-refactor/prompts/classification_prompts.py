@@ -518,28 +518,27 @@ Jawaban (A/B):"""
 # Designed to restore "Berita Murni" recall by adding mandatory news 
 # safeguards for public topics (Sports, Politics, Disaster).
 
-QWEN_ULTIMATE_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
+QWEN_HYPER_DISCRIMINATOR_V2 = """Tugas: Bertindaklah sebagai detektif iklan. Klasifikasikan artikel sebagai "native ads" (iklan terselubung) atau "berita murni" (fakta publik).
 
-PERISAI BERITA MURNI:
-- Kebijakan/Instruksi Presiden, Menteri, Gubernur, atau kunjungan negara.
-- Peristiwa publik: Olahraga, Bencana, Kriminal, Hukum, Ekonomi Makro.
-- Krisis Perusahaan: PHK, Kerugian, Bangkrut, Gugatan Hukum.
-- Seni & Hiburan: Rilis lagu/film/buku tanpa muatan promosi brand berlebihan.
+DETEKSI NIAT MARKETING (Utama):
+Labeli sebagai "native ads" jika Anda menemukan:
+1. Branding: Upaya membangun citra positif/prestasi brand/instansi (MOU, CSR, Penghargaan, Inovasi Produk).
+2. Nada PR: Gaya penulisan yang memuji, mementingkan satu entitas bisnis, atau rilis pers.
+3. Call to Action: Mengajak/mengarahkan pembaca untuk menggunakan layanan/produk secara halus.
 
-KRITERIA NATIVE ADS:
-- Ada upaya eksplisit membangun citra brand/produk (MOU, CSR, Penghargaan).
-- Mengandung bahasa promosi (lebih unggul dari brand lain).
+PERISAI BERITA MURNI (Gunakan hanya jika tidak ada niat marketing):
+- Kebijakan/Instruksi Pemerintah (Presiden/Menteri/Gubernur).
+- Peristiwa Publik: Bencana, Kriminal, Hukum, Olahraga, Krisis Perusahaan (PHK/Rugi).
 
 {context}
 
 Judul: {title}
 Isi: {content}
 
-Berikan alasan analisis di dalam tag <think>...</think>, lalu berikan output JSON di akhir.
-
-Output (JSON):
+Output (JSON ONLY):
 {{
-  "label": "berita murni/native ads"
+  "analysis_keywords": ["3-5 kata indikator promosi/fakta"],
+  "label": "native ads/berita murni"
 }}"""
 
 ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).

@@ -55,6 +55,14 @@ class ClassificationAgent:
         
         self.tokenizer = None
         self.local_model_ref = None
+        
+        # Phase 142/143: Hyper-Discriminator Reset
+        # If Qwen, prioritize deep context window (2200 chars).
+        # Phase 143: Re-enabling RAG for Qwen due to user preference.
+        is_qwen = "qwen" in self.model_name.lower()
+        if is_qwen:
+            self.max_chars = 2200
+        
         self.llm = self._initialize_llm(api_key)
         
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -183,13 +191,16 @@ class ClassificationAgent:
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE,
-                    QWEN_ULTIMATE_TEMPLATE
+                    QWEN_HYPER_DISCRIMINATOR_V2
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
                 # ---------------------------------------------------------------------
-                # Platinum RAG: Force 3 Ads + 3 News (Balanced 50:50). Threshold at 0.75.
-                RAG_THRESHOLD = 0.75
+                # Phase 143: Platinum RAG Reset (Re-enabled for Qwen)
+                # ---------------------------------------------------------------------
+                # Platinum RAG: Force 3 Ads + 3 News (Balanced 50:50).
+                # 0.85 threshold for Qwen (Elite standard), 0.75 for Llama.
+                RAG_THRESHOLD = 0.85 if is_qwen else 0.75
                 rag_block = ""
                 
                 if self.use_rag and examples:
@@ -213,7 +224,9 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            rag_block += f"- Konten: {str(ex.get('content', ''))[:800]}... -> Label: {label_hint}\n"
+                            # Phase 143: Deep Snippet (1250 Chars) for better Qwen context.
+                            char_limit = 1250 if is_qwen else 800
+                            rag_block += f"- Konten: {str(ex.get('content', ''))[:char_limit]}... -> Label: {label_hint}\n"
                         rag_block += "\n"
                     else:
                         rag_block = ""
@@ -227,8 +240,8 @@ class ClassificationAgent:
                 is_qwen = "qwen" in self.model_name.lower()
                 
                 if is_qwen:
-                    # Phase 141: Active Qwen Support (Target 91.5%+)
-                    template = QWEN_ULTIMATE_TEMPLATE
+                    # Phase 142: Hyper-Discriminator Pivot (Target 91.5%+)
+                    template = QWEN_HYPER_DISCRIMINATOR_V2
                     # ChatML format:
                     prefix_force = "<|im_start|>user\n"
                     suffix_force = "<|im_end|>\n<|im_start|>assistant\n"
