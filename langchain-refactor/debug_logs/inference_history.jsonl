@@ -13820,3 +13820,203 @@
 {"timestamp": "2026-03-31T08:02:22.159365", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
 {"timestamp": "2026-03-31T08:02:22.800456", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
 {"timestamp": "2026-03-31T08:02:23.293616", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:12.936925", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:13.720988", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:16.107894", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral atau informatif tanpa promosi produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:09:16.634494", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:17.125371", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:17.760239", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:21.207025", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:21.723518", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:22.369298", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:22.859675", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:23.614750", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:24.351681", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:24.989700", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:25.479361", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:25.969249", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:26.707019", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:27.347490", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:27.987129", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:28.488303", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:29.134006", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:29.621062", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:30.107189", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:30.749782", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:31.382248", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:33.724282", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:09:36.263331", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel mengandung informasi faktual/kebijakan, bukan promosi/branding/PR."}
+{"timestamp": "2026-03-31T08:09:38.972443", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel mengandung informasi faktual/kebijakan dan tidak mengandung unsur promosi/branding/PR."}
+{"timestamp": "2026-03-31T08:09:39.615048", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:40.249091", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:40.978681", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:43.375332", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral atau informatif tanpa promosi produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:09:44.023701", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:44.660261", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:45.149740", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:49.521809", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:50.027229", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:50.527993", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:52.864636", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:09:53.514675", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:54.244773", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:54.981352", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:55.630090", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:56.119614", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:56.857842", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:57.496668", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:09:58.134443", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:00.439242", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral dan informatif tanpa promosi produk tertentu."}
+{"timestamp": "2026-03-31T08:10:01.088781", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:01.725493", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:02.214263", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:04.601309", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk atau merek tertentu."}
+{"timestamp": "2026-03-31T08:10:05.352179", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:05.994844", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:06.484173", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:07.128948", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:09.435605", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral atau informatif tanpa promosi produk tertentu."}
+{"timestamp": "2026-03-31T08:10:11.962315", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral dan menyajikan informasi tanpa promosi produk atau brand tertentu."}
+{"timestamp": "2026-03-31T08:10:14.295008", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:14.794626", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:15.443320", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:15.929931", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:18.299322", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:18.947666", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:21.296299", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:21.948940", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:24.179973", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk tertentu."}
+{"timestamp": "2026-03-31T08:10:26.542658", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:27.199702", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:27.852871", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:30.193525", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:30.949741", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:32.792018", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR"}
+{"timestamp": "2026-03-31T08:10:33.537148", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:34.175052", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:36.508622", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:37.007067", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:37.641237", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:38.275941", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:38.910492", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:41.261440", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:41.767203", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:42.402030", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:43.036548", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:43.523154", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:44.164875", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:45.191748", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:45.679031", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:46.311795", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:46.948969", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:49.279002", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:49.931228", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:50.427101", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:50.915588", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:51.549842", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:52.186369", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:52.673768", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:53.323303", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:55.671179", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:10:56.175545", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:56.833580", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:10:59.204412", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:11:18.951823", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:19.474632", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:21.635465", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi atau branding terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:11:22.139797", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:22.627572", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:24.959607", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:11:25.603140", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:28.126068", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel mengandung informasi faktual/kebijakan, bukan promosi/branding/PR."}
+{"timestamp": "2026-03-31T08:11:28.777341", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:30.563886", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung unsur promosi/branding/PR"}
+{"timestamp": "2026-03-31T08:11:31.200503", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:31.838743", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:32.474815", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:33.208560", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:33.844071", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:34.485462", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:34.973532", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:37.708119", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel mengandung informasi atau fakta tanpa promosi atau iklan terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:11:38.499421", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:39.004203", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:39.492302", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:40.130488", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:40.619827", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:41.357602", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:41.994896", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:42.634981", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:43.124121", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:43.609724", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:11:44.253806", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:01.196857", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:01.846832", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:02.338709", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:02.825255", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:03.311497", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:05.702954", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk atau merek tertentu."}
+{"timestamp": "2026-03-31T08:12:06.351666", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:07.083520", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:09.668614", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel mengandung informasi atau fakta tanpa promosi atau iklan produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:12:10.313581", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:11.346041", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:13.719227", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral dan informatif tanpa promosi produk atau brand tertentu."}
+{"timestamp": "2026-03-31T08:12:14.369232", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:16.754956", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral dan informatif tanpa promosi produk atau brand tertentu."}
+{"timestamp": "2026-03-31T08:12:17.256145", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:19.587666", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:12:20.087446", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:20.576689", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:21.212454", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:21.700829", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:22.190410", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:22.829834", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:23.320964", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:23.957604", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:24.594271", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:25.229975", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:25.718111", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:26.352791", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:27.086877", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:29.540497", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel mengandung informasi faktual/kebijakan tanpa promosi/branding/PR."}
+{"timestamp": "2026-03-31T08:12:30.181823", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:32.516005", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:12:33.015558", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:35.353663", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:12:35.992579", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:37.760936", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Mengandung unsur promosi/branding/PR"}
+{"timestamp": "2026-03-31T08:12:38.250672", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:38.738872", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:39.380932", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:12:39.872258", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:05.162925", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:07.777835", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral dan informatif tanpa promosi produk tertentu."}
+{"timestamp": "2026-03-31T08:13:08.422594", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:11.865420", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:12.613154", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:13.102529", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:13.591180", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:14.324846", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:16.672242", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:13:17.326053", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:19.869166", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel bersifat netral dan menyajikan informasi tanpa promosi produk atau brand tertentu."}
+{"timestamp": "2026-03-31T08:13:20.523865", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:21.014286", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:21.508453", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:21.998403", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:22.487094", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:23.122221", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:23.613037", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:24.250174", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:24.983896", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:25.621279", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:27.944765", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
+{"timestamp": "2026-03-31T08:13:28.462804", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:29.102854", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:29.599740", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:30.241613", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:32.716949", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": "Artikel mengandung informasi faktual/kebijakan tanpa promosi/branding/PR"}
+{"timestamp": "2026-03-31T08:13:33.363738", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:34.018032", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "berita murni", "alasan": ""}
+{"timestamp": "2026-03-31T08:13:36.339925", "model": "../models/llama3-1-8b-native-ads-en_merged_16bit/", "title": "", "label": "native ads", "alasan": "Artikel mengandung unsur promosi/branding/PR terhadap produk/brand tertentu."}
