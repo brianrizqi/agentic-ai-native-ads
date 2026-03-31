@@ -56,11 +56,11 @@ class ClassificationAgent:
         self.tokenizer = None
         self.local_model_ref = None
         
-        # Phase 142/143: Hyper-Discriminator Reset
-        # If Qwen, prioritize deep context window (2200 chars).
-        # Phase 143: Re-enabling RAG for Qwen due to user preference.
+        # Phase 142/143/145: Hyper-Discriminator Reset
+        # Phase 145: NUCLEAR RESET. Disabling RAG for Qwen to restore 91% baseline.
         is_qwen = "qwen" in self.model_name.lower()
         if is_qwen:
+            self.use_rag = False
             self.max_chars = 2200
         
         self.llm = self._initialize_llm(api_key)
@@ -191,7 +191,7 @@ class ClassificationAgent:
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE,
-                    QWEN_HYPER_DISCRIMINATOR_V2
+                    QWEN_GOLD_MINIMALIST_V3
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
@@ -246,11 +246,11 @@ class ClassificationAgent:
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
                 if is_qwen:
-                    # Phase 142: Hyper-Discriminator Pivot (Target 91.5%+)
-                    template = QWEN_HYPER_DISCRIMINATOR_V2
-                    # ChatML format:
-                    prefix_force = "<|im_start|>user\n"
-                    suffix_force = "<|im_end|>\n<|im_start|>assistant\n"
+                    # Phase 145: Nuclear Minimalist Restoration (Target 91.5%+)
+                    # Use English Meta-Instructions for better instruction following.
+                    template = QWEN_GOLD_MINIMALIST_V3
+                    prefix_force = "" 
+                    suffix_force = ""
                 elif self.model_tier == 'micro':
                     # Heuristics for micro models if specified
                     template = MICRO_HEURISTIC_PROMPT
@@ -419,7 +419,8 @@ class ClassificationAgent:
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float: 
         """Phase 81: Task-Aware Perplexity (Corrected for Zero-Generation)"""
-        if self.provider == "local" and self.local_model_ref and self.tokenizer:
+        # Phase 141/145 Check: Only manual for micro or specific local needs
+        if self.provider == "local" and self.local_model_ref and self.model_tier == 'micro':
             try:
                 import torch
                 
