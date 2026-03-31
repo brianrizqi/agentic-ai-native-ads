@@ -398,7 +398,10 @@ Isi: {content}
 {context}
 
 Output (JSON ONLY):
-{{"label": "berita murni/native ads"}}"""
+{{
+  "keywords": ["3 kata/frasa penentu"],
+  "label": "berita murni/native ads"
+}}"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
@@ -423,7 +426,10 @@ Content: {content}
 {context}
 
 Output (JSON ONLY):
-{{"label": "berita murni/native ads"}}"""
+{{
+  "keywords": ["3 decisive words/phrases"],
+  "label": "berita murni/native ads"
+}}"""
 
 BILINGUAL_MICRO_TEMPLATE = """Task: Classify as "native ads" or "berita murni".
 
