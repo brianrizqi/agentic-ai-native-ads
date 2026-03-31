@@ -164,30 +164,27 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 112: The Stoic Minimalist (Absolute Balance)
+                # Phase 113: The Platinum Equilibrium (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Diversity Guard: TOP-5 with at least 1:1 class-presence protection.
-                RAG_THRESHOLD = 0.80
+                # Hybrid-Weighted RAG: Force 2 Ads + 1 News, then natural Top-K.
+                RAG_THRESHOLD = 0.82
                 rag_block = ""
                 
                 if self.use_rag and examples:
-                    # Candidates within threshold
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # 1. Force pick top 1 of each class if available
-                        forced_ad = next((ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()), None)
-                        forced_news = next((ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()), None)
+                        # 1. Base Layer (Ensure presence)
+                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         
-                        selected = []
-                        if forced_ad: selected.append(forced_ad)
-                        if forced_news: selected.append(forced_news)
+                        selected = top_ads + top_news
                         
-                        # 2. Fill the rest from the top remaining candidates (up to 5 total)
-                        remaining = [ex for ex in candidates if ex not in selected]
+                        # 2. Natural Fill (Fill to 5 slots from highest remaining)
+                        remaining = sorted([ex for ex in candidates if ex not in selected], key=lambda x: x.get('similarity_score', 0), reverse=True)
                         selected += remaining[:(5 - len(selected))]
                         
-                        # Sort by similarity score for logical flow
+                        # 3. Canonical Sort (by similarity for Llama logical flow)
                         selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
                     else:
                         selected = []
