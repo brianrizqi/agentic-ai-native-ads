@@ -393,12 +393,13 @@ Output (JSON):
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 Perisai Berita Murni (PENTING):
-- Tokoh Publik/Politik: Instruksi Presiden/Menteri, kunjungan dinas, atau kebijakan negara adalah "berita murni".
+- Tokoh Publik/Negara: Instruksi Presiden, kunjungan Menteri, atau kebijakan negara adalah "berita murni".
 - Peristiwa Umum: Bencana alam, kriminal, hukum, dan hasil pertandingan olahraga adalah "berita murni".
-- PHK/Krisis: Berita tentang krisis perusahaan (PHK, kerugian, gugatan hukum) adalah "berita murni".
+- PHK/Krisis: Berita tentang krisis perusahaan (PHK besar-besaran, kerugian, gugatan hukum) adalah "berita murni".
+- Seni/Musik: Pengumuman rilis lagu, album, atau konser tanpa nada pemujaan brand adalah "berita murni".
 
-Kriteria Native Ads:
-LOKALKAN label "native ads" HANYA jika artikel bertujuan mempromosikan keunggulan, citra positif, atau produk/brand secara mencolok (branding). MOU, CSR, dan rilis penghargaan instansi biasanya adalah native ads.
+Aturan Emas:
+Hanya labeli "native ads" jika artikel memiliki niat mempromosikan keunggulan, citra positif, atau produk brand (Branding). Fokuslah pada keseimbangan informasi.
 
 Judul: {title}
 Isi: {content}
