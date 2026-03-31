@@ -541,6 +541,21 @@ Output (JSON ONLY):
   "label": "native ads/berita murni"
 }}"""
 
+QWEN_GOLD_MINIMALIST_V3 = """Task: Classify the Indonesian article below into one of two categories: "native ads" or "berita murni". 
+
+Criteria:
+- "native ads": Content with promotional intent, PR releases, or corporate branding (MOU, Awards, CSR).
+- "berita murni": Pure objective news about public events, disasters, or government policy.
+
+Title: {title}
+Content: {content}
+
+Output (Return JSON ONLY):
+{{
+  "reason": "one sentence explanation",
+  "label": "native ads/berita murni"
+}}"""
+
 ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 {context}
