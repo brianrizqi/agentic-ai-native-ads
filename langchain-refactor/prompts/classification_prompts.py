@@ -390,7 +390,7 @@ Output (JSON):
 # -----------------------------------------------------------------------------
 # Zero-Load with sharpened Ad-intent markers.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/CSR/MOU/Awards).
 
 {context}
 
@@ -415,7 +415,7 @@ Output JSON:
 # -----------------------------------------------------------------------------
 # Using English instructions to prevent 'multilingual collapse' in small models.
 
-BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
+BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/CSR/MOU/Awards).
 
 {context}
 
