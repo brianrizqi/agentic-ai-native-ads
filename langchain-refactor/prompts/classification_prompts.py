@@ -518,17 +518,17 @@ Jawaban (A/B):"""
 # Designed to restore "Berita Murni" recall by adding mandatory news 
 # safeguards for public topics (Sports, Politics, Disaster).
 
-QWEN_HYPER_DISCRIMINATOR_V2 = """Tugas: Bertindaklah sebagai detektif iklan. Klasifikasikan artikel sebagai "native ads" (iklan terselubung) atau "berita murni" (fakta publik).
+QWEN_HYPER_DISCRIMINATOR_V2 = """Tugas: Bertindaklah sebagai detektif iklan profesional. Ekstraksi niat promosi terselubung di balik bahasa berita yang halus.
 
-DETEKSI NIAT MARKETING (Utama):
-Labeli sebagai "native ads" jika Anda menemukan:
-1. Branding: Upaya membangun citra positif/prestasi brand/instansi (MOU, CSR, Penghargaan, Inovasi Produk).
-2. Nada PR: Gaya penulisan yang memuji, mementingkan satu entitas bisnis, atau rilis pers.
-3. Call to Action: Mengajak/mengarahkan pembaca untuk menggunakan layanan/produk secara halus.
+MODE DETEKTIF (Wajib Agresif):
+Klasifikasikan sebagai "native ads" jika ada SATU PUN indikasi berikut:
+1. Citra Positif: Menyoroti prestasi, penghargaan, inovasi, atau kegiatan CSR (tanggung jawab sosial) sebuah perusahaan/instansi.
+2. Nama Brand Berulang: Nama perusahaan atau produk disebut lebih dari 2 kali tanpa ada unsur urgensi publik yang mendasar.
+3. Kerjasama/MOU: Pelaporan tentang peresmian, kerjasama, atau nota kesepahaman antar lembaga/perusahaan.
+4. Nada Rilis Pers: Kalimat yang memuji, optimis, atau menggunakan kutipan pejabat perusahaan tanpa kritik.
 
-PERISAI BERITA MURNI (Gunakan hanya jika tidak ada niat marketing):
-- Kebijakan/Instruksi Pemerintah (Presiden/Menteri/Gubernur).
-- Peristiwa Publik: Bencana, Kriminal, Hukum, Olahraga, Krisis Perusahaan (PHK/Rugi).
+PERISAI BERITA MURNI (Gunakan HANYA jika bersifat darurat/netral total):
+- Kebijakan makro, Bencana alam, Kriminalitas murni, Hasil pertandingan olahraga, Krisis/Kerugian perusahaan (PHK/Rugi).
 
 {context}
 
@@ -537,7 +537,7 @@ Isi: {content}
 
 Output (JSON ONLY):
 {{
-  "analysis_keywords": ["3-5 kata indikator promosi/fakta"],
+  "analysis_keywords": ["Minimal 3 kata kunci indikator marketing"],
   "label": "native ads/berita murni"
 }}"""
 

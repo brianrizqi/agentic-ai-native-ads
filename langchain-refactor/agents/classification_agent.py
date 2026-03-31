@@ -136,10 +136,10 @@ class ClassificationAgent:
                     # Qwen specific generation params (Best for 9B/14B)
                     generation_params = {
                         "max_new_tokens": 1024 if self.use_rag else 512,
-                        "temperature": 0.1, # Slight temperature for better reasoning flow
+                        "temperature": 0.0, 
                         "top_p": 0.9,
                         "repetition_penalty": 1.05,
-                        "do_sample": True,
+                        "do_sample": False,
                         "pad_token_id": tokenizer.pad_token_id,
                         "eos_token_id": tokenizer.eos_token_id
                     }
@@ -210,9 +210,14 @@ class ClassificationAgent:
                     
                     if candidates:
                         # 1. Base Layer (3:3 Balanced Mix)
-                        # Phase 140: Eliminating Ads bias by using a 50:50 example ratio.
-                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
-                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                        # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
+                        # Phase 140/143 had 3:3 balanced mix, which caused news bias.
+                        if is_qwen:
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
+                            top_news = [] # Force zero news to break news bias
+                        else:
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                         
                         selected = top_ads + top_news
                         
@@ -389,7 +394,13 @@ class ClassificationAgent:
                 try:
                     json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
                     data = json.loads(json_str_clean.replace('\n', ' '))
-                    alasan = data.get('alasan', data.get('reason', data.get('reasoning', alasan)))
+                    # Phase 144: Unified reasoning extraction
+                    alasan = data.get('analysis_keywords', 
+                                     data.get('alasan', 
+                                     data.get('reason', 
+                                     data.get('reasoning', alasan))))
+                    if isinstance(alasan, list): alasan = ", ".join(alasan)
+                    
                     raw_label = str(data.get('label', data.get('kelas', data.get('target', '')))).lower()
                     # Phase 85: Removed "a" keyword landmine (False Positive risk in ID "Berita murni")
                     if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "advertorial"]): 
