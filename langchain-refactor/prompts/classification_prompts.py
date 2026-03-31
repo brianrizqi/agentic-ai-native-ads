@@ -390,11 +390,7 @@ Output (JSON):
 # -----------------------------------------------------------------------------
 # Zero-Load with sharpened Ad-intent markers.
 
-ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
-
-[STANDAR]:
-- NATIVE ADS: Branding produk/PT, MOU/Kerjasama, Berita Penghargaan (Awards), rilis PR bisnis.
-- BERITA MURNI: Fakta kebijakan negara, diplomasi, krisis hukum, ekonomi makro, atau rilis Pemerintah/Lembaga Negara.
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 {context}
 
@@ -419,11 +415,7 @@ Output JSON:
 # -----------------------------------------------------------------------------
 # Using English instructions to prevent 'multilingual collapse' in small models.
 
-BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" or "native ads".
-
-[STANDARDS]:
-- NATIVE ADS: Product/Brand promotion, MOU/Partnership, Awards news, or Corporate PR.
-- BERITA MURNI: Official state policy, diplomacy, legal/crime facts, macro-economics, or Government/State announcements.
+BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
 
 {context}
 
@@ -514,11 +506,7 @@ Jawaban (A/B):"""
 # Designed to restore "Berita Murni" recall by adding mandatory news 
 # safeguards for public topics (Sports, Politics, Disaster).
 
-ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" atau "native ads".
-
-[STANDAR]:
-- NATIVE ADS: Branding produk/PT, MOU/Kerjasama, Berita Penghargaan (Awards), rilis PR bisnis.
-- BERITA MURNI: Fakta kebijakan negara, diplomasi, krisis hukum, ekonomi makro, atau rilis Pemerintah/Lembaga Negara.
+ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 {context}
 

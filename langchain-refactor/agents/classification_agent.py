@@ -164,9 +164,9 @@ class ClassificationAgent:
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE
                 )
                 import torch
-                # Phase 114: The Perfect Equilibrium (Target 89%+)
+                # Phase 115: Pure Context Breakthrough (Target 89%+)
                 # ---------------------------------------------------------------------
-                # Hybrid-Weighted RAG: Force 1 Ad + 1 News, then natural Top-K fill.
+                # Contextual Skew RAG: Force 3 Ads + 2 News.
                 RAG_THRESHOLD = 0.82
                 rag_block = ""
                 
@@ -174,17 +174,13 @@ class ClassificationAgent:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # 1. Base Layer (Ensure presence)
-                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
-                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                        # 1. Base Layer (3:2)
+                        top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                        top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                         
                         selected = top_ads + top_news
                         
-                        # 2. Natural Fill (Fill to 5 slots from highest remaining)
-                        remaining = sorted([ex for ex in candidates if ex not in selected], key=lambda x: x.get('similarity_score', 0), reverse=True)
-                        selected += remaining[:(5 - len(selected))]
-                        
-                        # 3. Canonical Sort (by similarity for Llama logical flow)
+                        # 2. Canonical Sort (by similarity for Llama logical flow)
                         selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
                     else:
                         selected = []
