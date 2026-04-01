@@ -1,0 +1,70 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 20,
+    "good_count": 18,
+    "borderline_count": 0,
+    "bad_count": 2,
+    "avg_judge_score": 3.9
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that accurately identifies the absence of promotional content, aligning with the ground truth.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Petenis Spanyol Rafael Nadal menambah koleksi gelar juara grand slam usai memenangi turnamen French Open 2022. Petenis berusia 36 tahun ini memberi pesan yang jelas kepada para pes",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads, bukan berita korporasi/prestasi, dan tidak terkait musibah.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided strong reasoning that effectively supports the label, identifying the absence of promotional content and focusing on a public inquiry about CPNS.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "KOMPAS.com - Warganet di media sosial ramai menanyakan soal pengadaan calon pegawai negeri sipil (CPNS) 2022. Salah satunya akun ini, yang menanyakan apakah 2022 ada seleksi CPNS melalui jalur umum. \"",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads, bukan laporan keuangan/prestasi korporat, dan tidak membahas musibah/bencana.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, and the reasoning provided is logical as it highlights the promotional aspect of mentioning a specific brand and its achievements. However, the reasoning could be more nuanced in distinguishing between promotional content and informative news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– PT Bank Negara Indonesia (Persero) Tbk. atauBNI(kode saham: BBNI) melanjutkan pertumbuhan kinerja kredit usaha rakyat (KUR) yang progresif tahun ini. Hal ini sejalan dengan tren pemulihan ekonom",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi/iklan karena menyebutkan brand/korporasi dan prestasi.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' despite it discussing a financial distribution, which is a clear indicator of native advertising. The reasoning fails to recognize the financial context and the corporate nature of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "TORONTO, Feb. 19, 2026 (GLOBE NEWSWIRE) — Canadian Life Companies Split Corp. (the “Company”) declares its monthly distribution of $0.10000 for each Class A share ($1.20 annualized) and $0.05833 for e",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel tidak menyebutkan brand/BUMN/instansi tertentu, tidak mengandung kata keuangan/prestasi seperti 'dividen', 'laba bersih', dll., dan juga tidak menyebut musibah. Namun karena tidak ada unsur korporat/brand, maka bukan native ads.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have identified it as 'native ads.' The reasoning provided does not adequately address the promotional nature of the content, which describes a unique dining place, indicating an advertisement rather than pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Kampung Mataraman yang terletak di Desa Panggungharjo, Kecamatan Sewon, Kabupaten Bantul, Daerah Istimewa Yogyakarta (DIY) bukan kampung tempat tinggal warga, melainkan sebuah tempat makan unik yang j",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads, tidak menyebutkan brand/BUMN/instansi, tidak mengandung kata-kata keuangan/prestasi, dan tidak mengandung kata-kata musibah.",
+      "confidence": 0.95
+    }
+  ]
+}
