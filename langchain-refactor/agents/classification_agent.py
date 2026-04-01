@@ -259,6 +259,12 @@ If the content below mentions a Private Company and contains ANY of these, you M
 - Kerjasama: MOU, Pengumuman peresmian, Kolaborasi strategis.
 - Finansial: Dividen, Profit, Laporan Kinerja Saham.
 
+PERISAI BERITA MURNI (PRIORITAS TINGGI):
+Jika konten berisi hal berikut, labeli "berita murni":
+- Kebijakan Negara: Instruksi Presiden/Menteri, kunjungan kenegaraan.
+- Peristiwa Umum: Bencana alam, kriminal umum, hukum, hasil olahraga.
+- Krisis/PHK: Berita kerugian perusahaan, PHK besar-besaran, atau krisis hukum.
+
 Judul: {title}
 Isi: {content}
 
@@ -299,7 +305,8 @@ JAWABAN: (A) native ads / (B) berita murni
                     content_processed = content_clean[:max_chars]
 
                 user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block).strip()
-                full_prompt = f"{prefix_force}{user_msg}{suffix_force}"
+                # Phase 161: Vertical Separation Fix (\n\n)
+                full_prompt = f"{prefix_force}\n\n{user_msg}{suffix_force}"
                 
                 # Phase 141/153: Prompt Dispatcher
                 if is_qwen:
@@ -378,7 +385,7 @@ JAWABAN: (A) native ads / (B) berita murni
                 raw_response = self.chain.invoke(input_data)
             
             # Phase 63: RESTORE AUTONOMY (No overrides)
-            result = self._parse_response(raw_response, content=content, title=title)
+            result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
             result['metadata'] = {'model': self.model_name, 'raw_response': raw_response}
             self._log_inference(title, content, result)
             return result
@@ -396,9 +403,12 @@ JAWABAN: (A) native ads / (B) berita murni
                 f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
         except: pass
 
-    def _parse_response(self, response: str, content: str = "", title: str = "") -> Dict[str, Any]:
+    def _parse_response(self, response: str, content: str = "", title: str = "", prefix_forced: str = "") -> Dict[str, Any]:
         """Phase 66: Robust A/B and JSON Parser."""
         try:
+            # Stage 16: Handle Prefix-Forced Labels
+            forced_label = "native ads" if "A" in prefix_forced.upper() else "berita murni" if "B" in prefix_forced.upper() else None
+            
             resp_clean = response.strip()
             alasan = "Tidak ditemukan alasan (mode MCQ)."
             label = "berita murni"
@@ -500,6 +510,10 @@ JAWABAN: (A) native ads / (B) berita murni
                 elif any(kw in low_resp for kw in ["berita murni", "informasi netral"]):
                     label = "berita murni"
 
+            # Stage 16: Final forced label fallback
+            if forced_label and label == "berita murni" and len(resp_clean) < 500:
+                 label = forced_label
+            
             return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan else "Tidak ditemukan analisis eksplisit."}
         except Exception as e:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
