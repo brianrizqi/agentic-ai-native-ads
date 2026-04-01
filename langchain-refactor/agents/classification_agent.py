@@ -212,9 +212,10 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Restoration: 3 Ads + 2 News for better contrast
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
-                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                            # Restoration: Hyper-Aggressive Skew (5 Ads, 0 News)
+                            # This forces the model to recognize 'Ad-ness' manually by example.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
+                            top_news = [] # Force zero news to break intrinsic news bias
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -289,11 +290,11 @@ Output harus berupa JSON dengan format:
                     messages = [
                         {
                             "role": "system", 
-                            "content": "Anda adalah Redaktur Eksekutif Media Indonesia yang sangat teliti. Tugas Anda adalah membedakan antara 'Berita Murni' dan 'Native Ads'.\n\n"
-                                       "PEDOMAN EDITORIAL:\n"
-                                       "1. NATIVE ADS (ADVERTORIAL): Memiliki nada promotif, terlalu memuji produk/brand, menyertakan Call to Action (CTA), atau ditulis oleh pihak sponsor.\n"
-                                       "2. BERITA MURNI: Informasi faktual, seimbang, objektif, dan menjaga jarak kritis terhadap subjek yang diberitakan.\n\n"
-                                       "Fokuslah pada NIAT (INTENT) dari tulisan tersebut."
+                            "content": "Anda adalah Senior Media Auditor yang bertugas membongkar praktik 'Stealth Marketing' dan 'Native Advertising' terselubung.\n\n"
+                                       "KRITERIA PENILAIAN KRITIS:\n"
+                                       "1. NATIVE ADS: Artikel yang fokus pada satu brand/produk, rilis pers perusahaan, profil CEO/Perusahaan yang memuji, atau artikel dengan gaya bahasa 'promotional-soft'.\n"
+                                       "2. BERITA MURNI: Informasi faktual, seimbang (multi-stakeholder), objektif, dan tidak memihak satu entitas komersial secara berlebihan.\n\n"
+                                       "Ingat: Banyak Native Ads dibungkus dengan gaya berita. Jika niatnya adalah membangun citra positif brand, itu adalah NATIVE ADS."
                         },
                         {"role": "user", "content": user_msg}
                     ]
