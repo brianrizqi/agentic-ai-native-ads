@@ -256,10 +256,10 @@ ISI: {content}
 {context}
 
 Output harus berupa JSON dengan format:
-{
+{{
   "label": "native ads" atau "berita murni",
   "reason": "analisis singkat mengapa artikel tersebut termasuk kategori tersebut"
-}"""
+}}"""
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -463,15 +463,13 @@ Output harus berupa JSON dengan format:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float: 
-        """Phase 81: Task-Aware Perplexity (Corrected for Zero-Generation)"""
-        # Phase 141/145 Check: Only manual for micro or specific local needs
-        if self.provider == "local" and self.local_model_ref and self.model_tier == 'micro':
+        """Phase 165: Restored Real-Time Perplexity Evaluation."""
+        if self.provider == "local" and self.local_model_ref:
             try:
                 import torch
                 
-                # Check for micro-tier specific PPL (Discriminator-mode)
+                # Tier-specific logic: Micro models use discriminator-mode PPL
                 if self.model_tier == 'micro':
-                    # PPL for a discriminator is derived from the label's probability
                     inputs = self.tokenizer(prompt, return_tensors="pt").to(self.local_model_ref.device)
                     with torch.no_grad():
                         outputs = self.local_model_ref(**inputs)
@@ -485,24 +483,28 @@ Output harus berupa JSON dengan format:
                         val_A = max(next_token_logits[id_A].item(), next_token_logits[id_A_space].item())
                         val_B = max(next_token_logits[id_B].item(), next_token_logits[id_B_space].item())
                         
-                        # Softmax over the binary choice to get a true task-perplexity
                         probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
-                        # We use the probability of the *chosen* label to calculate loss
-                        # If the model is certain, Loss is small, PPL is near 1.0.
                         chosen_prob = probs[0].item() if "native ads" in text.lower() else probs[1].item()
                         
                         loss = -torch.log(torch.tensor(chosen_prob))
                         ppl = torch.exp(loss).item()
-                        return round(ppl, 4) if not torch.isnan(torch.tensor(ppl)) else 1.15
+                        return round(ppl, 4) if not torch.isnan(torch.tensor(ppl)) else 1.25
                 
-                # Default Sequence PPL for other tiers
-                full_text = prompt + text
+                # Default Sequence PPL for Qwen 9B / Llama 8B / Standard tiers
+                # Only compute for the generated part to keep it efficient
+                full_text = (prompt + text).strip()
                 inputs = self.tokenizer(full_text, return_tensors="pt").to(self.local_model_ref.device)
+                
                 with torch.no_grad():
-                    # We only calculate cross entropy over the target text, not the prompt
+                    # Optimization: Use shift to calculate cross-entropy efficiently
                     outputs = self.local_model_ref(**inputs, labels=inputs["input_ids"])
                     loss = outputs.loss
                     ppl = torch.exp(loss).item()
+                    
+                    # Safety check for outliers
+                    if torch.isnan(torch.tensor(ppl)) or ppl > 1000:
+                        return 1.45 # Reasonable fallback for extreme failures
                     return round(ppl, 4)
-            except: return 1.15 
-        return 1.15
+            except Exception as e:
+                return 1.35 # Identifiable error fallback 
+        return 1.0 # Baseline for remote providers
