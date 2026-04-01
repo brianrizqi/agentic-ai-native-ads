@@ -259,23 +259,30 @@ If the content below mentions a Private Company and contains ANY of these, you M
 - Kerjasama: MOU, Pengumuman peresmian, Kolaborasi strategis.
 - Finansial: Dividen, Profit, Laporan Kinerja Saham.
 
-PERISAI BERITA MURNI (PRIORITAS TINGGI):
-Jika konten berisi hal berikut, labeli "berita murni":
-- Kebijakan Negara: Instruksi Presiden/Menteri, kunjungan kenegaraan.
-- Peristiwa Umum: Bencana alam, kriminal umum, hukum, hasil olahraga.
-- Krisis/PHK: Berita kerugian perusahaan, PHK besar-besaran, atau krisis hukum.
+PERISAI BERITA MURNI (KHUSUS NON-KOMERSIAL):
+Hanya labeli "berita murni" jika konten berisi:
+- Bencana/Kriminal: Musibah alam, kecelakaan, kejahatan umum (Non-korporasi).
+- Kebijakan Negara Murni: Pengumuman hari libur, jadwal pemilu, hukum pidana.
+
+⚠️ BUKAN BERITA MURNI (VETO):
+Jika PT Bank (BNI, BRI, dsb), Telkom, Pertamina, atau Instansi merilis hal berikut, TETAP labeli "native ads":
+- Prestasi/Laporan KUR: Pertumbuhan kredit, dividen, kinerja laba.
+- Penghargaan: Meraih Bronze/Silver/Gold award, apresiasi internasional.
+- Event Promosi: Pengenalan produk ke kancah global (Expo Dubai, dsb).
+- CSR Ber-merek: Bakti sosial yang sangat menonjolkan nama brand.
 
 Judul: {title}
 Isi: {content}
 
-Format Respon (Wajib DIAWALI dengan JAWABAN):
-JAWABAN: (A) native ads / (B) berita murni
+Format Respon (JSON Berbasis Bukti):
 {{
-  "reason": "1 Kalimat: Bukti branding/PR/Penanda fisik spesifik",
+  "reasoning": "Satu bukti konkret kenapa ini branding/PR (sebutkan nama brand/instansi)",
   "label": "native ads/berita murni"
-}}"""
-                    # Phase 149: Raw Completion (No ChatML) for 9B SFT alignment
-                    prefix_force = "JAWABAN: (A) native ads" 
+}}
+
+JAWABAN: """
+                    # Step 172: Neutral Start for Honest COT
+                    prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
                     # Heuristics for micro models if specified
@@ -305,8 +312,8 @@ JAWABAN: (A) native ads / (B) berita murni
                     content_processed = content_clean[:max_chars]
 
                 user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block).strip()
-                # Phase 161: Vertical Separation Fix (\n\n)
-                full_prompt = f"{prefix_force}\n\n{user_msg}{suffix_force}"
+                # Phase 175: Clean Structure (No forced prefix)
+                full_prompt = user_msg
                 
                 # Phase 141/153: Prompt Dispatcher
                 if is_qwen:
@@ -431,7 +438,7 @@ JAWABAN: (A) native ads / (B) berita murni
                 reason_match = re.search(r'ALASAN:\s*(.*)', resp_clean, re.IGNORECASE | re.DOTALL)
                 if reason_match:
                     alasan = reason_match.group(1).strip()
-                return {'label': label, 'confidence': 0.99, 'reasoning': alasan}
+                return {'label': label, 'confidence': 0.99, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else "Model memicu pola JAWABAN/VONIS langsung."}
 
             # 2. Label-First Parsing (Legacy support)
             mcq_direct = re.search(r'JAWABAN:\s*([AB])', resp_clean, re.IGNORECASE)
@@ -441,7 +448,7 @@ JAWABAN: (A) native ads / (B) berita murni
                 reason_match = re.search(r'ALASAN:\s*(.*)', resp_clean, re.IGNORECASE | re.DOTALL)
                 if reason_match:
                     alasan = reason_match.group(1).strip()
-                return {'label': label, 'confidence': 0.98, 'reasoning': alasan}
+                return {'label': label, 'confidence': 0.98, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else "Model memicu pola JAWABAN/VONIS langsung."}
 
             # 3. Flexible Keyword scan (A/B or label names in first 100 chars)
             # Match (A), [A], A., or JAWABAN: A
@@ -449,7 +456,7 @@ JAWABAN: (A) native ads / (B) berita murni
             if choice_match:
                 choice = choice_match.group(1).upper()
                 label = "native ads" if choice == 'A' else "berita murni"
-                return {'label': label, 'confidence': 0.98, 'reasoning': "Pencocokan Pola MCQ (Tahap 15)."}
+                return {'label': label, 'confidence': 0.98, 'reasoning': "Pola MCQ terdeteksi (Stage 17)."}
 
             if re.search(r'\b(NATIVE\s*AD[S]?|IKLAN|PROMOSI|ADVERTORIAL)\b', resp_clean[:100], re.IGNORECASE):
                 label = "native ads"
@@ -510,11 +517,11 @@ JAWABAN: (A) native ads / (B) berita murni
                 elif any(kw in low_resp for kw in ["berita murni", "informasi netral"]):
                     label = "berita murni"
 
-            # Stage 16: Final forced label fallback
-            if forced_label and label == "berita murni" and len(resp_clean) < 500:
+            # Stage 17: Final forced label fallback (Reduced weight)
+            if forced_label and label == "berita murni" and len(resp_clean) < 300:
                  label = forced_label
             
-            return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan else "Tidak ditemukan analisis eksplisit."}
+            return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan and alasan != "Tidak ditemukan alasan (mode MCQ)." else "Analisis inferensi otomatis."}
         except Exception as e:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
