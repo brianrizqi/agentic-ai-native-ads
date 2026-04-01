@@ -381,67 +381,73 @@ class ClassificationAgent:
                 label = "native ads" if choice == 'A' else "berita murni"
                 return {'label': label, 'confidence': 0.9, 'reasoning': alasan}
 
-            # 2. JSON Parsing fallback
-            json_match = re.search(r'\{(.*)\}', resp_clean, re.DOTALL)
-            if not json_match and resp_clean.startswith('{'): json_match = re.search(r'\{(.*)', resp_clean, re.DOTALL)
-            
-            if json_match:
-                json_str = json_match.group(0)
-                if not json_str.endswith('}'): 
-                    if json_str.count('"') % 2 != 0: json_str += '"'
-                    json_str += '}'
-                try:
-                    json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
-                    data = json.loads(json_str_clean.replace('\n', ' '))
-                    # Phase 150: Ultra-Aggressive Key Search
-                    # Qwen is being very creative with keys like "native_ads/berita murni"
-                    # or boolean keys like "native_ads": false.
-                    found_ads = False
-                    found_news = False
+                # Phase 150/151: Hyper-Robust JSON Extraction
+                # Find ALL JSON blocks and take the LAST one (Qwen often repeats template first)
+                json_blocks = re.findall(r'\{(?:[^{}]|(?R))*\}', resp_clean, re.DOTALL)
+                if not json_blocks:
+                    # Fallback for simple single-level match if regex recursion isn't supported
+                    json_blocks = re.findall(r'\{.*?\}', resp_clean, re.DOTALL)
+                
+                if json_blocks:
+                    # Take the LAST block as it's usually the actual answer, not the repeated template
+                    json_str = json_blocks[-1]
                     
-                    for k, v in data.items():
-                        k_low = str(k).lower()
-                        v_str = str(v).lower()
+                    try:
+                        # Clean special chars
+                        json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
                         
-                        # Check for label-like keys or boolean flags
-                        is_ads_key = any(x in k_low for x in ["native", "ads", "iklan", "promosi"])
-                        is_news_key = any(x in k_low for x in ["murni", "berita", "news"])
+                        # Phase 151: Python-to-JSON normalization (True -> true, False -> false)
+                        # We do this carefully to avoid breaking strings that happen to have these words.
+                        json_str_clean = re.sub(r':\s*True\b', ': true', json_str_clean)
+                        json_str_clean = re.sub(r':\s*False\b', ': false', json_str_clean)
                         
-                        if is_ads_key:
-                            if v is True or any(x in v_str for x in ["native", "ads", "iklan", "promosi"]):
-                                found_ads = True
-                            elif v is False:
-                                found_news = True
+                        data = json.loads(json_str_clean.replace('\n', ' '))
                         
-                        if is_news_key:
-                            if v is True or any(x in v_str for x in ["murni", "berita", "news"]):
-                                found_news = True
-                            elif v is False:
-                                found_ads = True
-                    
-                    # Tie-break: Ads usually takes priority in detection tasks
-                    if found_ads:
-                        label = "native ads"
-                    elif found_news:
-                        label = "berita murni"
-                    
-                    # Fallback to old mapping if still unassigned
-                    if label == "berita murni" and not found_news:
-                        raw_label = str(data.get('label', 
-                                       data.get('kelas', 
-                                       data.get('target', 
-                                       data.get('output', 
-                                       data.get('result', 
-                                       data.get('classification', ''))))))).lower()
-                        if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "advertorial"]): 
+                        # Phase 144/146/151: Robust reasoning extraction
+                        alasan = data.get('alasan', 
+                                         data.get('reason', 
+                                         data.get('reasoning', 
+                                         data.get('why', 
+                                         data.get('analysis_keywords', alasan)))))
+                        
+                        # Phase 150/151: Ultra-Aggressive Key Search
+                        found_ads = False
+                        found_news = False
+                        
+                        for k, v in data.items():
+                            k_low = str(k).lower()
+                            v_str = str(v).lower()
+                            
+                            # Check for label-like keys or boolean flags
+                            is_ads_key = any(x in k_low for x in ["native", "ads", "iklan", "promosi", "class", "output"])
+                            is_news_key = any(x in k_low for x in ["murni", "berita", "news"])
+                            
+                            if is_ads_key:
+                                if v is True or any(x in v_str for x in ["native", "ads", "iklan", "promosi", "true"]):
+                                    found_ads = True
+                                elif v is False:
+                                    found_news = True
+                            
+                            if is_news_key:
+                                if v is True or any(x in v_str for x in ["murni", "berita", "news", "true"]):
+                                    found_news = True
+                                elif v is False:
+                                    found_ads = True
+                        
+                        if found_ads:
                             label = "native ads"
-                except:
-                    if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): label = "native ads"
-            else:
-                if any(kw in resp_clean.lower()[:50] for kw in ["native ads", "iklan", "promosi"]): 
-                    label = "native ads"
-                elif "A" in resp_clean[:10].upper():
-                    label = "native ads"
+                        elif found_news:
+                            label = "berita murni"
+                    except:
+                        # Final raw keyword fallback if JSON still fails
+                        if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): label = "native ads"
+                else:
+                    if any(kw in resp_clean.lower()[:50] for kw in ["native ads", "iklan", "promosi"]): 
+                        label = "native ads"
+                    elif "A" in resp_clean[:10].upper():
+                        label = "native ads"
+                    elif "B" in resp_clean[:10].upper():
+                        label = "berita murni"
 
             return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else ""}
         except Exception as e:
