@@ -404,87 +404,32 @@ JAWABAN: """
         except: pass
 
     def _parse_response(self, response: str, content: str = "", title: str = "", prefix_forced: str = "") -> Dict[str, Any]:
-        """Phase 66: Robust A/B and JSON Parser."""
+        """Stage 28: Clean JSON-First Parser."""
         try:
-            # Stage 16: Handle Prefix-Forced Labels
-            forced_label = "native ads" if "A" in prefix_forced.upper() else "berita murni" if "B" in prefix_forced.upper() else None
-            
             resp_clean = response.strip()
-            alasan = "Tidak ditemukan alasan (mode MCQ)."
+            alasan = "Tidak ditemukan alasan (JSON regex fallback)."
             label = "berita murni"
             
-            # 1. Audit Verdict Parsing (Nuclear Overhaul mode)
-            # Find VONIS: (A) or (B) or label
-            verdict_match = re.search(r'VONIS:\s*(?:\([AB]\)\s*)?(NATIVE\s*ADS|PURE\s*NEWS|BERITA\s*MURNI)', resp_clean, re.IGNORECASE)
-            if not verdict_match:
-                # Fallback to JAWABAN pattern from previous versions
-                verdict_match = re.search(r'JAWABAN:\s*([AB])', resp_clean, re.IGNORECASE)
-            
-            if verdict_match:
-                lbl_raw = verdict_match.group(0).lower() # Use full match to handle (A)/(B) labels
-                if "(A)" in lbl_raw or "native" in lbl_raw:
-                    label = "native ads"
-                else:
-                    label = "berita murni"
-                
-                # Extract reason if exists
-                reason_match = re.search(r'ALASAN:\s*(.*)', resp_clean, re.IGNORECASE | re.DOTALL)
-                if reason_match:
-                    alasan = reason_match.group(1).strip()
-                return {'label': label, 'confidence': 0.99, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else "Model memicu pola JAWABAN/VONIS langsung."}
-
-            # 2. Label-First Parsing (Legacy support)
-            mcq_direct = re.search(r'JAWABAN:\s*([AB])', resp_clean, re.IGNORECASE)
-            if mcq_direct:
-                choice = mcq_direct.group(1).upper()
-                label = "native ads" if choice == 'A' else "berita murni"
-                reason_match = re.search(r'ALASAN:\s*(.*)', resp_clean, re.IGNORECASE | re.DOTALL)
-                if reason_match:
-                    alasan = reason_match.group(1).strip()
-                return {'label': label, 'confidence': 0.98, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else "Model memicu pola JAWABAN/VONIS langsung."}
-
-            # 3. Flexible Keyword scan (A/B or label names in first 100 chars)
-            # Match (A), [A], A., or JAWABAN: A
-            choice_match = re.search(r'(?:JAWABAN|VONIS|PILIHAN|KATEGORI)?:\s*[\(\[]?([AB])[\)\]]?\.?', resp_clean[:100], re.IGNORECASE)
-            if choice_match:
-                choice = choice_match.group(1).upper()
-                label = "native ads" if choice == 'A' else "berita murni"
-                return {'label': label, 'confidence': 0.98, 'reasoning': "Pola MCQ terdeteksi (Stage 17)."}
-
-            if re.search(r'\b(NATIVE\s*AD[S]?|IKLAN|PROMOSI|ADVERTORIAL)\b', resp_clean[:100], re.IGNORECASE):
-                label = "native ads"
-            elif re.search(r'\b(PURE\s*NEWS|BERITA|MURNI|OBJEKTIF)\b', resp_clean[:100], re.IGNORECASE):
-                label = "berita murni"
-
-            # 4. JSON Extraction (Deep Fallback)
-            # Find all JSON blocks
+            # 1. JSON Parsing (Primary Logic)
             json_blocks = re.findall(r'\{.*?\}', resp_clean, re.DOTALL)
-            
             if json_blocks:
-                # Take the LAST block as it's usually the actual answer
                 json_str = json_blocks[-1]
-                
                 try:
-                    # Clean special chars and handle common JSON malformations
-                    json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
-                    json_str_clean = re.sub(r':\s*True\b', ': true', json_str_clean)
-                    json_str_clean = re.sub(r':\s*False\b', ': false', json_str_clean)
+                    json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str)
+                    json_str_clean = re.sub(r':\s*True\b', ': true', json_str_clean, flags=re.IGNORECASE)
+                    json_str_clean = re.sub(r':\s*False\b', ': false', json_str_clean, flags=re.IGNORECASE)
                     
                     data = json.loads(json_str_clean.replace('\n', ' '))
                     
-                    # Robust reasoning extraction
-                    alasan = str(data.get('reason', 
-                                 data.get('alasan', 
-                                 data.get('reasoning', 
-                                 data.get('analysis', alasan)))))
+                    alasan_candidates = [data.get(k) for k in ['reason', 'alasan', 'reasoning', 'analysis'] if data.get(k)]
+                    if alasan_candidates:
+                        alasan = str(alasan_candidates[0])
                     
-                    # Label detection logic
                     found_label = None
                     for k, v in data.items():
                         k_low = str(k).lower()
                         v_str = str(v).lower()
-                        
-                        if 'label' in k_low or 'class' in k_low:
+                        if 'label' in k_low or 'class' in k_low or 'kategori' in k_low:
                             if any(x in v_str for x in ["native", "ads", "iklan"]):
                                 found_label = "native ads"
                             elif any(x in v_str for x in ["murni", "berita", "news"]):
@@ -493,28 +438,23 @@ JAWABAN: """
                     if found_label:
                         label = found_label
                     else:
-                        # Fallback for boolean flags
                         if data.get('is_native_ads') is True or data.get('is_ads') is True:
                             label = "native ads"
                         elif data.get('is_pure_news') is True or data.get('is_berita') is True:
                             label = "berita murni"
-                except:
-                    # Final raw keyword fallback if JSON still fails
-                    if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): 
-                        label = "native ads"
-            else:
-                # No JSON found, use keyword search
-                low_resp = resp_clean.lower()
-                if any(kw in low_resp for kw in ["native ads", "iklan ", "promos"]): 
-                    label = "native ads"
-                elif any(kw in low_resp for kw in ["berita murni", "informasi netral"]):
-                    label = "berita murni"
-
-            # Stage 17: Final forced label fallback (Reduced weight)
-            if forced_label and label == "berita murni" and len(resp_clean) < 300:
-                 label = forced_label
+                    
+                    return {'label': label, 'confidence': 0.99, 'reasoning': alasan}
+                except Exception as e:
+                    pass
             
-            return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan and alasan != "Tidak ditemukan alasan (mode MCQ)." else "Analisis inferensi otomatis."}
+            # 2. String Fallback (If JSON is entirely broken/missing)
+            low_resp = resp_clean.lower()
+            if any(kw in low_resp for kw in ["native ads", "iklan", "promosi", "native_ads"]): 
+                label = "native ads"
+            elif any(kw in low_resp for kw in ["berita murni", "pure news", "jurnalistik"]):
+                label = "berita murni"
+                
+            return {'label': label, 'confidence': 0.90, 'reasoning': "Pencarian teks manual (JSON gagal)."}
         except Exception as e:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
