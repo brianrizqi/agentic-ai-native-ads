@@ -212,10 +212,10 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Restoration Stage 3: Contrastive RAG (3 Ads, 2 News)
-                            # Providing contrast helps the model see the decision boundary.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
-                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                            # Stage 4.3: Nuclear Overhaul (Minimalist 2:1 Contrastive RAG)
+                            # Focus on quality and decision-boundary clarity over quantity.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -252,17 +252,23 @@ class ClassificationAgent:
                 if is_qwen:
                     # Phase 153: Silver Concise (Target 91.5%+)
                     # ChatML will handle the 'system/user' boundaries.
-                    template = """[TASK] Classify the article into: (A) NATIVE ADS or (B) PURE NEWS.
+                    template = """[TASK] PERFORM INTERNAL MEDIA AUDIT
                     
 TITLE: {title}
 BODY: {content}
 
-### CONTEXT EXAMPLES (Use these to calibrate your judgment):
+### REFERENCE DOCUMENTS (FOR CALIBRATION):
 {context}
 
-[REQUIRED OUTPUT FORMAT]
-LABEL: [NATIVE ADS / PURE NEWS]
-REASON: [Brief 1-sentence analysis in Indonesian]"""
+[AUDIT CHECKLIST - STEP BY STEP]:
+1. IDENTIFY BRANDS: List all company/brand names mentioned.
+2. CHECK CALL-TO-ACTION: Are there links, discounts, or purchase instructions?
+3. TONE EVALUATION: Is the tone 'Promotional' (praising) or 'Objective' (critical/multi-source)?
+4. PRESS RELEASE CHECK: Is it a corporate announcement or PR-style report?
+
+[FINAL VERDICT]:
+VONIS: (A) NATIVE ADS / (B) PURE NEWS
+ALASAN: [Brief logic summary]"""
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -292,11 +298,11 @@ REASON: [Brief 1-sentence analysis in Indonesian]"""
                     messages = [
                         {
                             "role": "system", 
-                            "content": "You are an Elite Media Auditor specializing in Indonesian news. Your goal is to detect 'Native Ads' with 99% precision.\n\n"
-                                       "CRITICAL RULES:\n"
-                                       "1. Output the LABEL on the first line.\n"
-                                       "2. NATIVE ADS: Promotional intent, PR, product focuses, or paid-style brand profiles.\n"
-                                       "3. PURE NEWS: Purely factual, multi-perspective, balanced reporting."
+                            "content": "Anda adalah Senior Auditor Media yang sangat skeptis dan kritis. Tugas Anda adalah membongkar 'Stealth Marketing'.\n\n"
+                                       "LOGIKA AUDITOR:\n"
+                                       "1. Cari niat ekonomi di balik tulisan.\n"
+                                       "2. Jika artikel terlalu fokus pada satu brand atau memuji prestasi satu perusahaan secara berlebihan, itu adalah NATIVE ADS.\n"
+                                       "3. Berita Murni harus memiliki jarak kritis dan minimal 2 sudut pandang berbeda."
                         },
                         {"role": "user", "content": user_msg}
                     ]
@@ -394,20 +400,27 @@ REASON: [Brief 1-sentence analysis in Indonesian]"""
             alasan = "Tidak ditemukan alasan (mode MCQ)."
             label = "berita murni"
             
-            # 1. Label-First Parsing (Elite Accuracy mode)
-            # Find LABEL: NATIVE ADS or PURE NEWS
-            label_match = re.search(r'LABEL:\s*(NATIVE\s*ADS|PURE\s*NEWS|BERITA\s*MURNI)', resp_clean, re.IGNORECASE)
-            if label_match:
-                lbl_raw = label_match.group(1).lower()
-                label = "native ads" if "native" in lbl_raw else "berita murni"
+            # 1. Audit Verdict Parsing (Nuclear Overhaul mode)
+            # Find VONIS: (A) or (B) or label
+            verdict_match = re.search(r'VONIS:\s*(?:\([AB]\)\s*)?(NATIVE\s*ADS|PURE\s*NEWS|BERITA\s*MURNI)', resp_clean, re.IGNORECASE)
+            if not verdict_match:
+                # Fallback to JAWABAN pattern from previous versions
+                verdict_match = re.search(r'JAWABAN:\s*([AB])', resp_clean, re.IGNORECASE)
+            
+            if verdict_match:
+                lbl_raw = verdict_match.group(0).lower() # Use full match to handle (A)/(B) labels
+                if "(A)" in lbl_raw or "native" in lbl_raw:
+                    label = "native ads"
+                else:
+                    label = "berita murni"
                 
                 # Extract reason if exists
-                reason_match = re.search(r'REASON:\s*(.*)', resp_clean, re.IGNORECASE | re.DOTALL)
+                reason_match = re.search(r'ALASAN:\s*(.*)', resp_clean, re.IGNORECASE | re.DOTALL)
                 if reason_match:
                     alasan = reason_match.group(1).strip()
                 return {'label': label, 'confidence': 0.99, 'reasoning': alasan}
 
-            # 2. MCQ Parsing (JAWABAN: A or B)
+            # 2. Label-First Parsing (Legacy support)
             mcq_direct = re.search(r'JAWABAN:\s*([AB])', resp_clean, re.IGNORECASE)
             if mcq_direct:
                 choice = mcq_direct.group(1).upper()
