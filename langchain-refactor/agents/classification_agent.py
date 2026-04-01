@@ -209,9 +209,9 @@ class ClassificationAgent:
                     
                     if candidates:
                         if is_qwen:
-                            # Stage 12: The Guilty Expansion (10:0 RAG Skew)
-                            # 10 Ads leave zero room for news bias to emerge.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:10]
+                            # Stage 13: Final Stability (3:0 RAG Skew)
+                            # 3 Ads are the 'Sweet Spot' - 10 was too noisy.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = []
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -229,8 +229,8 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            # Stage 5: Deep Context (6K Chars)
-                            char_limit = 6000 if is_qwen else 800
+                            # Stage 13: Light Context (2000 Chars) to prevent Drowning.
+                            char_limit = 2000 if is_qwen else 800
                             label_upper = label_hint.upper()
                             rag_block += f"DOKUMEN REFERENSI ({label_upper}):\n"
                             rag_block += f"{str(ex.get('content', ''))[:char_limit]}...\n"
@@ -246,31 +246,29 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 12: The Guilty Expansion (Prosecutor V3)
+                    # Stage 15: The Infrastructure Prosecutor (V5)
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang ahli mendeteksi manipulasi opini (Native Ads).
 
-VETO PR KORPORAT (DILARANG JADI BERITA MURNI):
-Jika artikel mengandung satu saja unsur berikut, Anda HARUS melabeli "native ads":
-- MOU/Kerjasama: Peluncuran, peresmian, atau penandatanganan nota kesepahaman perusahaan.
-- Penghargaan: Artikel tentang penghargaan perusahaan (Awards/Ranking).
-- CSR/Sosial: Kegiatan amal perusahaan namun menggunakan logo perusahaan/brand secara aktif.
-- Kinerja Saham/Dividen: Pengumuman pembagian keuntungan atau laporan keuangan positif.
+### REFERENCE PATTERNS (QUALITY OVER QUANTITY):
+{context}
 
-PERISAI BERITA MURNI (Hanya jika benar-benar beku):
-- Bencana alam, Kriminalitas jalanan, WHO, atau Politik Negara TANPA menyebut satu pun entitas bisnis swasta.
+RULES FOR VETO:
+If the content below mentions a Private Company and contains ANY of these, you MUST label "native ads":
+- Penanda Fisik: [ADVERTORIAL], [KERJA SAMA], | BIZ KOMPAS, atau sejenisnya.
+- Prestasi: Awards, Penghargaan, Ranking, Inovasi Produk.
+- Kerjasama: MOU, Pengumuman peresmian, Kolaborasi strategis.
+- Finansial: Dividen, Profit, Laporan Kinerja Saham.
 
 Judul: {title}
 Isi: {content}
 
-### EVIDENCE PATTERNS (10 AD EXAMPLES):
-{context}
-
 Format Respon (Wajib DIAWALI dengan JAWABAN):
 JAWABAN: (A) native ads / (B) berita murni
 {{
-  "reason": "Sebutkan bukti PR/Branding konkret sesuai poin Veto di atas",
+  "reason": "1 Kalimat: Bukti branding/PR/Penanda fisik spesifik",
   "label": "native ads/berita murni"
 }}"""
+                    # Phase 149: Raw Completion (No ChatML) for 9B SFT alignment
                     prefix_force = "JAWABAN: (A) native ads" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -291,8 +289,16 @@ JAWABAN: (A) native ads / (B) berita murni
                     if content_clean.startswith("-") or content_clean.startswith(":"):
                         content_clean = content_clean[1:].strip()
                 
-                max_chars = 6000 if is_qwen else self.max_chars
-                user_msg = template.format(title=title or content[:70], content=content_clean[:max_chars], context=rag_block).strip()
+                # Phase 155: Sandwich Preprocessing (Quality over Quantity)
+                max_chars = 5000 if is_qwen else self.max_chars
+                if is_qwen and len(content_clean) > max_chars:
+                    # Take 2.5K from start and 2.5K from end to catch all markers
+                    half = max_chars // 2
+                    content_processed = content_clean[:half] + "\n... [TEKS DIPOTONG] ...\n" + content_clean[-half:]
+                else:
+                    content_processed = content_clean[:max_chars]
+
+                user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block).strip()
                 full_prompt = f"{prefix_force}{user_msg}{suffix_force}"
                 
                 # Phase 141/153: Prompt Dispatcher
@@ -357,11 +363,9 @@ JAWABAN: (A) native ads / (B) berita murni
                     generated_ids = self.local_model_ref.generate(
                         input_ids, 
                         attention_mask=mask,
-                        max_new_tokens=150,
-                        do_sample=True,
-                        temperature=0.01,
-                        top_p=0.9,
-                        repetition_penalty=1.2,
+                        max_new_tokens=300,
+                        do_sample=False,
+                        repetition_penalty=1.1,
                         pad_token_id=self.tokenizer.eos_token_id
                     )
                 
@@ -429,10 +433,17 @@ JAWABAN: (A) native ads / (B) berita murni
                     alasan = reason_match.group(1).strip()
                 return {'label': label, 'confidence': 0.98, 'reasoning': alasan}
 
-            # 3. Simple Keyword scan (A/B or label names in first 50 chars)
-            if re.search(r'\b(NATIVE\s*AD[S]?|IKLAN)\b', resp_clean[:50], re.IGNORECASE):
+            # 3. Flexible Keyword scan (A/B or label names in first 100 chars)
+            # Match (A), [A], A., or JAWABAN: A
+            choice_match = re.search(r'(?:JAWABAN|VONIS|PILIHAN|KATEGORI)?:\s*[\(\[]?([AB])[\)\]]?\.?', resp_clean[:100], re.IGNORECASE)
+            if choice_match:
+                choice = choice_match.group(1).upper()
+                label = "native ads" if choice == 'A' else "berita murni"
+                return {'label': label, 'confidence': 0.98, 'reasoning': "Pencocokan Pola MCQ (Tahap 15)."}
+
+            if re.search(r'\b(NATIVE\s*AD[S]?|IKLAN|PROMOSI|ADVERTORIAL)\b', resp_clean[:100], re.IGNORECASE):
                 label = "native ads"
-            elif re.search(r'\b(PURE\s*NEWS|BERITA|MURNI)\b', resp_clean[:50], re.IGNORECASE):
+            elif re.search(r'\b(PURE\s*NEWS|BERITA|MURNI|OBJEKTIF)\b', resp_clean[:100], re.IGNORECASE):
                 label = "berita murni"
 
             # 4. JSON Extraction (Deep Fallback)
