@@ -56,10 +56,11 @@ class ClassificationAgent:
         self.tokenizer = None
         self.local_model_ref = None
         
-        # Phase 142/143/145/147: Final Restoration Reset
-        # Re-enabling RAG for Qwen but with Platinum 0.85 threshold.
+        # Phase 142/143/145/147/148: Zero-Point Alignment
+        # Disabling RAG as requested to reach the 91% intrinsic baseline.
         is_qwen = "qwen" in self.model_name.lower()
         if is_qwen:
+            self.use_rag = False
             self.max_chars = 2200
         
         self.llm = self._initialize_llm(api_key)
@@ -134,12 +135,11 @@ class ClassificationAgent:
                 if is_qwen:
                     # Qwen specific generation params (Best for 9B/14B)
                     generation_params = {
-                        "max_new_tokens": 1024 if self.use_rag else 512,
-                        "temperature": 0.0, 
-                        "top_p": 0.9,
-                        "repetition_penalty": 1.05,
+                        "max_new_tokens": 150,
+                        "repetition_penalty": 1.1,
+                        "temperature": 0.01, # Slight noise for stability
                         "do_sample": False,
-                        "pad_token_id": tokenizer.pad_token_id,
+                        "stop_sequence": ["}", "\n\n", "user", "human"],
                         "eos_token_id": tokenizer.eos_token_id
                     }
                 else:
@@ -245,9 +245,9 @@ class ClassificationAgent:
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
                 if is_qwen:
-                    # Phase 147: Indonesian Gold Restoration (Target 91.5%+)
-                    # Qwen performs better with explicit Indonesian context.
-                    template = ADVANCED_8B_GOLD_TEMPLATE
+                    # Phase 148: Zero-Point Minimalist (Target 91.5%+)
+                    # Use absolute bare minimum to avoid biasing the model.
+                    template = "{content}\n\nJSON Output (label: native ads/berita murni, reason: string):"
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
