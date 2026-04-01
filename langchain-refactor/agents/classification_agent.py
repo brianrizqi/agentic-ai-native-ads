@@ -209,16 +209,12 @@ class ClassificationAgent:
                     
                     if candidates:
                         if is_qwen:
-                            # Stage 26: RAG-Resistant Prosecutor (Balanced 1:1)
-                            best_ad = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
-                            best_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
-                            top_ads = best_ad
-                            top_news = best_news
+                            # Stage 27: The Grand Overhaul (Natural RAG)
+                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
-                        
-                        selected = top_ads + top_news
+                            selected = top_ads + top_news
                         
                         # 2. Canonical Sort (by similarity for Llama logical flow)
                         selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
@@ -247,34 +243,33 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 15: The Infrastructure Prosecutor (V5)
-                    template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang ahli mendeteksi manipulasi opini (Native Ads).
+                    template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
 
-### CONTEXT REFERENCE (STYLE ONLY):
+### CONTEXT REFERENCE (PANDUAN GAYA BAHASA):
 {context}
 
-⚠️ PENTING: Jangan meniru label di atas jika bertentangan dengan VETO di bawah.
+⚠️ PENGINGAT: Gunakan contoh RAG di atas hanya sebagai referensi. Keputusan final harus murni berdasarkan aturan di bawah.
 
-### DATA ARTIKEL UTAMA (CEK TELITI):
+### DATA ARTIKEL UTAMA:
 Judul: {title}
 Isi: {content}
 
-### INSTRUKSI FINAL JAKSA (WAJIB DIIKUTI):
-Anda HARUS mengisi Checklist Logika berikut sebelum menentukan label:
-1. Ada penyebutan Brand/BUMN/Instansi (e.g. Bank, PT, BBNI, BBRI, Persero Tbk)? (ya/tidak)
-2. Apakah artikel memuat kata-kata KEUANGAN/PRESTASI/DISTRIBUSI ini: [Dividen, Distribution, Laba Bersih, Net Profit, Earnings, Pertumbuhan, Penghargaan, Award, Achievement, Expo, Pameran]? (ya/tidak)
-3. Apakah artikel memuat kata-kata MUSIBAH ini: [Kebakaran, Kecelakaan, Kematian, Duka Cita, Bencana Alam]? (ya/tidak)
+### PANDUAN PRINSIP (BILINGUAL MASTER RULES):
 
-⚠️ ATURAN LABEL (MANDATORY):
-- Jika (Checklist 1=ya DAN Checklist 2=ya) -> LABEL: "native ads" (WAJIB).
-- Jika (Checklist 3=ya) -> LABEL: "berita murni" (WAJIB).
+🔴 KATEGORI: NATIVE ADS (WAJIB DIPILIH JIKA ADA SALAH SATU):
+1. Corporate Press Release: Rilis pers perusahaan, baik bahasa Inggris maupun Indonesia (bermuatan "Globe Newswire", "PR Newswire", "TSX", "NYSE", "NASDAQ", dll).
+2. Financial / Business Announcement: Pengumuman dividen, laba perusahaan (net profit, earnings), akuisisi, atau ekspansi bisnis oleh brand/BUMN/Korporasi.
+3. Corporate Pride / Awards: Brand/Instansi memamerkan penghargaan (awards, achievements), atau partisipasi di pameran/expo, dengan bahasa positif.
+4. Soft-Selling: Artikel kesehatan, gaya hidup, atau review yang menonjolkan satu tempat/produk/layanan secara spesifik dan persuasif tanpa unsur musibah.
+
+🟢 KATEGORI: BERITA MURNI (WAJIB DIPILIH JIKA ADA SALAH SATU):
+1. Public Grief / Disasters: Kecelakaan, kebakaran, bencana alam, musibah, berita duka (kematian).
+2. Crisis / Legal Issues: Kasus hukum persidangan, PHK massal, skandal, kriminalitas.
+3. Government & Public Policy: Kebijakan negara, hari libur nasional, hasil olahraga murni.
 
 Format Respon (JSON WAJIB):
 {{
-  "checklist_korporasi": "ya/tidak",
-  "checklist_prestasi": "ya/tidak",
-  "checklist_musibah": "ya/tidak",
-  "reasoning": "Analisis singkat berdasarkan checklist di atas.",
+  "analysis": "Penjelasan singkat menggunakan prinsip kategori di atas (maks 2 kalimat).",
   "label": "native ads/berita murni"
 }}
 
