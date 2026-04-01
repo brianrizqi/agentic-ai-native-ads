@@ -245,9 +245,9 @@ class ClassificationAgent:
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
                 if is_qwen:
-                    # Phase 148: Zero-Point Minimalist (Target 91.5%+)
-                    # Use absolute bare minimum to avoid biasing the model.
-                    template = "{content}\n\nJSON Output (label: native ads/berita murni, reason: string):"
+                    # Phase 150: Ultra-Minimalist Schema (Target 91.5%+)
+                    # Removing sashes and colons from keys to avoid Qwen's schema hallucinations.
+                    template = "{content}\n\nOutput JSON (Kelas: native ads/berita murni, Alasan: string):"
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -393,25 +393,48 @@ class ClassificationAgent:
                 try:
                     json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
                     data = json.loads(json_str_clean.replace('\n', ' '))
-                    # Phase 144/146: Unified reasoning extraction
-                    alasan = data.get('analysis_keywords', 
-                                     data.get('alasan', 
-                                     data.get('reason', 
-                                     data.get('reasoning', 
-                                     data.get('why', alasan)))))
-                    if isinstance(alasan, list): alasan = ", ".join(alasan)
+                    # Phase 150: Ultra-Aggressive Key Search
+                    # Qwen is being very creative with keys like "native_ads/berita murni"
+                    # or boolean keys like "native_ads": false.
+                    found_ads = False
+                    found_news = False
                     
-                    # Phase 146: Hyper-Robust Label Mapping
-                    raw_label = str(data.get('label', 
-                                   data.get('kelas', 
-                                   data.get('target', 
-                                   data.get('output', 
-                                   data.get('result', 
-                                   data.get('classification', ''))))))).lower()
+                    for k, v in data.items():
+                        k_low = str(k).lower()
+                        v_str = str(v).lower()
+                        
+                        # Check for label-like keys or boolean flags
+                        is_ads_key = any(x in k_low for x in ["native", "ads", "iklan", "promosi"])
+                        is_news_key = any(x in k_low for x in ["murni", "berita", "news"])
+                        
+                        if is_ads_key:
+                            if v is True or any(x in v_str for x in ["native", "ads", "iklan", "promosi"]):
+                                found_ads = True
+                            elif v is False:
+                                found_news = True
+                        
+                        if is_news_key:
+                            if v is True or any(x in v_str for x in ["murni", "berita", "news"]):
+                                found_news = True
+                            elif v is False:
+                                found_ads = True
                     
-                    # Phase 85: Removed "a" keyword landmine (False Positive risk in ID "Berita murni")
-                    if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "advertorial"]): 
+                    # Tie-break: Ads usually takes priority in detection tasks
+                    if found_ads:
                         label = "native ads"
+                    elif found_news:
+                        label = "berita murni"
+                    
+                    # Fallback to old mapping if still unassigned
+                    if label == "berita murni" and not found_news:
+                        raw_label = str(data.get('label', 
+                                       data.get('kelas', 
+                                       data.get('target', 
+                                       data.get('output', 
+                                       data.get('result', 
+                                       data.get('classification', ''))))))).lower()
+                        if any(kw in raw_label for kw in ["native", "ads", "iklan", "promosi", "advertorial"]): 
+                            label = "native ads"
                 except:
                     if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): label = "native ads"
             else:
