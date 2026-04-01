@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 20,
+    "good_count": 15,
+    "borderline_count": 0,
+    "bad_count": 5,
+    "avg_judge_score": 3.7
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that accurately identifies the absence of promotional content, aligning with the ground truth.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Data Badan Kesehatan Dunia (WHO) mengungkap saat ini di seluruh dunia 3 juta orang meninggal setiap tahun akibat penggunaan alkohol yang berbahaya. Artinya, satu orang meninggal se",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/branding korporasi maupun prestasi komersial; tetap memenuhi kriteria berita murni.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided sound reasoning by noting the absence of promotional content, which aligns with the ground truth.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Petenis Spanyol Rafael Nadal menambah koleksi gelar juara grand slam usai memenangi turnamen French Open 2022. Petenis berusia 36 tahun ini memberi pesan yang jelas kepada para pes",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that aligns with the content, which is focused on a health issue without any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Satu tersangka dari kejadian luar biasa hepatitis akut misterius pada anak yang sedang merebak di banyak negara saat ini adalah adenovirus. Kasus-kasusnya menjadi perhatian karena ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat berita murni tanpa unsur promosi/native ads.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided does not adequately address the nature of the content, which appears to be informative but lacks the promotional elements typical of native ads. The absence of specific brands or financial mentions does not justify the classification as pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Menurut dr Nusye E Zamsiar Spesialis Kedokteran Okupasi, selesma bisa disebabkan oleh virus atau faktor lain, seperti alergi, cuaca, dan kelelahan.“Umumnya, tingkat keparahan selesma cenderung ringan.",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel tidak menyebutkan brand/BUMN/instansi/tempat spesifik, tidak mengandung unsur keuangan/prestasi/promosi, dan tidak membahas musibah.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about layoffs at Carvana. The reasoning provided is shallow and does not adequately support the label, as the article does not promote a product or service.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi/native ads karena membahas produk/jasa tertentu dari perusahaan tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have been 'native ads'. The reasoning provided does not adequately address the promotional nature of the content, which suggests a focus on health and weight management, typical of native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Sayangnya, hasilkalkulator BMI, menampakkan hasil yang melebihi ideal. Ini berarti, berat badan Anda mungkin tergolong berlebih atau bahkan obesitas.Jika hal itu terjadi, cobalah untuk lebih memperhat",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel tidak menyebutkan brand/BUMN/instansi/tempat spesifik, tidak mengandung unsur keuangan/prestasi/promosi, dan tidak membahas musibah.",
+      "confidence": 0.95
+    }
+  ]
+}
