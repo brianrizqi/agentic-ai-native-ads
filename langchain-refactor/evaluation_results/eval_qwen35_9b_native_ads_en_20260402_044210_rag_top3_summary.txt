@@ -1,0 +1,27 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/qwen35-9b-native-ads-en_merged_16bit/
+Timestamp: 20260402_044210
+Dataset: ../data/llm_dataset_12k_refined_full.json
+Samples: 200
+
+Overall Metrics:
+  Accuracy: 81.00%
+  Correct: 162/200
+
+BERTScore:
+  Precision: 0.842
+  Recall: 0.857
+  F1: 0.849
+
+NLP Metrics (Reasoning Quality):
+  BLEU: 0.2057
+  METEOR: 0.4405
+
+Perplexity: 16.30
+
+Per-Class Accuracy:
+  native ads: 72.38%
+  berita murni: 90.53%
