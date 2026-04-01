@@ -209,9 +209,8 @@ class ClassificationAgent:
                     
                     if candidates:
                         if is_qwen:
-                            # Stage 13: Final Stability (3:0 RAG Skew)
-                            # 3 Ads are the 'Sweet Spot' - 10 was too noisy.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            # Stage 22: Absolute Enforcer (Kill RAG Noise)
+                            top_ads = []
                             top_news = []
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
@@ -256,15 +255,16 @@ class ClassificationAgent:
 Judul: {title}
 Isi: {content}
 
-### INSTRUKSI FINAL JAKSA:
+### INSTRUKSI FINAL JAKSA (WAJIB DIIKUTI):
 Anda HARUS mengisi Checklist Logika berikut sebelum menentukan label:
-1. Ada penyebutan Brand/Perusahaan/Instansi (e.g. Bank, PT, BUMN)? (ya/tidak)
-2. Isi konten adalah prestasi/laba/penghargaan/kamera expo/inovasi/promo? (ya/tidak)
-3. Isi konten adalah musibah (kecelakaan/kebakaran/kematian)? (ya/tidak)
+1. Ada penyebutan Brand/BUMN/Instansi (e.g. Bank, PT, BBNI, BBRI, Persero Tbk)? (ya/tidak)
+2. Apakah artikel memuat kata-kata KEUANGAN/PRESTASI ini: [Dividen, Laba Bersih, Pertumbuhan Profit, Laporan Tahunan, Penghargaan, Expo, Pameran, Awards]? (ya/tidak)
+3. Apakah artikel memuat kata-kata MUSIBAH ini: [Kebakaran, Kecelakaan, Kematian, Duka Cita, Bencana Alam]? (ya/tidak)
 
-⚠️ ATURAN LABEL:
-- Jika (Checklist 1=ya DAN Checklist 2=ya) -> LABEL: "native ads" (WAJIB).
-- Jika (Checklist 3=ya) -> LABEL: "berita murni" (WAJIB).
+⚠️ ATURAN LABEL (MANDATORY):
+- Jika (Checklist 1=ya DAN Checklist 2=ya) -> LABEL: "native ads" (MISALNYA: Berita dividen bank adalah IKLAN).
+- Jika (Checklist 3=ya) -> LABEL: "berita murni" (MISALNYA: Berita kecelakaan bus adalah BERITA).
+- Berita edukasi produk/layanan tanpa musibah -> LABEL: "native ads".
 
 Format Respon (JSON WAJIB):
 {{
