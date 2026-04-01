@@ -259,18 +259,17 @@ If the content below mentions a Private Company and contains ANY of these, you M
 - Kerjasama: MOU, Pengumuman peresmian, Kolaborasi strategis.
 - Finansial: Dividen, Profit, Laporan Kinerja Saham.
 
-PERISAI BERITA MURNI (KHUSUS NON-KOMERSIAL):
+PERISAI BERITA MURNI (KHUSUS KRISIS/MUSIBAH):
 Hanya labeli "berita murni" jika konten berisi:
-- Musibah/Kecelakaan: Kebakaran bus, kecelakaan pesawat, bencana alam (Meskipun ada nama PO Bus/Maskapai).
-- Krisis/PHK: Berita pemecatan karyawan (Carvana, GoTo, dsb), kerugian besar, atau kebangkrutan.
-- Kriminal: Kasus hukum, pembunuhan, narkoba, dsb.
-- Kebijakan Negara: Pengumuman hari libur, jadwal pemilu, hukum pidana resmi.
+- Kecelakaan/Bencana: Kebakaran, kecelakaan kendaraan, gempa bumi, musibah alam.
+- Krisis/PHK/Kematian: Berita pemecatan karyawan massal, kebangkrutan, atau kabar duka cita (WHO, dsb).
+- Kebijakan Negara: Pengumuman hari libur, jadwal resmi pemilu, hukum pidana.
 
-⚠️ BUKAN BERITA MURNI (VETO PROMOSI):
-Jika BUMN atau Instansi merilis hal berikut dengan SENTIMEN POSITIF/NETRAL, TETAP labeli "native ads":
-- Prestasi/Laporan KUR: Pertumbuhan kredit BNI/BRI, dividen, kinerja laba.
-- Penghargaan: Meraih Bronze/Silver/Gold award, apresiasi internasional.
-- Event Promosi: Pengenalan produk/instansi ke kancah global.
+⚠️ BUKAN BERITA MURNI (VETO ADVERTORIAL):
+Jika ada nama perusahan (Bank dsb) atau Instansi, TETAP labeli "native ads" jika berisi:
+- Finansial: Pengumuman dividen, laba perusahaan, pertumbuhan kinerja KUR (BNI, BRI, dsb).
+- Prestige: Menang penghargaan (Bronze/Silver/Gold), pengenalan Batik/Produk ke kancah global (Expo Dubai, dsb).
+- Edukasi Branding: Tips kesehatan dari dokter yang menonjolkan satu klinik/metode tertentu.
 
 Judul: {title}
 Isi: {content}
