@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 73,
+    "borderline_count": 7,
+    "bad_count": 20,
+    "avg_judge_score": 3.75
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on its neutral and informative content, which does not contain any promotional elements or branding.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan informatif tanpa promosi/branding.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its neutral and informative content, which aligns with the ground truth. The reasoning provided is logical and accurately reflects the absence of promotional tone, supporting the classification effectively.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan informatif tanpa promosi/branding.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided strong reasoning by highlighting the lack of promotional content and the focus on factual reporting about the layoffs at Carvana.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat berita murni karena melaporkan informasi publik tentang pemecatan karyawan Carvana tanpa promosi atau sudut pandang positif terhadap perusahaan.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly classified the article as native ads, but the reasoning provided is weak and generic. The content does not clearly indicate promotional elements, and it could be interpreted as news related to cybersecurity.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi/iklan terhadap produk atau perusahaan tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content primarily discusses a tax regulation without clear promotional elements, which could suggest it is more aligned with news rather than advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The article does not clearly promote a specific product or company, making the classification questionable. It lacks a strong promotional tone, which is essential for native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi terhadap produk/perusahaan tertentu (Naga Komodo).",
+      "confidence": 0.95
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news announcement about military academy registration. The reasoning provided does not apply, as the content does not promote a product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Bagi kalian lulusan SMA/sederajat yang ingin menjadi tentara, pendaftaran Akademi Militer ( Akmil ) 2022 masih dibuka. TNI Angkatan Darat membuka kesempatan untuk putra-putri terbaik di seluruh Indo",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece. The reasoning about promotional content is not applicable here, as the article discusses a public infrastructure initiative without promotional intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Uji coba penerapan jalan tol menggunakan transaksi nontunai nirsentuh atau multi lane free flow (MLFF), akan dilakukan pada beberapa titik mulai tahun ini.  Penerapan transaksi i",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi/branding terhadap produk/instansi tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the content as 'berita murni' (pure news) when it should have identified it as 'native ads.' The reasoning provided is not relevant to the content, which discusses BMI and weight management in a way that suggests a promotional tone, indicating it is likely an advertisement.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Sayangnya, hasilkalkulator BMI, menampakkan hasil yang melebihi ideal. Ini berarti, berat badan Anda mungkin tergolong berlebih atau bahkan obesitas.Jika hal itu terjadi, cobalah untuk lebih memperhat",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Pola MCQ terdeteksi (Stage 17).",
+      "confidence": 0.98
+    }
+  ]
+}
