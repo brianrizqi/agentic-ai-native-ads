@@ -261,22 +261,24 @@ If the content below mentions a Private Company and contains ANY of these, you M
 
 PERISAI BERITA MURNI (KHUSUS NON-KOMERSIAL):
 Hanya labeli "berita murni" jika konten berisi:
-- Bencana/Kriminal: Musibah alam, kecelakaan, kejahatan umum (Non-korporasi).
-- Kebijakan Negara Murni: Pengumuman hari libur, jadwal pemilu, hukum pidana.
+- Musibah/Kecelakaan: Kebakaran bus, kecelakaan pesawat, bencana alam (Meskipun ada nama PO Bus/Maskapai).
+- Krisis/PHK: Berita pemecatan karyawan (Carvana, GoTo, dsb), kerugian besar, atau kebangkrutan.
+- Kriminal: Kasus hukum, pembunuhan, narkoba, dsb.
+- Kebijakan Negara: Pengumuman hari libur, jadwal pemilu, hukum pidana resmi.
 
-⚠️ BUKAN BERITA MURNI (VETO):
-Jika PT Bank (BNI, BRI, dsb), Telkom, Pertamina, atau Instansi merilis hal berikut, TETAP labeli "native ads":
-- Prestasi/Laporan KUR: Pertumbuhan kredit, dividen, kinerja laba.
+⚠️ BUKAN BERITA MURNI (VETO PROMOSI):
+Jika BUMN atau Instansi merilis hal berikut dengan SENTIMEN POSITIF/NETRAL, TETAP labeli "native ads":
+- Prestasi/Laporan KUR: Pertumbuhan kredit BNI/BRI, dividen, kinerja laba.
 - Penghargaan: Meraih Bronze/Silver/Gold award, apresiasi internasional.
-- Event Promosi: Pengenalan produk ke kancah global (Expo Dubai, dsb).
-- CSR Ber-merek: Bakti sosial yang sangat menonjolkan nama brand.
+- Event Promosi: Pengenalan produk/instansi ke kancah global.
 
 Judul: {title}
 Isi: {content}
 
 Format Respon (JSON Berbasis Bukti):
 {{
-  "reasoning": "Satu bukti konkret kenapa ini branding/PR (sebutkan nama brand/instansi)",
+  "sentiment": "positif/negatif/netral",
+  "reasoning": "Kenapa ini branding vs kenapa ini musibah?",
   "label": "native ads/berita murni"
 }}
 
