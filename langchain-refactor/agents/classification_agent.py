@@ -249,31 +249,27 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 10: The Ultimate Reversion (Back to 85% Gold)
-                    template = """Tugas: Bertindaklah sebagai detektif iklan profesional. Ekstraksi niat promosi terselubung di balik bahasa berita yang halus.
+                    # Stage 11: The Prosecutor (91.5% Target Recovery)
+                    template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang ahli mendeteksi manipulasi opini (Native Ads).
 
-MODE DETEKTIF (Wajib Agresif):
-Klasifikasikan sebagai "native ads" jika ada indikasi berikut:
-1. Citra Positif: Menyoroti prestasi, penghargaan, inovasi, atau kegiatan CSR sebuah perusahaan/instansi.
-2. Nama Brand: Nama perusahaan atau produk disebut lebih dari 2 kali.
-3. Kerjasama/PR: Laporan peresmian, MOU, laporan keuangan positif, atau nota kesepahaman.
-4. Nada Rilis Pers: Kalimat memuji, optimis, dan tanpa kritik.
-
-PERISAI BERITA MURNI:
-- Gunakan "berita murni" HANYA jika artikel adalah murni informasi publik, bencana, atau politik makro tanpa brand perusahaan.
+PRESUMPTION OF BRANDING (Wajib Patuh):
+1. Artikel yang menyebutkan nama PERUSAHAAN SWASTA (BNI, Emina, Bank, Brand, dll) dengan nada keberhasilan, prestasi, atau CSR adalah NATIVE ADS.
+2. Artikel yang berisi pengumuman keuntungan, dividen, atau kerjasama (MOU) antar perusahaan adalah NATIVE ADS.
+3. HANYA labeli sebagai "berita murni" jika artikel adalah Fakta Dingin tentang WHO, Bencana Alam, Kriminal Umum, atau Politik Makro TANPA menyebut nama produk/brand swasta.
 
 Judul: {title}
 Isi: {content}
 
-### RELEVANT ADVERTISING EXAMPLES:
+### PATTERN ASSET (PROMOTIONAL):
 {context}
 
-Output (Return JSON ONLY):
+Format Respon (Wajib DIAWALI dengan JAWABAN):
+JAWABAN: (A) native ads / (B) berita murni
 {{
-  "reason": "one sentence explanation highlighting the marketing intent",
+  "reason": "Sebutkan 1 alasan kuat kenapa ini adalah iklan branding/PR",
   "label": "native ads/berita murni"
 }}"""
-                    prefix_force = "" 
+                    prefix_force = "JAWABAN: (A) native ads" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
                     # Heuristics for micro models if specified
@@ -363,7 +359,7 @@ Output (Return JSON ONLY):
                         do_sample=True,
                         temperature=0.01,
                         top_p=0.9,
-                        repetition_penalty=1.1,
+                        repetition_penalty=1.2,
                         pad_token_id=self.tokenizer.eos_token_id
                     )
                 
