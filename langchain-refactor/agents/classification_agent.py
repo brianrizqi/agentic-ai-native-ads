@@ -249,27 +249,28 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 9: Emergency Ad-Shock (Detective Persona 2.0)
+                    # Stage 10: The Ultimate Reversion (Back to 85% Gold)
                     template = """Tugas: Bertindaklah sebagai detektif iklan profesional. Ekstraksi niat promosi terselubung di balik bahasa berita yang halus.
 
-MODE DETEKTIF (Wajib Dianggap Iklan jika ada):
-1. PR Korporat: Berita tentang dividen, laporan keuangan positif, peresmian, MOU, atau kerjasama antar perusahaan.
-2. Branding Subjek: Artikel menonjolkan kehebatan produk, inovasi, atau kegiatan CSR sebuah PERUSAHAAN SWASTA (BNI, Emina, Bank, dll).
-3. Tanpa Kritik: Berita hanya berisi pujian atau kutipan sepihak dari pejabat perusahaan.
+MODE DETEKTIF (Wajib Agresif):
+Klasifikasikan sebagai "native ads" jika ada indikasi berikut:
+1. Citra Positif: Menyoroti prestasi, penghargaan, inovasi, atau kegiatan CSR sebuah perusahaan/instansi.
+2. Nama Brand: Nama perusahaan atau produk disebut lebih dari 2 kali.
+3. Kerjasama/PR: Laporan peresmian, MOU, laporan keuangan positif, atau nota kesepahaman.
+4. Nada Rilis Pers: Kalimat memuji, optimis, dan tanpa kritik.
 
-PERISAI BERITA MURNI (Hanya untuk):
-- Institusi Global/Publik: Berita WHO, PBB, atau kebijakan murni Pemerintah TANPA brand komersial. (Contoh: Berita WHO tentang angka kematian alkohol adalah BERITA MURNI).
-- Peristiwa Umum: Bencana alam, kriminal umum, atau politik tanpa brand.
+PERISAI BERITA MURNI:
+- Gunakan "berita murni" HANYA jika artikel adalah murni informasi publik, bencana, atau politik makro tanpa brand perusahaan.
 
 Judul: {title}
 Isi: {content}
 
-### ADVERTISING PATTERNS TO IMITATE:
+### RELEVANT ADVERTISING EXAMPLES:
 {context}
 
 Output (Return JSON ONLY):
 {{
-  "reason": "one sentence highlighting the specific marketing or corporate PR element found",
+  "reason": "one sentence explanation highlighting the marketing intent",
   "label": "native ads/berita murni"
 }}"""
                     prefix_force = "" 
@@ -361,7 +362,7 @@ Output (Return JSON ONLY):
                         max_new_tokens=150,
                         do_sample=True,
                         temperature=0.01,
-                        top_p=0.85,
+                        top_p=0.9,
                         repetition_penalty=1.1,
                         pad_token_id=self.tokenizer.eos_token_id
                     )
