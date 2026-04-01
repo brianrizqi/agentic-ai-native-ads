@@ -245,9 +245,16 @@ class ClassificationAgent:
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
                 if is_qwen:
-                    # Phase 150: Ultra-Minimalist Schema (Target 91.5%+)
-                    # Removing sashes and colons from keys to avoid Qwen's schema hallucinations.
-                    template = "{content}\n\nOutput JSON (Kelas: native ads/berita murni, Alasan: string):"
+                    # Phase 153: Silver Concise (Target 91.5%+)
+                    # ChatML will handle the 'system/user' boundaries.
+                    template = """Tugas: Klasifikasikan artikel sebagai 'native ads' (konten promosi/iklan) atau 'berita murni' (informasi netral).
+                    
+JUDUL: {title}
+ISI: {content}
+
+{context}
+
+Output hanya JSON valid dengan kunci "label" dan "reason"."""
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -271,10 +278,14 @@ class ClassificationAgent:
                 user_msg = template.format(title=title or content[:70], content=content_clean[:self.max_chars], context=rag_block).strip()
                 full_prompt = f"{prefix_force}{user_msg}{suffix_force}"
                 
-                # Phase 141: Prompt Dispatcher
+                # Phase 141/153: Prompt Dispatcher
                 if is_qwen:
-                    # Qwen uses manual ChatML wrapping for maximal control over Thinking tokens
-                    templated_prompt = full_prompt
+                    # Phase 153: Use standard ChatML for Qwen Chat models
+                    messages = [
+                        {"role": "system", "content": "You are a professional Indonesian news editor specializing in native ads detection."},
+                        {"role": "user", "content": user_msg}
+                    ]
+                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 elif self.model_tier == 'micro':
                     templated_prompt = user_msg
                 else:
