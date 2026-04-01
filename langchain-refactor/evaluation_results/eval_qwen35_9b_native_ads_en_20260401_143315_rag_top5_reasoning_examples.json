@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 99,
+    "good_count": 29,
+    "borderline_count": 0,
+    "bad_count": 70,
+    "avg_judge_score": 2.747
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided strong reasoning that highlights the neutral and factual nature of the content, with no promotional elements present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi faktual tanpa unsur promosi atau keuntungan komersial terhadap produk/brand tertentu.",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided strong reasoning that highlights the neutral and factual nature of the content, with no promotional elements present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi faktual tanpa unsur promosi atau keuntungan komersial terhadap produk/brand tertentu.",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided strong reasoning that highlights the neutral and factual nature of the content, effectively distinguishing it from promotional material.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi faktual mengenai pemecatan karyawan Carvana tanpa unsur promosi atau bias terhadap produk/brand tertentu.",
+      "confidence": 0.98
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when it is actually a native ad. The reasoning fails to recognize the promotional nature of the content, which highlights a specific brand's achievement in a competitive event.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi faktual tentang hasil lomba yachting tanpa unsur promosi atau bias terhadap produk/brand tertentu.",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model's prediction is completely wrong as the article is classified as native ads, but the reasoning provided does not support this classification. The content appears to be promotional in nature, indicating a lack of objectivity.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Penandatangan dilakukan di Aula Arsip Kantor Wilayah BPN Provinsi Jabar secara hibrida. Acara ini dihadiri langsung oleh Kepala Kanwil BPN Provinsi Jabar Dalu Agung Darmawan.Sementara, dari pihakItena",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi faktual tanpa unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.98
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' While the reasoning highlights the neutral and factual nature of the content, it fails to recognize that the article promotes a partnership involving a government entity and universities, which aligns more with native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "YOGJAKARTA - PT Jasa Raharja bekerjasama dengan tiga Universitas di Yogyakarta menggelar kegiatan penandatanganan Nota Kesepahaman atau Memorandum of Understanding (MOU) tentang Sinergi Peningkatan Ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi faktual mengenai kegiatan penandatanganan nota kesepahaman antara Jasa Raharja dengan tiga universitas tanpa unsur promosi atau persuasi komersial terhadap produk/brand tertentu.",
+      "confidence": 0.98
+    }
+  ]
+}
