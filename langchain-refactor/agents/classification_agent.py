@@ -209,9 +209,9 @@ class ClassificationAgent:
                     
                     if candidates:
                         if is_qwen:
-                            # Stage 22: Absolute Enforcer (Kill RAG Noise)
-                            top_ads = []
-                            top_news = []
+                            # Stage 23: Bilingual Finalist (Minimal RAG for patterns)
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
@@ -255,16 +255,16 @@ class ClassificationAgent:
 Judul: {title}
 Isi: {content}
 
-### INSTRUKSI FINAL JAKSA (WAJIB DIIKUTI):
+### INSTRUKSI FINAL JAKSA (BILINGUAL MANDATE):
 Anda HARUS mengisi Checklist Logika berikut sebelum menentukan label:
-1. Ada penyebutan Brand/BUMN/Instansi (e.g. Bank, PT, BBNI, BBRI, Persero Tbk)? (ya/tidak)
-2. Apakah artikel memuat kata-kata KEUANGAN/PRESTASI ini: [Dividen, Laba Bersih, Pertumbuhan Profit, Laporan Tahunan, Penghargaan, Expo, Pameran, Awards]? (ya/tidak)
+1. Ada penyebutan Brand/BUMN/Instansi/Tempat Spesifik (e.g. Bank, PT, BBNI, BBRI, Persero Tbk, Nama Restoran/Toko)? (ya/tidak)
+2. Apakah artikel memuat kata-kata KEUANGAN/PRESTASI/PROMOSI ini: [Dividen, Distribution, Laba Bersih, Net Profit, Earnings, Pertumbuhan, Penghargaan, Award, Achievement, Expo, Pameran, Launch, Buka Cabang]? (ya/tidak)
 3. Apakah artikel memuat kata-kata MUSIBAH ini: [Kebakaran, Kecelakaan, Kematian, Duka Cita, Bencana Alam]? (ya/tidak)
 
-⚠️ ATURAN LABEL (MANDATORY):
-- Jika (Checklist 1=ya DAN Checklist 2=ya) -> LABEL: "native ads" (MISALNYA: Berita dividen bank adalah IKLAN).
-- Jika (Checklist 3=ya) -> LABEL: "berita murni" (MISALNYA: Berita kecelakaan bus adalah BERITA).
-- Berita edukasi produk/layanan tanpa musibah -> LABEL: "native ads".
+⚠️ ATURAN LABEL (PRIORITAS TERTINGGI):
+- Jika (Checklist 1=ya DAN Checklist 2=ya) -> LABEL: "native ads" (WAJIB).
+- Konten LIFESTYLE/REVIEW tempat makan/toko spesifik tanpa musibah -> LABEL: "native ads".
+- Jika (Checklist 3=ya) -> LABEL: "berita murni" (WAJIB).
 
 Format Respon (JSON WAJIB):
 {{
