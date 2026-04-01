@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 27,
+    "borderline_count": 0,
+    "bad_count": 73,
+    "avg_judge_score": 2.59
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided sound reasoning, noting the absence of promotional content or a focus on products/services, which aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads terhadap brand/BUMN/instansi, juga tidak membahas prestasi atau distribusi produk/jasa, dan tidak terkait musibah.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that accurately reflects the content's educational nature without promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads, murni informasi edukatif tentang temuan arkeologis.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided strong reasoning that accurately identifies the absence of promotional content or a promotional tone, supporting the classification effectively.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads terhadap brand/BUMN/instansi, juga tidak membahas prestasi atau distribusi produk/jasa, dan tidak terkait musibah.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it is actually a native ad. The reasoning fails to recognize the promotional nature of the content, which is focused on a corporate announcement and financial results, indicating a clear intent to promote the company.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, Feb. 23, 2026 (GLOBE NEWSWIRE) — Ero Copper Corp. (TSX: ERO, NYSE: ERO) (“Ero” or the “Company”) is pleased to announce results of the Preliminary Economic Assessment (“PE",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads, bukan berita murni tentang korporasi/brand/BUMN, dan tidak membahas prestasi atau musibah.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have identified it as a native ad. The reasoning fails to recognize the promotional nature of the content, which is indicative of native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONCTON, New Brunswick, Feb. 25, 2026 (GLOBE NEWSWIRE) — Major Drilling Group International Inc. (“Major Drilling” or the “Company”) (TSX: MDI), the largest provider of drilling services to the mining",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi atau iklan tersembunyi terhadap produk/brand tertentu.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have identified it as a native ad. The reasoning provided does not support the label, as the article is clearly promotional in nature, indicating a strong bias towards the company and its products.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, March 04, 2026 (GLOBE NEWSWIRE) — NervGen Pharma Corp. (“NervGen” or the “Company”) (TSXV: NGEN) (NASDAQ: NGEN), a clinical-stage biopharmaceutical company developing firs",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads terhadap produk/brand tertentu.",
+      "confidence": 0.95
+    }
+  ]
+}
