@@ -212,10 +212,10 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Stage 7: The Ad-Pressure Strategy (5:0 Ultra-Ads RAG)
-                            # This forces the 9B model's 'working memory' to focus exclusively on Ad patterns.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
-                            top_news = []
+                            # Stage 8: The Balanced Sword (4:1 RAG Anchoring)
+                            # 1 News Anchor prevents 'Model Paranoia' / News-Blindness.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:4]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -249,28 +249,29 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 7: The Ad-Pressure Strategy (Adversarial Adversity)
+                    # Stage 8: The Balanced Sword (Calibration Final)
                     template = """Tugas: Bertindaklah sebagai detektif iklan profesional. Ekstraksi niat promosi terselubung di balik bahasa berita yang halus.
 
-MODE DETEKTIF (Wajib Agresif):
-Klasifikasikan sebagai "native ads" jika ada SATU PUN indikasi berikut:
-1. Citra Positif: Menyoroti prestasi, penghargaan, inovasi, atau kegiatan CSR sebuah perusahaan/instansi.
-2. Nama Brand Berulang: Nama perusahaan atau produk disebut lebih dari 2 kali.
-3. Kerjasama/MOU: Pelaporan tentang peresmian, kerjasama, atau nota kesepahaman.
-4. Nada Rilis Pers: Kalimat yang memuji, optimis, atau menggunakan kutipan pejabat tanpa kritik.
+MODE DETEKTIF (Kriteria Penentu):
+Klasifikasikan sebagai "native ads" jika ada indikasi berikut:
+1. Citra Positif Komersial: Menyoroti kehebatan produk, inovasi, atau kegiatan CSR sebuah PERUSAHAAN (BNI, Emina, Tokopedia, dll).
+2. PR Korporat: Pengumuman dividen, pembagian keuntungan, rilis laporan keuangan positif, atau MOU antar perusahaan. 
+3. Nama Brand Komersial Berulang: Nama produk/perusahaan komersial disebut > 2 kali dengan nada mendukung.
+4. Tanpa Kritik: Berita hanya berisi pujian atau kutipan sepihak dari pejabat perusahaan.
 
-PERISAI BERITA MURNI (Hanya untuk berita bencana/kriminal/politik makro):
-- Gunakan "berita murni" HANYA jika artikel adalah murni informasi publik, bencana, atau kebijakan pemerintah tanpa brand.
+PERISAI BERITA MURNI (Gunakan ONLY untuk hal berikut):
+- Institusi Publik: Berita tentang WHO, PBB, Pemerintah (Menteri, Presiden), atau Lembaga Non-Profit tanpa embel-embel produk.
+- Peristiwa Umum: Bencana, kriminal, politik negara, dan kesehatan masyarakat umum (tanpa promosi obat/layanan tertentu).
 
 Judul: {title}
 Isi: {content}
 
-### RELEVANT ADVERTISING EXAMPLES (FOR PATTERN MATCHING):
+### RELEVANT EXAMPLES (FOR CALIBRATION):
 {context}
 
 Output (Return JSON ONLY):
 {{
-  "reason": "one sentence explanation highlighting the marketing intent",
+  "reason": "one sentence highlighting the specific marketing or corporate PR element found",
   "label": "native ads/berita murni"
 }}"""
                     prefix_force = "" 
