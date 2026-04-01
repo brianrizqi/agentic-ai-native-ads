@@ -556,7 +556,11 @@ Output (Return JSON ONLY):
   "label": "native ads/berita murni"
 }}"""
 
-ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
+ADVANCED_8B_GOLD_TEMPLATE = """Tugas: Klasifikasikan artikel di bawah sebagai "berita murni" atau "native ads".
+
+Kriteria:
+- "native ads": Konten dengan niat promosi, rilis PR, atau branding korporat (MOU, CSR, Penghargaan, Inovasi Produk).
+- "berita murni": Berita objektif tentang peristiwa publik, bencana, kebijakan pemerintah, atau hukum.
 
 {context}
 
@@ -564,4 +568,7 @@ Judul: {title}
 Isi: {content}
 
 Output (JSON ONLY):
-{{"label": "berita murni/native ads"}}"""
+{{
+  "reason": "penjelasan singkat 1 kalimat",
+  "label": "native ads/berita murni"
+}}"""

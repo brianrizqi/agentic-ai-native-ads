@@ -56,11 +56,10 @@ class ClassificationAgent:
         self.tokenizer = None
         self.local_model_ref = None
         
-        # Phase 142/143/145: Hyper-Discriminator Reset
-        # Phase 145: NUCLEAR RESET. Disabling RAG for Qwen to restore 91% baseline.
+        # Phase 142/143/145/147: Final Restoration Reset
+        # Re-enabling RAG for Qwen but with Platinum 0.85 threshold.
         is_qwen = "qwen" in self.model_name.lower()
         if is_qwen:
-            self.use_rag = False
             self.max_chars = 2200
         
         self.llm = self._initialize_llm(api_key)
@@ -246,9 +245,9 @@ class ClassificationAgent:
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
                 if is_qwen:
-                    # Phase 145: Nuclear Minimalist Restoration (Target 91.5%+)
-                    # Use English Meta-Instructions for better instruction following.
-                    template = QWEN_GOLD_MINIMALIST_V3
+                    # Phase 147: Indonesian Gold Restoration (Target 91.5%+)
+                    # Qwen performs better with explicit Indonesian context.
+                    template = ADVANCED_8B_GOLD_TEMPLATE
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
