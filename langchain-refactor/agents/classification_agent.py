@@ -212,10 +212,10 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Stage 6: Training Alignment Sync (Balanced 3:2 RAG)
-                            # Restoration of the training-time distribution.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
-                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                            # Stage 7: The Ad-Pressure Strategy (5:0 Ultra-Ads RAG)
+                            # This forces the 9B model's 'working memory' to focus exclusively on Ad patterns.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
+                            top_news = []
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -249,21 +249,28 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 6: Training Mirror (Advanced 8B Gold)
-                    template = """Tugas: Klasifikasikan artikel di bawah sebagai "berita murni" atau "native ads".
+                    # Stage 7: The Ad-Pressure Strategy (Adversarial Adversity)
+                    template = """Tugas: Bertindaklah sebagai detektif iklan profesional. Ekstraksi niat promosi terselubung di balik bahasa berita yang halus.
 
-Kriteria:
-- "native ads": Konten dengan niat promosi, rilis PR, atau branding korporat (MOU, CSR, Penghargaan, Inovasi Produk).
-- "berita murni": Berita objektif tentang peristiwa publik, bencana, kebijakan pemerintah, atau hukum.
+MODE DETEKTIF (Wajib Agresif):
+Klasifikasikan sebagai "native ads" jika ada SATU PUN indikasi berikut:
+1. Citra Positif: Menyoroti prestasi, penghargaan, inovasi, atau kegiatan CSR sebuah perusahaan/instansi.
+2. Nama Brand Berulang: Nama perusahaan atau produk disebut lebih dari 2 kali.
+3. Kerjasama/MOU: Pelaporan tentang peresmian, kerjasama, atau nota kesepahaman.
+4. Nada Rilis Pers: Kalimat yang memuji, optimis, atau menggunakan kutipan pejabat tanpa kritik.
 
-{context}
+PERISAI BERITA MURNI (Hanya untuk berita bencana/kriminal/politik makro):
+- Gunakan "berita murni" HANYA jika artikel adalah murni informasi publik, bencana, atau kebijakan pemerintah tanpa brand.
 
 Judul: {title}
 Isi: {content}
 
+### RELEVANT ADVERTISING EXAMPLES (FOR PATTERN MATCHING):
+{context}
+
 Output (Return JSON ONLY):
 {{
-  "reason": "penjelasan singkat 1 kalimat",
+  "reason": "one sentence explanation highlighting the marketing intent",
   "label": "native ads/berita murni"
 }}"""
                     prefix_force = "" 
