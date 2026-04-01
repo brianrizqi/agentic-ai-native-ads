@@ -212,9 +212,9 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Stage 4.3: Nuclear Overhaul (Minimalist 2:1 Contrastive RAG)
-                            # Focus on quality and decision-boundary clarity over quantity.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
+                            # Stage 5: Deep Context Restoration (4:1 Ads-Bias RAG)
+                            # 4 Ads and 1 News to provide strong promotional markers.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:4]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -232,8 +232,8 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            # Restoration Stage 4.2: High-Saliency RAG Formatting
-                            char_limit = 1500 if is_qwen else 800
+                            # Stage 5: Deep Context (6K Chars)
+                            char_limit = 6000 if is_qwen else 800
                             label_upper = label_hint.upper()
                             rag_block += f"DOKUMEN REFERENSI ({label_upper}):\n"
                             rag_block += f"{str(ex.get('content', ''))[:char_limit]}...\n"
@@ -289,7 +289,8 @@ ALASAN: [Brief logic summary]"""
                     if content_clean.startswith("-") or content_clean.startswith(":"):
                         content_clean = content_clean[1:].strip()
                 
-                user_msg = template.format(title=title or content[:70], content=content_clean[:self.max_chars], context=rag_block).strip()
+                max_chars = 6000 if is_qwen else self.max_chars
+                user_msg = template.format(title=title or content[:70], content=content_clean[:max_chars], context=rag_block).strip()
                 full_prompt = f"{prefix_force}{user_msg}{suffix_force}"
                 
                 # Phase 141/153: Prompt Dispatcher
@@ -490,7 +491,7 @@ ALASAN: [Brief logic summary]"""
                 elif any(kw in low_resp for kw in ["berita murni", "informasi netral"]):
                     label = "berita murni"
 
-            return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else ""}
+            return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan else "Tidak ditemukan analisis eksplisit."}
         except Exception as e:
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
