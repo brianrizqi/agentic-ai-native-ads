@@ -232,9 +232,12 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            # Phase 162: Deep Context (1500 Chars) for high-grade analysis.
+                            # Restoration Stage 4.2: High-Saliency RAG Formatting
                             char_limit = 1500 if is_qwen else 800
-                            rag_block += f"- Konten: {str(ex.get('content', ''))[:char_limit]}... -> Label: {label_hint}\n"
+                            label_upper = label_hint.upper()
+                            rag_block += f"DOKUMEN REFERENSI ({label_upper}):\n"
+                            rag_block += f"{str(ex.get('content', ''))[:char_limit]}...\n"
+                            rag_block += f"(KLASIFIKASI TERKONFIRMASI: {label_upper})\n\n"
                         rag_block += "\n"
                     else:
                         rag_block = ""
@@ -254,6 +257,7 @@ class ClassificationAgent:
 TITLE: {title}
 BODY: {content}
 
+### CONTEXT EXAMPLES (Use these to calibrate your judgment):
 {context}
 
 [REQUIRED OUTPUT FORMAT]
