@@ -212,10 +212,10 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Restoration: Hyper-Aggressive Skew (5 Ads, 0 News)
-                            # This forces the model to recognize 'Ad-ness' manually by example.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
-                            top_news = [] # Force zero news to break intrinsic news bias
+                            # Restoration Stage 3: Contrastive RAG (3 Ads, 2 News)
+                            # Providing contrast helps the model see the decision boundary.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -249,18 +249,20 @@ class ClassificationAgent:
                 if is_qwen:
                     # Phase 153: Silver Concise (Target 91.5%+)
                     # ChatML will handle the 'system/user' boundaries.
-                    template = """Tugas: Klasifikasikan artikel di bawah ini sebagai 'native ads' (advertorial/iklan) atau 'berita murni' (informasi netral).
+                    template = """Tugas: Klasifikasikan artikel di bawah ini ke dalam kategori (A) atau (B).
                     
 JUDUL: {title}
 ISI: {content}
 
 {context}
 
-Output harus berupa JSON dengan format:
-{{
-  "label": "native ads" atau "berita murni",
-  "reason": "analisis singkat mengapa artikel tersebut termasuk kategori tersebut"
-}}"""
+PILIHAN KATEGORI:
+(A) Native Ads: Konten promosi, rilis pers, profil brand/produk, atau tulisan yang didorong kepentingan komersial.
+(B) Berita Murni: Informasi faktual, netral, objektif, dan tidak memihak satu entitas komersial.
+
+Format Jawaban:
+JAWABAN: [A atau B]
+ALASAN: [analisis singkat]"""
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -290,11 +292,11 @@ Output harus berupa JSON dengan format:
                     messages = [
                         {
                             "role": "system", 
-                            "content": "Anda adalah Senior Media Auditor yang bertugas membongkar praktik 'Stealth Marketing' dan 'Native Advertising' terselubung.\n\n"
-                                       "KRITERIA PENILAIAN KRITIS:\n"
-                                       "1. NATIVE ADS: Artikel yang fokus pada satu brand/produk, rilis pers perusahaan, profil CEO/Perusahaan yang memuji, atau artikel dengan gaya bahasa 'promotional-soft'.\n"
-                                       "2. BERITA MURNI: Informasi faktual, seimbang (multi-stakeholder), objektif, dan tidak memihak satu entitas komersial secara berlebihan.\n\n"
-                                       "Ingat: Banyak Native Ads dibungkus dengan gaya berita. Jika niatnya adalah membangun citra positif brand, itu adalah NATIVE ADS."
+                            "content": "Anda adalah Senior Media Auditor yang bertugas membedakan 'Native Ads' dan 'Berita Murni'.\n\n"
+                                       "INSTRUKSI KETAT:\n"
+                                       "1. Jawablah di baris pertama dengan format 'JAWABAN: A' atau 'JAWABAN: B'.\n"
+                                       "2. Identifikasi sinyal promosi halus (soft-selling), profil brand, atau rilis pers sebagai Native Ads.\n"
+                                       "3. Berita Murni harus benar-benar netral dan tidak memihak."
                         },
                         {"role": "user", "content": user_msg}
                     ]
@@ -392,20 +394,26 @@ Output harus berupa JSON dengan format:
             alasan = "Tidak ditemukan alasan (mode MCQ)."
             label = "berita murni"
             
-            # 1. MCQ Parsing (Priority for micro)
-            # Find the first A or B that appears after "Jawaban" or at the start
-            mcq_match = re.search(r'(?:Jawaban|Pilih|Answer):\s*([AB])', resp_clean, re.IGNORECASE)
-            if not mcq_match:
-                # Direct check for single token A/B
-                if resp_clean.split() and resp_clean.split()[0].upper() in ['A', 'B']:
-                    label = "native ads" if resp_clean.split()[0].upper() == 'A' else "berita murni"
-                    return {'label': label, 'confidence': 0.9, 'reasoning': alasan}
-            else:
-                choice = mcq_match.group(1).upper()
+            # 1. MCQ Parsing (Priority for Multiple Choice)
+            # Find JAWABAN: A or B
+            mcq_direct = re.search(r'JAWABAN:\s*([AB])', resp_clean, re.IGNORECASE)
+            if mcq_direct:
+                choice = mcq_direct.group(1).upper()
                 label = "native ads" if choice == 'A' else "berita murni"
-                return {'label': label, 'confidence': 0.9, 'reasoning': alasan}
+                
+                # Extract reason if exists
+                reason_match = re.search(r'ALASAN:\s*(.*)', resp_clean, re.IGNORECASE | re.DOTALL)
+                if reason_match:
+                    alasan = reason_match.group(1).strip()
+                return {'label': label, 'confidence': 0.98, 'reasoning': alasan}
 
-            # 2. JSON Extraction (Run if MCQ parsing didn't return)
+            # 2. Heuristic A/B search (first occurrences)
+            if resp_clean.startswith('A') or '(A)' in resp_clean[:20]:
+                label = "native ads"
+            elif resp_clean.startswith('B') or '(B)' in resp_clean[:20]:
+                label = "berita murni"
+
+            # 3. JSON Extraction (Fallback)
             # Find all JSON blocks
             json_blocks = re.findall(r'\{.*?\}', resp_clean, re.DOTALL)
             
