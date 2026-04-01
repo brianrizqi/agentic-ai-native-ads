@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 20,
+    "good_count": 12,
+    "borderline_count": 0,
+    "bad_count": 8,
+    "avg_judge_score": 3.4
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that accurately identifies the absence of promotional content, aligning with the ground truth.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Data Badan Kesehatan Dunia (WHO) mengungkap saat ini di seluruh dunia 3 juta orang meninggal setiap tahun akibat penggunaan alkohol yang berbahaya. Artinya, satu orang meninggal se",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads terhadap brand/BUMN/instansi maupun prestasi/komersial.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that accurately identifies the absence of promotional content, aligning well with the ground truth.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Petenis Spanyol Rafael Nadal menambah koleksi gelar juara grand slam usai memenangi turnamen French Open 2022. Petenis berusia 36 tahun ini memberi pesan yang jelas kepada para pes",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads, bukan korporat, dan tidak membahas prestasi/keuangan/distribusi maupun musibah.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the absence of promotional content, financial terms, or disaster discussions, and the reasoning provided is logical and well-supported.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TORONTO - Books by Amanda Leduc, Megha Majumdar and Katie Kitamura are among the 15 titles longlisted for the Carol Shields Prize for Fiction.\n\nThe US$150,000 award is the world’s largest literary pur",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel tidak menyebutkan brand/BUMN/instansi, tidak mengandung kata keuangan/prestasi/distribusi, dan tidak membahas musibah.",
+      "confidence": 0.95
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model's prediction is incorrect as the ground truth is 'native ads'. The reasoning provided does not adequately address the promotional nature of the content, which suggests it is more aligned with native advertising despite appearing informative.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Menurut dr Nusye E Zamsiar Spesialis Kedokteran Okupasi, selesma bisa disebabkan oleh virus atau faktor lain, seperti alergi, cuaca, dan kelelahan.“Umumnya, tingkat keparahan selesma cenderung ringan.",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel tidak mengandung unsur promosi/native ads, murni informasi kesehatan tanpa elemen korporasi/prestasi/musibah.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' While the reasoning mentions elements of achievement and financial aspects, it fails to recognize the promotional intent behind introducing Batik Tulis Nitik to an international audience, which aligns with native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Guna mengenalkan Batik Tulis Nitik ke dunia internasional, sejumlah perajin dari Yogyakarta pun diboyong DJKI Kemenkumham pada gelaran Expo 2020 Dubai yang berlangsung pada Jumat (4/3/2022) sampai Kam",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur prestasi/keuangan (Expo, Pameran). Namun tidak memenuhi kriteria native ads karena tidak terkait brand/BUMN/instansi.",
+      "confidence": 0.95
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have been labeled as 'native ads.' The reasoning provided is shallow and does not adequately address the promotional nature of the content, which is focused on a financial distribution announcement.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "TORONTO, Feb. 19, 2026 (GLOBE NEWSWIRE) — Canadian Life Companies Split Corp. (the “Company”) declares its monthly distribution of $0.10000 for each Class A share ($1.20 annualized) and $0.05833 for e",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel mengandung unsur keuangan/prestasi (dividen/distribusi), namun tidak terkait dengan brand/BUMN/instansi tertentu sehingga bukan native ads.",
+      "confidence": 0.95
+    }
+  ]
+}
