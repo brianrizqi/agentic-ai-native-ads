@@ -257,15 +257,15 @@ Isi: {content}
 ### PANDUAN PRINSIP (BILINGUAL MASTER RULES):
 
 🔴 KATEGORI: NATIVE ADS (WAJIB DIPILIH JIKA ADA SALAH SATU):
-1. Corporate Press Release: Rilis pers perusahaan, baik bahasa Inggris maupun Indonesia (bermuatan "Globe Newswire", "PR Newswire", "TSX", "NYSE", "NASDAQ", dll).
-2. Financial / Business Announcement: Pengumuman dividen, laba perusahaan (net profit, earnings), akuisisi, atau ekspansi bisnis oleh brand/BUMN/Korporasi.
-3. Corporate Pride / Awards: Brand/Instansi memamerkan penghargaan (awards, achievements), atau partisipasi di pameran/expo, dengan bahasa positif.
-4. Soft-Selling: Artikel kesehatan, gaya hidup, atau review yang menonjolkan satu tempat/produk/layanan secara spesifik dan persuasif tanpa unsur musibah.
+1. Corporate / Government PR (Advertorial): Rilis pers, klaim prestasi, atau liputan yang memoles citra positif Perusahaan, BUMN (misal: KAI, Pertamina, dll), atau Pemerintah Daerah (Pemkab/Pemkot/Kementerian).
+2. Financial / Business Announcement: Pengumuman dividen, laba, ekspansi bisnis, atau korporasi ("Globe Newswire", "PR Newswire", "TSX", dll).
+3. Event & Product Promotion: Liputan pameran (otomotif/IMOS, gadget, travel fair) atau peluncuran produk/layanan dengan ragam bahasa positif/persuasif.
+4. Soft-Selling: Artikel kesehatan, gaya hidup, atau review yang menonjolkan satu entitas komersial secara dominan tanpa unsur kritis/musibah.
 
 🟢 KATEGORI: BERITA MURNI (WAJIB DIPILIH JIKA ADA SALAH SATU):
-1. Public Grief / Disasters: Kecelakaan, kebakaran, bencana alam, musibah, berita duka (kematian).
-2. Crisis / Legal Issues: Kasus hukum persidangan, PHK massal, skandal, kriminalitas.
-3. Government & Public Policy: Kebijakan negara, hari libur nasional, hasil olahraga murni.
+1. Public Grief / Disasters: Kecelakaan lalulintas, musibah alam, cuaca, atau berita duka/kematian.
+2. Crisis / Legal Issues: Persidangan hukum murni, skandal kriminal, atau PHK/kebangkrutan.
+3. Macro Policy & Pure Event: Kebijakan makro negara (contoh: aturan pajak/PPN, pemilu), diplomasi presiden antar negara, atau laporan langsung skor pertandingan olahraga. No PR!
 
 Format Respon (JSON WAJIB):
 {{
