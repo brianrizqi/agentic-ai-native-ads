@@ -50,9 +50,12 @@ try:
     import nltk
     from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
     from nltk.translate.meteor_score import meteor_score
-    nltk.download('wordnet', quiet=True)
-    nltk.download('punkt', quiet=True)
-    nltk.download('punkt_tab', quiet=True)
+    try:
+        nltk.download('wordnet', quiet=True)
+        nltk.download('punkt', quiet=True)
+        nltk.download('punkt_tab', quiet=True)
+    except Exception as e:
+        print(f"Note: Could not download NLTK data (likely no internet): {e}")
     HAS_NLP_METRICS = True
 except ImportError:
     HAS_NLP_METRICS = False
