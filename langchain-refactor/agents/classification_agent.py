@@ -201,20 +201,17 @@ class ClassificationAgent:
                 
                 # Phase 160: Accuracy Push (Target 91.5%+)
                 # 0.78 threshold for Qwen (Optimize for retrieval hit)
-                RAG_THRESHOLD = 0.78 if is_qwen else 0.75
+                RAG_THRESHOLD = 0.75 if is_qwen else 0.75
                 rag_block = ""
                 
                 if self.use_rag and examples:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # 1. Base Layer (3:3 Balanced Mix)
-                        # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
-                        # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Stage 9: Emergency Ad-Shock (Revert to 5:0)
-                            # Qwen 9B cannot handle mixed RAG without defaulting to News (Safety Bias).
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
+                            # Stage 12: The Guilty Expansion (10:0 RAG Skew)
+                            # 10 Ads leave zero room for news bias to emerge.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:10]
                             top_news = []
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -249,24 +246,29 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 11: The Prosecutor (91.5% Target Recovery)
+                    # Stage 12: The Guilty Expansion (Prosecutor V3)
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang ahli mendeteksi manipulasi opini (Native Ads).
 
-PRESUMPTION OF BRANDING (Wajib Patuh):
-1. Artikel yang menyebutkan nama PERUSAHAAN SWASTA (BNI, Emina, Bank, Brand, dll) dengan nada keberhasilan, prestasi, atau CSR adalah NATIVE ADS.
-2. Artikel yang berisi pengumuman keuntungan, dividen, atau kerjasama (MOU) antar perusahaan adalah NATIVE ADS.
-3. HANYA labeli sebagai "berita murni" jika artikel adalah Fakta Dingin tentang WHO, Bencana Alam, Kriminal Umum, atau Politik Makro TANPA menyebut nama produk/brand swasta.
+VETO PR KORPORAT (DILARANG JADI BERITA MURNI):
+Jika artikel mengandung satu saja unsur berikut, Anda HARUS melabeli "native ads":
+- MOU/Kerjasama: Peluncuran, peresmian, atau penandatanganan nota kesepahaman perusahaan.
+- Penghargaan: Artikel tentang penghargaan perusahaan (Awards/Ranking).
+- CSR/Sosial: Kegiatan amal perusahaan namun menggunakan logo perusahaan/brand secara aktif.
+- Kinerja Saham/Dividen: Pengumuman pembagian keuntungan atau laporan keuangan positif.
+
+PERISAI BERITA MURNI (Hanya jika benar-benar beku):
+- Bencana alam, Kriminalitas jalanan, WHO, atau Politik Negara TANPA menyebut satu pun entitas bisnis swasta.
 
 Judul: {title}
 Isi: {content}
 
-### PATTERN ASSET (PROMOTIONAL):
+### EVIDENCE PATTERNS (10 AD EXAMPLES):
 {context}
 
 Format Respon (Wajib DIAWALI dengan JAWABAN):
 JAWABAN: (A) native ads / (B) berita murni
 {{
-  "reason": "Sebutkan 1 alasan kuat kenapa ini adalah iklan branding/PR",
+  "reason": "Sebutkan bukti PR/Branding konkret sesuai poin Veto di atas",
   "label": "native ads/berita murni"
 }}"""
                     prefix_force = "JAWABAN: (A) native ads" 
