@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class TextCleanerInput(BaseModel):
     """Input schema for TextCleanerTool."""
     text: str = Field(description="Raw text to clean")
-    max_length: int = Field(default=2000, description="Maximum text length")
+    max_length: int = Field(default=15000, description="Maximum text length") # Stage 15b: Expansion
 
 
 class TextCleanerTool(BaseTool):
@@ -34,7 +34,7 @@ class TextCleanerTool(BaseTool):
     def _run(
         self,
         text: str,
-        max_length: int = 2000,
+        max_length: int = 15000, # Stage 15b: Expansion
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
         """Clean text."""
@@ -52,8 +52,8 @@ class TextCleanerTool(BaseTool):
             # Remove email addresses
             text = re.sub(r'\S+@\S+', '', text)
             
-            # Remove special characters but keep punctuation
-            text = re.sub(r'[^\w\s.,!?;:()\-\']', '', text)
+            # Remove special characters but keep punctuation and markers [], |
+            text = re.sub(r'[^\w\s.,!?;:()\-\'\[\]|]', '', text)
             
             # Remove extra punctuation
             text = re.sub(r'([.,!?;:]){2,}', r'\1', text)
@@ -210,15 +210,18 @@ class SummarizerTool(BaseTool):
             if not paragraphs:
                 return ""
             
-            # Take first few paragraphs
-            summary_paragraphs = paragraphs[:max_sentences]
+            # Take first 2 and last 2 paragraphs (Sandwich method)
+            if len(paragraphs) <= max_sentences + 1:
+                summary_paragraphs = paragraphs
+            else:
+                summary_paragraphs = paragraphs[:2] + paragraphs[-2:]
             
             # Combine
             summary = ' '.join(summary_paragraphs)
             
-            # Truncate if too long
-            if len(summary) > 500:
-                summary = summary[:500] + '...'
+            # Truncate if too long (Stage 15: Increased to 2000)
+            if len(summary) > 2000:
+                summary = summary[:2000] + '...'
             
             logger.info(f"Created summary: {len(summary)} characters")
             return summary

@@ -77,7 +77,7 @@ class WebScraperTool(BaseTool):
                 'url': url,
                 'title': title_text,
                 'text': text,
-                'paragraphs': paragraphs[:10],  # Limit to 10 paragraphs
+                'paragraphs': paragraphs[:100],  # Stage 15b: Deep Scraping (10 -> 100)
                 'metadata': {
                     'status_code': response.status_code,
                     'content_type': response.headers.get('content-type', ''),
@@ -173,7 +173,7 @@ class SeleniumScraperTool(BaseTool):
                     'url': url,
                     'title': title_text,
                     'text': text,
-                    'paragraphs': paragraphs[:10],
+                    'paragraphs': paragraphs[:100], # Stage 15b: Deep Scraping
                     'metadata': {
                         'scraping_method': 'selenium',
                         'wait_time': wait_time
