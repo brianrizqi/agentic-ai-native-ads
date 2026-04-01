@@ -255,15 +255,14 @@ class ClassificationAgent:
 Judul: {title}
 Isi: {content}
 
-### INSTRUKSI FINAL JAKSA (BILINGUAL MANDATE):
+### INSTRUKSI FINAL JAKSA (WAJIB DIIKUTI):
 Anda HARUS mengisi Checklist Logika berikut sebelum menentukan label:
-1. Ada penyebutan Brand/BUMN/Instansi/Tempat Spesifik (e.g. Bank, PT, BBNI, BBRI, Persero Tbk, Nama Restoran/Toko)? (ya/tidak)
-2. Apakah artikel memuat kata-kata KEUANGAN/PRESTASI/PROMOSI ini: [Dividen, Distribution, Laba Bersih, Net Profit, Earnings, Pertumbuhan, Penghargaan, Award, Achievement, Expo, Pameran, Launch, Buka Cabang]? (ya/tidak)
+1. Ada penyebutan Brand/BUMN/Instansi (e.g. Bank, PT, BBNI, BBRI, Persero Tbk)? (ya/tidak)
+2. Apakah artikel memuat kata-kata KEUANGAN/PRESTASI/DISTRIBUSI ini: [Dividen, Distribution, Laba Bersih, Net Profit, Earnings, Pertumbuhan, Penghargaan, Award, Achievement, Expo, Pameran]? (ya/tidak)
 3. Apakah artikel memuat kata-kata MUSIBAH ini: [Kebakaran, Kecelakaan, Kematian, Duka Cita, Bencana Alam]? (ya/tidak)
 
-⚠️ ATURAN LABEL (PRIORITAS TERTINGGI):
+⚠️ ATURAN LABEL (MANDATORY):
 - Jika (Checklist 1=ya DAN Checklist 2=ya) -> LABEL: "native ads" (WAJIB).
-- Konten LIFESTYLE/REVIEW tempat makan/toko spesifik tanpa musibah -> LABEL: "native ads".
 - Jika (Checklist 3=ya) -> LABEL: "berita murni" (WAJIB).
 
 Format Respon (JSON WAJIB):
