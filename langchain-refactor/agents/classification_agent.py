@@ -212,10 +212,10 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Stage 5: Deep Context Restoration (4:1 Ads-Bias RAG)
-                            # 4 Ads and 1 News to provide strong promotional markers.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:4]
-                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            # Stage 6: Training Alignment Sync (Balanced 3:2 RAG)
+                            # Restoration of the training-time distribution.
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -248,27 +248,24 @@ class ClassificationAgent:
 
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
-                
                 if is_qwen:
-                    # Phase 153: Silver Concise (Target 91.5%+)
-                    # ChatML will handle the 'system/user' boundaries.
-                    template = """[TASK] PERFORM INTERNAL MEDIA AUDIT
-                    
-TITLE: {title}
-BODY: {content}
+                    # Stage 6: Training Mirror (Advanced 8B Gold)
+                    template = """Tugas: Klasifikasikan artikel di bawah sebagai "berita murni" atau "native ads".
 
-### REFERENCE DOCUMENTS (FOR CALIBRATION):
+Kriteria:
+- "native ads": Konten dengan niat promosi, rilis PR, atau branding korporat (MOU, CSR, Penghargaan, Inovasi Produk).
+- "berita murni": Berita objektif tentang peristiwa publik, bencana, kebijakan pemerintah, atau hukum.
+
 {context}
 
-[AUDIT CHECKLIST - STEP BY STEP]:
-1. IDENTIFY BRANDS: List all company/brand names mentioned.
-2. CHECK CALL-TO-ACTION: Are there links, discounts, or purchase instructions?
-3. TONE EVALUATION: Is the tone 'Promotional' (praising) or 'Objective' (critical/multi-source)?
-4. PRESS RELEASE CHECK: Is it a corporate announcement or PR-style report?
+Judul: {title}
+Isi: {content}
 
-[FINAL VERDICT]:
-VONIS: (A) NATIVE ADS / (B) PURE NEWS
-ALASAN: [Brief logic summary]"""
+Output (Return JSON ONLY):
+{{
+  "reason": "penjelasan singkat 1 kalimat",
+  "label": "native ads/berita murni"
+}}"""
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -296,15 +293,9 @@ ALASAN: [Brief logic summary]"""
                 # Phase 141/153: Prompt Dispatcher
                 if is_qwen:
                     # Phase 153: Use standard ChatML for Qwen Chat models
+                    # Training Mirror Persona
                     messages = [
-                        {
-                            "role": "system", 
-                            "content": "Anda adalah Senior Auditor Media yang sangat skeptis dan kritis. Tugas Anda adalah membongkar 'Stealth Marketing'.\n\n"
-                                       "LOGIKA AUDITOR:\n"
-                                       "1. Cari niat ekonomi di balik tulisan.\n"
-                                       "2. Jika artikel terlalu fokus pada satu brand atau memuji prestasi satu perusahaan secara berlebihan, itu adalah NATIVE ADS.\n"
-                                       "3. Berita Murni harus memiliki jarak kritis dan minimal 2 sudut pandang berbeda."
-                        },
+                        {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
                         {"role": "user", "content": user_msg}
                     ]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -356,14 +347,16 @@ ALASAN: [Brief logic summary]"""
                             'reasoning': final_reason
                         }
 
-                # Standard Generation for other tiers
-                gen_config = self.local_model_ref.generation_config
-                
+                # Optimized Sampling for 9B Training Alignment
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(
                         input_ids, 
                         attention_mask=mask,
-                        generation_config=gen_config,
+                        max_new_tokens=150,
+                        do_sample=True,
+                        temperature=0.01,
+                        top_p=0.9,
+                        repetition_penalty=1.1,
                         pad_token_id=self.tokenizer.eos_token_id
                     )
                 
