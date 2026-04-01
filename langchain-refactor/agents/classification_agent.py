@@ -211,11 +211,11 @@ class ClassificationAgent:
                         if is_qwen:
                             # Stage 13: Final Stability (3:0 RAG Skew)
                             # 3 Ads are the 'Sweet Spot' - 10 was too noisy.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                             top_news = []
                         else:
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
-                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         
                         selected = top_ads + top_news
                         
@@ -252,26 +252,26 @@ class ClassificationAgent:
 ### REFERENCE PATTERNS (QUALITY OVER QUANTITY):
 {context}
 
-### DATA ARTIKEL UTAMA:
+### DATA ARTIKEL:
 Judul: {title}
 Isi: {content}
 
-### PANDUAN KEPUTUSAN FINAL (WAJIB DIIKUTI):
-1. ⚠️ VETO ADVERTORIAL: Jika ada nama perusahaan (Bank dsb) atau instansi, WAJIB labeli "native ads" jika berisi:
-   - Finansial: Pengumuman dividen, laba perusahaan, pertumbuhan kinerja KUR (BNI, BRI, dsb).
-   - Prestige: Menang penghargaan, partisipasi Expo Internasional (Dubai, dsb).
-   - Edukasi Branding: Tips dari dokter/ahli yang mempromosikan klinik/produk tertentu.
+### INSTRUKSI FINAL JAKSA:
+Anda HARUS mengisi Checklist Logika berikut sebelum menentukan label:
+1. Ada penyebutan Brand/Perusahaan/Instansi (e.g. Bank, PT, BUMN)? (ya/tidak)
+2. Isi konten adalah prestasi/laba/penghargaan/kamera expo/inovasi/promo? (ya/tidak)
+3. Isi konten adalah musibah (kecelakaan/kebakaran/kematian)? (ya/tidak)
 
-2. 🛡️ PERISAI BERITA MURNI: Hanya labeli "berita murni" jika konten berisi:
-   - Musibah: Kebakaran, kecelakaan, bencana alam, kematian/duka cita.
-   - Kebijakan Negara: Pengumuman hari libur, jadwal resmi pemilu.
+⚠️ ATURAN LABEL:
+- Jika (Checklist 1=ya DAN Checklist 2=ya) -> LABEL: "native ads" (WAJIB).
+- Jika (Checklist 3=ya) -> LABEL: "berita murni" (WAJIB).
 
-Abaikan contoh RAG di atas jika mereka bertentangan dengan PANDUAN FINAL ini.
-
-Format Respon (JSON Berbasis Bukti):
+Format Respon (JSON WAJIB):
 {{
-  "sentiment": "positif/negatif/netral",
-  "reasoning": "Kenapa ini branding vs kenapa ini musibah?",
+  "checklist_korporasi": "ya/tidak",
+  "checklist_prestasi": "ya/tidak",
+  "checklist_musibah": "ya/tidak",
+  "reasoning": "Analisis singkat berdasarkan checklist di atas.",
   "label": "native ads/berita murni"
 }}
 
