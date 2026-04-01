@@ -209,9 +209,11 @@ class ClassificationAgent:
                     
                     if candidates:
                         if is_qwen:
-                            # Stage 24: Pure Enforcer (Zero RAG)
-                            top_ads = []
-                            top_news = []
+                            # Stage 26: RAG-Resistant Prosecutor (Balanced 1:1)
+                            best_ad = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            best_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            top_ads = best_ad
+                            top_news = best_news
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
@@ -248,10 +250,12 @@ class ClassificationAgent:
                     # Stage 15: The Infrastructure Prosecutor (V5)
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang ahli mendeteksi manipulasi opini (Native Ads).
 
-### REFERENCE PATTERNS (QUALITY OVER QUANTITY):
+### CONTEXT REFERENCE (STYLE ONLY):
 {context}
 
-### DATA ARTIKEL:
+⚠️ PENTING: Jangan meniru label di atas jika bertentangan dengan VETO di bawah.
+
+### DATA ARTIKEL UTAMA (CEK TELITI):
 Judul: {title}
 Isi: {content}
 
