@@ -212,10 +212,10 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            # Stage 8: The Balanced Sword (4:1 RAG Anchoring)
-                            # 1 News Anchor prevents 'Model Paranoia' / News-Blindness.
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:4]
-                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            # Stage 9: Emergency Ad-Shock (Revert to 5:0)
+                            # Qwen 9B cannot handle mixed RAG without defaulting to News (Safety Bias).
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
+                            top_news = []
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -249,24 +249,22 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 if is_qwen:
-                    # Stage 8: The Balanced Sword (Calibration Final)
+                    # Stage 9: Emergency Ad-Shock (Detective Persona 2.0)
                     template = """Tugas: Bertindaklah sebagai detektif iklan profesional. Ekstraksi niat promosi terselubung di balik bahasa berita yang halus.
 
-MODE DETEKTIF (Kriteria Penentu):
-Klasifikasikan sebagai "native ads" jika ada indikasi berikut:
-1. Citra Positif Komersial: Menyoroti kehebatan produk, inovasi, atau kegiatan CSR sebuah PERUSAHAAN (BNI, Emina, Tokopedia, dll).
-2. PR Korporat: Pengumuman dividen, pembagian keuntungan, rilis laporan keuangan positif, atau MOU antar perusahaan. 
-3. Nama Brand Komersial Berulang: Nama produk/perusahaan komersial disebut > 2 kali dengan nada mendukung.
-4. Tanpa Kritik: Berita hanya berisi pujian atau kutipan sepihak dari pejabat perusahaan.
+MODE DETEKTIF (Wajib Dianggap Iklan jika ada):
+1. PR Korporat: Berita tentang dividen, laporan keuangan positif, peresmian, MOU, atau kerjasama antar perusahaan.
+2. Branding Subjek: Artikel menonjolkan kehebatan produk, inovasi, atau kegiatan CSR sebuah PERUSAHAAN SWASTA (BNI, Emina, Bank, dll).
+3. Tanpa Kritik: Berita hanya berisi pujian atau kutipan sepihak dari pejabat perusahaan.
 
-PERISAI BERITA MURNI (Gunakan ONLY untuk hal berikut):
-- Institusi Publik: Berita tentang WHO, PBB, Pemerintah (Menteri, Presiden), atau Lembaga Non-Profit tanpa embel-embel produk.
-- Peristiwa Umum: Bencana, kriminal, politik negara, dan kesehatan masyarakat umum (tanpa promosi obat/layanan tertentu).
+PERISAI BERITA MURNI (Hanya untuk):
+- Institusi Global/Publik: Berita WHO, PBB, atau kebijakan murni Pemerintah TANPA brand komersial. (Contoh: Berita WHO tentang angka kematian alkohol adalah BERITA MURNI).
+- Peristiwa Umum: Bencana alam, kriminal umum, atau politik tanpa brand.
 
 Judul: {title}
 Isi: {content}
 
-### RELEVANT EXAMPLES (FOR CALIBRATION):
+### ADVERTISING PATTERNS TO IMITATE:
 {context}
 
 Output (Return JSON ONLY):
@@ -363,7 +361,7 @@ Output (Return JSON ONLY):
                         max_new_tokens=150,
                         do_sample=True,
                         temperature=0.01,
-                        top_p=0.9,
+                        top_p=0.85,
                         repetition_penalty=1.1,
                         pad_token_id=self.tokenizer.eos_token_id
                     )
