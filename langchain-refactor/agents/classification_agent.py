@@ -252,27 +252,21 @@ class ClassificationAgent:
 ### REFERENCE PATTERNS (QUALITY OVER QUANTITY):
 {context}
 
-RULES FOR VETO:
-If the content below mentions a Private Company and contains ANY of these, you MUST label "native ads":
-- Penanda Fisik: [ADVERTORIAL], [KERJA SAMA], | BIZ KOMPAS, atau sejenisnya.
-- Prestasi: Awards, Penghargaan, Ranking, Inovasi Produk.
-- Kerjasama: MOU, Pengumuman peresmian, Kolaborasi strategis.
-- Finansial: Dividen, Profit, Laporan Kinerja Saham.
-
-PERISAI BERITA MURNI (KHUSUS KRISIS/MUSIBAH):
-Hanya labeli "berita murni" jika konten berisi:
-- Kecelakaan/Bencana: Kebakaran, kecelakaan kendaraan, gempa bumi, musibah alam.
-- Krisis/PHK/Kematian: Berita pemecatan karyawan massal, kebangkrutan, atau kabar duka cita (WHO, dsb).
-- Kebijakan Negara: Pengumuman hari libur, jadwal resmi pemilu, hukum pidana.
-
-⚠️ BUKAN BERITA MURNI (VETO ADVERTORIAL):
-Jika ada nama perusahan (Bank dsb) atau Instansi, TETAP labeli "native ads" jika berisi:
-- Finansial: Pengumuman dividen, laba perusahaan, pertumbuhan kinerja KUR (BNI, BRI, dsb).
-- Prestige: Menang penghargaan (Bronze/Silver/Gold), pengenalan Batik/Produk ke kancah global (Expo Dubai, dsb).
-- Edukasi Branding: Tips kesehatan dari dokter yang menonjolkan satu klinik/metode tertentu.
-
+### DATA ARTIKEL UTAMA:
 Judul: {title}
 Isi: {content}
+
+### PANDUAN KEPUTUSAN FINAL (WAJIB DIIKUTI):
+1. ⚠️ VETO ADVERTORIAL: Jika ada nama perusahaan (Bank dsb) atau instansi, WAJIB labeli "native ads" jika berisi:
+   - Finansial: Pengumuman dividen, laba perusahaan, pertumbuhan kinerja KUR (BNI, BRI, dsb).
+   - Prestige: Menang penghargaan, partisipasi Expo Internasional (Dubai, dsb).
+   - Edukasi Branding: Tips dari dokter/ahli yang mempromosikan klinik/produk tertentu.
+
+2. 🛡️ PERISAI BERITA MURNI: Hanya labeli "berita murni" jika konten berisi:
+   - Musibah: Kebakaran, kecelakaan, bencana alam, kematian/duka cita.
+   - Kebijakan Negara: Pengumuman hari libur, jadwal resmi pemilu.
+
+Abaikan contoh RAG di atas jika mereka bertentangan dengan PANDUAN FINAL ini.
 
 Format Respon (JSON Berbasis Bukti):
 {{
