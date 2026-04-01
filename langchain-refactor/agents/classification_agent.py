@@ -199,9 +199,9 @@ class ClassificationAgent:
                 # ---------------------------------------------------------------------
                 is_qwen = "qwen" in self.model_name.lower()
                 
-                # Platinum RAG: Force 3 Ads + 3 News (Balanced 50:50).
-                # 0.85 threshold for Qwen (Elite standard), 0.75 for Llama.
-                RAG_THRESHOLD = 0.85 if is_qwen else 0.75
+                # Phase 160: Accuracy Push (Target 91.5%+)
+                # 0.78 threshold for Qwen (Optimize for retrieval hit)
+                RAG_THRESHOLD = 0.78 if is_qwen else 0.75
                 rag_block = ""
                 
                 if self.use_rag and examples:
@@ -212,8 +212,9 @@ class ClassificationAgent:
                         # Phase 144: Hyper-Aggressive Skew (5 Ads, 0 News for Qwen)
                         # Phase 140/143 had 3:3 balanced mix, which caused news bias.
                         if is_qwen:
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:5]
-                            top_news = [] # Force zero news to break news bias
+                            # Restoration: 3 Ads + 2 News for better contrast
+                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
+                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:2]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                             top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
@@ -230,8 +231,8 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            # Phase 143: Deep Snippet (1250 Chars) for better Qwen context.
-                            char_limit = 1250 if is_qwen else 800
+                            # Phase 162: Deep Context (1500 Chars) for high-grade analysis.
+                            char_limit = 1500 if is_qwen else 800
                             rag_block += f"- Konten: {str(ex.get('content', ''))[:char_limit]}... -> Label: {label_hint}\n"
                         rag_block += "\n"
                     else:
@@ -247,14 +248,18 @@ class ClassificationAgent:
                 if is_qwen:
                     # Phase 153: Silver Concise (Target 91.5%+)
                     # ChatML will handle the 'system/user' boundaries.
-                    template = """Tugas: Klasifikasikan artikel sebagai 'native ads' (konten promosi/iklan) atau 'berita murni' (informasi netral).
+                    template = """Tugas: Klasifikasikan artikel di bawah ini sebagai 'native ads' (advertorial/iklan) atau 'berita murni' (informasi netral).
                     
 JUDUL: {title}
 ISI: {content}
 
 {context}
 
-Output hanya JSON valid dengan kunci "label" dan "reason"."""
+Output harus berupa JSON dengan format:
+{
+  "label": "native ads" atau "berita murni",
+  "reason": "analisis singkat mengapa artikel tersebut termasuk kategori tersebut"
+}"""
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
@@ -282,7 +287,14 @@ Output hanya JSON valid dengan kunci "label" dan "reason"."""
                 if is_qwen:
                     # Phase 153: Use standard ChatML for Qwen Chat models
                     messages = [
-                        {"role": "system", "content": "You are a professional Indonesian news editor specializing in native ads detection."},
+                        {
+                            "role": "system", 
+                            "content": "Anda adalah Redaktur Eksekutif Media Indonesia yang sangat teliti. Tugas Anda adalah membedakan antara 'Berita Murni' dan 'Native Ads'.\n\n"
+                                       "PEDOMAN EDITORIAL:\n"
+                                       "1. NATIVE ADS (ADVERTORIAL): Memiliki nada promotif, terlalu memuji produk/brand, menyertakan Call to Action (CTA), atau ditulis oleh pihak sponsor.\n"
+                                       "2. BERITA MURNI: Informasi faktual, seimbang, objektif, dan menjaga jarak kritis terhadap subjek yang diberitakan.\n\n"
+                                       "Fokuslah pada NIAT (INTENT) dari tulisan tersebut."
+                        },
                         {"role": "user", "content": user_msg}
                     ]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -392,73 +404,59 @@ Output hanya JSON valid dengan kunci "label" dan "reason"."""
                 label = "native ads" if choice == 'A' else "berita murni"
                 return {'label': label, 'confidence': 0.9, 'reasoning': alasan}
 
-                # Phase 150/151: Hyper-Robust JSON Extraction
-                # Find ALL JSON blocks and take the LAST one (Qwen often repeats template first)
-                json_blocks = re.findall(r'\{(?:[^{}]|(?R))*\}', resp_clean, re.DOTALL)
-                if not json_blocks:
-                    # Fallback for simple single-level match if regex recursion isn't supported
-                    json_blocks = re.findall(r'\{.*?\}', resp_clean, re.DOTALL)
+            # 2. JSON Extraction (Run if MCQ parsing didn't return)
+            # Find all JSON blocks
+            json_blocks = re.findall(r'\{.*?\}', resp_clean, re.DOTALL)
+            
+            if json_blocks:
+                # Take the LAST block as it's usually the actual answer
+                json_str = json_blocks[-1]
                 
-                if json_blocks:
-                    # Take the LAST block as it's usually the actual answer, not the repeated template
-                    json_str = json_blocks[-1]
+                try:
+                    # Clean special chars and handle common JSON malformations
+                    json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
+                    json_str_clean = re.sub(r':\s*True\b', ': true', json_str_clean)
+                    json_str_clean = re.sub(r':\s*False\b', ': false', json_str_clean)
                     
-                    try:
-                        # Clean special chars
-                        json_str_clean = re.sub(r'[^\x00-\x7F]+', ' ', json_str) 
+                    data = json.loads(json_str_clean.replace('\n', ' '))
+                    
+                    # Robust reasoning extraction
+                    alasan = str(data.get('reason', 
+                                 data.get('alasan', 
+                                 data.get('reasoning', 
+                                 data.get('analysis', alasan)))))
+                    
+                    # Label detection logic
+                    found_label = None
+                    for k, v in data.items():
+                        k_low = str(k).lower()
+                        v_str = str(v).lower()
                         
-                        # Phase 151: Python-to-JSON normalization (True -> true, False -> false)
-                        # We do this carefully to avoid breaking strings that happen to have these words.
-                        json_str_clean = re.sub(r':\s*True\b', ': true', json_str_clean)
-                        json_str_clean = re.sub(r':\s*False\b', ': false', json_str_clean)
-                        
-                        data = json.loads(json_str_clean.replace('\n', ' '))
-                        
-                        # Phase 144/146/151: Robust reasoning extraction
-                        alasan = data.get('alasan', 
-                                         data.get('reason', 
-                                         data.get('reasoning', 
-                                         data.get('why', 
-                                         data.get('analysis_keywords', alasan)))))
-                        
-                        # Phase 150/151: Ultra-Aggressive Key Search
-                        found_ads = False
-                        found_news = False
-                        
-                        for k, v in data.items():
-                            k_low = str(k).lower()
-                            v_str = str(v).lower()
-                            
-                            # Check for label-like keys or boolean flags
-                            is_ads_key = any(x in k_low for x in ["native", "ads", "iklan", "promosi", "class", "output"])
-                            is_news_key = any(x in k_low for x in ["murni", "berita", "news"])
-                            
-                            if is_ads_key:
-                                if v is True or any(x in v_str for x in ["native", "ads", "iklan", "promosi", "true"]):
-                                    found_ads = True
-                                elif v is False:
-                                    found_news = True
-                            
-                            if is_news_key:
-                                if v is True or any(x in v_str for x in ["murni", "berita", "news", "true"]):
-                                    found_news = True
-                                elif v is False:
-                                    found_ads = True
-                        
-                        if found_ads:
+                        if 'label' in k_low or 'class' in k_low:
+                            if any(x in v_str for x in ["native", "ads", "iklan"]):
+                                found_label = "native ads"
+                            elif any(x in v_str for x in ["murni", "berita", "news"]):
+                                found_label = "berita murni"
+                    
+                    if found_label:
+                        label = found_label
+                    else:
+                        # Fallback for boolean flags
+                        if data.get('is_native_ads') is True or data.get('is_ads') is True:
                             label = "native ads"
-                        elif found_news:
+                        elif data.get('is_pure_news') is True or data.get('is_berita') is True:
                             label = "berita murni"
-                    except:
-                        # Final raw keyword fallback if JSON still fails
-                        if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): label = "native ads"
-                else:
-                    if any(kw in resp_clean.lower()[:50] for kw in ["native ads", "iklan", "promosi"]): 
+                except:
+                    # Final raw keyword fallback if JSON still fails
+                    if any(kw in resp_clean.lower() for kw in ["native ads", "iklan", "promosi"]): 
                         label = "native ads"
-                    elif "A" in resp_clean[:10].upper():
-                        label = "native ads"
-                    elif "B" in resp_clean[:10].upper():
-                        label = "berita murni"
+            else:
+                # No JSON found, use keyword search
+                low_resp = resp_clean.lower()
+                if any(kw in low_resp for kw in ["native ads", "iklan ", "promos"]): 
+                    label = "native ads"
+                elif any(kw in low_resp for kw in ["berita murni", "informasi netral"]):
+                    label = "berita murni"
 
             return {'label': label, 'confidence': 0.95, 'reasoning': alasan if alasan != "Tidak ditemukan alasan (mode MCQ)." else ""}
         except Exception as e:
