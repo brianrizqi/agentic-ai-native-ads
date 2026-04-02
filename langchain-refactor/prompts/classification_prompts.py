@@ -518,22 +518,24 @@ Output (JSON):"""
 # the 270M model recognizes its fine-tuned patterns.
 
 ALPACA_ID_MINIMAL_TEMPLATE = """### Instruction:
-Klasifikasikan artikel berikut sebagai native ads atau berita murni.
+Anda adalah ahli klasifikasi media. Tugas: Klasifikasikan artikel di bawah secara tepat.
 
 ### Input:
 {content}
 
+### Petunjuk:
 {context_short}
 
 ### Response:
 {{"label": \""""
 
 ALPACA_EN_MINIMAL_TEMPLATE = """### Instruction:
-Classify the following article as native ads or berita murni.
+Task: Classify the following article.
 
 ### Input:
 {content}
 
+### Petunjuk:
 {context_short}
 
 ### Response:
