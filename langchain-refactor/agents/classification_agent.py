@@ -312,13 +312,13 @@ JAWABAN: """
                 else:
                     content_processed = content_clean[:max_chars]
 
-                # Phase 45: Selective Content Dispatcher (The Sweet Spot)
+                # Phase 46: Selective Content Dispatcher (The Golden Zero)
                 if self.model_tier == 'micro':
-                    # Extract a slightly larger chunk for the 270M model (Stage 45 refined)
+                    # Extract a substantial chunk for the 270M model (Stage 46 refined)
                     micro_context = ""
                     if rag_block and len(rag_block) > 50:
-                        # Grab the first 250 characters of the best RAG result
-                        micro_context = f"Petunjuk: {rag_block.strip()[:250]}..."
+                        # Grab the first 500 characters of the best RAG result (Max hint)
+                        micro_context = f"Petunjuk: {rag_block.strip()[:500]}..."
                     
                     micro_content = content_processed
                     if title and title.strip() and title.lower() not in content_processed.lower():
@@ -356,23 +356,27 @@ JAWABAN: """
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
                         
-                        # Identify critical token candidates (Lowercase & Space-prefixed for catch-all)
+                        # Identify critical token candidates (Multi-token Voting)
                         tids_native = self.tokenizer.encode("native", add_special_tokens=False)
+                        tids_iklan = self.tokenizer.encode(" iklan", add_special_tokens=False)
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
+                        tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Score the labels (Max of its multi-token components or first token)
-                        score_native = logits[tids_native[0]].item() if tids_native else -100
-                        score_berita = logits[tids_berita[0]].item() if tids_berita else -100
+                        # Phase 46: System Voting (Max or sum of potential candidates)
+                        score_native = max(logits[tids_native[0]].item() if tids_native else -100,
+                                           logits[tids_iklan[0]].item() if tids_iklan else -100)
+                        score_berita = max(logits[tids_berita[0]].item() if tids_berita else -100,
+                                           logits[tids_berita_cap[0]].item() if tids_berita_cap else -100)
                         
-                        # Phase 45: Decision Calibration (The Sweet Spot)
-                        # Stage 44 (-2.5) was an over-correction. 
-                        # Adjusting to -1.2 to find the perfect precision/recall balance.
-                        balanced_score_native = score_native - 1.2 # Sweet spot adjustment 
+                        # Phase 46: Decision Calibration (The Golden Zero)
+                        # -1.2 was too strict (18% recall). 
+                        # Adjusting to -0.5 to balance Ads and News.
+                        balanced_score_native = score_native - 0.5 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'
                         
-                        print(f"DEBUG: Logits [%s] Native: %.2f (Adj: %.2f) vs Berita: %.2f -> %s" % 
+                        print(f"DEBUG: Logits [%s] N: %.2f (Adj: %.2f) vs B: %.2f -> %s" % 
                               (self.model_tier, score_native, balanced_score_native, score_berita, decision_label))
                 else:
                     # Small/Standard tier still uses open generation
