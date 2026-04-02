@@ -375,19 +375,24 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 66 Refinements
-                        # Stage 77: Expanded Commercial & PR Keyword Detector
-                        # Detecting PT, TBK, BUMN, and Western PR Newswires
-                        pr_markers = ["PT ", "TBK", "BUMN", "PEMKAB", "PEMKOT", "GLOBE NEWSWIRE", "PR NEWSWIRE", "BUSINESS WIRE"]
-                        is_commercial = any(kw in micro_context.lower() or kw in content.upper() for kw in ["shopee", "promo", "diskon", "cashback"] + pr_markers)
+                        # Stage 78: Surgical Precision Restoration (Goldilocks Zone)
+                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = 8.80
+                        base_bonus = 8.80 if self.model_tier == 'small' else 4.38
+                        
+                        # Multi-Level Bonus Scoring
+                        # Hard Commercial triggers (High Intent)
+                        hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon"]
+                        score_hard = 4.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
+                        
+                        # Soft PR/Corporate markers (Moderate Intent)
+                        soft_markers = ["PT ", "TBK", "BUMN", "MOU", "KERJASAMA", "PEMKAB", "PEMKOT", "GLOBE NEWSWIRE", "PR NEWSWIRE"]
+                        score_soft = 1.6 if any(kw in micro_context.upper() or kw in content.upper() for kw in soft_markers) else 0.0
+                        
+                        # Phase 78: Unified Bonus + News Shield
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
+                        guard_penalty = 2.5 if has_news_marker else 0.0
                         
-                        guard_penalty = 1.4 if has_news_marker else 0.0
-                        
-                        # Stage 77: Structural Recall Shift (Dose Boost)
-                        # Micro (270M) needs +4.38; Small (8B) needs +13.50 to overcome News Bias.
-                        base_bonus = 13.50 if self.model_tier == 'small' else 4.38
-                        current_bonus = (base_bonus + 1.82 if is_commercial else base_bonus) - guard_penalty
+                        current_bonus = base_bonus + score_hard + score_soft - guard_penalty
                         
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"

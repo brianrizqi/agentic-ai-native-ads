@@ -445,9 +445,9 @@ Label: (either "berita murni" or "native ads")
 
 BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
 
-Rules:
-- "native ads": ALL Corporate PR, BUMN releases, MOU signings, CSR/Awards news, and Government marketing (Pemkab/Pemkot).
-- "berita murni": Pure facts, macro policy, crime, disasters, or neutral sports reports.
+Definitions:
+- "native ads": Content with clear "marketing intent". This includes active brand promotion, PR releases praising a company (CSR, Awards, MOU), or persuasive advertorials.
+- "berita murni": Facts-first reporting. Includes macro policy, public incidents, crime, disasters, or neutral reports where a company is mentioned only as a secondary subject.
 
 {context}
 
@@ -456,7 +456,7 @@ Content: {content}
 
 Output (Return JSON ONLY):
 {{
-  "analysis": "1-sentence marketing logic",
+  "analysis": "1-sentence marketing intent analysis",
   "label": "native ads/berita murni"
 }}"""
 
