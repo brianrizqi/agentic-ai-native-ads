@@ -388,10 +388,20 @@ JAWABAN: """
                         # Scan the 'Petunjuk' (micro_context)
                         is_commercial = any(kw in micro_context.lower() for kw in market_keywords)
                         
-                        # Phase 63: The Restoration Peak (+4.62)
-                        # - Reverting to Record baseline (62.5% Stage 61)
-                        # - Target: 130/200 correct samples (65%).
-                        current_bonus = 6.2 if is_commercial else 4.62
+                        # Phase 64: The News Guard (Surgical Overrides)
+                        # Detect blatant news agency signatures to prevent false positives.
+                        news_guards = [
+                            "republika.co.id", "antaranews", "harian kompas", "laporan wartawan",
+                            "detikcom", "viva.co.id", "bisnis.com", "okezone", "tribun", "suara.com"
+                        ]
+                        # Check original content for news signatures
+                        has_news_marker = any(marker in content.lower() for marker in news_guards)
+                        
+                        # Apply Guard Penalty: -1.4 if News Agency identified
+                        guard_penalty = 1.4 if has_news_marker else 0.0
+                        
+                        # Final Bonus Logic: +4.5 (Peak Baseline)
+                        current_bonus = (6.2 if is_commercial else 4.5) - guard_penalty
                         balanced_score_native = score_native + current_bonus 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
