@@ -356,29 +356,31 @@ JAWABAN: """
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
                         
-                        # Identify critical token candidates (Radical Voting Expansion)
+                        # Identify critical token candidates (Precision Refiner Pool)
                         tids_native = self.tokenizer.encode("native", add_special_tokens=False)
                         tids_iklan = self.tokenizer.encode(" iklan", add_special_tokens=False)
-                        tids_promo = self.tokenizer.encode(" promo", add_special_tokens=False)
-                        tids_ads = self.tokenizer.encode(" ads", add_special_tokens=False)
+                        tids_promo_cap = self.tokenizer.encode(" Promosi", add_special_tokens=False)
                         
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
                         tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Phase 47: Radical Voting (Max of potential candidates)
-                        score_native = max(
-                            logits[tids_native[0]].item() if tids_native else -100,
-                            logits[tids_iklan[0]].item() if tids_iklan else -100,
-                            logits[tids_promo[0]].item() if tids_promo else -100,
-                            logits[tids_ads[0]].item() if tids_ads else -100
-                        )
-                        score_berita = max(logits[tids_berita[0]].item() if tids_berita else -100,
-                                           logits[tids_berita_cap[0]].item() if tids_berita_cap else -100)
+                        # Phase 48: Weighted System Voting (Average of top 2 to stabilize)
+                        v_native = sorted([
+                            logits[tid[0]].item() if tid else -100 
+                            for tid in [tids_native, tids_iklan, tids_promo_cap]
+                        ], reverse=True)
+                        v_news = sorted([
+                            logits[tid[0]].item() if tid else -100
+                            for tid in [tids_berita, tids_berita_cap]
+                        ], reverse=True)
                         
-                        # Phase 47: Radical Decision Calibration (The Biased Force)
-                        # Previous negative penalties failed to achieve balance.
-                        # Switched to Radical Positive Bias (+5.0) to forceAds recall.
-                        balanced_score_native = score_native + 5.0 
+                        # Stabilize with weighted max (Average of top 1 and top 2)
+                        score_native = (v_native[0] + v_native[1]) / 2.0
+                        score_berita = (v_news[0] + v_news[1]) / 2.0
+                        
+                        # Phase 48: The Sweet Spot (+4.2)
+                        # Reducing slightly from +5.0 to reclaim News recall without losing Ads.
+                        balanced_score_native = score_native + 4.2 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'
