@@ -35,7 +35,8 @@ class ClassificationAgent:
         lora_path: Optional[str] = None,
         gpu_id: int = 0,
         use_rag: bool = False,
-        is_mcq: bool = False
+        is_mcq: bool = False,
+        model_tier: Optional[str] = None
     ):
         """
         Initialize Classification Agent.
@@ -50,7 +51,7 @@ class ClassificationAgent:
         self.is_mcq = is_mcq
         
         # Tier Detection (Phase 66: Radical Reduction for Micro)
-        self.model_tier = self._get_model_tier(model_name)
+        self.model_tier = model_tier if model_tier else self._get_model_tier(model_name)
         self.max_chars = 500 if self.model_tier == 'micro' else 1800
         
         self.tokenizer = None
