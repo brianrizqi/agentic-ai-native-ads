@@ -312,15 +312,19 @@ JAWABAN: """
                 else:
                     content_processed = content_clean[:max_chars]
 
-                # Phase 42: Selective Content Dispatcher
+                # Phase 44: Selective Content Dispatcher (The Balanced Hint)
                 if self.model_tier == 'micro':
-                    # Merge title into content for micro
+                    # Extract only the first chunk of context for the 270M model (Prevent noise)
+                    micro_context = ""
+                    if rag_block and len(rag_block) > 50:
+                        # Grab the first match only, truncated
+                        micro_context = f"Petunjuk: {rag_block.strip().split('.')[0]}."
+                    
                     micro_content = content_processed
                     if title and title.strip() and title.lower() not in content_processed.lower():
                         micro_content = f"{title}\n{content_processed}"
                     
-                    # RECALIBRATION: Micro models (270M) perform better WITHOUT RAG context noise.
-                    user_msg = template.format(content=micro_content).strip()
+                    user_msg = template.format(content=micro_content, context_short=micro_context).strip()
                 else:
                     user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
@@ -360,12 +364,16 @@ JAWABAN: """
                         score_native = logits[tids_native[0]].item() if tids_native else -100
                         score_berita = logits[tids_berita[0]].item() if tids_berita else -100
                         
-                        # Phase 141: Decision Bias Balancing (Default 0.0)
-                        # If model is too bias to News, we can subtract a constant from berita or add to native.
-                        decision_label = "native ads" if score_native > score_berita else "berita murni"
+                        # Phase 44: Decision Calibration (Balanced Threshold)
+                        # We observed a strong flip to Native bias (85%) in Stage 43.
+                        # Adding a manual penalty to 'native' to balance the detection.
+                        balanced_score_native = score_native - 2.5 # Threshold adjustment 
+                        
+                        decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'
                         
-                        print(f"DEBUG: Logits [%s] Native: %.2f vs Berita: %.2f -> %s" % (self.model_tier, score_native, score_berita, decision_label))
+                        print(f"DEBUG: Logits [%s] Native: %.2f (Adj: %.2f) vs Berita: %.2f -> %s" % 
+                              (self.model_tier, score_native, balanced_score_native, score_berita, decision_label))
                 else:
                     # Small/Standard tier still uses open generation
                     max_new = 16 if self.model_tier == 'micro' else 300
