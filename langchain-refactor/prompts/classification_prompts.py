@@ -514,15 +514,13 @@ Output (JSON):"""
 # ultra-compact heuristics and uses recency bias by putting the task 
 # at the very bottom.
 
-MICRO_HEURISTIC_PROMPT = """Tugas: Klasifikasikan berita di bawah sebagai "native ads" atau "berita murni".
+MICRO_HEURISTIC_PROMPT = """Tugas: Klasifikasikan artikel bahasa Indonesia di bawah.
 
-[ATURAN ANTI-BIAS (PENTING)]:
-1. TRAGEDI & SOSIAL: Kecelakaan, kematian, dan bencana = BERITA MURNI 100%.
-2. OLAHRAGA & KEBIJAKAN: Skor, atlet, dan info pemerintah = BERITA MURNI.
-3. NATIVE ADS: Hanya jika isinya murni PROMOSI produk/brand (Advertorial).
+PANDUAN (PENTING):
+1. BERITA MURNI: Informasi faktual publik (kecelakaan, hukum, bencana, politik, olahraga).
+2. NATIVE ADS: Artikel yang mempromosikan citra/produk suatu instansi/brand (siaran pers, liputan acara produk, advertorial).
 
 {context}
-
 Judul: {title}
 Konten: {content}
 
