@@ -476,7 +476,7 @@ Output JSON (analysis must be objective):
 {{"analysis": "brief objective motive analysis", "label": "native ads/berita murni"}}"""
 
 BILINGUAL_SILENT_TEMPLATE = """Task: Classify text strictly as "berita murni" (News) or "native ads" (Marketing). 
-Note: Entity mentions (WHO, NASA, Jokowi, PDIP) and reports on Infrastructure (Jalan Tol), Technology (Sistem MLFF), Government Services (CPNS), or Sports results are NOT marketing unless selling a specific product.
+Note: Reports on Public Figures (Jokowi, Celebrities), Sports (Skor Pertandingan), Government Policy (Pajak, CPNS), or Infrastructure (Jalan Tol) are NOT marketing unless selling a specific product.
 
 {context}
 

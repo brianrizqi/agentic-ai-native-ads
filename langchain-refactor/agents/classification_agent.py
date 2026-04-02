@@ -206,11 +206,10 @@ class ClassificationAgent:
                 # ---------------------------------------------------------------------
                 is_qwen = "qwen" in self.model_name.lower()
                 
-                # Phase 82: High-Trust RAG Filter
-                # Qwen (9B) and Llama (8B) require different thresholds for precision.
-                # Llama 8B (Small) needs 0.87 to avoid Ad Poisoning on neutral news.
+                # Phase 83: Contextual Equilibrium
+                # Stage 82 (0.87) was too aggressive; we need the 0.75 anchors.
                 if self.model_tier == 'small':
-                    RAG_THRESHOLD = 0.87
+                    RAG_THRESHOLD = 0.75
                 else:
                     RAG_THRESHOLD = 0.75 if is_qwen else 0.75
                 rag_block = ""
@@ -381,18 +380,18 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 82: Precision Scalpel (High-Intensity Shield)
-                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -3.5
-                        base_bonus = -3.5 if self.model_tier == 'small' else 4.38
+                        # Stage 83: Contextual Equilibrium (Total Bias Override)
+                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -5.5
+                        base_bonus = -5.5 if self.model_tier == 'small' else 4.38
                         
-                        # Multi-Level Bonus Scoring (Ultra-High Threshold Only)
+                        # Multi-Level Bonus Scoring (Peak Threshold)
                         # Hard Commercial triggers (High Intent)
                         hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon"]
-                        score_hard = 7.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
+                        score_hard = 8.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
                         
-                        # Phase 82: Fortified News Shield (Total Immutability)
+                        # Phase 83: Unified Neutrality Shield
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
-                        guard_penalty = 6.0 if has_news_marker else 0.0
+                        guard_penalty = 7.5 if has_news_marker else 0.0
                         
                         current_bonus = base_bonus + score_hard - guard_penalty
                         
