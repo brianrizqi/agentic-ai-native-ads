@@ -208,8 +208,8 @@ class ClassificationAgent:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        if is_qwen:
-                            # Stage 27: The Grand Overhaul (Natural RAG)
+                        if self.model_tier != 'micro':
+                            # Stage 30: Empowering Llama with Natural RAG (same as Qwen)
                             selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
@@ -226,8 +226,8 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            # Stage 13: Light Context (2000 Chars) to prevent Drowning.
-                            char_limit = 2000 if is_qwen else 800
+                            # Stage 30: Normal Context (2000 Chars) for all models > Micro
+                            char_limit = 2000 if self.model_tier != 'micro' else 800
                             label_upper = label_hint.upper()
                             rag_block += f"DOKUMEN REFERENSI ({label_upper}):\n"
                             rag_block += f"{str(ex.get('content', ''))[:char_limit]}...\n"
@@ -242,7 +242,9 @@ class ClassificationAgent:
 
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
-                if is_qwen:
+                
+                # Stage 30: Llama gets the Qwen Master Prompt
+                if self.model_tier != 'micro':
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
 
 ### CONTEXT REFERENCE (PANDUAN GAYA BAHASA):
@@ -296,8 +298,8 @@ JAWABAN: """
                         content_clean = content_clean[1:].strip()
                 
                 # Phase 155: Sandwich Preprocessing (Quality over Quantity)
-                max_chars = 5000 if is_qwen else self.max_chars
-                if is_qwen and len(content_clean) > max_chars:
+                max_chars = 5000 if self.model_tier != 'micro' else self.max_chars
+                if self.model_tier != 'micro' and len(content_clean) > max_chars:
                     # Take 2.5K from start and 2.5K from end to catch all markers
                     half = max_chars // 2
                     content_processed = content_clean[:half] + "\n... [TEKS DIPOTONG] ...\n" + content_clean[-half:]
@@ -309,20 +311,16 @@ JAWABAN: """
                 full_prompt = user_msg
                 
                 # Phase 141/153: Prompt Dispatcher
-                if is_qwen:
-                    # Phase 153: Use standard ChatML for Qwen Chat models
-                    # Training Mirror Persona
+                if self.model_tier != 'micro':
+                    # Training Mirror Persona for all >Micro models
                     messages = [
                         {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
                         {"role": "user", "content": user_msg}
                     ]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-                elif self.model_tier == 'micro':
-                    templated_prompt = user_msg
                 else:
-                    # Llama Standard
-                    messages = [{"role": "user", "content": user_msg}]
-                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                    # Micro Standard (Logit only)
+                    templated_prompt = user_msg
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt", add_special_tokens=True)
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
