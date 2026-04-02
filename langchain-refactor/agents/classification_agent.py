@@ -295,10 +295,11 @@ JAWABAN: """
                     prefix_force = '{"label": "'
                     suffix_force = ""
                 else:
-                    # Stage 79: Clinical Reset for Llama 8B (Small Tier)
-                    # Removing prefix_force to allow natural, unbiased reasoning
-                    template = BILINGUAL_MICRO_TEMPLATE
-                    prefix_force = "" 
+                    # Stage 81: Silent Expert Mode for Llama 8B (Small Tier)
+                    # Removing the 'Thinking' process to eliminate hallucinated marketing intent.
+                    # Forcing a purely calibrated logit decision.
+                    template = BILINGUAL_SILENT_TEMPLATE
+                    prefix_force = '{"label": "' 
                     suffix_force = ""
                 
                 # Phase 138: Title De-duplication (Clean redundant title from content)
@@ -375,18 +376,18 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 80: Zero-Bias Mode (Precision Breakthrough)
-                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -0.5
-                        base_bonus = -0.5 if self.model_tier == 'small' else 4.38
+                        # Stage 81: Silent Expert Mode (Neutrality Offensive)
+                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -1.5
+                        base_bonus = -1.5 if self.model_tier == 'small' else 4.38
                         
-                        # Multi-Level Bonus Scoring (Surgical Only)
+                        # Multi-Level Bonus Scoring (High Threshold Only)
                         # Hard Commercial triggers (High Intent)
                         hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon"]
-                        score_hard = 3.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
+                        score_hard = 5.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
                         
-                        # Phase 80: Unified Bonus + News Shield
+                        # Phase 81: Unified Bonus + News Shield
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
-                        guard_penalty = 3.5 if has_news_marker else 0.0
+                        guard_penalty = 4.5 if has_news_marker else 0.0
                         
                         current_bonus = base_bonus + score_hard - guard_penalty
                         
