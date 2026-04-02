@@ -446,7 +446,15 @@ JAWABAN: """
                 except Exception as e:
                     pass
             
-            # 2. String Fallback (If JSON is entirely broken/missing)
+            # 1.5 Markdown KV Parser (Llama 8B Anti-Drift)
+            markdown_label = re.search(r'(?i)Label:\s*["\']?(native ads|berita murni)["\']?', resp_clean)
+            if markdown_label:
+                label_val = markdown_label.group(1).lower().strip()
+                markdown_alasan = re.search(r'(?i)Analisa:\s*(.*?)(?=\nLabel:|$)', resp_clean, re.DOTALL)
+                alasan_val = markdown_alasan.group(1).strip() if markdown_alasan else "Tidak ditemukan string Analisa."
+                return {'label': label_val, 'confidence': 0.90, 'reasoning': alasan_val}
+            
+            # 2. String Fallback (If JSON/Markdown is entirely broken/missing)
             low_resp = resp_clean.lower()
             if any(kw in low_resp for kw in ["native ads", "iklan", "promosi", "native_ads"]): 
                 label = "native ads"
