@@ -312,6 +312,8 @@ JSON Output Only:
 }}
 
 JAWABAN: """
+                    prefix_force = ""
+                    suffix_force = ""
                 elif self.model_tier == 'micro':
                     # Heuristics for micro models if specified
                     template = MICRO_HEURISTIC_PROMPT
