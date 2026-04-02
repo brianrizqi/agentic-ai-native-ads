@@ -356,22 +356,29 @@ JAWABAN: """
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
                         
-                        # Identify critical token candidates (Multi-token Voting)
+                        # Identify critical token candidates (Radical Voting Expansion)
                         tids_native = self.tokenizer.encode("native", add_special_tokens=False)
                         tids_iklan = self.tokenizer.encode(" iklan", add_special_tokens=False)
+                        tids_promo = self.tokenizer.encode(" promo", add_special_tokens=False)
+                        tids_ads = self.tokenizer.encode(" ads", add_special_tokens=False)
+                        
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
                         tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Phase 46: System Voting (Max or sum of potential candidates)
-                        score_native = max(logits[tids_native[0]].item() if tids_native else -100,
-                                           logits[tids_iklan[0]].item() if tids_iklan else -100)
+                        # Phase 47: Radical Voting (Max of potential candidates)
+                        score_native = max(
+                            logits[tids_native[0]].item() if tids_native else -100,
+                            logits[tids_iklan[0]].item() if tids_iklan else -100,
+                            logits[tids_promo[0]].item() if tids_promo else -100,
+                            logits[tids_ads[0]].item() if tids_ads else -100
+                        )
                         score_berita = max(logits[tids_berita[0]].item() if tids_berita else -100,
                                            logits[tids_berita_cap[0]].item() if tids_berita_cap else -100)
                         
-                        # Phase 46: Decision Calibration (The Golden Zero)
-                        # -1.2 was too strict (18% recall). 
-                        # Adjusting to -0.5 to balance Ads and News.
-                        balanced_score_native = score_native - 0.5 
+                        # Phase 47: Radical Decision Calibration (The Biased Force)
+                        # Previous negative penalties failed to achieve balance.
+                        # Switched to Radical Positive Bias (+5.0) to forceAds recall.
+                        balanced_score_native = score_native + 5.0 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'

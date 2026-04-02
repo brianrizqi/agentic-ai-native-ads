@@ -518,19 +518,25 @@ Output (JSON):"""
 # the 270M model recognizes its fine-tuned patterns.
 
 ALPACA_ID_MINIMAL_TEMPLATE = """### Instruction:
-Tugas: Klasifikasikan artikel di bawah. {context_short}
+Tugas: Klasifikasikan artikel di bawah.
 
 ### Input:
 {content}
+
+### Petunjuk:
+{context_short}
 
 ### Response:
 {{"label": \""""
 
 ALPACA_EN_MINIMAL_TEMPLATE = """### Instruction:
-Task: Classify the following article. {context_short}
+Task: Classify the following article.
 
 ### Input:
 {content}
+
+### Petunjuk:
+{context_short}
 
 ### Response:
 {{"label": \""""
