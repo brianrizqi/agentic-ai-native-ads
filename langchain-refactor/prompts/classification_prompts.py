@@ -393,21 +393,26 @@ Output (JSON):
 ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan sebagai "berita murni" (fakta/kebijakan) atau "native ads" (branding/promosi/PR).
 
 Perisai Berita Murni (PENTING):
-- Tokoh Publik/Negara: Instruksi Presiden, kunjungan Menteri, atau kebijakan negara adalah "berita murni".
-- Peristiwa Umum: Bencana alam, kriminal, hukum, dan hasil pertandingan olahraga adalah "berita murni".
-- PHK/Krisis: Berita tentang krisis perusahaan (PHK besar-besaran, kerugian, gugatan hukum) adalah "berita murni".
-- Seni/Musik: Pengumuman rilis lagu, album, atau konser tanpa nada pemujaan brand adalah "berita murni".
+- Tokoh Publik/Negara: Instruksi Presiden, kunjungan Menteri, atau kebijakan makro negara.
+- Peristiwa Umum: Bencana alam, kriminal, hukum, dan hasil pertandingan olahraga murni.
+- PHK/Krisis: Berita tentang krisis perusahaan (PHK besar-besaran, kerugian, gugatan hukum).
+- Seni/Musik: Pengumuman rilis lagu, album, atau konser tanpa nada pemujaan brand.
 
-Aturan Emas:
-Hanya labeli "native ads" jika artikel memiliki niat mempromosikan keunggulan, citra positif, atau produk brand (Branding). Fokuslah pada keseimbangan informasi.
+Aturan Emas Native Ads:
+Hanya labeli "native ads" jika artikel memiliki niat mempromosikan keunggulan, citra positif produk, rilis pers korporasi, atau advertorial/PR Pemerintah Daerah (Pemkab/Pemkot) & BUMN.
 
 Judul: {title}
 Isi: {content}
 
 {context}
 
-Output (JSON ONLY):
-{{"label": "berita murni/native ads"}}"""
+Format JSON Output:
+{{
+  "analysis": "Berikan 1-2 kalimat alasan lugas mengapa artikel masuk kategori tersebut.",
+  "label": "berita murni/native ads"
+}}
+
+JAWABAN: """
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
