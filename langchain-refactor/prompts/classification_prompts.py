@@ -508,27 +508,32 @@ Konten: {content}
 
 Output (JSON):"""
 
-# Phase 83: Micro-Heuristic Prompt (The Stability Anchor)
+# Phase 39: Alpaca Format Restoration (Gemma 3 270M Target 65%)
 # -----------------------------------------------------------------------------
-# Designed for 270M models to prevent "Context Drowning." It provides 
-# ultra-compact heuristics and uses recency bias by putting the task 
-# at the very bottom.
+# Re-aligning the model prompt exactly with its Unsloth fine-tuning template.
 
-MICRO_HEURISTIC_PROMPT = """Tugas: Klasifikasikan artikel bahasa Indonesia di bawah.
+ALPACA_TRAINING_TEMPLATE = """### Instruction:
+Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-PANDUAN (PENTING):
-1. BERITA MURNI: Informasi faktual publik (kecelakaan, hukum, bencana, politik, olahraga).
-2. NATIVE ADS: Artikel yang mempromosikan citra/produk suatu instansi/brand (siaran pers, liputan acara produk, advertorial).
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
 
 {context}
+
+### Input:
 Judul: {title}
-Konten: {content}
+{content}
 
-Pilih Jawaban:
-A. native ads
-B. berita murni
-
-Jawaban (A/B):"""
+### Response:
+{{"label": """
 
 # Phase 87: Advanced 8B Gold Template (Bernoulli Calibration)
 # -----------------------------------------------------------------------------

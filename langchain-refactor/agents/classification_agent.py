@@ -190,7 +190,8 @@ class ClassificationAgent:
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE,
-                    QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE
+                    QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE,
+                    ALPACA_TRAINING_TEMPLATE
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
@@ -278,9 +279,9 @@ JAWABAN: """
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
-                    # Heuristics for micro models if specified
-                    template = MICRO_HEURISTIC_PROMPT
-                    prefix_force = "" 
+                    # Phase 39: Alpaca format restoration for 270M fine-tuned weights
+                    template = ALPACA_TRAINING_TEMPLATE
+                    prefix_force = '{"label": '
                     suffix_force = ""
                 else:
                     template = ENGLISH_MARKDOWN_TEMPLATE
@@ -326,42 +327,7 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 76: Hybrid Logit-Reasoning Pivot (The Final Solution)
-                if self.model_tier == 'micro':
-                    import torch
-                    with torch.no_grad():
-                        # Step 1: Atomic Classification via Logits
-                        outputs = self.local_model_ref(input_ids, attention_mask=mask)
-                        next_token_logits = outputs.logits[0, -1, :]
-                        
-                        id_A = self.tokenizer.encode("A", add_special_tokens=False)[-1]
-                        id_B = self.tokenizer.encode("B", add_special_tokens=False)[-1]
-                        id_A_space = self.tokenizer.encode(" A", add_special_tokens=False)[-1]
-                        id_B_space = self.tokenizer.encode(" B", add_special_tokens=False)[-1]
-                        
-                        val_A = max(next_token_logits[id_A].item(), next_token_logits[id_A_space].item())
-                        val_B = max(next_token_logits[id_B].item(), next_token_logits[id_B_space].item())
-                        
-                        label = "native ads" if val_A > val_B else "berita murni"
-                        probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
-                        conf = probs[0].item() if label == "native ads" else probs[1].item()
-                        
-                        # Step 2: Static Reason Mapping (Phase 80 - Zero Generation Mode)
-                        # To restore low PPL and 0% hallucinations, we use pre-defined high-quality reasons
-                        # as the 270M model is a strong discriminator but a weak generator.
-                        reason_map = {
-                            "native ads": "Teks ini menunjukkan pola promosi produk/brand yang didorong oleh kepentingan komersial satu pihak (Advertorial).",
-                            "berita murni": "Teks ini menyajikan informasi secara faktual, objektif, dan tidak mengandung unsur persuasi atau promosi produk/brand."
-                        }
-                        
-                        final_reason = reason_map.get(label, f"Konten ini diklasifikasikan sebagai {label} berdasarkan bukti di dalam teks.")
-                        
-                        print(f"DEBUG: Pure Discriminator [{self.model_tier}] -> Choice: {label}, PPL: Stable (~2800)")
-                        return {
-                            'label': label, 
-                            'confidence': conf, 
-                            'reasoning': final_reason
-                        }
+                # Phase 76: (Logit Mode disabled for Micro, letting generation run natively for Alpaca weights)
 
                 # Optimized Sampling for 9B Training Alignment
                 with torch.no_grad():
@@ -405,6 +371,12 @@ JAWABAN: """
         """Stage 28: Clean JSON-First Parser."""
         try:
             resp_clean = response.strip()
+            # Phase 39: Re-inject the prefix for Alpaca outputs
+            if prefix_forced and not resp_clean.startswith("{"):
+                resp_clean = prefix_forced + resp_clean
+                if not resp_clean.endswith("}"):
+                    resp_clean += "}"
+                    
             alasan = "Tidak ditemukan alasan (JSON regex fallback)."
             label = "berita murni"
             
