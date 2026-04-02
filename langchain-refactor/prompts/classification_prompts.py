@@ -517,23 +517,29 @@ Output (JSON):"""
 # Replicating the exact prompt structure from convert_dataset.py to ensure 
 # the 270M model recognizes its fine-tuned patterns.
 
-ALPACA_ID_MINIMAL_TEMPLATE = """Tugas: Klasifikasikan artikel ini (IKLAN NATIVE atau BERITA MURNI).
+ALPACA_ID_MINIMAL_TEMPLATE = """### Instruction:
+Anda adalah ahli klasifikasi media. Tugas: Klasifikasikan artikel di bawah secara tepat.
 
-Isi:
+### Input:
 {content}
 
+### Petunjuk:
 {context_short}
 
-Label: """
+### Response:
+{{"label": \""""
 
-ALPACA_EN_MINIMAL_TEMPLATE = """Task: Classify this article (NATIVE ADS or NEWS).
+ALPACA_EN_MINIMAL_TEMPLATE = """### Instruction:
+Task: Classify the following article.
 
-Content:
+### Input:
 {content}
 
+### Petunjuk:
 {context_short}
 
-Label: """
+### Response:
+{{"label": \""""
 
 # Phase 87: Advanced 8B Gold Template (Bernoulli Calibration)
 # -----------------------------------------------------------------------------
