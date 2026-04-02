@@ -196,7 +196,8 @@ class ClassificationAgent:
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
                     ADVANCED_8B_GOLD_TEMPLATE,
                     QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE,
-                    ALPACA_ID_MINIMAL_TEMPLATE, ALPACA_EN_MINIMAL_TEMPLATE
+                    ALPACA_ID_MINIMAL_TEMPLATE, ALPACA_EN_MINIMAL_TEMPLATE,
+                    BILINGUAL_SILENT_TEMPLATE
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
