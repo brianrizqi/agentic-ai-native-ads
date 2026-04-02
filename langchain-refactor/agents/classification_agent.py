@@ -365,8 +365,7 @@ JAWABAN: """
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
                         tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Phase 51: Max Voting Strategy (Final Robustness)
-                        # Instead of averaging, use the strongest semantic trigger.
+                        # Phase 51/52: Max Voting Strategy (Final Robustness)
                         score_native = max(
                             logits[tids_native[0]].item() if tids_native else -100,
                             logits[tids_iklan[0]].item() if tids_iklan else -100,
@@ -377,16 +376,25 @@ JAWABAN: """
                             logits[tids_berita_cap[0]].item() if tids_berita_cap else -100
                         )
                         
-                        # Phase 51: The Perfect Calibrator (+4.9)
-                        # - Interpolated from Stage 48 (+4.2) and Stage 50 (+6.0)
-                        # - Targeting 60-70% recall for both classes.
-                        balanced_score_native = score_native + 4.9 
+                        # Phase 52: Dynamic Intent Calibration (The Intent Anchor)
+                        # Switch bias based on promotional keyword presence in context
+                        promo_keywords = [
+                            "promo", "diskon", "harga", "beli", "brand", "iklan", "penawaran", "hubungi",
+                            "cashback", "voucher", "order", "cuan", "terbatas", "buruan", "klik", "gratis",
+                            "register", "daftar", "stok", "discount", "sale"
+                        ]
+                        # Check context and prompt for intent signal (Case-insensitive)
+                        has_intent = any(kw in user_msg.lower() for kw in promo_keywords)
+                        
+                        # Apply aggressive bias (+6.5) if signal exists, otherwise conservative (+3.5)
+                        current_bonus = 6.5 if has_intent else 3.5
+                        balanced_score_native = score_native + current_bonus 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'
                         
-                        print(f"DEBUG: Logits [%s] N: %.2f (Adj: %.2f) vs B: %.2f -> %s" % 
-                              (self.model_tier, score_native, balanced_score_native, score_berita, decision_label))
+                        print(f"DEBUG: Logits [%s] N: %.2f (Adj: %.2f, B:%.1f) vs B: %.2f -> %s" % 
+                              (self.model_tier, score_native, balanced_score_native, current_bonus, score_berita, decision_label))
                 else:
                     # Small/Standard tier still uses open generation
                     max_new = 16 if self.model_tier == 'micro' else 300
