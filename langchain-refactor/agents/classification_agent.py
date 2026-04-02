@@ -345,12 +345,13 @@ JAWABAN: """
                 
                 # Phase 76: (Logit Mode disabled for Micro, letting generation run natively for Alpaca weights)
 
-                # Optimized Sampling for 9B Training Alignment
+                # Phase 40: Optimized Sampling for Micro (Max 64 tokens for short JSON)
+                max_new = 64 if self.model_tier == 'micro' else 300
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(
                         input_ids, 
                         attention_mask=mask,
-                        max_new_tokens=300,
+                        max_new_tokens=max_new,
                         do_sample=False,
                         repetition_penalty=1.1,
                         pad_token_id=self.tokenizer.eos_token_id
@@ -366,7 +367,11 @@ JAWABAN: """
             
             # Phase 63: RESTORE AUTONOMY (No overrides)
             result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
-            result['metadata'] = {'model': self.model_name, 'raw_response': raw_response}
+            result['metadata'] = {
+                'model': self.model_name, 
+                'raw_response': raw_response,
+                'raw_prompt': templated_prompt if self.provider == "local" else ""
+            }
             self._log_inference(title, content, result)
             return result
         except Exception as e:
@@ -458,29 +463,7 @@ JAWABAN: """
             try:
                 import torch
                 
-                # Tier-specific logic: Micro models use discriminator-mode PPL
-                if self.model_tier == 'micro':
-                    inputs = self.tokenizer(prompt, return_tensors="pt").to(self.local_model_ref.device)
-                    with torch.no_grad():
-                        outputs = self.local_model_ref(**inputs)
-                        next_token_logits = outputs.logits[0, -1, :]
-                        
-                        id_A = self.tokenizer.encode("A", add_special_tokens=False)[-1]
-                        id_B = self.tokenizer.encode("B", add_special_tokens=False)[-1]
-                        id_A_space = self.tokenizer.encode(" A", add_special_tokens=False)[-1]
-                        id_B_space = self.tokenizer.encode(" B", add_special_tokens=False)[-1]
-                        
-                        val_A = max(next_token_logits[id_A].item(), next_token_logits[id_A_space].item())
-                        val_B = max(next_token_logits[id_B].item(), next_token_logits[id_B_space].item())
-                        
-                        probs = torch.softmax(torch.tensor([val_A, val_B]), dim=0)
-                        chosen_prob = probs[0].item() if "native ads" in text.lower() else probs[1].item()
-                        
-                        loss = -torch.log(torch.tensor(chosen_prob))
-                        ppl = torch.exp(loss).item()
-                        return round(ppl, 4) if not torch.isnan(torch.tensor(ppl)) else 1.25
-                
-                # Default Sequence PPL for Qwen 9B / Llama 8B / Standard tiers
+                # Full Sequence PPL (Universal for JSON and Markdown models)
                 # Only compute for the generated part to keep it efficient
                 full_text = (prompt + text).strip()
                 inputs = self.tokenizer(full_text, return_tensors="pt").to(self.local_model_ref.device)
