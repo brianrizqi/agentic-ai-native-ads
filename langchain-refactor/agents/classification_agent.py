@@ -365,23 +365,22 @@ JAWABAN: """
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
                         tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Phase 50: Restore Average Voting (Stage 48 logic)
-                        v_native = sorted([
-                            logits[tid[0]].item() if tid else -100 
-                            for tid in [tids_native, tids_iklan, tids_promo_cap]
-                        ], reverse=True)
-                        v_news = sorted([
-                            logits[tid[0]].item() if tid else -100
-                            for tid in [tids_berita, tids_berita_cap]
-                        ], reverse=True)
+                        # Phase 51: Max Voting Strategy (Final Robustness)
+                        # Instead of averaging, use the strongest semantic trigger.
+                        score_native = max(
+                            logits[tids_native[0]].item() if tids_native else -100,
+                            logits[tids_iklan[0]].item() if tids_iklan else -100,
+                            logits[tids_promo_cap[0]].item() if tids_promo_cap else -100
+                        )
+                        score_berita = max(
+                            logits[tids_berita[0]].item() if tids_berita else -100,
+                            logits[tids_berita_cap[0]].item() if tids_berita_cap else -100
+                        )
                         
-                        # Phase 50: Stable Average (Mean of top 2)
-                        score_native = (v_native[0] + v_native[1]) / 2.0
-                        score_berita = (v_news[0] + v_news[1]) / 2.0
-                        
-                        # Phase 50: The Final Scaling (+6.0)
-                        # Pushing the Stage 48 baseline (+4.2 / 60.5%) the final distance.
-                        balanced_score_native = score_native + 6.0 
+                        # Phase 51: The Perfect Calibrator (+4.9)
+                        # - Interpolated from Stage 48 (+4.2) and Stage 50 (+6.0)
+                        # - Targeting 60-70% recall for both classes.
+                        balanced_score_native = score_native + 4.9 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'
