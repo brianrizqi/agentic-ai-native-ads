@@ -406,13 +406,12 @@ Isi: {content}
 
 {context}
 
-Output JSON:
-{{
-  "label": "berita murni/native ads",
-  "analysis": "Berikan 1-2 kalimat alasan singkat kenapa memilih label tersebut."
-}}
+JAWABAN (GUNAKAN FORMAT INI):
+Analisa: (Berikan 1-2 kalimat alasan lugas mengapa artikel masuk kategori tersebut)
+Label: (Pilih antara "berita murni" ATAU "native ads")
 
-JAWABAN: """
+JAWABAN:
+Analisa: """
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
