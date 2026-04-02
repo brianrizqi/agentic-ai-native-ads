@@ -295,7 +295,8 @@ JAWABAN: """
                     prefix_force = '{"label": "'
                     suffix_force = ""
                 else:
-                    template = ENGLISH_MARKDOWN_TEMPLATE
+                    # Stage 76: Bilingual Gold Standard for Llama 8B (Small Tier)
+                    template = BILINGUAL_GOLD_STANDARD_TEMPLATE
                     prefix_force = "" 
                     suffix_force = ""
                 
@@ -378,7 +379,11 @@ JAWABAN: """
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
                         
                         guard_penalty = 1.4 if has_news_marker else 0.0
-                        current_bonus = (6.2 if is_commercial else 4.38) - guard_penalty
+                        
+                        # Stage 76: Tier-Aware Logit Bonus
+                        # Micro (270M) needs +4.38; Small (8B) needs +7.50 to shift the weights.
+                        base_bonus = 7.50 if self.model_tier == 'small' else 4.38
+                        current_bonus = (base_bonus + 1.82 if is_commercial else base_bonus) - guard_penalty
                         
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
