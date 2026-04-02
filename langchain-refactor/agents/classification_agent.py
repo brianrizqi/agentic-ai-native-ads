@@ -312,13 +312,13 @@ JAWABAN: """
                 else:
                     content_processed = content_clean[:max_chars]
 
-                # Phase 44: Selective Content Dispatcher (The Balanced Hint)
+                # Phase 45: Selective Content Dispatcher (The Sweet Spot)
                 if self.model_tier == 'micro':
-                    # Extract only the first chunk of context for the 270M model (Prevent noise)
+                    # Extract a slightly larger chunk for the 270M model (Stage 45 refined)
                     micro_context = ""
                     if rag_block and len(rag_block) > 50:
-                        # Grab the first match only, truncated
-                        micro_context = f"Petunjuk: {rag_block.strip().split('.')[0]}."
+                        # Grab the first 250 characters of the best RAG result
+                        micro_context = f"Petunjuk: {rag_block.strip()[:250]}..."
                     
                     micro_content = content_processed
                     if title and title.strip() and title.lower() not in content_processed.lower():
@@ -364,10 +364,10 @@ JAWABAN: """
                         score_native = logits[tids_native[0]].item() if tids_native else -100
                         score_berita = logits[tids_berita[0]].item() if tids_berita else -100
                         
-                        # Phase 44: Decision Calibration (Balanced Threshold)
-                        # We observed a strong flip to Native bias (85%) in Stage 43.
-                        # Adding a manual penalty to 'native' to balance the detection.
-                        balanced_score_native = score_native - 2.5 # Threshold adjustment 
+                        # Phase 45: Decision Calibration (The Sweet Spot)
+                        # Stage 44 (-2.5) was an over-correction. 
+                        # Adjusting to -1.2 to find the perfect precision/recall balance.
+                        balanced_score_native = score_native - 1.2 # Sweet spot adjustment 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'
