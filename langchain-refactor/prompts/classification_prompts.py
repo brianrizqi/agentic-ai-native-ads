@@ -518,7 +518,7 @@ Output (JSON):"""
 # the 270M model recognizes its fine-tuned patterns.
 
 ALPACA_ID_MINIMAL_TEMPLATE = """### Instruction:
-Anda adalah ahli klasifikasi media. Tugas: Klasifikasikan artikel di bawah secara tepat.
+Identifikasi apakah artikel berikut adalah IKLAN NATIVE atau BERITA MURNI.
 
 ### Input:
 {content}
