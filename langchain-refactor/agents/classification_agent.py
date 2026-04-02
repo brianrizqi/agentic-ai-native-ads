@@ -190,7 +190,7 @@ class ClassificationAgent:
                     BILINGUAL_GOLD_STANDARD_TEMPLATE, BILINGUAL_MICRO_TEMPLATE,
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
                     MICRO_HEURISTIC_PROMPT, ADVANCED_8B_GOLD_TEMPLATE,
-                    QWEN_GOLD_MINIMALIST_V3
+                    QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
@@ -208,15 +208,10 @@ class ClassificationAgent:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        if is_qwen:
-                            # Stage 31: Empowering Llama with Balanced RAG (avoids label mimicking bias)
-                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
-                        else:
-                            top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
-                            top_news = sorted([ex for ex in candidates if 'murni' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
-                            selected = top_ads + top_news
+                        # Stage 37: Restoring Natural Top-K RAG for Llama (Biased 1:1 RAG destroyed Llama's reasoning)
+                        selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:self.rag_top_k]
                         
-                        # 2. Canonical Sort (by similarity for Llama logical flow)
+                        # 2. Canonical Sort (by similarity for logical flow)
                         selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
                     else:
                         selected = []
@@ -284,7 +279,7 @@ JAWABAN: """
                     prefix_force = "" 
                     suffix_force = ""
                 else:
-                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
+                    template = ENGLISH_MARKDOWN_TEMPLATE
                     prefix_force = "" 
                     suffix_force = ""
                 
@@ -450,7 +445,7 @@ JAWABAN: """
             markdown_label = re.search(r'(?i)Label:\s*["\']?(native ads|berita murni)["\']?', resp_clean)
             if markdown_label:
                 label_val = markdown_label.group(1).lower().strip()
-                markdown_alasan = re.search(r'(?i)Analisa:\s*(.*?)(?=\nLabel:|$)', resp_clean, re.DOTALL)
+                markdown_alasan = re.search(r'(?i)(?:Analysis|Analisa|Alasan):\s*(.*?)(?=\nLabel:|$)', resp_clean, re.DOTALL)
                 alasan_val = markdown_alasan.group(1).strip() if markdown_alasan else "Tidak ditemukan string Analisa."
                 return {'label': label_val, 'confidence': 0.90, 'reasoning': alasan_val}
             

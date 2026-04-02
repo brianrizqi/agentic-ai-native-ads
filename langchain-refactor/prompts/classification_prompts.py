@@ -407,11 +407,9 @@ Isi: {content}
 {context}
 
 JAWABAN (GUNAKAN FORMAT INI):
-Analisa: (Berikan 1-2 kalimat alasan lugas mengapa artikel masuk kategori tersebut)
-Label: (Pilih antara "berita murni" ATAU "native ads")
-
-JAWABAN:
-Analisa: """
+Analisa: (Berikan argumen logis 1-2 kalimat)
+Label: (Pilih "berita murni" atau "native ads")
+"""
 
 SIMPLE_MICRO_TEMPLATE = """Tugas: Klasifikasikan sebagai "native ads" atau "berita murni".
 
@@ -423,6 +421,23 @@ Konten: {content}
 Output JSON:
 {{"alasan": """
 
+
+# Phase 37: English Markdown Template (Final Llama Stability Fix)
+# -----------------------------------------------------------------------------
+# Llama 8B suffers from "Indonesian Instruction Collapse" when given heavy ID rules.
+# This uses strong English system-commands but parses Indonesian text.
+
+ENGLISH_MARKDOWN_TEMPLATE = """Task: Classify the following Indonesian article as "berita murni" (pure news, facts, objective reporting) or "native ads" (promotional, branding, PR marketing).
+
+Title: {title}
+Content: {content}
+
+{context}
+
+Format your answer EXACTLY like this:
+Analysis: (1-2 sentences explaining your logic)
+Label: (either "berita murni" or "native ads")
+"""
 
 # Phase 64: Bilingual Templates for Gemma/Llama Stability
 # -----------------------------------------------------------------------------
