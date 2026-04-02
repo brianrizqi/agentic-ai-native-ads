@@ -199,8 +199,9 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             if retriever:
                 # Phase 116: Force a broad pool (Top-20) to ensure 3:2 Skew can find enough Ads.
                 # This fixes the 85.5% plateau where Ads were starving in a Top-5 pool.
-                eff_top_k = kwargs.get('top_k', 20)
-                if eff_top_k < 20: eff_top_k = 20
+                # Phase 40: Respect User Top-K (Stop over-fetching for Micro)
+                eff_top_k = kwargs.get('top_k', 5)
+                if eff_top_k < 5: eff_top_k = 5
                 max_reasoning = None
                 minimalist = False
                 
@@ -283,8 +284,8 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             'correct': pred_label == gt_label
         })
         
-        if (i + 1) % 10 == 0:
-            print(f"Processed {i + 1}/{len(test_data)} samples..." + (f" (Avg PPL: {np.mean(results['perplexities']):.2f})" if results['perplexities'] else ""))
+        # Phase 40: Real-time progress (every sample)
+        print(f"[{i + 1}/{len(test_data)}] {gt_label} -> {pred_label}" + (f" (PPL: {ppl:.2f})" if 'ppl' in locals() else ""))
     
     return results
 
