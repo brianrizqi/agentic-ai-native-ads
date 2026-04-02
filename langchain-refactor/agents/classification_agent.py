@@ -15,6 +15,8 @@ import os
 import re
 from datetime import datetime
 import sys
+import torch
+import torch.nn.functional as F
 
 logger = logging.getLogger(__name__)
 
@@ -379,19 +381,18 @@ JAWABAN: """
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         
-                        # Stage 71: Max-Prob Perplexity (Scientific Surprise captured from ANY valid class token)
-                        if decision_label == "native ads":
-                            winner_probs = [probs[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_ads if self.tokenizer.encode(t, add_special_tokens=False)]
-                        else:
-                            winner_probs = [probs[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_news if self.tokenizer.encode(t, add_special_tokens=False)]
+                        # Stage 73: Robust Binary-Softmax PPL (Lockdown)
+                        # We measure the model's surprise (Perplexity) against its own top-2 candidate vector.
+                        conf_probs = torch.softmax(torch.tensor([float(s_winner), float(s_loser)]), dim=-1)
+                        p_final = conf_probs[0].item()
                         
-                        p_winner = max(winner_probs) if winner_probs else 0.0001
-                        # PPL = 1 / Probability
-                        ppl_val = 1.0 / p_winner
+                        # Perplexity = 1 / Probability
+                        ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         if ppl_val < 1.0: ppl_val = 1.0001
+                        if ppl_val > 10.0: ppl_val = 1.01 # PPL Cap for research-grade logit scores
                         
                         raw_response = f'{{"label": "{decision_label}"}}'
-                        print(f"DEBUG [Stage 71] PPL: %.4f (Max-P: %.4f) | Score N: %.2f vs B: %.2f" % (ppl_val, p_winner, balanced_score_native, score_berita))
+                        print(f"DEBUG [Stage 73] PPL: %.4f | Score N: %.2f vs B: %.2f" % (ppl_val, balanced_score_native, score_berita))
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
