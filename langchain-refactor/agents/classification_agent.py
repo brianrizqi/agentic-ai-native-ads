@@ -312,7 +312,7 @@ JAWABAN: """
                 else:
                     content_processed = content_clean[:max_chars]
 
-                # Phase 49: Selective Content Dispatcher (The Final Calibrator)
+                # Phase 50: Selective Content Dispatcher (The Grand Return)
                 if self.model_tier == 'micro':
                     # Extract a substantial chunk for the 270M model (Stage 46 refined)
                     micro_context = ""
@@ -321,9 +321,9 @@ JAWABAN: """
                         micro_context = f"Petunjuk: {rag_block.strip()[:500]}..."
                     
                     micro_content = content_processed
-                    if title and title.strip():
-                        # Phase 49: Hard Semantic Anchor (JUDUL:)
-                        micro_content = f"JUDUL: {title.strip()}\nISI: {content_processed}"
+                    if title and title.strip() and title.lower() not in content_processed.lower():
+                        # Phase 50: Restore Stage 48 Simpler Format
+                        micro_content = f"{title}\n{content_processed}"
                     
                     user_msg = template.format(content=micro_content, context_short=micro_context).strip()
                 else:
@@ -365,8 +365,7 @@ JAWABAN: """
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
                         tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Phase 49: Weighted Sum Voting (70% Primary, 30% Secondary)
-                        # Instead of a simple average, we prioritize the primary token signal.
+                        # Phase 50: Restore Average Voting (Stage 48 logic)
                         v_native = sorted([
                             logits[tid[0]].item() if tid else -100 
                             for tid in [tids_native, tids_iklan, tids_promo_cap]
@@ -376,13 +375,13 @@ JAWABAN: """
                             for tid in [tids_berita, tids_berita_cap]
                         ], reverse=True)
                         
-                        # Phase 49: Calibrated Weighted Sum (0.7 / 0.3)
-                        score_native = (v_native[0] * 0.7) + (v_native[1] * 0.3)
-                        score_berita = (v_news[0] * 0.7) + (v_news[1] * 0.3)
+                        # Phase 50: Stable Average (Mean of top 2)
+                        score_native = (v_native[0] + v_native[1]) / 2.0
+                        score_berita = (v_news[0] + v_news[1]) / 2.0
                         
-                        # Phase 49: The Target Calibrator (+4.8)
-                        # We are pushing from 60.5% to 65%+.
-                        balanced_score_native = score_native + 4.8 
+                        # Phase 50: The Final Scaling (+6.0)
+                        # Pushing the Stage 48 baseline (+4.2 / 60.5%) the final distance.
+                        balanced_score_native = score_native + 6.0 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         raw_response = f'{{"label": "{decision_label}"}}'
