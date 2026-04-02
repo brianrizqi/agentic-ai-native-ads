@@ -536,26 +536,38 @@ JAWABAN: """
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float: 
-        """Phase 165: Restored Real-Time Perplexity Evaluation."""
+        """Stage 67.1: Strict Response-Only Perplexity (No Hardcoded Fallbacks)."""
         if self.provider == "local" and self.local_model_ref:
             try:
                 import torch
                 
-                # Full Sequence PPL (Universal for JSON and Markdown models)
-                # Only compute for the generated part to keep it efficient
-                full_text = (prompt + text).strip()
-                inputs = self.tokenizer(full_text, return_tensors="pt").to(self.local_model_ref.device)
+                # Tokenize exactly
+                prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"].to(self.local_model_ref.device)
+                full_ids = self.tokenizer(prompt + text, return_tensors="pt")["input_ids"].to(self.local_model_ref.device)
+                
+                # Strict boundary check: If there's no completion, PPL is undefined.
+                if full_ids.shape[1] <= prompt_ids.shape[1]:
+                    return 0.0 
+
+                # Mask prompt tokens with -100 (standard ignore index)
+                labels = full_ids.clone()
+                labels[:, :prompt_ids.shape[1]] = -100 
                 
                 with torch.no_grad():
-                    # Optimization: Use shift to calculate cross-entropy efficiently
-                    outputs = self.local_model_ref(**inputs, labels=inputs["input_ids"])
+                    # Calculate loss ONLY on completion tokens
+                    outputs = self.local_model_ref(input_ids=full_ids, labels=labels)
                     loss = outputs.loss
+                    
+                    if loss is None:
+                        return 0.0
+                        
                     ppl = torch.exp(loss).item()
                     
-                    # Safety check for outliers
-                    if torch.isnan(torch.tensor(ppl)) or ppl > 1000:
-                        return 1.45 # Reasonable fallback for extreme failures
+                    # Only return valid computed PPL
+                    if torch.isnan(torch.tensor(ppl)) or torch.isinf(torch.tensor(ppl)):
+                        return 0.0
+                        
                     return round(ppl, 4)
-            except Exception as e:
-                return 1.35 # Identifiable error fallback 
-        return 1.0 # Baseline for remote providers
+            except Exception:
+                return 0.0 # Return 0.0 to signal invalid calculation rather than hiding it
+        return 1.0
