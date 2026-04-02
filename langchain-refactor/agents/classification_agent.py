@@ -191,7 +191,7 @@ class ClassificationAgent:
                     ULTRA_STABLE_MICRO_TEMPLATE, MCQ_PROMPT_TEMPLATE,
                     ADVANCED_8B_GOLD_TEMPLATE,
                     QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE,
-                    ALPACA_TRAINING_TEMPLATE
+                    ALPACA_ID_MINIMAL_TEMPLATE, ALPACA_EN_MINIMAL_TEMPLATE
                 )
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
@@ -279,9 +279,15 @@ JAWABAN: """
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
-                    # Phase 39: Alpaca format restoration for 270M fine-tuned weights
-                    template = ALPACA_TRAINING_TEMPLATE
-                    prefix_force = '{"label": '
+                    # Phase 40: Strict Training Alignment (Simulating convert_dataset.py)
+                    # Simple bilingual detection for base instruction set
+                    en_indicators = [" the ", " and ", " is ", " of ", " with ", " for "]
+                    is_english = any(indic in content.lower() for indic in en_indicators)
+                    
+                    template = ALPACA_EN_MINIMAL_TEMPLATE if is_english else ALPACA_ID_MINIMAL_TEMPLATE
+                    
+                    # Lock the model into immediate JSON member completion
+                    prefix_force = '{"label": "'
                     suffix_force = ""
                 else:
                     template = ENGLISH_MARKDOWN_TEMPLATE
@@ -305,8 +311,17 @@ JAWABAN: """
                 else:
                     content_processed = content_clean[:max_chars]
 
-                user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block).strip()
-                # Phase 175: Clean Structure (No forced prefix)
+                # Phase 40: Multi-Tier Content Dispatcher
+                if self.model_tier == 'micro':
+                    # Merge title into content for micro to match training input distribution
+                    micro_content = content_processed
+                    if title and title.strip() and title.lower() not in content_processed.lower():
+                        micro_content = f"{title}\n{content_processed}"
+                    user_msg = template.format(content=micro_content, context=rag_block or "N/A").strip()
+                else:
+                    user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
+                
+                # Phase 175: Clean Structure
                 full_prompt = user_msg
                 
                 # Phase 141/153: Prompt Dispatcher

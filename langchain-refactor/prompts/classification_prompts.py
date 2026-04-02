@@ -512,28 +512,32 @@ Output (JSON):"""
 # -----------------------------------------------------------------------------
 # Re-aligning the model prompt exactly with its Unsloth fine-tuning template.
 
-ALPACA_TRAINING_TEMPLATE = """### Instruction:
-Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+# Phase 40: Minimalist Alpaca Templates (The Golden Alignment)
+# -----------------------------------------------------------------------------
+# Replicating the exact prompt structure from convert_dataset.py to ensure 
+# the 270M model recognizes its fine-tuned patterns.
 
-Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
-1. Nada positif/netral (tidak mengkritik subjek)
-2. Bahasa persuasif (mengajak/meyakinkan)
-3. Mempromosikan produk/brand/instansi
-4. Hanya satu sudut pandang (tidak objektif)
-
-Berita Murni:
-- Bisa positif/netral/negatif
-- Objektif, menyajikan berbagai sudut pandang
-- Tidak mempromosikan produk/brand
+ALPACA_ID_MINIMAL_TEMPLATE = """### Instruction:
+Klasifikasikan artikel berikut sebagai native ads atau berita murni.
 
 {context}
 
 ### Input:
-Judul: {title}
 {content}
 
 ### Response:
-{{"label": """
+{{"label": \""""
+
+ALPACA_EN_MINIMAL_TEMPLATE = """### Instruction:
+Classify the following article as native ads or berita murni.
+
+{context}
+
+### Input:
+{content}
+
+### Response:
+{{"label": \""""
 
 # Phase 87: Advanced 8B Gold Template (Bernoulli Calibration)
 # -----------------------------------------------------------------------------
