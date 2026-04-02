@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 20,
+    "borderline_count": 0,
+    "bad_count": 80,
+    "avg_judge_score": 2.34
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news), which aligns with the ground truth. The reasoning, while not detailed, indicates a manual text search failure rather than a misclassification. The article presents factual information about an injury without promotional content, supporting the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and the reasoning aligns with the content being factual news about a historical discovery. However, the reasoning could be more detailed to enhance clarity.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' which aligns with the ground truth. However, the reasoning provided is vague and lacks depth, as it does not clearly explain why the content is classified as pure news rather than native ads.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads'. The reasoning provided is absent, which fails to support the prediction and does not address the promotional tone present in the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia, Feb. 23, 2026 (GLOBE NEWSWIRE) — Ero Copper Corp. (TSX: ERO, NYSE: ERO) (“Ero” or the “Company”) is pleased to announce results of the Preliminary Economic Assessment (“PE",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Tidak ditemukan alasan (JSON regex fallback).",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads', which is the ground truth. The reasoning provided is vague and does not address the promotional nature of the content, leading to a completely wrong classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONCTON, New Brunswick, Feb. 25, 2026 (GLOBE NEWSWIRE) — Major Drilling Group International Inc. (“Major Drilling” or the “Company”) (TSX: MDI), the largest provider of drilling services to the mining",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model prediction is completely wrong as it classified the article as 'berita murni' (pure news) instead of 'native ads', which is the correct label according to the ground truth. Additionally, the reasoning provided is absent, indicating a lack of any logical support for the prediction.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia and BOSTON, March 10, 2026 (GLOBE NEWSWIRE) — Xenon Pharmaceuticals Inc. (Nasdaq: XENE), a neuroscience-focused biopharmaceutical company dedicated to drug discovery, clini",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Tidak ditemukan alasan (JSON regex fallback).",
+      "confidence": 0.99
+    }
+  ]
+}
