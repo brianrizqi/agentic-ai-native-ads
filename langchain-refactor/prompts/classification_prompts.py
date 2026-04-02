@@ -518,7 +518,11 @@ Output (JSON):"""
 # the 270M model recognizes its fine-tuned patterns.
 
 ALPACA_ID_MINIMAL_TEMPLATE = """### Instruction:
-Klasifikasikan artikel berikut sebagai native ads atau berita murni.
+Tugas: Klasifikasikan artikel di bawah sebagai "native ads" atau "berita murni".
+
+Pilihan Jawaban:
+[A] Native Ads: Artikel promosi produk/brand (iklan dalam bentuk berita).
+[B] Berita Murni: Artikel jurnalistik objektif tanpa muatan promosi produk.
 
 {context}
 
@@ -526,10 +530,14 @@ Klasifikasikan artikel berikut sebagai native ads atau berita murni.
 {content}
 
 ### Response:
-{{"label": \""""
+Label: ["""
 
 ALPACA_EN_MINIMAL_TEMPLATE = """### Instruction:
-Classify the following article as native ads or berita murni.
+Task: Classify the following article as "native ads" or "berita murni".
+
+Choice:
+[A] Native Ads: Promotional content for products/brands in news format.
+[B] Berita Murni: Objective journalistic news without promotional intent.
 
 {context}
 
@@ -537,7 +545,7 @@ Classify the following article as native ads or berita murni.
 {content}
 
 ### Response:
-{{"label": \""""
+Label: ["""
 
 # Phase 87: Advanced 8B Gold Template (Bernoulli Calibration)
 # -----------------------------------------------------------------------------

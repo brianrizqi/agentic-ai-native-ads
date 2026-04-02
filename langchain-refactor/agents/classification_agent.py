@@ -280,15 +280,15 @@ JAWABAN: """
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
-                    # Phase 40: Strict Training Alignment (Simulating convert_dataset.py)
+                    # Phase 41: Golden Anchor (MCQ Strategy)
                     # Simple bilingual detection for base instruction set
                     en_indicators = [" the ", " and ", " is ", " of ", " with ", " for "]
                     is_english = any(indic in content.lower() for indic in en_indicators)
                     
                     template = ALPACA_EN_MINIMAL_TEMPLATE if is_english else ALPACA_ID_MINIMAL_TEMPLATE
                     
-                    # Lock the model into immediate JSON member completion
-                    prefix_force = '{"label": "'
+                    # Force a simple Choice Trigger instead of JSON
+                    prefix_force = "Label: ["
                     suffix_force = ""
                 else:
                     template = ENGLISH_MARKDOWN_TEMPLATE
@@ -312,13 +312,16 @@ JAWABAN: """
                 else:
                     content_processed = content_clean[:max_chars]
 
-                # Phase 40: Multi-Tier Content Dispatcher
+                # Phase 41: Multi-Tier Content Dispatcher
                 if self.model_tier == 'micro':
-                    # Merge title into content for micro to match training input distribution
+                    # Merge title into content for micro
                     micro_content = content_processed
                     if title and title.strip() and title.lower() not in content_processed.lower():
                         micro_content = f"{title}\n{content_processed}"
-                    user_msg = template.format(content=micro_content, context=rag_block or "N/A").strip()
+                    
+                    # Sanitized context: No more "N/A" confusion
+                    context_val = rag_block.strip() if (rag_block and rag_block.strip() and rag_block != "N/A") else ""
+                    user_msg = template.format(content=micro_content, context=context_val).strip()
                 else:
                     user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
@@ -392,8 +395,8 @@ JAWABAN: """
         """Stage 28: Clean JSON-First Parser."""
         try:
             resp_clean = response.strip()
-            # Phase 39: Re-inject the prefix for Alpaca outputs
-            if prefix_forced and not resp_clean.startswith("{"):
+            # Stage 41: Clean JSON-First Parser.
+            if prefix_forced and not resp_clean.startswith("{") and not prefix_forced.startswith("Label:"):
                 resp_clean = prefix_forced + resp_clean
                 if not resp_clean.endswith("}"):
                     resp_clean += "}"
@@ -401,7 +404,7 @@ JAWABAN: """
             alasan = "Tidak ditemukan alasan (JSON regex fallback)."
             label = "berita murni"
             
-            # 1. JSON Parsing (Primary Logic)
+            # 1. JSON Parsing (Primary Logic for larger models)
             json_blocks = re.findall(r'\{.*?\}', resp_clean, re.DOTALL)
             if json_blocks:
                 json_str = json_blocks[-1]
@@ -435,8 +438,18 @@ JAWABAN: """
                             label = "berita murni"
                     
                     return {'label': label, 'confidence': 0.99, 'reasoning': alasan}
-                except Exception as e:
+                except Exception:
                     pass
+
+            # 1.1 MCQ Parsing (Phase 41: Priority for Micro)
+            if prefix_forced == "Label: [" or "Label: [" in resp_clean:
+                # Catch [A], [B], A], B], or just A, B at the start of generated part
+                mcq_match = re.search(r'\[?(A|B)\]?', resp_clean)
+                if mcq_match:
+                    choice = mcq_match.group(1).upper()
+                    label = "native ads" if choice == 'A' else "berita murni"
+                    reasoning = f"Pilihan MCQ: {choice} (Gemma 270M)"
+                    return {'label': label, 'confidence': 0.85, 'reasoning': reasoning}
             
             # 1.5 Markdown KV Parser (Llama 8B Anti-Drift)
             markdown_label = re.search(r'(?i)Label:\s*["\']?(native ads|berita murni)["\']?', resp_clean)
