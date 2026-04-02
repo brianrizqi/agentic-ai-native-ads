@@ -1,0 +1,27 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/gemma3-270m-native-ads-en_merged_16bit/
+Timestamp: 20260402_054844
+Dataset: ../data/llm_dataset_12k_refined_full.json
+Samples: 200
+
+Overall Metrics:
+  Accuracy: 51.00%
+  Correct: 102/200
+
+BERTScore:
+  Precision: 0.794
+  Recall: 0.846
+  F1: 0.819
+
+NLP Metrics (Reasoning Quality):
+  BLEU: 0.0423
+  METEOR: 0.3780
+
+Perplexity: 5.48
+
+Per-Class Accuracy:
+  native ads: 18.10%
+  berita murni: 87.37%
