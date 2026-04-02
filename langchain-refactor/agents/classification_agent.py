@@ -350,34 +350,27 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 69: Unified Inference & PPL (Real-Time Overhaul)
+                # Phase 70: Strict Bugfix (Real-Time Overhaul Restoration)
+                ppl_val = None
                 if self.model_tier == 'micro' and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
-                        
-                        # Softmax for scientific probability
                         probs = torch.softmax(logits, dim=-1)
                         
-                        # Identify tokens
                         tids_native = self.tokenizer.encode("native", add_special_tokens=False)
                         tids_iklan = self.tokenizer.encode(" iklan", add_special_tokens=False)
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
                         tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Logit scores for decision logic
                         v_native = sorted([logits[tid[0]].item() if tid else -100 for tid in [tids_native, tids_iklan]], reverse=True)
                         v_news = sorted([logits[tid[0]].item() if tid else -100 for tid in [tids_berita, tids_berita_cap]], reverse=True)
                         
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 66 Refinements
-                        market_keywords = ["shopee", "tokopedia", "lazada", "tiktok", "cashback", "diskon", "promo"]
-                        is_commercial = any(kw in micro_context.lower() for kw in market_keywords)
-                        
-                        news_guards = ["republika.co.id", "antaranews", "harian kompas", "laporan wartawan", "detikcom"]
-                        has_news_marker = any(marker in content.lower() for marker in news_guards)
+                        is_commercial = any(kw in micro_context.lower() for kw in ["shopee", "promo", "diskon", "cashback"])
+                        has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
                         
                         guard_penalty = 1.4 if has_news_marker else 0.0
                         current_bonus = (6.2 if is_commercial else 4.38) - guard_penalty
@@ -385,44 +378,30 @@ JAWABAN: """
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         
-                        # REAL-TIME PPL: 1 / P (Scientific Surprise)
-                        # We take the probability of the winning logit's primary token
                         winner_tid = tids_native[0] if decision_label == "native ads" else tids_berita[0]
                         p_winner = probs[winner_tid].item()
-                        ppl_logit = 1.0 / p_winner if p_winner > 0.0001 else 2.0
-                        if ppl_logit < 1.0: ppl_logit = 1.001
+                        ppl_val = 1.0 / p_winner if p_winner > 0.0001 else 2.0
+                        if ppl_val < 1.0: ppl_val = 1.001
                         
                         raw_response = f'{{"label": "{decision_label}"}}'
-                        result["metadata"]["ppl"] = round(ppl_logit, 4)
-                        
-                        print(f"DEBUG [Stage 69] PPL: %.4f | Prob: %.4f | Score N: %.2f vs B: %.2f" % 
-                              (ppl_logit, p_winner, balanced_score_native, score_berita))
+                        print(f"DEBUG [Stage 70] PPL: %.4f | Score N: %.2f vs B: %.2f" % (ppl_val, balanced_score_native, score_berita))
                 else:
-                    # Generation mode for larger tiers
-                    max_new = 300
                     with torch.no_grad():
-                        generated_ids = self.local_model_ref.generate(
-                            input_ids, attention_mask=mask, max_new_tokens=max_new, do_sample=False
-                        )
+                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
                     raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
-                
-                clean_peek = raw_response[:120].replace('\n', ' ')
-                
-                clean_peek = raw_response[:120].replace('\n', ' ')
-                print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")
-            else:
-                input_data = {"title": title or content[:100], "content": content[:400], "context": context}
-                raw_response = self.chain.invoke(input_data)
-            
-            # Phase 63: RESTORE AUTONOMY (No overrides)
-            result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
-            result['metadata'] = {
-                'model': self.model_name, 
-                'raw_response': raw_response,
-                'raw_prompt': templated_prompt if self.provider == "local" else ""
-            }
-            self._log_inference(title, content, result)
-            return result
+
+                # Final Structure
+                result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
+                result['metadata'] = {
+                    'model': self.model_name, 
+                    'raw_response': raw_response,
+                    'raw_prompt': templated_prompt if self.provider == "local" else ""
+                }
+                if ppl_val is not None:
+                    result['metadata']['ppl'] = round(ppl_val, 4)
+                    
+                self._log_inference(title, content, result)
+                return result
         except Exception as e:
             print(f"CRITICAL ERROR DURING CLASSIFY: {e}")
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'FAILSAFE: {str(e)}'}
