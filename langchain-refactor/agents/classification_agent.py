@@ -208,8 +208,12 @@ class ClassificationAgent:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # Stage 37: Restoring Natural Top-K RAG for Llama (Biased 1:1 RAG destroyed Llama's reasoning)
-                        selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:self.rag_top_k]
+                        # Stage 37: Restoring Natural Top-K RAG for Llama
+                        if self.model_tier == 'micro':
+                            # Micro (Gemma 3 270M) Minimalist RAG limit to 1
+                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                        else:
+                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:self.rag_top_k]
                         
                         # 2. Canonical Sort (by similarity for logical flow)
                         selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
@@ -221,8 +225,8 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            # Stage 34: Backtrack limits (2000 Chars for Qwen, 800 for others)
-                            char_limit = 2000 if is_qwen else 800
+                            # Stage 38: RAG Minim for Gemma 3 270m
+                            char_limit = 2000 if is_qwen else (150 if self.model_tier == 'micro' else 800)
                             label_upper = label_hint.upper()
                             rag_block += f"DOKUMEN REFERENSI ({label_upper}):\n"
                             rag_block += f"{str(ex.get('content', ''))[:char_limit]}...\n"
