@@ -345,21 +345,41 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 76: (Logit Mode disabled for Micro, letting generation run natively for Alpaca weights)
-
-                # Phase 42: Ultra-Efficient Sampling for Micro (Max 16 tokens)
-                max_new = 16 if self.model_tier == 'micro' else 300
-                with torch.no_grad():
-                    generated_ids = self.local_model_ref.generate(
-                        input_ids, 
-                        attention_mask=mask,
-                        max_new_tokens=max_new,
-                        do_sample=False,
-                        repetition_penalty=1.1,
-                        pad_token_id=self.tokenizer.eos_token_id
-                    )
-                
-                raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
+                # Phase 43: Dual-Mode Execution (Logit vs Generation)
+                if self.model_tier == 'micro' and self.local_model_ref is not None:
+                    # Stage 43: Logit Force (Binary contrastive selection)
+                    with torch.no_grad():
+                        outputs = self.local_model_ref(input_ids, attention_mask=mask)
+                        logits = outputs.logits[0, -1, :]
+                        
+                        # Identify critical token candidates (Lowercase & Space-prefixed for catch-all)
+                        tids_native = self.tokenizer.encode("native", add_special_tokens=False)
+                        tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
+                        
+                        # Score the labels (Max of its multi-token components or first token)
+                        score_native = logits[tids_native[0]].item() if tids_native else -100
+                        score_berita = logits[tids_berita[0]].item() if tids_berita else -100
+                        
+                        # Phase 141: Decision Bias Balancing (Default 0.0)
+                        # If model is too bias to News, we can subtract a constant from berita or add to native.
+                        decision_label = "native ads" if score_native > score_berita else "berita murni"
+                        raw_response = f'{{"label": "{decision_label}"}}'
+                        
+                        print(f"DEBUG: Logits [%s] Native: %.2f vs Berita: %.2f -> %s" % (self.model_tier, score_native, score_berita, decision_label))
+                else:
+                    # Small/Standard tier still uses open generation
+                    max_new = 16 if self.model_tier == 'micro' else 300
+                    with torch.no_grad():
+                        generated_ids = self.local_model_ref.generate(
+                            input_ids, 
+                            attention_mask=mask,
+                            max_new_tokens=max_new,
+                            do_sample=False,
+                            repetition_penalty=1.1,
+                            pad_token_id=self.tokenizer.eos_token_id
+                        )
+                    
+                    raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
                 
                 clean_peek = raw_response[:120].replace('\n', ' ')
                 print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")
