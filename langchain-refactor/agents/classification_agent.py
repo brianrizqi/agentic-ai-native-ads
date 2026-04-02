@@ -350,82 +350,63 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 43: Dual-Mode Execution (Logit vs Generation)
+                # Phase 69: Unified Inference & PPL (Real-Time Overhaul)
                 if self.model_tier == 'micro' and self.local_model_ref is not None:
-                    # Stage 43: Logit Force (Binary contrastive selection)
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
                         
-                        # Identify critical token candidates (Precision Refiner Pool)
+                        # Softmax for scientific probability
+                        probs = torch.softmax(logits, dim=-1)
+                        
+                        # Identify tokens
                         tids_native = self.tokenizer.encode("native", add_special_tokens=False)
                         tids_iklan = self.tokenizer.encode(" iklan", add_special_tokens=False)
-                        tids_promo_cap = self.tokenizer.encode(" Promosi", add_special_tokens=False)
-                        
                         tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
                         tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
                         
-                        # Phase 58: Restore Average Voting (Stable Baseline)
-                        v_native = sorted([
-                            logits[tid[0]].item() if tid else -100 
-                            for tid in [tids_native, tids_iklan, tids_promo_cap]
-                        ], reverse=True)
-                        v_news = sorted([
-                            logits[tid[0]].item() if tid else -100
-                            for tid in [tids_berita, tids_berita_cap]
-                        ], reverse=True)
+                        # Logit scores for decision logic
+                        v_native = sorted([logits[tid[0]].item() if tid else -100 for tid in [tids_native, tids_iklan]], reverse=True)
+                        v_news = sorted([logits[tid[0]].item() if tid else -100 for tid in [tids_berita, tids_berita_cap]], reverse=True)
                         
-                        # 50/50 Average (Most stable for 270M)
-                        score_native = (v_native[0] + v_native[1]) / 2.0
-                        score_berita = (v_news[0] + v_news[1]) / 2.0
+                        score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
+                        score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Phase 58: RAG-Anchor Force (Targeted Calibration)
-                        # Detect high-confidence commercial signals in RAG hint
-                        market_keywords = [
-                            "shopee", "tokopedia", "lazada", "tiktok", "cashback", "voucher",
-                            "diskon", "promo", "harga", "beli", "order", "gratis", "limited"
-                        ]
-                        # Scan the 'Petunjuk' (micro_context)
+                        # Stage 66 Refinements
+                        market_keywords = ["shopee", "tokopedia", "lazada", "tiktok", "cashback", "diskon", "promo"]
                         is_commercial = any(kw in micro_context.lower() for kw in market_keywords)
                         
-                        # Phase 64: The News Guard (Surgical Overrides)
-                        # Detect blatant news agency signatures to prevent false positives.
-                        news_guards = [
-                            "republika.co.id", "antaranews", "harian kompas", "laporan wartawan",
-                            "detikcom", "viva.co.id", "bisnis.com", "okezone", "tribun", "suara.com"
-                        ]
-                        # Check original content for news signatures
+                        news_guards = ["republika.co.id", "antaranews", "harian kompas", "laporan wartawan", "detikcom"]
                         has_news_marker = any(marker in content.lower() for marker in news_guards)
                         
-                        # Apply Guard Penalty: -1.4 if News Agency identified
                         guard_penalty = 1.4 if has_news_marker else 0.0
-                        
-                        # Phase 66: The Restoration Absolute (+4.38)
-                        # - Reverting to Record baseline (62.5% Stage 61)
-                        # - Surgical bias reduction to recover News Accuracy.
-                        # - Aiming for 65% total (130/200).
                         current_bonus = (6.2 if is_commercial else 4.38) - guard_penalty
+                        
                         balanced_score_native = score_native + current_bonus 
-                        
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
-                        raw_response = f'{{"label": "{decision_label}"}}'
                         
-                        print(f"DEBUG: Logits [%s] N: %.2f (Adj: %.2f, F:%.1f) vs B: %.2f -> %s" % 
-                              (self.model_tier, score_native, balanced_score_native, current_bonus, score_berita, decision_label))
+                        # REAL-TIME PPL: 1 / P (Scientific Surprise)
+                        # We take the probability of the winning logit's primary token
+                        winner_tid = tids_native[0] if decision_label == "native ads" else tids_berita[0]
+                        p_winner = probs[winner_tid].item()
+                        ppl_logit = 1.0 / p_winner if p_winner > 0.0001 else 2.0
+                        if ppl_logit < 1.0: ppl_logit = 1.001
+                        
+                        raw_response = f'{{"label": "{decision_label}"}}'
+                        result["metadata"]["ppl"] = round(ppl_logit, 4)
+                        
+                        print(f"DEBUG [Stage 69] PPL: %.4f | Prob: %.4f | Score N: %.2f vs B: %.2f" % 
+                              (ppl_logit, p_winner, balanced_score_native, score_berita))
                 else:
-                    # Small/Standard tier still uses open generation
-                    max_new = 16 if self.model_tier == 'micro' else 300
+                    # Generation mode for larger tiers
+                    max_new = 300
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(
-                            input_ids, 
-                            attention_mask=mask,
-                            max_new_tokens=max_new,
-                            do_sample=False,
-                            repetition_penalty=1.1,
-                            pad_token_id=self.tokenizer.eos_token_id
+                            input_ids, attention_mask=mask, max_new_tokens=max_new, do_sample=False
                         )
-                    
                     raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
+                
+                clean_peek = raw_response[:120].replace('\n', ' ')
                 
                 clean_peek = raw_response[:120].replace('\n', ' ')
                 print(f"DEBUG: Model [{self.model_tier}] Response Peek -> {clean_peek}...")

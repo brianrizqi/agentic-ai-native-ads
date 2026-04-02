@@ -252,15 +252,17 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         
         # Calculate perplexity if local model
         if hasattr(agent, 'compute_perplexity'):
-            # Use raw response for PPL if available, conditioned on prompt
             metadata = pred.get('metadata', {})
-            ppl_text = metadata.get('raw_response', pred_reasoning)
-            ppl_prompt = metadata.get('raw_prompt', "")
-            
-            if ppl_text:
+            # Phase 69: Prioritize real-time logit-based PPL from the agent
+            if 'ppl' in metadata:
+                ppl = metadata['ppl']
+            else:
+                ppl_text = metadata.get('raw_response', pred_reasoning)
+                ppl_prompt = metadata.get('raw_prompt', "")
                 ppl = agent.compute_perplexity(ppl_text, prompt=ppl_prompt)
-                if ppl > 0:
-                    results['perplexities'].append(ppl)
+            
+            if ppl > 0:
+                results['perplexities'].append(ppl)
         
         if pred_label == gt_label:
             results['correct'] += 1
