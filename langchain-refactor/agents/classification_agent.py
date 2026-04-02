@@ -295,9 +295,10 @@ JAWABAN: """
                     prefix_force = '{"label": "'
                     suffix_force = ""
                 else:
-                    # Stage 76: Bilingual Gold Standard for Llama 8B (Small Tier)
+                    # Stage 77: Bilingual Gold Standard for Llama 8B (Small Tier)
+                    # Enforcing JSON prefix to stabilize reasoning and eliminate chatter
                     template = BILINGUAL_GOLD_STANDARD_TEMPLATE
-                    prefix_force = "" 
+                    prefix_force = '{"analysis": "' 
                     suffix_force = ""
                 
                 # Phase 138: Title De-duplication (Clean redundant title from content)
@@ -375,14 +376,17 @@ JAWABAN: """
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
                         # Stage 66 Refinements
-                        is_commercial = any(kw in micro_context.lower() for kw in ["shopee", "promo", "diskon", "cashback"])
+                        # Stage 77: Expanded Commercial & PR Keyword Detector
+                        # Detecting PT, TBK, BUMN, and Western PR Newswires
+                        pr_markers = ["PT ", "TBK", "BUMN", "PEMKAB", "PEMKOT", "GLOBE NEWSWIRE", "PR NEWSWIRE", "BUSINESS WIRE"]
+                        is_commercial = any(kw in micro_context.lower() or kw in content.upper() for kw in ["shopee", "promo", "diskon", "cashback"] + pr_markers)
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
                         
                         guard_penalty = 1.4 if has_news_marker else 0.0
                         
-                        # Stage 76: Tier-Aware Logit Bonus
-                        # Micro (270M) needs +4.38; Small (8B) needs +7.50 to shift the weights.
-                        base_bonus = 7.50 if self.model_tier == 'small' else 4.38
+                        # Stage 77: Structural Recall Shift (Dose Boost)
+                        # Micro (270M) needs +4.38; Small (8B) needs +13.50 to overcome News Bias.
+                        base_bonus = 13.50 if self.model_tier == 'small' else 4.38
                         current_bonus = (base_bonus + 1.82 if is_commercial else base_bonus) - guard_penalty
                         
                         balanced_score_native = score_native + current_bonus 

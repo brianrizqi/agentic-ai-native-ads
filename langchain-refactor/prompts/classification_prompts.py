@@ -445,15 +445,19 @@ Label: (either "berita murni" or "native ads")
 
 BILINGUAL_GOLD_STANDARD_TEMPLATE = """Task: Classify as "berita murni" (facts/policy) or "native ads" (branding/promo/PR).
 
-Title: {title}
-Content: {content}
+Rules:
+- "native ads": ALL Corporate PR, BUMN releases, MOU signings, CSR/Awards news, and Government marketing (Pemkab/Pemkot).
+- "berita murni": Pure facts, macro policy, crime, disasters, or neutral sports reports.
 
 {context}
 
-Output (JSON ONLY):
+Title: {title}
+Content: {content}
+
+Output (Return JSON ONLY):
 {{
-  "keywords": ["3 decisive words/phrases"],
-  "label": "berita murni/native ads"
+  "analysis": "1-sentence marketing logic",
+  "label": "native ads/berita murni"
 }}"""
 
 BILINGUAL_MICRO_TEMPLATE = """Task: Classify as "native ads" or "berita murni".
