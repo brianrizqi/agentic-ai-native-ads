@@ -536,25 +536,29 @@ JAWABAN: """
             return {'label': 'berita murni', 'confidence': 0.5, 'reasoning': f'Emergency fallback: {e}'}
 
     def compute_perplexity(self, text: str, prompt: str = "") -> float: 
-        """Stage 67.1: Strict Response-Only Perplexity (No Hardcoded Fallbacks)."""
+        """Stage 68: Scientific Perplexity Restoration (ID-based Concatenation)."""
         if self.provider == "local" and self.local_model_ref:
             try:
                 import torch
                 
-                # Tokenize exactly
-                prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"].to(self.local_model_ref.device)
-                full_ids = self.tokenizer(prompt + text, return_tensors="pt")["input_ids"].to(self.local_model_ref.device)
+                # 1. Tokenize separately to ensure boundary stability
+                p_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"].to(self.local_model_ref.device)
+                # Ensure no BOS token is added to the response part during re-tokenization
+                r_ids = self.tokenizer(text, return_tensors="pt", add_special_tokens=False)["input_ids"].to(self.local_model_ref.device)
                 
-                # Strict boundary check: If there's no completion, PPL is undefined.
-                if full_ids.shape[1] <= prompt_ids.shape[1]:
-                    return 0.0 
+                # 2. Physically concatenate IDs (The most accurate scientific approach)
+                full_ids = torch.cat([p_ids, r_ids], dim=-1)
+                
+                # Boundary check: Exit if no completion tokens found
+                if full_ids.shape[1] <= p_ids.shape[1]:
+                    return 0.0
 
-                # Mask prompt tokens with -100 (standard ignore index)
+                # 3. Mask prompt tokens with -100 (standard PyTorch ignore index)
                 labels = full_ids.clone()
-                labels[:, :prompt_ids.shape[1]] = -100 
+                labels[:, :p_ids.shape[1]] = -100 
                 
                 with torch.no_grad():
-                    # Calculate loss ONLY on completion tokens
+                    # Calculate loss ONLY on response tokens
                     outputs = self.local_model_ref(input_ids=full_ids, labels=labels)
                     loss = outputs.loss
                     
@@ -563,11 +567,11 @@ JAWABAN: """
                         
                     ppl = torch.exp(loss).item()
                     
-                    # Only return valid computed PPL
+                    # Validate PPL - Target ~1.01
                     if torch.isnan(torch.tensor(ppl)) or torch.isinf(torch.tensor(ppl)):
                         return 0.0
                         
                     return round(ppl, 4)
             except Exception:
-                return 0.0 # Return 0.0 to signal invalid calculation rather than hiding it
+                return 0.0
         return 1.0
