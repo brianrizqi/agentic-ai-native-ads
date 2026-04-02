@@ -208,8 +208,8 @@ class ClassificationAgent:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        if self.model_tier != 'micro':
-                            # Stage 30: Empowering Llama with Natural RAG (same as Qwen)
+                        if is_qwen:
+                            # Stage 31: Empowering Llama with Balanced RAG (avoids label mimicking bias)
                             selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:3]
                         else:
                             top_ads = sorted([ex for ex in candidates if 'native' in str(ex.get('label', '')).lower()], key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
@@ -243,8 +243,8 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
-                # Stage 30: Llama gets the Qwen Master Prompt
-                if self.model_tier != 'micro':
+                # Stage 31: Split Master Prompt into Qwen (Indo) and Llama (Eng-Anchored)
+                if is_qwen:
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
 
 ### CONTEXT REFERENCE (PANDUAN GAYA BAHASA):
@@ -279,6 +279,39 @@ JAWABAN: """
                     # Step 172: Neutral Start for Honest COT
                     prefix_force = "" 
                     suffix_force = ""
+                elif self.model_tier != 'micro':
+                    # Llama gets English structural framing to prevent instruction tuning collapse
+                    template = """Task: Act as an objective Media Classifier. Classify the article below as "native ads" (PR release/advertorial/promotion) or "berita murni" (pure journalism/public news).
+
+### CONTEXT REFERENCE:
+{context}
+
+⚠️ REMINDER: Use the RAG examples above only as reference. Final decision must STRICTLY follow the MASTER RULES below.
+
+### ARTICLE DATA:
+Title: {title}
+Content: {content}
+
+### BILINGUAL MASTER RULES:
+
+🔴 CATEGORY: NATIVE ADS (MANDATORY IF APPLICABLE):
+1. Corporate / Government PR (Advertorial): Klaim prestasi, rilis pers, atau liputan yang memoles citra positif Perusahaan, BUMN, atau Pemerintah Daerah (Pemkab/Pemkot).
+2. Financial / Business Announcement: Pengumuman dividen, laba perusahaan, ekspansi bisnis, atau korporasi ("Globe Newswire", "PR Newswire", "TSX").
+3. Event & Product Promotion: Liputan pameran (otomotif/IMOS, gadget, travel fair) atau peluncuran produk/layanan dengan kalimat positif/persuasif.
+4. Soft-Selling: Artikel gaya hidup atau review yang menonjolkan satu entitas komersial secara dominan tanpa unsur musibah.
+
+🟢 CATEGORY: BERITA MURNI (MANDATORY IF APPLICABLE):
+1. Public Grief / Disasters: Kecelakaan lalulintas, musibah alam, cuaca, atau berita duka/kematian.
+2. Crisis / Legal Issues: Kasus hukum, pengadilan kriminal murni, skandal, atau PHK besar-besaran.
+3. Macro Policy & Pure Event: Kebijakan makro negara (pajak/PPN, pemilu), diplomasi presiden, atau laporan skor pertandingan olahraga murni tanpa afiliasi sponsor.
+
+JSON Output Only:
+{{
+  "analysis": "Short 2 sentence analysis applying the specific rules above.",
+  "label": "native ads/berita murni"
+}}
+
+JAWABAN: """
                 elif self.model_tier == 'micro':
                     # Heuristics for micro models if specified
                     template = MICRO_HEURISTIC_PROMPT
@@ -312,9 +345,9 @@ JAWABAN: """
                 
                 # Phase 141/153: Prompt Dispatcher
                 if self.model_tier != 'micro':
-                    # Training Mirror Persona for all >Micro models
+                    sys_prompt = "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia." if is_qwen else "You are an expert AI classifying Indonesian news as pure journalism or native advertising."
                     messages = [
-                        {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
+                        {"role": "system", "content": sys_prompt},
                         {"role": "user", "content": user_msg}
                     ]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
