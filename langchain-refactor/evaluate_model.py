@@ -143,7 +143,8 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         gpu_id=kwargs.get('gpu_id', 0),
         temperature=0.0, # Phase 48: Force 0.0 for deterministic evaluation
         use_rag=kwargs.get('use_rag', False),
-        is_mcq=kwargs.get('is_mcq', False) # Phase 47: Stop forcing MCQ via the caller
+        is_mcq=kwargs.get('is_mcq', False), # Phase 47: Stop forcing MCQ via the caller
+        model_tier=kwargs.get('tier', 'base') # Phase 40: Pass tier from CLI
     )
     
     # Initialize RAG if requested
@@ -701,8 +702,10 @@ def main():
                        help='Path to fine-tuned model')
     parser.add_argument('--dataset', type=str, default='../data/llm_dataset_finetuning_optimized.json',
                        help='Dataset path')
-    parser.add_argument('--num-samples', type=int, default=100,
+    parser.add_argument('--num-samples', '--num-sample', type=int, default=100,
                        help='Number of test samples')
+    parser.add_argument('--tier', type=str, default='base', choices=['base', 'micro', 'standard', 'premium'],
+                       help='Model tier (base, micro, standard, premium) for prompt selection')
     parser.add_argument('--use-rag', action='store_true',
                        help='Use RAG during evaluation')
     parser.add_argument('--vectorstore-dir', type=str, default='data/vectorstore',
@@ -766,7 +769,8 @@ def main():
         use_rag=args.use_rag,
         vectorstore_dir=args.vectorstore_dir,
         embedding_model=args.embedding_model,
-        gpu_id=args.gpu_id
+        gpu_id=args.gpu_id,
+        tier=args.tier # Phase 40: Pass tier from CLI
     )
     
     # Compute BERTScore
