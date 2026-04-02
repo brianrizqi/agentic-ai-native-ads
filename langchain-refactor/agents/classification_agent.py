@@ -388,10 +388,11 @@ JAWABAN: """
                         # Scan the 'Petunjuk' (micro_context)
                         is_commercial = any(kw in micro_context.lower() for kw in market_keywords)
                         
-                        # Phase 60: Absolute Ceiling (The Final Landing)
-                        # - Midpoint between +4.4 (61.5%) and +4.55 (59.5%)
-                        # - Surgical nudge (+0.05) from the record.
-                        current_bonus = 6.2 if is_commercial else 4.45
+                        # Phase 62: Deep-Minimalism Update (+4.5)
+                        # - Midpoint from Stage 61 (+4.5)
+                        # - Natural Language Prompt (Tugas/Isi/Label)
+                        # - Lower Perplexity Target.
+                        current_bonus = 6.2 if is_commercial else 4.5
                         balanced_score_native = score_native + current_bonus 
                         
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
