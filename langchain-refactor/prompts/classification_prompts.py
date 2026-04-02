@@ -406,10 +406,10 @@ Isi: {content}
 
 {context}
 
-Format JSON Output:
+Output JSON:
 {{
-  "analysis": "Berikan 1-2 kalimat alasan lugas mengapa artikel masuk kategori tersebut.",
-  "label": "berita murni/native ads"
+  "label": "berita murni/native ads",
+  "analysis": "Berikan 1-2 kalimat alasan singkat kenapa memilih label tersebut."
 }}
 
 JAWABAN: """
