@@ -144,7 +144,8 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         temperature=0.0, # Phase 48: Force 0.0 for deterministic evaluation
         use_rag=kwargs.get('use_rag', False),
         is_mcq=kwargs.get('is_mcq', False), # Phase 47: Stop forcing MCQ via the caller
-        model_tier=kwargs.get('tier', 'base') # Phase 40: Pass tier from CLI
+        model_tier=kwargs.get('tier', 'base'), # Phase 40: Pass tier from CLI
+        rag_top_k=kwargs.get('top_k', 3) # Stage 75: Support Top-K from CLI
     )
     
     # Initialize RAG if requested
