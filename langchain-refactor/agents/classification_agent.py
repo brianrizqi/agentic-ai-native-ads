@@ -280,15 +280,15 @@ JAWABAN: """
                     prefix_force = "" 
                     suffix_force = ""
                 elif self.model_tier == 'micro':
-                    # Phase 41: Golden Anchor (MCQ Strategy)
-                    # Simple bilingual detection for base instruction set
+                    # Phase 42: Golden Recalibration (No-RAG Strategy)
+                    # Re-aligning exactly with the training instruction set
                     en_indicators = [" the ", " and ", " is ", " of ", " with ", " for "]
                     is_english = any(indic in content.lower() for indic in en_indicators)
                     
                     template = ALPACA_EN_MINIMAL_TEMPLATE if is_english else ALPACA_ID_MINIMAL_TEMPLATE
                     
-                    # Force a simple Choice Trigger instead of JSON
-                    prefix_force = "Label: ["
+                    # Lock the model back into immediate JSON completion
+                    prefix_force = '{"label": "'
                     suffix_force = ""
                 else:
                     template = ENGLISH_MARKDOWN_TEMPLATE
@@ -312,16 +312,15 @@ JAWABAN: """
                 else:
                     content_processed = content_clean[:max_chars]
 
-                # Phase 41: Multi-Tier Content Dispatcher
+                # Phase 42: Selective Content Dispatcher
                 if self.model_tier == 'micro':
                     # Merge title into content for micro
                     micro_content = content_processed
                     if title and title.strip() and title.lower() not in content_processed.lower():
                         micro_content = f"{title}\n{content_processed}"
                     
-                    # Sanitized context: No more "N/A" confusion
-                    context_val = rag_block.strip() if (rag_block and rag_block.strip() and rag_block != "N/A") else ""
-                    user_msg = template.format(content=micro_content, context=context_val).strip()
+                    # RECALIBRATION: Micro models (270M) perform better WITHOUT RAG context noise.
+                    user_msg = template.format(content=micro_content).strip()
                 else:
                     user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
@@ -348,8 +347,8 @@ JAWABAN: """
                 
                 # Phase 76: (Logit Mode disabled for Micro, letting generation run natively for Alpaca weights)
 
-                # Phase 40: Optimized Sampling for Micro (Max 64 tokens for short JSON)
-                max_new = 64 if self.model_tier == 'micro' else 300
+                # Phase 42: Ultra-Efficient Sampling for Micro (Max 16 tokens)
+                max_new = 16 if self.model_tier == 'micro' else 300
                 with torch.no_grad():
                     generated_ids = self.local_model_ref.generate(
                         input_ids, 
@@ -395,11 +394,11 @@ JAWABAN: """
         """Stage 28: Clean JSON-First Parser."""
         try:
             resp_clean = response.strip()
-            # Stage 41: Clean JSON-First Parser.
-            if prefix_forced and not resp_clean.startswith("{") and not prefix_forced.startswith("Label:"):
+            # Stage 42: Clean JSON-First Parser. (Matches ALPACA prefix force)
+            if prefix_forced and not resp_clean.startswith("{") and prefix_forced == '{"label": "':
                 resp_clean = prefix_forced + resp_clean
                 if not resp_clean.endswith("}"):
-                    resp_clean += "}"
+                    resp_clean += '"}'
                     
             alasan = "Tidak ditemukan alasan (JSON regex fallback)."
             label = "berita murni"
