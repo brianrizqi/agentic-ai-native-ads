@@ -381,8 +381,10 @@ JAWABAN: """
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         
-                        # Stage 73: Robust Binary-Softmax PPL (Lockdown)
-                        # We measure the model's surprise (Perplexity) against its own top-2 candidate vector.
+                        s_winner = balanced_score_native if decision_label == "native ads" else score_berita
+                        s_loser = score_berita if decision_label == "native ads" else balanced_score_native
+                        
+                        # Stage 74: Robust Binary-Softmax PPL (Lockdown Restoration)
                         conf_probs = torch.softmax(torch.tensor([float(s_winner), float(s_loser)]), dim=-1)
                         p_final = conf_probs[0].item()
                         
