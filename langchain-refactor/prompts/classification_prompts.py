@@ -460,15 +460,20 @@ Output (Return JSON ONLY):
   "label": "native ads/berita murni"
 }}"""
 
-BILINGUAL_MICRO_TEMPLATE = """Task: Classify as "native ads" or "berita murni".
+BILINGUAL_MICRO_TEMPLATE = """Task: Professional News Audit. Classify as "berita murni" (News) or "native ads" (Marketing).
+
+Instruction:
+- Default to "berita murni" for neutral reporting on policy, crime, sports, or public figures (e.g. Jokowi).
+- Label as "native ads" ONLY if there is a clear "Commercial Offer", "Product for Sale", or "Excessive Brand Praise" intended to drive revenue.
+- If no specific product is being sold, it is NEWS.
 
 {context}
 
 Title: {title}
 Content: {content}
 
-Output JSON:
-{{"alasan": """
+Output JSON (analysis must be objective):
+{{"analysis": "brief objective motive analysis", "label": "native ads/berita murni"}}"""
 
 # Phase 65: Nuclear PPL Fix (Ultra-Stable Micro)
 # -----------------------------------------------------------------------------
