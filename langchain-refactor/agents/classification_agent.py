@@ -350,7 +350,7 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 70: Strict Bugfix (Real-Time Overhaul Restoration)
+                # Phase 71: Space-Aware Perplexity (Real-Time Overhaul Restoration)
                 ppl_val = None
                 if self.model_tier == 'micro' and self.local_model_ref is not None:
                     with torch.no_grad():
@@ -358,17 +358,18 @@ JAWABAN: """
                         logits = outputs.logits[0, -1, :]
                         probs = torch.softmax(logits, dim=-1)
                         
-                        tids_native = self.tokenizer.encode("native", add_special_tokens=False)
-                        tids_iklan = self.tokenizer.encode(" iklan", add_special_tokens=False)
-                        tids_berita = self.tokenizer.encode("berita", add_special_tokens=False)
-                        tids_berita_cap = self.tokenizer.encode(" Berita", add_special_tokens=False)
+                        # Identify primary tokens for decision logic
+                        t_ads = ["native", " native", " iklan", " iklan"]
+                        t_news = ["berita", " berita", " Berita", " Berita"]
                         
-                        v_native = sorted([logits[tid[0]].item() if tid else -100 for tid in [tids_native, tids_iklan]], reverse=True)
-                        v_news = sorted([logits[tid[0]].item() if tid else -100 for tid in [tids_berita, tids_berita_cap]], reverse=True)
+                        # Logit scores for contrastive selection (Stage 66 logic)
+                        v_native = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_ads if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
+                        v_news = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_news if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
                         
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
+                        # Stage 66 Refinements
                         is_commercial = any(kw in micro_context.lower() for kw in ["shopee", "promo", "diskon", "cashback"])
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
                         
@@ -378,13 +379,19 @@ JAWABAN: """
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
                         
-                        winner_tid = tids_native[0] if decision_label == "native ads" else tids_berita[0]
-                        p_winner = probs[winner_tid].item()
-                        ppl_val = 1.0 / p_winner if p_winner > 0.0001 else 2.0
-                        if ppl_val < 1.0: ppl_val = 1.001
+                        # Stage 71: Max-Prob Perplexity (Scientific Surprise captured from ANY valid class token)
+                        if decision_label == "native ads":
+                            winner_probs = [probs[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_ads if self.tokenizer.encode(t, add_special_tokens=False)]
+                        else:
+                            winner_probs = [probs[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_news if self.tokenizer.encode(t, add_special_tokens=False)]
+                        
+                        p_winner = max(winner_probs) if winner_probs else 0.0001
+                        # PPL = 1 / Probability
+                        ppl_val = 1.0 / p_winner
+                        if ppl_val < 1.0: ppl_val = 1.0001
                         
                         raw_response = f'{{"label": "{decision_label}"}}'
-                        print(f"DEBUG [Stage 70] PPL: %.4f | Score N: %.2f vs B: %.2f" % (ppl_val, balanced_score_native, score_berita))
+                        print(f"DEBUG [Stage 71] PPL: %.4f (Max-P: %.4f) | Score N: %.2f vs B: %.2f" % (ppl_val, p_winner, balanced_score_native, score_berita))
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
