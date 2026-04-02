@@ -38,7 +38,8 @@ class ClassificationAgent:
         gpu_id: int = 0,
         use_rag: bool = False,
         is_mcq: bool = False,
-        model_tier: Optional[str] = None
+        model_tier: Optional[str] = None,
+        rag_top_k: int = 3
     ):
         """
         Initialize Classification Agent.
@@ -51,6 +52,7 @@ class ClassificationAgent:
         self.gpu_id = gpu_id
         self.use_rag = use_rag
         self.is_mcq = is_mcq
+        self.rag_top_k = rag_top_k
         
         # Tier Detection (Phase 66: Radical Reduction for Micro)
         self.model_tier = model_tier if model_tier else self._get_model_tier(model_name)
@@ -352,9 +354,9 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 71: Space-Aware Perplexity (Real-Time Overhaul Restoration)
+                # Phase 75: Llama Compatibility & RAG Fix (Expanded Logit-Pass)
                 ppl_val = None
-                if self.model_tier == 'micro' and self.local_model_ref is not None:
+                if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
