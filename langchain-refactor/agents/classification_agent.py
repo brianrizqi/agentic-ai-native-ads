@@ -226,8 +226,8 @@ class ClassificationAgent:
                         for ex in selected:
                             label_val = str(ex.get('label', '')).lower()
                             label_hint = "native ads" if 'native' in label_val else "berita murni"
-                            # Stage 30: Normal Context (2000 Chars) for all models > Micro
-                            char_limit = 2000 if self.model_tier != 'micro' else 800
+                            # Stage 34: Backtrack limits (2000 Chars for Qwen, 800 for others)
+                            char_limit = 2000 if is_qwen else 800
                             label_upper = label_hint.upper()
                             rag_block += f"DOKUMEN REFERENSI ({label_upper}):\n"
                             rag_block += f"{str(ex.get('content', ''))[:char_limit]}...\n"
@@ -297,8 +297,8 @@ JAWABAN: """
                         content_clean = content_clean[1:].strip()
                 
                 # Phase 155: Sandwich Preprocessing (Quality over Quantity)
-                max_chars = 5000 if self.model_tier != 'micro' else self.max_chars
-                if self.model_tier != 'micro' and len(content_clean) > max_chars:
+                max_chars = 5000 if is_qwen else self.max_chars
+                if is_qwen and len(content_clean) > max_chars:
                     # Take 2.5K from start and 2.5K from end to catch all markers
                     half = max_chars // 2
                     content_processed = content_clean[:half] + "\n... [TEKS DIPOTONG] ...\n" + content_clean[-half:]
@@ -310,16 +310,18 @@ JAWABAN: """
                 full_prompt = user_msg
                 
                 # Phase 141/153: Prompt Dispatcher
-                if self.model_tier != 'micro':
-                    sys_prompt = "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia." if is_qwen else "You are an expert AI classifying Indonesian news as pure journalism or native advertising."
+                if is_qwen:
                     messages = [
-                        {"role": "system", "content": sys_prompt},
+                        {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
                         {"role": "user", "content": user_msg}
                     ]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-                else:
-                    # Micro Standard (Logit only)
+                elif self.model_tier == 'micro':
                     templated_prompt = user_msg
+                else:
+                    # Llama Standard (User Only to prevent instruction weight clashes)
+                    messages = [{"role": "user", "content": user_msg}]
+                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 
                 input_encoding = self.tokenizer(templated_prompt, return_tensors="pt", add_special_tokens=True)
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
