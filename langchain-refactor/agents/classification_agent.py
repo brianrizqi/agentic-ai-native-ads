@@ -219,8 +219,10 @@ class ClassificationAgent:
                     
                     if candidates:
                         # Stage 37: Restoring Natural Top-K RAG for Llama
-                        if self.model_tier == 'micro':
-                            # Micro (Gemma 3 270M) Minimalist RAG limit to 1
+                        # Phase 84: RAG Reduction for Small Tier (Llama 8B)
+                        # We use Top-K 1 to minimize 'Ad Poisoning' for neutral news.
+                        if self.model_tier in ['micro', 'small']:
+                            # Minimalist RAG limit to 1
                             selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         else:
                             selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:self.rag_top_k]
@@ -380,18 +382,18 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 83: Contextual Equilibrium (Total Bias Override)
-                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -5.5
-                        base_bonus = -5.5 if self.model_tier == 'small' else 4.38
+                        # Stage 84: The Logit Nuke (Absolute Bias Override)
+                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -10.0
+                        base_bonus = -10.0 if self.model_tier == 'small' else 4.38
                         
-                        # Multi-Level Bonus Scoring (Peak Threshold)
+                        # Multi-Level Bonus Scoring (Nuclear Threshold)
                         # Hard Commercial triggers (High Intent)
                         hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon"]
-                        score_hard = 8.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
+                        score_hard = 15.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
                         
-                        # Phase 83: Unified Neutrality Shield
+                        # Phase 84: Nuclear Neutrality Shield
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
-                        guard_penalty = 7.5 if has_news_marker else 0.0
+                        guard_penalty = 12.0 if has_news_marker else 0.0
                         
                         current_bonus = base_bonus + score_hard - guard_penalty
                         
