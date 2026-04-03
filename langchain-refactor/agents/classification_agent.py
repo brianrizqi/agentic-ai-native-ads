@@ -305,8 +305,8 @@ JAWABAN: """
                     
                     suffix_force = '"}'
                 else:
-                    # Stage 101: The Safe Landing
-                    # Reverting to the 78% winner (BILINGUAL_SILENT) to recover accuracy.
+                    # Stage 102: The Balanced Pivot
+                    # Reverting to SILENT template but with intermediate bias balancing.
                     template = BILINGUAL_SILENT_TEMPLATE
                     prefix_force = '{"label": "' 
                     suffix_force = ""
@@ -374,7 +374,7 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 101: Similarity-Weighted Voting
+                        # Stage 102: Similarity-Weighted Voting
                         rag_weighted_news = 0.0
                         rag_weighted_ads = 0.0
                         
@@ -386,8 +386,8 @@ JAWABAN: """
                                 if 'native' in lbl or 'ads' in lbl: rag_weighted_ads += sim
                                 elif 'murni' in lbl or 'news' in lbl: rag_weighted_news += sim
                         
-                        # Stage 101: Discrete Stable Bias Calculation
-                        # Absolute restoration to Stage 94 master values
+                        # Stage 102: Discrete Balanced Bias Calculation
+                        # Absolute restoration to Neutral Base
                         base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
                         
                         rag_bias_news = 0.0
@@ -395,11 +395,11 @@ JAWABAN: """
                         
                         # Apply discrete boost (predictable jumps) based on Top-5 consensus
                         if rag_weighted_news > rag_weighted_ads + 0.2:
-                            # Stage 94 Winner values (+2.5)
-                            rag_bias_news = 2.5 if rag_weighted_news > 1.2 else 1.2
+                            # Balanced News recovery (+4.5) to lift 56% recall
+                            rag_bias_news = 4.5 if rag_weighted_news > 1.2 else 2.2
                         elif rag_weighted_ads > rag_weighted_news + 0.2:
-                            # Stage 94 Winner values (+1.2)
-                            rag_bias_ads = 1.2 if rag_weighted_ads > 0.6 else 0.8
+                            # Balanced Ads maintenance (+0.5)
+                            rag_bias_ads = 0.5 if rag_weighted_ads > 0.6 else 0.2
                         
                         final_score_berita = score_berita + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
@@ -413,12 +413,12 @@ JAWABAN: """
                         p_final = conf_probs[0].item()
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 101: Reporting
+                        # Stage 102: Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
                         vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
                         reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 101] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 102] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
