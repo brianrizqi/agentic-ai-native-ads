@@ -389,13 +389,19 @@ JAWABAN: """
                         # Stage 106: Champion Bias (+2.5 news / +1.2 ads) - THE PROVEN VALUES
                         base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
                         
+                        # Stage 112: Neutral Zone Correction
                         rag_bias_news = 0.0
                         rag_bias_ads = 0.0
                         
                         if rag_weighted_news > rag_weighted_ads + 0.2:
+                            # RAG clearly says: News → big boost
                             rag_bias_news = 2.5 if rag_weighted_news > 1.2 else 1.2
                         elif rag_weighted_ads > rag_weighted_news + 0.2:
+                            # RAG clearly says: Ads → ads boost
                             rag_bias_ads = 1.2 if rag_weighted_ads > 0.6 else 0.8
+                        else:
+                            # RAG is neutral/ambiguous → compensate model's innate ads bias
+                            rag_bias_news = 1.0
                         
                         final_score_berita = score_berita + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
