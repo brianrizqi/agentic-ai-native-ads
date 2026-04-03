@@ -210,11 +210,14 @@ class ClassificationAgent:
                 is_qwen = "qwen" in self.model_name.lower()
                 
                 # Phase 86: The Entity Fortress (Restored Stage 81 Foundation)
+                # Stage 90: RAG Integrity & Score Visibility
+                # Reducing threshold from 0.75 to 0.3 for Small tier to ensure context usage.
                 if self.model_tier == 'small':
-                    RAG_THRESHOLD = 0.75
+                    RAG_THRESHOLD = 0.3
                 else:
                     RAG_THRESHOLD = 0.75 if is_qwen else 0.75
                 rag_block = ""
+                avg_sim = 0.0
                 
                 if self.use_rag and examples:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
@@ -230,6 +233,7 @@ class ClassificationAgent:
                         
                         # 2. Canonical Sort (by similarity for logical flow)
                         selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
+                        avg_sim = sum([x.get('similarity_score', 0) for x in selected]) / len(selected)
                     else:
                         selected = []
                     
@@ -409,11 +413,12 @@ JAWABAN: """
                         if ppl_val < 1.0: ppl_val = 1.0001
                         if ppl_val > 10.0: ppl_val = 1.01 
                         
-                        # Stage 89: Enhanced reasoning with RAG context visibility
-                        rag_status = "RAG-YES" if context and len(context) > 20 else "RAG-NO"
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | Bias:{current_bonus:.1f} | {rag_status}"
+                        # Stage 90: Fixed rag_status check (use rag_block instead of context)
+                        rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
+                        sim_info = f" | Sim:{avg_sim:.2f}" if rag_status == "RAG-YES" else ""
+                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | Bias:{current_bonus:.1f} | {rag_status}{sim_info}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 89] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 90] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
