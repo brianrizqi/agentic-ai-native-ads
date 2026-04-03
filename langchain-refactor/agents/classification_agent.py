@@ -368,7 +368,7 @@ JAWABAN: """
                         t_news = ["berita", " berita", " Berita", " Berita"]
                         
                         v_native = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_ads if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
-                        v_news = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in v_news if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
+                        v_news = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_news if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
                         
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
