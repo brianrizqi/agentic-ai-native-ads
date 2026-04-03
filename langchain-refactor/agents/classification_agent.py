@@ -387,41 +387,38 @@ JAWABAN: """
                                 if 'native' in lbl or 'ads' in lbl: rag_weighted_ads += sim
                                 elif 'murni' in lbl or 'news' in lbl: rag_weighted_news += sim
                         
-                        # Stage 104: Discrete Champion Bias Calculation
-                        # Absolute restoration to Stage 94 Winning Values
-                        base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
-                        # Stage 107: Global Leveling
-                        base_bonus_news = 1.8 if self.model_tier == 'small' else 0.0
+                        # Stage 108: Mathematical Redemption (Probabilistic Ensemble)
+                        # 1. LLM Probabilities (Softmax normalized)
+                        t_logits = torch.tensor([float(score_native), float(score_berita)])
+                        llm_probs = torch.softmax(t_logits, dim=-1)
+                        llm_prob_native = llm_probs[0].item()
+                        llm_prob_news = llm_probs[1].item()
                         
-                        rag_bias_news = 0.0
-                        rag_bias_ads = 0.0
+                        # 2. RAG Probabilities (Normalized)
+                        total_rag = rag_weighted_news + rag_weighted_ads + 1e-9
+                        if rag_weighted_news == 0 and rag_weighted_ads == 0:
+                            # If no RAG context, default neutral to rely entirely on LLM
+                            rag_prob_native = 0.5
+                            rag_prob_news = 0.5
+                        else:
+                            rag_prob_native = rag_weighted_ads / total_rag
+                            rag_prob_news = rag_weighted_news / total_rag
+                            
+                        # 3. The Ensemble (50/50 weighting)
+                        final_prob_native = 0.5 * llm_prob_native + 0.5 * rag_prob_native
+                        final_prob_news = 0.5 * llm_prob_news + 0.5 * rag_prob_news
                         
-                        # Apply discrete boost (predictable jumps) based on Top-3 consensus
-                        if rag_weighted_news > rag_weighted_ads + 0.2:
-                            # Stage 94 Champion Balance (+2.5) to break 80% with ULTIMATE shield
-                            rag_bias_news = 2.5 if rag_weighted_news > 1.2 else 1.2
-                        elif rag_weighted_ads > rag_weighted_news + 0.2:
-                            # Stage 94 Champion Ads (+1.2)
-                            rag_bias_ads = 1.2 if rag_weighted_ads > 0.6 else 0.8
+                        decision_label = "native ads" if final_prob_native > final_prob_news else "berita murni"
                         
-                        final_score_berita = score_berita + base_bonus_news + rag_bias_news
-                        final_score_native = score_native + base_bonus_ads + rag_bias_ads
-                        
-                        decision_label = "native ads" if final_score_native > final_score_berita else "berita murni"
-                        
-                        s_winner = final_score_native if decision_label == "native ads" else final_score_berita
-                        s_loser = final_score_berita if decision_label == "native ads" else final_score_native
-                        
-                        conf_probs = torch.softmax(torch.tensor([float(s_winner), float(s_loser)]), dim=-1)
-                        p_final = conf_probs[0].item()
+                        p_final = final_prob_native if decision_label == "native ads" else final_prob_news
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 106/107: Reporting
+                        # Stage 108: Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
-                        vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{base_bonus_news+rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
+                        vote_msg = f"RAG:[N:{rag_prob_native:.2f}, B:{rag_prob_news:.2f}]" if rag_status == "RAG-YES" else "RAG-NO "
+                        reason_msg = f"LLM:[N:{llm_prob_native:.2f}, B:{llm_prob_news:.2f}] | ENS:[N:{final_prob_native:.2f}, B:{final_prob_news:.2f}] | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 107] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 108] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
