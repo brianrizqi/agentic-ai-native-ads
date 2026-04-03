@@ -619,3 +619,27 @@ Output (JSON ONLY):
   "reason": "penjelasan singkat 1 kalimat",
   "label": "native ads/berita murni"
 }}"""
+
+ULTIMATE_GOLD_STANDARD_TEMPLATE = """Tugas: Klasifikasikan artikel ini sebagai "berita murni" atau "native ads".
+
+PERISAI BERITA MURNI (News Shields):
+- Jika isi berita bersifat darurat (bencana alam, krisis ekonomi negara, kriminalitas murni).
+- Jika isi berita adalah hasil pertandingan olahraga, skor, atau jadwal turnamen.
+- Jika isi berita adalah KEBIJAKAN MAKRO negara/instansi (Kenaikan suku bunga, kunjungan kenegaraan, peresmian fasilitas publik UNTUK rakyat).
+- Jika berita melaporkan KERUGIAN atau KRISIS (rugi bersih, PHK, penurunan saham).
+
+ATURAN EMAS NATIVE ADS:
+- Jika artikel mempromosikan PENGHARGAAN, PRESTASI, atau INOVASI satu brand/lembaga.
+- Jika artikel berupa rilis CSR, MOU (kerjasama korporat), atau seremoni peresmian yang bersifat branding.
+- Jika artikel memuji subjek tanpa kritik atau menyajikan SATU SUDUT PANDANG yang menguntungkan subjek.
+
+{context}
+
+Judul: {title}
+Isi: {content}
+
+Output (Return JSON ONLY):
+{{
+  "reason": "Penjelasan singkat 1 kalimat mengapa ini berita murni/native ads",
+  "label": "native ads/berita murni"
+}}"""
