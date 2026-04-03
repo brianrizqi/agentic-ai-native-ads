@@ -482,7 +482,7 @@ BILINGUAL_SILENT_TEMPLATE = """Task: Professional Media Audit. Classify the text
 Title: {title}
 Content: {content}
 
-{"label": \""""
+{{"label": \""""
 
 # Phase 65: Nuclear PPL Fix (Ultra-Stable Micro)
 # -----------------------------------------------------------------------------
