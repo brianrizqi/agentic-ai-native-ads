@@ -206,10 +206,10 @@ class ClassificationAgent:
                 # ---------------------------------------------------------------------
                 is_qwen = "qwen" in self.model_name.lower()
                 
-                # Phase 83: Contextual Equilibrium
-                # Stage 82 (0.87) was too aggressive; we need the 0.75 anchors.
+                # Phase 85: The Golden Ratio (Sanitized Context)
+                # Stage 82/83 showed that 0.75 is too noisy, but 0.87 is almost there.
                 if self.model_tier == 'small':
-                    RAG_THRESHOLD = 0.75
+                    RAG_THRESHOLD = 0.88
                 else:
                     RAG_THRESHOLD = 0.75 if is_qwen else 0.75
                 rag_block = ""
@@ -382,18 +382,18 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 84: The Logit Nuke (Absolute Bias Override)
-                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -10.0
-                        base_bonus = -10.0 if self.model_tier == 'small' else 4.38
+                        # Stage 85: The Golden Ratio (Calibrated Bias)
+                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -3.0
+                        base_bonus = -3.0 if self.model_tier == 'small' else 4.38
                         
-                        # Multi-Level Bonus Scoring (Nuclear Threshold)
+                        # Multi-Level Bonus Scoring (Peak Threshold)
                         # Hard Commercial triggers (High Intent)
                         hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon"]
-                        score_hard = 15.0 if any(kw in (rag_block or "").lower() or kw in content.lower() for kw in hard_triggers) else 0.0
+                        score_hard = 8.0 if any(kw in (rag_block or "").lower() or kw in content.lower() for kw in hard_triggers) else 0.0
                         
-                        # Phase 84: Nuclear Neutrality Shield
+                        # Phase 85: Balanced Neutrality Shield
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
-                        guard_penalty = 12.0 if has_news_marker else 0.0
+                        guard_penalty = 6.0 if has_news_marker else 0.0
                         
                         current_bonus = base_bonus + score_hard - guard_penalty
                         
