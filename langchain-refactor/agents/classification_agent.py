@@ -302,45 +302,33 @@ JAWABAN: """
                     
                     template = ALPACA_EN_MINIMAL_TEMPLATE if is_english else ALPACA_ID_MINIMAL_TEMPLATE
                     
-                    # Lock the model back into immediate JSON completion
-                    prefix_force = '{"label": "'
-                    suffix_force = ""
+                    suffix_force = '"}'
                 else:
-                    # Stage 81: Silent Expert Mode for Llama 8B (Small Tier)
-                    # Removing the 'Thinking' process to eliminate hallucinated marketing intent.
-                    # Forcing a purely calibrated logit decision.
-                    template = BILINGUAL_SILENT_TEMPLATE
-                    prefix_force = '{"label": "' 
+                    # Stage 93: Ultimate Gold Standard
+                    # Upgrading to the most descriptive prompt with explicit "News Shields".
+                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
+                    prefix_force = "" 
                     suffix_force = ""
                 
-                # Phase 138: Title De-duplication (Clean redundant title from content)
-                # This prevents model 8B from being 'fed' twice with the same info, missing the ad signs later.
+                # Phase 138: Title De-duplication
                 content_clean = content
                 if title and content.lower().startswith(title.lower()):
                     content_clean = content[len(title):].strip()
                     if content_clean.startswith("-") or content_clean.startswith(":"):
                         content_clean = content_clean[1:].strip()
                 
-                # Phase 155: Sandwich Preprocessing (Quality over Quantity)
+                # Phase 155: Preprocessing
                 max_chars = 5000 if is_qwen else self.max_chars
-                if is_qwen and len(content_clean) > max_chars:
-                    # Take 2.5K from start and 2.5K from end to catch all markers
-                    half = max_chars // 2
-                    content_processed = content_clean[:half] + "\n... [TEKS DIPOTONG] ...\n" + content_clean[-half:]
-                else:
-                    content_processed = content_clean[:max_chars]
+                content_processed = content_clean[:max_chars]
 
-                # Phase 50: Selective Content Dispatcher (The Grand Return)
                 if self.model_tier == 'micro':
-                    # Extract a substantial chunk for the 270M model (Stage 46 refined)
+                    # Extract a substantial chunk
                     micro_context = ""
                     if rag_block and len(rag_block) > 50:
-                        # Reverting to 500 chars (Record Baseline)
                         micro_context = f"Petunjuk: {rag_block.strip()[:500]}..."
                     
                     micro_content = content_processed
                     if title and title.strip() and title.lower() not in content_processed.lower():
-                        # Phase 50: Restore Stage 48 Simpler Format
                         micro_content = f"{title}\n{content_processed}"
                     
                     user_msg = template.format(content=micro_content, context_short=micro_context).strip()
@@ -360,7 +348,7 @@ JAWABAN: """
                 elif self.model_tier == 'micro':
                     templated_prompt = user_msg
                 else:
-                    # Llama Standard (User Only to prevent instruction weight clashes)
+                    # Llama Standard
                     messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 
@@ -368,50 +356,48 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 75: Llama Compatibility & RAG Fix (Expanded Logit-Pass)
+                # Phase 75: Llama Compatibility
                 ppl_val = None
                 if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
-                        probs = torch.softmax(logits, dim=-1)
                         
-                        # Identify primary tokens for decision logic
+                        # Identify primary tokens
                         t_ads = ["native", " native", " iklan", " iklan"]
                         t_news = ["berita", " berita", " Berita", " Berita"]
                         
-                        # Logit scores for contrastive selection (Stage 66 logic)
                         v_native = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_ads if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
                         v_news = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_news if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
                         
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 92: RAG Vote System
-                        # Dynamically calculating bias based on the retrieved consensus.
-                        rag_num_news = 0
-                        rag_num_ads = 0
+                        # Stage 93: Similarity-Weighted Voting
+                        rag_weighted_news = 0.0
+                        rag_weighted_ads = 0.0
                         
                         if selected:
                             for ex in selected:
                                 lbl = str(ex.get('label', '')).lower()
-                                if 'native' in lbl or 'ads' in lbl: rag_num_ads += 1
-                                elif 'murni' in lbl or 'news' in lbl: rag_num_news += 1
+                                sim = float(ex.get('similarity_score', 0.5))
+                                # Influence is SIM * 1.0
+                                if 'native' in lbl or 'ads' in lbl: rag_weighted_ads += sim
+                                elif 'murni' in lbl or 'news' in lbl: rag_weighted_news += sim
                         
-                        # Stage 92: Weighted Consensus
-                        # Neutralized base at -0.2 (Slight News anchor)
-                        base_bonus_ads = -0.2 if self.model_tier == 'small' else 4.38
+                        # Stage 93: Weighted Bias Calculation
+                        # Neutralized base at -0.3
+                        base_bonus_ads = -0.3 if self.model_tier == 'small' else 4.38
                         
                         rag_bias_news = 0.0
                         rag_bias_ads = 0.0
                         
-                        if rag_num_news >= 3: rag_bias_news = 1.5   # 3/3 News
-                        elif rag_num_news == 2: rag_bias_news = 0.8  # 2/3 News
-                        elif rag_num_ads >= 2: rag_bias_ads = 0.5    # RAG consensus is Ads
+                        # Apply dynamic boost based on weighted consensus
+                        if rag_weighted_news > rag_weighted_ads + 0.2:
+                            rag_bias_news = 1.8 if rag_weighted_news > 1.2 else 0.8
+                        elif rag_weighted_ads > rag_weighted_news + 0.2:
+                            rag_bias_ads = 0.6
                         
-                        # Final logit scoring
-                        # Score News gets the RAG bonus if consensus is News
-                        # Score Ads gets the base equilibrium + RAG ads bonus
                         final_score_berita = score_berita + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
                         
@@ -420,18 +406,17 @@ JAWABAN: """
                         s_winner = final_score_native if decision_label == "native ads" else final_score_berita
                         s_loser = final_score_berita if decision_label == "native ads" else final_score_native
                         
-                        # Stage 74: Robust Binary-Softmax PPL
                         conf_probs = torch.softmax(torch.tensor([float(s_winner), float(s_loser)]), dim=-1)
                         p_final = conf_probs[0].item()
-                        
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 92: Enhanced Diagnostics
+                        # Stage 93: Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
-                        vote_msg = f"RAG-VOTE:[N:{rag_num_ads}, B:{rag_num_news}]" if rag_status == "RAG-YES" else ""
+                        vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
                         reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
+                        # In reasoning-first mode, we generate the full reasoning text too
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 92] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 93] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
