@@ -389,7 +389,7 @@ JAWABAN: """
                         # Multi-Level Bonus Scoring (Nuclear Threshold)
                         # Hard Commercial triggers (High Intent)
                         hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon"]
-                        score_hard = 15.0 if any(kw in micro_context.lower() or kw in content.lower() for kw in hard_triggers) else 0.0
+                        score_hard = 15.0 if any(kw in (rag_block or "").lower() or kw in content.lower() for kw in hard_triggers) else 0.0
                         
                         # Phase 84: Nuclear Neutrality Shield
                         has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
