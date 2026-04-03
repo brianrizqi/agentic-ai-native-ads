@@ -360,7 +360,7 @@ JAWABAN: """
                 
                 # Phase 75: Llama Compatibility (Restored)
                 ppl_val = None
-                if self.model_tier in ['micro'] and self.local_model_ref is not None:
+                if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
@@ -375,33 +375,11 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 104: Similarity-Weighted Voting
-                        rag_weighted_news = 0.0
-                        rag_weighted_ads = 0.0
-                        
-                        if selected:
-                            for ex in selected:
-                                lbl = str(ex.get('label', '')).lower()
-                                sim = float(ex.get('similarity_score', 0.5))
-                                if 'native' in lbl or 'ads' in lbl: rag_weighted_ads += sim
-                                elif 'murni' in lbl or 'news' in lbl: rag_weighted_news += sim
-                        
-                        # Stage 106: Champion Bias (+2.5 news / +1.2 ads) - THE PROVEN VALUES
+                        # Stage 115: Permanent Neutral Zone (The 88.5% Key)
+                        # RAG stays in the PROMPT only. Logit uses fixed +1.0 news correction.
                         base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
-                        
-                        # Stage 112: Neutral Zone Correction
-                        rag_bias_news = 0.0
+                        rag_bias_news = 1.0  # Permanent: compensates model's innate ads bias
                         rag_bias_ads = 0.0
-                        
-                        if rag_weighted_news > rag_weighted_ads + 0.2:
-                            # RAG clearly says: News → big boost
-                            rag_bias_news = 2.5 if rag_weighted_news > 1.2 else 1.2
-                        elif rag_weighted_ads > rag_weighted_news + 0.2:
-                            # RAG clearly says: Ads → ads boost
-                            rag_bias_ads = 1.2 if rag_weighted_ads > 0.6 else 0.8
-                        else:
-                            # RAG is neutral/ambiguous → compensate model's innate ads bias
-                            rag_bias_news = 1.0
                         
                         final_score_berita = score_berita + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
