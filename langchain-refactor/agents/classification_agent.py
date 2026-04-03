@@ -362,7 +362,13 @@ JAWABAN: """
                 ppl_val = None
                 if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
                     with torch.no_grad():
-                        outputs = self.local_model_ref(input_ids, attention_mask=mask)
+                        # Stage 113: Label-Anchor Logit
+                        # Append '{"label": "' so model predicts in label-completion context.
+                        label_anchor = '{"label": "'
+                        anchor_ids = self.tokenizer(label_anchor, return_tensors="pt", add_special_tokens=False)["input_ids"].to(self.local_model_ref.device)
+                        input_with_anchor = torch.cat([input_ids, anchor_ids], dim=1)
+                        anchor_mask = torch.ones(input_with_anchor.shape, dtype=torch.long).to(self.local_model_ref.device)
+                        outputs = self.local_model_ref(input_with_anchor, attention_mask=anchor_mask)
                         logits = outputs.logits[0, -1, :]
                         
                         # Stage 106: The Safe Haven (Restored to 78.00%)
