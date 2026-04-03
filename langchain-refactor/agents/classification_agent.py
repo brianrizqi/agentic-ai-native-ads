@@ -360,7 +360,7 @@ JAWABAN: """
                 
                 # Phase 75: Llama Compatibility (Restored)
                 ppl_val = None
-                if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
+                if self.model_tier in ['micro'] and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
