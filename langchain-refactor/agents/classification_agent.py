@@ -304,10 +304,10 @@ JAWABAN: """
                     
                     suffix_force = '"}'
                 else:
-                    # Stage 93: Ultimate Gold Standard
-                    # Upgrading to the most descriptive prompt with explicit "News Shields".
-                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
-                    prefix_force = "" 
+                    # Stage 94: Balanced Hybrid
+                    # Reverting to the high-performance minimalist prompt.
+                    template = BILINGUAL_SILENT_TEMPLATE
+                    prefix_force = '{"label": "' 
                     suffix_force = ""
                 
                 # Phase 138: Title De-duplication
@@ -373,7 +373,7 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 93: Similarity-Weighted Voting
+                        # Stage 94: Similarity-Weighted Voting
                         rag_weighted_news = 0.0
                         rag_weighted_ads = 0.0
                         
@@ -385,18 +385,20 @@ JAWABAN: """
                                 if 'native' in lbl or 'ads' in lbl: rag_weighted_ads += sim
                                 elif 'murni' in lbl or 'news' in lbl: rag_weighted_news += sim
                         
-                        # Stage 93: Weighted Bias Calculation
-                        # Neutralized base at -0.3
-                        base_bonus_ads = -0.3 if self.model_tier == 'small' else 4.38
+                        # Stage 94: Aggressive Weighted Bias Calculation
+                        # Pure Zero Base
+                        base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
                         
                         rag_bias_news = 0.0
                         rag_bias_ads = 0.0
                         
                         # Apply dynamic boost based on weighted consensus
                         if rag_weighted_news > rag_weighted_ads + 0.2:
-                            rag_bias_news = 1.8 if rag_weighted_news > 1.2 else 0.8
+                            # Strong News evidence gets +2.5
+                            rag_bias_news = 2.5 if rag_weighted_news > 1.2 else 1.0
                         elif rag_weighted_ads > rag_weighted_news + 0.2:
-                            rag_bias_ads = 0.6
+                            # Strong Ads evidence gets +1.2
+                            rag_bias_ads = 1.2 if rag_weighted_ads > 0.6 else 0.5
                         
                         final_score_berita = score_berita + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
@@ -410,13 +412,12 @@ JAWABAN: """
                         p_final = conf_probs[0].item()
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 93: Reporting
+                        # Stage 94: Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
                         vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
                         reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
-                        # In reasoning-first mode, we generate the full reasoning text too
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 93] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 94] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
