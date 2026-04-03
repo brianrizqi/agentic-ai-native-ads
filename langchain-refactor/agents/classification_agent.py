@@ -306,10 +306,10 @@ JAWABAN: """
                     
                     suffix_force = '"}'
                 else:
-                    # Stage 105: The Paradigm Shift
-                    # Complete reasoning release (CoT). No label-forcing.
-                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
-                    prefix_force = "" 
+                    # Stage 106: The Safe Haven (Absolute Rollback)
+                    # Returning to the proven 78% structure.
+                    template = BILINGUAL_SILENT_TEMPLATE
+                    prefix_force = '{"label": "' 
                     suffix_force = ""
                 
                 # Phase 138: Title De-duplication
@@ -358,9 +358,9 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 75/105: Llama Compatibility (Logit bypass DISABLED)
+                # Phase 75: Llama Compatibility (Restored)
                 ppl_val = None
-                if False and self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
+                if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
@@ -414,16 +414,15 @@ JAWABAN: """
                         p_final = conf_probs[0].item()
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 104: Reporting
+                        # Stage 106: Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
                         vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
                         reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 104] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 106] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
-                        # Stage 105: Max new tokens to 250 to allow full CoT reasoning
-                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=250, do_sample=False)
+                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
                     raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
 
                 # Final Structure
