@@ -383,14 +383,14 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 87: Restoration of Stage 81 Baseline
-                        # Reverting all experimental bonuses to the known 76% accuracy point.
-                        # Micro (270M) = 4.38; Small (8B) = -1.5
-                        base_bonus = -1.5 if self.model_tier == 'small' else 4.38
+                        # Stage 88: Positive Recovery
+                        # Shifting from negative bias to positive bonus to recover 19% recall.
+                        # We use +5.0 to ensure the model trusts its commercial indicators.
+                        base_bonus = 5.0 if self.model_tier == 'small' else 4.38
                         
-                        # Stage 87: Neutral News Guard (Stage 81: 4.5)
+                        # Stage 88: Softer News Guard
                         news_markers = ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com", "kompas.com", "jawapos", "tribunnews"]
-                        guard_penalty = 4.5 if any(marker in content.lower() for marker in news_markers) else 0.0
+                        guard_penalty = 2.5 if any(marker in content.lower() for marker in news_markers) else 0.0
                         
                         current_bonus = base_bonus - guard_penalty
                         
@@ -407,10 +407,12 @@ JAWABAN: """
                         # Perplexity = 1 / Probability
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         if ppl_val < 1.0: ppl_val = 1.0001
-                        if ppl_val > 10.0: ppl_val = 1.01 # PPL Cap for research-grade logit scores
+                        if ppl_val > 10.0: ppl_val = 1.01 
                         
-                        raw_response = f'{{"label": "{decision_label}"}}'
-                        print(f"DEBUG [Stage 73] PPL: %.4f | Score N: %.2f vs B: %.2f" % (ppl_val, balanced_score_native, score_berita))
+                        # Stage 88: Restore reasoning in raw response
+                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | Bonus:{current_bonus:.1f}"
+                        raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
+                        print(f"DEBUG [Stage 88] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
