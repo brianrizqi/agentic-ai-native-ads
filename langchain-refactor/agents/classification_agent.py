@@ -387,37 +387,51 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 91: True Zero Equilibrium
-                        # Removing all external logit-bias to find the Natural Baseline with RAG.
-                        base_bonus = 0.0 if self.model_tier == 'small' else 4.38
+                        # Stage 92: RAG Vote System
+                        # Dynamically calculating bias based on the retrieved consensus.
+                        rag_num_news = 0
+                        rag_num_ads = 0
                         
-                        # Stage 91: Neutral Guard
-                        news_markers = ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com", "kompas.com", "jawapos", "tribunnews"]
-                        guard_penalty = 0.0 if any(marker in content.lower() for marker in news_markers) else 0.0
+                        if selected:
+                            for ex in selected:
+                                lbl = str(ex.get('label', '')).lower()
+                                if 'native' in lbl or 'ads' in lbl: rag_num_ads += 1
+                                elif 'murni' in lbl or 'news' in lbl: rag_num_news += 1
                         
-                        current_bonus = base_bonus - guard_penalty
+                        # Stage 92: Weighted Consensus
+                        # Neutralized base at -0.2 (Slight News anchor)
+                        base_bonus_ads = -0.2 if self.model_tier == 'small' else 4.38
                         
-                        balanced_score_native = score_native + current_bonus 
-                        decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
+                        rag_bias_news = 0.0
+                        rag_bias_ads = 0.0
                         
-                        s_winner = balanced_score_native if decision_label == "native ads" else score_berita
-                        s_loser = score_berita if decision_label == "native ads" else balanced_score_native
+                        if rag_num_news >= 3: rag_bias_news = 1.5   # 3/3 News
+                        elif rag_num_news == 2: rag_bias_news = 0.8  # 2/3 News
+                        elif rag_num_ads >= 2: rag_bias_ads = 0.5    # RAG consensus is Ads
                         
-                        # Stage 74: Robust Binary-Softmax PPL (Lockdown Restoration)
+                        # Final logit scoring
+                        # Score News gets the RAG bonus if consensus is News
+                        # Score Ads gets the base equilibrium + RAG ads bonus
+                        final_score_berita = score_berita + rag_bias_news
+                        final_score_native = score_native + base_bonus_ads + rag_bias_ads
+                        
+                        decision_label = "native ads" if final_score_native > final_score_berita else "berita murni"
+                        
+                        s_winner = final_score_native if decision_label == "native ads" else final_score_berita
+                        s_loser = final_score_berita if decision_label == "native ads" else final_score_native
+                        
+                        # Stage 74: Robust Binary-Softmax PPL
                         conf_probs = torch.softmax(torch.tensor([float(s_winner), float(s_loser)]), dim=-1)
                         p_final = conf_probs[0].item()
                         
-                        # Perplexity = 1 / Probability
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
-                        if ppl_val < 1.0: ppl_val = 1.0001
-                        if ppl_val > 10.0: ppl_val = 1.01 
                         
-                        # Stage 90: Fixed rag_status check (use rag_block instead of context)
+                        # Stage 92: Enhanced Diagnostics
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
-                        sim_info = f" | Sim:{avg_sim:.2f}" if rag_status == "RAG-YES" else ""
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | Bias:{current_bonus:.1f} | {rag_status}{sim_info}"
+                        vote_msg = f"RAG-VOTE:[N:{rag_num_ads}, B:{rag_num_news}]" if rag_status == "RAG-YES" else ""
+                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 90] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 92] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
