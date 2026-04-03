@@ -390,6 +390,8 @@ JAWABAN: """
                         # Stage 104: Discrete Champion Bias Calculation
                         # Absolute restoration to Stage 94 Winning Values
                         base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
+                        # Stage 107: Global Leveling
+                        base_bonus_news = 1.8 if self.model_tier == 'small' else 0.0
                         
                         rag_bias_news = 0.0
                         rag_bias_ads = 0.0
@@ -402,7 +404,7 @@ JAWABAN: """
                             # Stage 94 Champion Ads (+1.2)
                             rag_bias_ads = 1.2 if rag_weighted_ads > 0.6 else 0.8
                         
-                        final_score_berita = score_berita + rag_bias_news
+                        final_score_berita = score_berita + base_bonus_news + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
                         
                         decision_label = "native ads" if final_score_native > final_score_berita else "berita murni"
@@ -414,12 +416,12 @@ JAWABAN: """
                         p_final = conf_probs[0].item()
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 106: Reporting
+                        # Stage 106/107: Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
                         vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
+                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{base_bonus_news+rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 106] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 107] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
