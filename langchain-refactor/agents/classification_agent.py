@@ -335,7 +335,13 @@ JAWABAN: """
                     
                     user_msg = template.format(content=micro_content, context_short=micro_context).strip()
                 else:
-                    user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
+                    # Stage 116: For small tier, only inject RAG context if it's high confidence
+                    # Low-quality RAG context DESTROYS the model's natural 88.5% accuracy
+                    if self.model_tier == 'small' and avg_sim < 0.75:
+                        # Context not reliable enough — let model use its own fine-tuned knowledge
+                        user_msg = template.format(title=title or content[:70], content=content_processed, context="").strip()
+                    else:
+                        user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
                 # Phase 175: Clean Structure
                 full_prompt = user_msg
@@ -360,7 +366,7 @@ JAWABAN: """
                 
                 # Phase 75: Llama Compatibility (Restored)
                 ppl_val = None
-                if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
+                if self.model_tier in ['micro'] and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
