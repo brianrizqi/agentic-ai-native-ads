@@ -708,8 +708,8 @@ def main():
                        help='Dataset path')
     parser.add_argument('--num-samples', '--num-sample', type=int, default=100,
                        help='Number of test samples')
-    parser.add_argument('--tier', type=str, default='base', choices=['base', 'micro', 'standard', 'premium'],
-                       help='Model tier (base, micro, standard, premium) for prompt selection')
+    parser.add_argument('--tier', type=str, default='base', choices=['base', 'micro', 'small', 'standard', 'premium'],
+                       help='Model tier (base, micro, small, standard, premium) for prompt selection')
     parser.add_argument('--use-rag', action='store_true',
                        help='Use RAG during evaluation')
     parser.add_argument('--vectorstore-dir', type=str, default='data/vectorstore',
