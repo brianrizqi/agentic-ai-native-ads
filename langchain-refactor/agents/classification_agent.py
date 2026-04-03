@@ -365,15 +365,13 @@ JAWABAN: """
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
                         
-                        # Stage 111: The Golden Balance (Final Ascension)
-                        # Restoring leading-space tokens for Llama 3.1
+                        # Stage 106: The Safe Haven (Restored to 78.00%)
                         t_ads = ["native", " native", " iklan", " iklan"]
                         t_news = ["berita", " berita", " Berita", " Berita"]
                         
                         v_native = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_ads if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
                         v_news = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_news if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
                         
-                        # Reverting to stable Top-2 averaging
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
@@ -385,27 +383,21 @@ JAWABAN: """
                             for ex in selected:
                                 lbl = str(ex.get('label', '')).lower()
                                 sim = float(ex.get('similarity_score', 0.5))
-                                # Influence is SIM * 1.0
                                 if 'native' in lbl or 'ads' in lbl: rag_weighted_ads += sim
                                 elif 'murni' in lbl or 'news' in lbl: rag_weighted_news += sim
                         
-                        # Stage 111: Precise Calibration
-                        # The Golden Offset (+0.8) to balance 81/68 disparity
-                        base_bonus_news = 0.8 if self.model_tier == 'small' else 0.0
+                        # Stage 106: Champion Bias (+2.5 news / +1.2 ads) - THE PROVEN VALUES
                         base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
                         
                         rag_bias_news = 0.0
                         rag_bias_ads = 0.0
                         
-                        # Apply discrete boost based on Top-3 consensus
                         if rag_weighted_news > rag_weighted_ads + 0.2:
-                            # Reinforced RAG (+3.5) for breaking news ceiling
-                            rag_bias_news = 3.5 if rag_weighted_news > 1.2 else 1.8
+                            rag_bias_news = 2.5 if rag_weighted_news > 1.2 else 1.2
                         elif rag_weighted_ads > rag_weighted_news + 0.2:
-                            # Stable Champion Ads (+1.2)
                             rag_bias_ads = 1.2 if rag_weighted_ads > 0.6 else 0.8
                         
-                        final_score_berita = score_berita + base_bonus_news + rag_bias_news
+                        final_score_berita = score_berita + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
                         
                         decision_label = "native ads" if final_score_native > final_score_berita else "berita murni"
@@ -417,12 +409,12 @@ JAWABAN: """
                         p_final = conf_probs[0].item()
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 111: Reporting
+                        # Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
                         vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{base_bonus_news+rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
+                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 111] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 106-Restored] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
