@@ -475,14 +475,14 @@ Content: {content}
 Output JSON (analysis must be objective):
 {{"analysis": "brief objective motive analysis", "label": "native ads/berita murni"}}"""
 
-BILINGUAL_SILENT_TEMPLATE = """Task: Classify text strictly as "berita murni" (News) or "native ads" (Marketing). 
+BILINGUAL_SILENT_TEMPLATE = """Task: Professional Media Audit. Classify the text below exactly as "berita murni" (General News) or "native ads" (Marketing/PR).
 
 {context}
 
 Title: {title}
 Content: {content}
 
-Output JSON:
+Output JSON (LABEL ONLY):
 {{"label": "native ads/berita murni"}}"""
 
 # Phase 65: Nuclear PPL Fix (Ultra-Stable Micro)

@@ -383,38 +383,16 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 86: The Entity Fortress Logic
-                        # Baseline Calibration (Restored from Stage 81)
+                        # Stage 87: Restoration of Stage 81 Baseline
+                        # Reverting all experimental bonuses to the known 76% accuracy point.
                         # Micro (270M) = 4.38; Small (8B) = -1.5
                         base_bonus = -1.5 if self.model_tier == 'small' else 4.38
                         
-                        # Hard Trigger Restoration (Stage 81: +5.0)
-                        hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon", "pesta", "undian"]
-                        score_hard = 5.0 if any(kw in (rag_block or "").lower() or kw in content.lower() for kw in hard_triggers) else 0.0
-                        
-                        # Neutral News Guard (Stage 81: 4.5)
-                        # This guard is for general journalistic markers.
+                        # Stage 87: Neutral News Guard (Stage 81: 4.5)
                         news_markers = ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com", "kompas.com", "jawapos", "tribunnews"]
                         guard_penalty = 4.5 if any(marker in content.lower() for marker in news_markers) else 0.0
                         
-                        # Phase 86: Surgical Entity Shield (-12.0)
-                        # These are neutral Government/BUMN entities that often get misclassified.
-                        NEWS_ONLY_ENTITIES = [
-                            "bpjt", "jasa raharja", "kai", "pertamina", "bpjs", "pln", 
-                            "telkom", "bni", "bri", "mandiri", "kemenhub", "kominfo",
-                            "kemenkeu", "jokowi", "prabowo", "gibran"
-                        ]
-                        
-                        entity_penalty = 0.0
-                        # We apply the entity penalty ONLY if the RAG context confirms it's 'berita murni'
-                        # or if the entities are present without hard commercial triggers.
-                        if any(ent in content.lower() for ent in NEWS_ONLY_ENTITIES):
-                            if "berita murni" in (rag_block or "").lower() and score_hard == 0:
-                                entity_penalty = 12.0 # Force neutral
-                            else:
-                                entity_penalty = 6.0  # Moderate shield
-
-                        current_bonus = base_bonus + score_hard - guard_penalty - entity_penalty
+                        current_bonus = base_bonus - guard_penalty
                         
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
