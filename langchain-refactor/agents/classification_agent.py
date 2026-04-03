@@ -387,14 +387,13 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 89: Balanced Neutrality
-                        # The model has a raw bias of ~2.0 points towards news.
-                        # We use +1.5 as a neutralizer, not a booster.
-                        base_bonus = 1.5 if self.model_tier == 'small' else 4.38
+                        # Stage 91: True Zero Equilibrium
+                        # Removing all external logit-bias to find the Natural Baseline with RAG.
+                        base_bonus = 0.0 if self.model_tier == 'small' else 4.38
                         
-                        # Stage 89: Fine-tuned Guard
+                        # Stage 91: Neutral Guard
                         news_markers = ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com", "kompas.com", "jawapos", "tribunnews"]
-                        guard_penalty = 1.5 if any(marker in content.lower() for marker in news_markers) else 0.0
+                        guard_penalty = 0.0 if any(marker in content.lower() for marker in news_markers) else 0.0
                         
                         current_bonus = base_bonus - guard_penalty
                         
