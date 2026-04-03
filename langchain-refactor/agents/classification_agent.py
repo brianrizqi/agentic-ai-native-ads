@@ -306,13 +306,10 @@ JAWABAN: """
                     
                     suffix_force = '"}'
                 else:
-                    # Stage 104: The 89% Convergence
-                    # Combining ULTIMATE definitions with Label-First JSON + Champion Bias
-                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE.replace(
-                        '"reason": "Penjelasan singkat 1 kalimat mengapa ini berita murni/native ads",\n  "label": "native ads/berita murni"',
-                        '"label": "native ads/berita murni",\n  "reason": "Penjelasan singkat 1 kalimat mengapa ini berita murni/native ads"'
-                    )
-                    prefix_force = '{"label": "' 
+                    # Stage 105: The Paradigm Shift
+                    # Complete reasoning release (CoT). No label-forcing.
+                    template = ULTIMATE_GOLD_STANDARD_TEMPLATE
+                    prefix_force = "" 
                     suffix_force = ""
                 
                 # Phase 138: Title De-duplication
@@ -361,9 +358,9 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 75: Llama Compatibility
+                # Phase 75/105: Llama Compatibility (Logit bypass DISABLED)
                 ppl_val = None
-                if self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
+                if False and self.model_tier in ['micro', 'small'] and self.local_model_ref is not None:
                     with torch.no_grad():
                         outputs = self.local_model_ref(input_ids, attention_mask=mask)
                         logits = outputs.logits[0, -1, :]
@@ -425,7 +422,8 @@ JAWABAN: """
                         print(f"DEBUG [Stage 104] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
-                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
+                        # Stage 105: Max new tokens to 250 to allow full CoT reasoning
+                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=250, do_sample=False)
                     raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
 
                 # Final Structure
