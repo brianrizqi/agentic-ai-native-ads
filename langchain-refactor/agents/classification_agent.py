@@ -383,14 +383,14 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 88: Positive Recovery
-                        # Shifting from negative bias to positive bonus to recover 19% recall.
-                        # We use +5.0 to ensure the model trusts its commercial indicators.
-                        base_bonus = 5.0 if self.model_tier == 'small' else 4.38
+                        # Stage 89: Balanced Neutrality
+                        # The model has a raw bias of ~2.0 points towards news.
+                        # We use +1.5 as a neutralizer, not a booster.
+                        base_bonus = 1.5 if self.model_tier == 'small' else 4.38
                         
-                        # Stage 88: Softer News Guard
+                        # Stage 89: Fine-tuned Guard
                         news_markers = ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com", "kompas.com", "jawapos", "tribunnews"]
-                        guard_penalty = 2.5 if any(marker in content.lower() for marker in news_markers) else 0.0
+                        guard_penalty = 1.5 if any(marker in content.lower() for marker in news_markers) else 0.0
                         
                         current_bonus = base_bonus - guard_penalty
                         
@@ -409,10 +409,11 @@ JAWABAN: """
                         if ppl_val < 1.0: ppl_val = 1.0001
                         if ppl_val > 10.0: ppl_val = 1.01 
                         
-                        # Stage 88: Restore reasoning in raw response
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | Bonus:{current_bonus:.1f}"
+                        # Stage 89: Enhanced reasoning with RAG context visibility
+                        rag_status = "RAG-YES" if context and len(context) > 20 else "RAG-NO"
+                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | Bias:{current_bonus:.1f} | {rag_status}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 88] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 89] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
