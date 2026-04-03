@@ -4,7 +4,10 @@ Main agent for Phase 63: Sanity Restoration
 """
 
 from typing import Dict, Any, Optional, List
-from langchain_openai import ChatOpenAI
+try:
+    from langchain_openai import ChatOpenAI
+except ImportError:
+    ChatOpenAI = None
 from langchain_huggingface import HuggingFaceEndpoint, HuggingFacePipeline
 from langchain_core.callbacks.manager import CallbackManager
 from langchain_core.output_parsers import StrOutputParser
@@ -206,10 +209,9 @@ class ClassificationAgent:
                 # ---------------------------------------------------------------------
                 is_qwen = "qwen" in self.model_name.lower()
                 
-                # Phase 85: The Golden Ratio (Sanitized Context)
-                # Stage 82/83 showed that 0.75 is too noisy, but 0.87 is almost there.
+                # Phase 86: The Entity Fortress (Restored Stage 81 Foundation)
                 if self.model_tier == 'small':
-                    RAG_THRESHOLD = 0.88
+                    RAG_THRESHOLD = 0.75
                 else:
                     RAG_THRESHOLD = 0.75 if is_qwen else 0.75
                 rag_block = ""
@@ -218,13 +220,12 @@ class ClassificationAgent:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
                     if candidates:
-                        # Stage 37: Restoring Natural Top-K RAG for Llama
-                        # Phase 84: RAG Reduction for Small Tier (Llama 8B)
-                        # We use Top-K 1 to minimize 'Ad Poisoning' for neutral news.
-                        if self.model_tier in ['micro', 'small']:
+                        # Phase 86: The Entity Fortress (Restored Stage 81 Foundation)
+                        if self.model_tier == 'micro':
                             # Minimalist RAG limit to 1
                             selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         else:
+                            # Restoring Stage 81 Top-K (3) for surgical recovery
                             selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:self.rag_top_k]
                         
                         # 2. Canonical Sort (by similarity for logical flow)
@@ -382,20 +383,38 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 85: The Golden Ratio (Calibrated Bias)
-                        # Tier-Aware Baseline: Micro (270M) = 4.38; Small (8B) = -3.0
-                        base_bonus = -3.0 if self.model_tier == 'small' else 4.38
+                        # Stage 86: The Entity Fortress Logic
+                        # Baseline Calibration (Restored from Stage 81)
+                        # Micro (270M) = 4.38; Small (8B) = -1.5
+                        base_bonus = -1.5 if self.model_tier == 'small' else 4.38
                         
-                        # Multi-Level Bonus Scoring (Peak Threshold)
-                        # Hard Commercial triggers (High Intent)
-                        hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon"]
-                        score_hard = 8.0 if any(kw in (rag_block or "").lower() or kw in content.lower() for kw in hard_triggers) else 0.0
+                        # Hard Trigger Restoration (Stage 81: +5.0)
+                        hard_triggers = ["shopee", "promo", "diskon", "cashback", "sale", "hemat", "voucher", "diskon", "pesta", "undian"]
+                        score_hard = 5.0 if any(kw in (rag_block or "").lower() or kw in content.lower() for kw in hard_triggers) else 0.0
                         
-                        # Phase 85: Balanced Neutrality Shield
-                        has_news_marker = any(marker in content.lower() for marker in ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com"])
-                        guard_penalty = 6.0 if has_news_marker else 0.0
+                        # Neutral News Guard (Stage 81: 4.5)
+                        # This guard is for general journalistic markers.
+                        news_markers = ["republika", "antaranews", "detikcom", "viva.co.id", "bisnis.com", "kompas.com", "jawapos", "tribunnews"]
+                        guard_penalty = 4.5 if any(marker in content.lower() for marker in news_markers) else 0.0
                         
-                        current_bonus = base_bonus + score_hard - guard_penalty
+                        # Phase 86: Surgical Entity Shield (-12.0)
+                        # These are neutral Government/BUMN entities that often get misclassified.
+                        NEWS_ONLY_ENTITIES = [
+                            "bpjt", "jasa raharja", "kai", "pertamina", "bpjs", "pln", 
+                            "telkom", "bni", "bri", "mandiri", "kemenhub", "kominfo",
+                            "kemenkeu", "jokowi", "prabowo", "gibran"
+                        ]
+                        
+                        entity_penalty = 0.0
+                        # We apply the entity penalty ONLY if the RAG context confirms it's 'berita murni'
+                        # or if the entities are present without hard commercial triggers.
+                        if any(ent in content.lower() for ent in NEWS_ONLY_ENTITIES):
+                            if "berita murni" in (rag_block or "").lower() and score_hard == 0:
+                                entity_penalty = 12.0 # Force neutral
+                            else:
+                                entity_penalty = 6.0  # Moderate shield
+
+                        current_bonus = base_bonus + score_hard - guard_penalty - entity_penalty
                         
                         balanced_score_native = score_native + current_bonus 
                         decision_label = "native ads" if balanced_score_native > score_berita else "berita murni"
