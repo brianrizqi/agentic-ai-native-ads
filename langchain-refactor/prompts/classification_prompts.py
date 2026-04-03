@@ -475,27 +475,14 @@ Content: {content}
 Output JSON (analysis must be objective):
 {{"analysis": "brief objective motive analysis", "label": "native ads/berita murni"}}"""
 
-BILINGUAL_SILENT_TEMPLATE = """Task: Classify the article below as "berita murni" (Pure News) or "native ads" (Promotional/PR Content).
-
-CLASSIFY AS "berita murni" (Pure News) if ANY of these apply:
-- Sports: match results, scores, tournament schedules, athlete news
-- Incidents: natural disasters, accidents, crime, health outbreaks
-- Government/Macro Policy: interest rates, state visits, public infrastructure (not branded)
-- Company TROUBLES: layoffs (PHK), financial losses, court cases, bankruptcy
-- Arts/Entertainment: album/film releases, concert announcements (without brand praise)
-
-CLASSIFY AS "native ads" if ANY of these apply:
-- A company/institution promotes its OWN achievements, awards, CSR, or product innovation
-- Article is a press release, MOU/partnership launch, or product announcement
-- Language praises a subject from ONE perspective only (no criticism)
-- Article ends with product details, prices, or calls to action
+BILINGUAL_SILENT_TEMPLATE = """Task: Professional Media Audit. Classify the text below exactly as "berita murni" (General News) or "native ads" (Marketing/PR).
 
 {context}
 
 Title: {title}
 Content: {content}
 
-Output JSON:
+Output JSON (LABEL ONLY):
 {{"label": "native ads/berita murni"}}"""
 
 # Phase 65: Nuclear PPL Fix (Ultra-Stable Micro)
