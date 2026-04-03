@@ -228,8 +228,9 @@ class ClassificationAgent:
                             # Minimalist RAG limit to 1
                             selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
                         else:
-                            # Restoring Stage 81 Top-K (3) for surgical recovery
-                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:self.rag_top_k]
+                            # Stage 100: Century Convergence Top-5 Policy
+                            current_k = 5 if self.model_tier == 'small' else self.rag_top_k
+                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:current_k]
                         
                         # 2. Canonical Sort (by similarity for logical flow)
                         selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
@@ -304,9 +305,9 @@ JAWABAN: """
                     
                     suffix_force = '"}'
                 else:
-                    # Stage 98: Extreme Bias Calibration
-                    # Reverting to the predictable Stage 94 logic base, but with extreme bias values.
-                    template = BILINGUAL_SILENT_TEMPLATE
+                    # Stage 100: The Century Convergence
+                    # Upgrading to Advanced 8B Template for better guidance
+                    template = ADVANCED_8B_GOLD_TEMPLATE
                     prefix_force = '{"label": "' 
                     suffix_force = ""
                 
@@ -373,7 +374,7 @@ JAWABAN: """
                         score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
                         score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
                         
-                        # Stage 98: Similarity-Weighted Voting
+                        # Stage 100: Similarity-Weighted Voting
                         rag_weighted_news = 0.0
                         rag_weighted_ads = 0.0
                         
@@ -385,20 +386,20 @@ JAWABAN: """
                                 if 'native' in lbl or 'ads' in lbl: rag_weighted_ads += sim
                                 elif 'murni' in lbl or 'news' in lbl: rag_weighted_news += sim
                         
-                        # Stage 98: Extreme Bias Calculation
-                        # Nuclear Power for Gap Closure
+                        # Stage 100: Discrete Master Calibration
+                        # Absolute restoration to Neutral Base
                         base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
                         
                         rag_bias_news = 0.0
                         rag_bias_ads = 0.0
                         
-                        # Apply discrete boost (predictable jumps) based on weighted consensus
+                        # Apply discrete boost (predictable jumps) based on Top-5 consensus
                         if rag_weighted_news > rag_weighted_ads + 0.2:
-                            # Extreme News recovery (+6.0) to melibas 4.0 gap
-                            rag_bias_news = 6.0 if rag_weighted_news > 1.2 else 2.5
+                            # Balanced News recovery (+4.0)
+                            rag_bias_news = 4.0 if rag_weighted_news > 1.2 else 1.5
                         elif rag_weighted_ads > rag_weighted_news + 0.2:
-                            # Extreme Ads recovery (+4.0)
-                            rag_bias_ads = 4.0 if rag_weighted_ads > 0.6 else 1.8
+                            # Balanced Ads recovery (+1.5)
+                            rag_bias_ads = 1.5 if rag_weighted_ads > 0.6 else 0.8
                         
                         final_score_berita = score_berita + rag_bias_news
                         final_score_native = score_native + base_bonus_ads + rag_bias_ads
@@ -412,12 +413,12 @@ JAWABAN: """
                         p_final = conf_probs[0].item()
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
                         
-                        # Stage 98: Reporting
+                        # Stage 100: Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
                         vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
                         reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 98] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Stage 100] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
