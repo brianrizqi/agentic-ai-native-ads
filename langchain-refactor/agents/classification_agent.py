@@ -75,8 +75,10 @@ class ClassificationAgent:
             self.use_rag = False
             self.max_chars = 2200
         elif is_gemma_large:
-            # Phase 200: Gemma 3 12B has large context window — increase max_chars
-            self.max_chars = 3000
+            # Phase 200: Gemma 3 12B — use same max_chars as other standard models.
+            # The March 25 winning run (98.5%) capped content at 400 chars inside classify(),
+            # which is handled by the default self.max_chars = 1800 path below.
+            pass  # max_chars already set to 1800 above
         
         self.llm = self._initialize_llm(api_key)
         
@@ -432,10 +434,19 @@ JAWABAN: """
                         print(f"DEBUG [Stage 106-Restored] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
-                        # Phase 200: Gemma 3 12B needs more tokens for complete JSON output
-                        max_new_tokens = 200 if (is_gemma and self.model_tier == 'standard') else 100
-                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=max_new_tokens, do_sample=False)
-                    raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
+                        if is_gemma and self.model_tier == 'standard':
+                            # Phase 200: Use HuggingFacePipeline invoke() for Gemma large —
+                            # exactly matching commit 198afc5 (March 25, 98.5% accuracy).
+                            # The pipeline already has stop_sequence="}\n" and repetition_penalty=1.1
+                            # configured, which is critical for clean JSON termination.
+                            invoke_result = self.llm.invoke(templated_prompt)
+                            # HuggingFacePipeline returns AIMessage — extract string content
+                            raw_response = invoke_result.content if hasattr(invoke_result, 'content') else str(invoke_result)
+                            print(f"DEBUG [Gemma-200] Pipeline invoke | resp: {raw_response[:80]}")
+                        else:
+                            max_new_tokens = 100
+                            generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=max_new_tokens, do_sample=False)
+                            raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
 
                 # Final Structure
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
