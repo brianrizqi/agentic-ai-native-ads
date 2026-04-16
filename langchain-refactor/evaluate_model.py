@@ -207,7 +207,23 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
                 minimalist = False
                 
                 # Phase 20: Use examples for multi-turn history-based RAG for local models
-                if agent.provider == "local" and agent.tokenizer:
+                # Phase 200: Exception — Gemma large (12B+) uses llm.invoke() pipeline,
+                # which reads from `context` string, NOT from `examples` list.
+                # The March 25 winning run (98.5%) used get_context_for_classification().
+                is_gemma_large = (
+                    agent.provider == "local" and agent.tokenizer and
+                    "gemma" in getattr(agent, 'model_name', '').lower() and
+                    getattr(agent, 'model_tier', '') == 'standard'
+                )
+                if is_gemma_large:
+                    # Restore the exact March 25 RAG path: context string with Label+Alasan+Isi
+                    context = retriever.get_context_for_classification(
+                        sample['input'],
+                        top_k=eff_top_k,
+                        max_reasoning_length=max_reasoning,
+                        minimalist=minimalist
+                    )
+                elif agent.provider == "local" and agent.tokenizer:
                     examples = retriever.get_examples_for_history(
                         sample['input'], 
                         top_k=eff_top_k
