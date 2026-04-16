@@ -340,7 +340,14 @@ JAWABAN: """
                         content_clean = content_clean[1:].strip()
                 
                 # Phase 155: Preprocessing
-                max_chars = 5000 if is_qwen else self.max_chars
+                # Phase 200: Gemma large uses content[:400] — exact match to March 25 winning config (198afc5).
+                # Longer content causes model to shortcut to generic training-template answers.
+                if is_gemma and self.model_tier == 'standard':
+                    max_chars = 400
+                elif is_qwen:
+                    max_chars = 5000
+                else:
+                    max_chars = self.max_chars
                 content_processed = content_clean[:max_chars]
 
                 if self.model_tier == 'micro':
