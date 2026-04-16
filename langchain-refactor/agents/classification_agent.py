@@ -58,7 +58,10 @@ class ClassificationAgent:
         self.rag_top_k = rag_top_k
         
         # Tier Detection (Phase 66: Radical Reduction for Micro)
-        self.model_tier = model_tier if model_tier else self._get_model_tier(model_name)
+        # Phase 200: Treat 'base' (argparse default) as unset — trigger auto-detection.
+        # When user runs without --tier, argparse passes 'base' which is truthy but meaningless.
+        # Auto-detect by model name so Gemma 3 12B → 'standard', not 'base'.
+        self.model_tier = model_tier if (model_tier and model_tier != 'base') else self._get_model_tier(model_name)
         self.max_chars = 500 if self.model_tier == 'micro' else 1800
         
         self.tokenizer = None
@@ -67,9 +70,13 @@ class ClassificationAgent:
         # Phase 142/143/145/147/148: Zero-Point Alignment
         # Disabling RAG as requested to reach the 91% intrinsic baseline.
         is_qwen = "qwen" in self.model_name.lower()
+        is_gemma_large = ("gemma" in self.model_name.lower() and self.model_tier == 'standard')
         if is_qwen:
             self.use_rag = False
             self.max_chars = 2200
+        elif is_gemma_large:
+            # Phase 200: Gemma 3 12B has large context window — increase max_chars
+            self.max_chars = 3000
         
         self.llm = self._initialize_llm(api_key)
         
@@ -86,6 +93,7 @@ class ClassificationAgent:
         n = name.lower()
         if any(x in n for x in ['270m', '500m', '1b']): return 'micro'
         if any(x in n for x in ['3b', '7b', '8b', '9b']): return 'small'
+        if any(x in n for x in ['12b', '13b', '14b', '27b', '32b', '70b']): return 'standard'
         return 'standard'
 
     def _get_model_family(self, name: str) -> str:
@@ -200,8 +208,10 @@ class ClassificationAgent:
                     ADVANCED_8B_GOLD_TEMPLATE,
                     QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE,
                     ALPACA_ID_MINIMAL_TEMPLATE, ALPACA_EN_MINIMAL_TEMPLATE,
-                    BILINGUAL_SILENT_TEMPLATE
+                    BILINGUAL_SILENT_TEMPLATE, GEMMA_LARGE_TEMPLATE
                 )
+                # Phase 200: Detect model family for Gemma-specific routing
+                is_gemma = self._get_model_family(self.model_name) == 'gemma'
                 import torch
                 # Phase 140: Balanced Multi-Heuristic (Final Push)
                 # ---------------------------------------------------------------------
@@ -261,7 +271,8 @@ class ClassificationAgent:
                 # Language detection (More robust to avoid false positives in titles)
                 is_bilingual = any(f" {w} " in f" {content.lower()} " for w in [" the ", " and ", " is ", " that ", " which "])
                 
-                # Stage 31: Split Master Prompt into Qwen (Indo) and Llama (Eng-Anchored)
+                # Stage 31: Split Master Prompt by model family/tier
+                # Phase 200: Gemma 3 Large (12B+) gets dedicated template
                 if is_qwen:
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
 
@@ -295,6 +306,13 @@ Format Respon (JSON WAJIB):
 
 JAWABAN: """
                     prefix_force = "" 
+                    suffix_force = ""
+                elif is_gemma and self.model_tier == 'standard':
+                    # Phase 200: Gemma 3 12B+ — Full reasoning template with proper chat format.
+                    # DO NOT use BILINGUAL_SILENT_TEMPLATE or prefix_force for Gemma large.
+                    # Gemma 3 has strong instruction-following; give it complete JSON instructions.
+                    template = GEMMA_LARGE_TEMPLATE
+                    prefix_force = ""
                     suffix_force = ""
                 elif self.model_tier == 'micro':
                     # Phase 42: Golden Recalibration (No-RAG Strategy)
@@ -346,17 +364,24 @@ JAWABAN: """
                 # Phase 175: Clean Structure
                 full_prompt = user_msg
                 
-                # Phase 141/153: Prompt Dispatcher
+                # Phase 141/153/200: Prompt Dispatcher
                 if is_qwen:
                     messages = [
                         {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
                         {"role": "user", "content": user_msg}
                     ]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                elif is_gemma and self.model_tier == 'standard':
+                    # Phase 200: Gemma 3 uses apply_chat_template with user role only.
+                    # Gemma 3 does NOT need a system prompt — it confuses the model.
+                    # The instruction is embedded in the GEMMA_LARGE_TEMPLATE itself.
+                    messages = [{"role": "user", "content": user_msg}]
+                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                    print(f"DEBUG [Gemma-200] Using GEMMA_LARGE_TEMPLATE | Tier: {self.model_tier} | MaxChars: {self.max_chars}")
                 elif self.model_tier == 'micro':
                     templated_prompt = user_msg
                 else:
-                    # Llama Standard
+                    # Llama Standard / other families
                     messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 
@@ -407,7 +432,9 @@ JAWABAN: """
                         print(f"DEBUG [Stage 106-Restored] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
-                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=100, do_sample=False)
+                        # Phase 200: Gemma 3 12B needs more tokens for complete JSON output
+                        max_new_tokens = 200 if (is_gemma and self.model_tier == 'standard') else 100
+                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=max_new_tokens, do_sample=False)
                     raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
 
                 # Final Structure
