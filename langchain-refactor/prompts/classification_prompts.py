@@ -663,7 +663,7 @@ Output (Return JSON ONLY):
 
 GEMMA_LARGE_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+Native Ads adalah konten yang MENGGABUNGKAN **semua** ciri berikut secara bersamaan:
 1. Nada positif/netral (tidak mengkritik subjek)
 2. Bahasa persuasif (mengajak/meyakinkan)
 3. Mempromosikan produk/brand/instansi
@@ -673,12 +673,7 @@ Berita Murni:
 - Bisa positif/netral/negatif
 - Objektif, menyajikan berbagai sudut pandang
 - Tidak mempromosikan produk/brand
-
-PENTING — Jangan salah klasifikasi:
-- Berita tentang kebijakan pemerintah, bencana, kriminal, hasil olahraga = SELALU "berita murni"
-- Berita yang menyebut nama brand/perusahaan tapi melaporkan fakta objektif = "berita murni"
-- Hanya label "native ads" jika ada NIAT PROMOSI yang jelas (bukan sekadar menyebut brand)
-- Jika ragu, pilih "berita murni"
+- Contoh: berita olahraga, politik, bencana, sains, hiburan, atau peristiwa publik = BERITA MURNI meski menyebut nama entitas
 
 {context}
 Target Berita yang Harus Diklasifikasi:
