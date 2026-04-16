@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 85,
+    "borderline_count": 6,
+    "bad_count": 9,
+    "avg_judge_score": 4.03
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided strong reasoning, highlighting the neutral and objective nature of the content without any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is weak and generic. The article discusses a tax regulation, which is more aligned with news content rather than promotional material. The reasoning does not adequately support the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article presents factual data about UMKM in Indonesia without clear promotional intent, which suggests it could be classified as news rather than an advertisement.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Menurut data Kementerian Koperasi dan Usaha Kecil Menengah (UKM) pada 2017, UMKM menguasai sekitar 62,9 juta unit atau 99,99 persen pangsa pasar dari total keseluruhan pelaku usaha di Indonesia. Tak h",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is weak and generic. The article does not clearly promote a product or brand, making the reasoning less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Badan Tenaga Nuklir Nasional (Batan) telah ditunjuk oleh Badan Tenaga Atom Internasional (International Atomic Energy Agency/IAEA) sebagai pusat acuan atau collaborating center (CC) di bidang uji tida",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning provided is shallow and does not address the promotional nature of the announcement, which is indicative of native advertising.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Ottawa, March 04, 2026 (GLOBE NEWSWIRE) — Today’s announcement of a new interprovincial-territorial partnership to expand electricity transmission infrastructure marks a major step toward better conne",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model's prediction of 'berita murni' is incorrect as the ground truth is 'native ads.' The reasoning provided does not adequately address the promotional nature of the content, which is typical for native ads, despite its informative tone.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "LONDON, Feb. 24, 2026 (GLOBE NEWSWIRE) — Datalec Precision Installations (DPI) has unveiled its next-generation Data Centre Modularisation Solution, engineered to help organisations deploy critical in",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Meskipun menyebutkan entitas bernama, artikel ini bersifat informatif dan tidak mengandung unsur persuasi atau promosi produk.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model correctly predicted the label as 'native ads,' but the reasoning is weak and lacks specific evidence from the article content to support the claim of promotional or persuasive elements.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ]
+}
