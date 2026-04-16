@@ -340,10 +340,11 @@ JAWABAN: """
                         content_clean = content_clean[1:].strip()
                 
                 # Phase 155: Preprocessing
-                # Phase 200: Gemma large uses content[:400] — exact match to March 25 winning config (198afc5).
-                # Longer content causes model to shortcut to generic training-template answers.
+                # Phase 200: Gemma large uses content[:800] — sweet spot between:
+                # - [:400] too short: misses Globe Newswire press release promo content
+                # - [:1800] too long: model shortcuts to generic training-template answers
                 if is_gemma and self.model_tier == 'standard':
-                    max_chars = 400
+                    max_chars = 800
                 elif is_qwen:
                     max_chars = 5000
                 else:
