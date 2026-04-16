@@ -647,47 +647,39 @@ Output (Return JSON ONLY):
 # ============================================================================
 # Phase 200: GEMMA 3 LARGE MODEL PROMPT (12B+)
 # ============================================================================
-# Root cause of Gemma 3 12B underperformance:
-# - Gemma 3 uses <start_of_turn> chat format, NOT [INST]
-# - The BILINGUAL_SILENT_TEMPLATE (label-first prefix force) forces Gemma to
-#   auto-complete from a partial JSON, which SKIPS its strong reasoning ability
-# - Gemma 3 12B has excellent Indonesian understanding — it should be given
-#   the FULL prompt with clear JSON output, not a truncated prefix trick.
+# Winning formula from commit 198afc5 (March 25, 2026) = 98.5% accuracy.
 #
-# This template is:
-# 1. English instructions (strong command language, resistant to drift)
-# 2. Bilingual definitions (matches Gemma's multilingual training)
-# 3. Clear JSON output format (Gemma 12B can produce clean JSON reliably)
-# 4. Explicit News Shield rules (prevents over-labeling as native ads)
+# Key insight from historical analysis:
+# - The March 25 RAG run used a deliberately MINIMAL prompt for Gemma
+# - 4 criteria → RAG context block → article → "Output (JSON):"
+# - NO elaborate shields, NO over-instruction, NO label-first prefix tricks
+# - Gemma 12B has strong fine-tuned knowledge — trust it with clean context
+# - The RAG examples (via {context}) did the heavy lifting for calibration
+#
+# This template is used when:
+#   - model family = 'gemma'
+#   - model_tier = 'standard' (i.e., 12B+, auto-detected from model name)
 # ============================================================================
 
-GEMMA_LARGE_TEMPLATE = """You are an expert Indonesian media auditor. Your task is to classify the article below as either "native ads" or "berita murni".
+GEMMA_LARGE_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
 
-DEFINITIONS:
-- "native ads": Content with clear marketing intent. This includes PR releases, corporate brand-building (CSR, awards, MOU), product launches framed as news, government/regional government (Pemkab/Pemkot/BUMN) advertorials, or persuasive soft-selling content that promotes a single entity in a positive light without criticism.
-- "berita murni": Pure factual journalism. Includes coverage of public disasters, crime, macro government policy, sports results, economic crises (company losses, layoffs), or neutral multi-perspective reporting where a company is only a secondary subject.
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
 
-NEWS SHIELDS — Always classify as "berita murni" if the article covers:
-1. Natural disasters, accidents, or public safety incidents.
-2. Criminal cases, court proceedings, or corruption investigations.
-3. Macro-economic policy (interest rate changes, national budget, presidential diplomacy).
-4. Sports event results, scores, or schedules (without brand promotion).
-5. Corporate crises: losses, layoffs (PHK), stock crashes, or legal troubles.
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
 
-NATIVE ADS TRIGGERS — Classify as "native ads" if the article primarily:
-1. Promotes an award, achievement, or innovation for a single brand/company.
-2. Reports a CSR event, MOU signing, or product launch with exclusively positive framing.
-3. Contains quotes from company executives/PR without any critical counterpoint.
-4. Ends with a call-to-action, pricing info, or promotional details.
-5. Is an advertorial/infographic/sponsored content from a regional government (Pemkab/Pemkot) or BUMN.
-
+Gunakan contoh-contoh berikut sebagai referensi. Perhatikan bagian "Alasan" untuk memahami logika klasifikasi:
 {context}
 
-Title: {title}
-Content: {content}
+Target Berita yang Harus Diklasifikasi:
+Judul: {title}
+Konten: {content}
 
-Respond with ONLY a valid JSON object in this exact format:
-{{
-  "analysis": "One clear sentence explaining your marketing-intent decision",
-  "label": "native ads or berita murni"
-}}"""
+Output (JSON):
+"""
