@@ -356,10 +356,13 @@ JAWABAN: """
                     user_msg = template.format(content=micro_content, context_short=micro_context).strip()
                 else:
                     # Stage 116: For small tier, only inject RAG context if it's high confidence
-                    # Low-quality RAG context DESTROYS the model's natural 88.5% accuracy
                     if self.model_tier == 'small' and avg_sim < 0.75:
-                        # Context not reliable enough — let model use its own fine-tuned knowledge
                         user_msg = template.format(title=title or content[:70], content=content_processed, context="").strip()
+                    elif is_gemma and self.model_tier == 'standard':
+                        # Phase 200: Gemma large gets context string directly from get_context_for_classification()
+                        # Do NOT use rag_block (built from examples list) — use the `context` param passed in.
+                        # This matches the March 25 winning path exactly.
+                        user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
                     else:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
