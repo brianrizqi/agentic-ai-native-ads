@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 54,
+    "borderline_count": 1,
+    "bad_count": 45,
+    "avg_judge_score": 3.27
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a solid reasoning that highlights the neutral and objective nature of the content, effectively distinguishing it from promotional material.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.85
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning provided is weak and generic. The article presents factual data about UMKM in Indonesia without clear promotional intent, which suggests it could be classified as news rather than an advertisement.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Menurut data Kementerian Koperasi dan Usaha Kecil Menengah (UKM) pada 2017, UMKM menguasai sekitar 62,9 juta unit atau 99,99 persen pangsa pasar dari total keseluruhan pelaku usaha di Indonesia. Tak h",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.85
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a sports injury. The reasoning based on a start-of-string heuristic does not apply here, as there is no promotional tone or content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Start-of-string heuristic",
+      "confidence": 0.8
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it is actually a native ad. The reasoning does not support the label, as it fails to identify the promotional tone and intent of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "JAKARTA - OPPO A55 telah hadir di Indonesia. Bagi kalian yang sedang mencari smartphone kelas menengah untuk digunakan oleh anak-anak, OPPO A55 ini layak dipertimbangkan.Bukan tanpa alasan, OPPO A55 h",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "",
+      "confidence": 0.85
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' instead of 'native ads.' The reasoning does not support the label, as the content appears promotional in nature, indicating it should be classified as a native ad.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONCTON, New Brunswick, Feb. 25, 2026 (GLOBE NEWSWIRE) — Major Drilling Group International Inc. (“Major Drilling” or the “Company”) (TSX: MDI), the largest provider of drilling services to the mining",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "",
+      "confidence": 0.9
+    }
+  ]
+}

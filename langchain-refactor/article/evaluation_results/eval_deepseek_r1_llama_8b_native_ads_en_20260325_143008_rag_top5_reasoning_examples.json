@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 79,
+    "borderline_count": 6,
+    "bad_count": 15,
+    "avg_judge_score": 3.72
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the factual content regarding a sports injury, and the reasoning provided is appropriate and objective, aligning with the nature of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the content, which discusses a scientific discovery without any promotional tone. The reasoning is strong as it aligns with the objective nature of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the factual reporting of a sports event, and the reasoning provided is appropriate and objective, aligning with the nature of news content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth. However, the reasoning provided is weak and generic, lacking a clear explanation of why the content is promotional rather than purely informational.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth. However, the reasoning provided is weak and generic, lacking specific indicators of promotional tone or intent that would clearly differentiate it from pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Sebagai contoh, teori aljabar, operasi hitung bilangan, operasi hitung, bangun ruang dan geometri, fungsi, hingga kalkulus. Jangankan untuk memecahkannya, membaca rumusnya saja sudah terasa memusingka",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' which aligns with the ground truth, but the reasoning provided is weak and generic, lacking specific indicators of promotional tone or content that would typically characterize native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Awal tahun 2021 menjadi ujian berat bagi bangsa Indonesia. Belum selesai wabah COVID-19, musibah bencana alam menimpa sejumlah wilayah di Tanah Air yang menimbulkan kerugian tak sedikit. Melihat kondi",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided is shallow and does not adequately support the label, as the content does not exhibit promotional tone or intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": ", Penyelenggaraan Festival KupatLepet di KabupatenJepara Jawa Tengah mendapat sambutan meriah dari wisatawan. Para wisatawan datang dari berbagai daerahke kawasanPantai Kartiniuntuk ikut mendapatkan g",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a pure news piece. The reasoning provided is shallow and does not adequately support the label, as the content is straightforward reporting on a sports event without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning based on label match is shallow and does not adequately support the prediction, as the content does not exhibit promotional tone or intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Uji coba penerapan jalan tol menggunakan transaksi nontunai nirsentuh atau multi lane free flow (MLFF), akan dilakukan pada beberapa titik mulai tahun ini.  Penerapan transaksi i",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ]
+}

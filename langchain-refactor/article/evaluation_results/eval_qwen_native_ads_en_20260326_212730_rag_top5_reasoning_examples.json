@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 43,
+    "borderline_count": 1,
+    "bad_count": 56,
+    "avg_judge_score": 2.83
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the content, which is a straightforward news report about a sports injury. The reasoning is sound as it aligns with the objective nature of news reporting, lacking any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the content, which discusses a scientific discovery without any promotional tone. The reasoning is strong and aligns well with the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the factual reporting of a sports event, and the reasoning is strong as it aligns with the objective nature of news content without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the content as native ads, but the reasoning is weak and generic, lacking a clear explanation of why the content is promotional rather than informative.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a meeting between two presidents. The reasoning provided does not logically support the label, as there is no promotional tone or advertising content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Setelah menempuh perjalanan darat selama kurang lebih 11 jam dari Polandia menuju Ukraina, Presiden Jokowi Widodo mengadakan pertemuan tatap muka dengan Presiden Ukraina Volodymyr Zelensky. Apa hasil ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about NASA's mission to Mars. The reasoning provided does not logically support the label, as there is no promotional tone or advertising content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "NASA merancang misi dua astronaut yang akan dikirim ke Mars. Rencana ini kemudian akan diuji coba di Bulan, sebagaimana diungkap oleh NASA Deputy Administrator Pam Melroy. Ada 50 tujuan yang ingin dic",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not logically support the label, as there is no promotional tone or advertisement content present in the text.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Sekretaris Jenderal DPP PDI-Perjuangan (PDIP) Hasto Kristiyanto mengatakan Bidang Kehormatan Partai akan segera mengeluarkan surat teguran terhadap politikus Masinton Pasaribu.Sanksi itu diberikan ter",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ]
+}

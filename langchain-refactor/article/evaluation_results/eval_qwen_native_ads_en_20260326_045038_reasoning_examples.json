@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 31,
+    "borderline_count": 3,
+    "bad_count": 66,
+    "avg_judge_score": 2.55
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the content, which discusses a scientific discovery without any promotional tone. The reasoning is strong and aligns well with the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the factual reporting of a sports event, and the reasoning provided is logical and objective, aligning well with the characteristics of news content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the factual reporting of Ryan Fox's withdrawal from a sports event due to health issues. The reasoning is sound as it aligns with the objective nature of news reporting, without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PONTE VEDRA BEACH, Fla. (AP) — Ryan Fox of New Zealand withdrew from The Players Championship on Thursday, spending the day in a hospital to have kidney stones removed.\n\nFox cited “illness” as the rea",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads' according to the ground truth, but the reasoning provided is weak and generic, lacking specific indicators of promotional tone or content that would clearly differentiate it from pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the content as native ads, aligning with the ground truth. However, the reasoning provided is weak and generic, lacking a detailed analysis of the promotional tone or intent behind the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning is weak and generic, lacking specific indicators of promotional tone or intent.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about an injury to a baseball player. The reasoning provided does not logically support the label, as there is no promotional tone or advertising content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a futsal match. The reasoning provided does not logically support the label, as there is no promotional tone or advertisement content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "TEMPO.CO, Jakarta - Timnas futsal Indonesia bermain imbang 1-1 dengan tuan rumah Vietnam dalam pertandingan perdana SEA Games 2021 di Ha Nam Gymnasium, Phu Ly, Vietnam, Rabu, 11 Mei 2022.Vietnam sempa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Detected via label match (lenient).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model prediction is completely incorrect as it labels the article with 'nick nurse', which is unrelated to the content. The reasoning does not support the label and fails to identify the article as news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "nick nurse",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Membersihkan rumah atau apartemen secara teratur adalah hal yang perlu dilakukan setiap penghuninya. Namun, banyak orang yang menunda atau sama sekali tidak mau repot-repot membe",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "{'label': 'nick nurse', 'confidence': 0.87, 'start_idx': 26, 'end_idx': 34}",
+      "confidence": 0.87
+    }
+  ]
+}
