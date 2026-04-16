@@ -674,9 +674,13 @@ Berita Murni:
 - Objektif, menyajikan berbagai sudut pandang
 - Tidak mempromosikan produk/brand
 
-Gunakan contoh-contoh berikut sebagai referensi. Perhatikan bagian "Alasan" untuk memahami logika klasifikasi:
-{context}
+PENTING — Jangan salah klasifikasi:
+- Berita tentang kebijakan pemerintah, bencana, kriminal, hasil olahraga = SELALU "berita murni"
+- Berita yang menyebut nama brand/perusahaan tapi melaporkan fakta objektif = "berita murni"
+- Hanya label "native ads" jika ada NIAT PROMOSI yang jelas (bukan sekadar menyebut brand)
+- Jika ragu, pilih "berita murni"
 
+{context}
 Target Berita yang Harus Diklasifikasi:
 Judul: {title}
 Konten: {content}
