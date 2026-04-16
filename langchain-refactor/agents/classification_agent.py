@@ -182,7 +182,22 @@ class ClassificationAgent:
                 
                 self.tokenizer = tokenizer
                 self.local_model_ref = model 
-                pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
+                
+                # Phase 200: Fix Pipeline Initialization for Gemma/Llama
+                # In commit 198afc5 (March 25), the pipeline was explicitly configured with 
+                # return_full_text=False and stop_sequence to ensure clean JSON output.
+                # Without these, self.llm.invoke() will hallucinate past the end of JSON and/or return the prompt.
+                pipe_kwargs = {
+                    "max_new_tokens": generation_params.get("max_new_tokens", 512),
+                    "do_sample": False,
+                    "repetition_penalty": generation_params.get("repetition_penalty", 1.1),
+                    "return_full_text": False,
+                }
+                if not is_qwen:
+                    # Qwen handles stop_sequence in logit processor, Gemma/Llama need it in pipeline
+                    pipe_kwargs["stop_sequence"] = "}\n"
+                    
+                pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, **pipe_kwargs)
                 return HuggingFacePipeline(pipeline=pipe)
             except Exception as e:
                 print(f"CRITICAL INITIALIZATION ERROR: {e}")
