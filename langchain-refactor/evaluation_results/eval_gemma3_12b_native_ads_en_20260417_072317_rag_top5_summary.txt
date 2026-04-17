@@ -20,7 +20,7 @@ NLP Metrics (Reasoning Quality):
   BLEU: 0.3464
   METEOR: 0.4751
 
-Perplexity: 1326540.33
+Perplexity: 1.01
 
 Per-Class Accuracy:
   native ads: 99.05%

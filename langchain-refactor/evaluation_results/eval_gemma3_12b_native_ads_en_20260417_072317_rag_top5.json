@@ -18,7 +18,7 @@
     "bleu": 0.3464392724750171,
     "meteor": 0.47513192614373473
   },
-  "avg_perplexity": 1326540.32945,
+  "avg_perplexity": 1.0072293829917909,
   "llm_judge": {
     "average_rating": 3.99,
     "num_samples_judged": 100,
