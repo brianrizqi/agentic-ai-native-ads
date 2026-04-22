@@ -520,11 +520,16 @@ def evaluate_zero_shot(model_name: str, test_data: List[Dict], **kwargs) -> Dict
         lang = sample.get('lang', 'id').lower()
 
         try:
+            # Phase 42: Increase tokens for reasoning models (DeepSeek-R1)
+            eff_max_tokens = kwargs.get('max_new_tokens', 64)
+            if "r1" in model_name.lower() and eff_max_tokens < 512:
+                eff_max_tokens = 512
+                
             pred = zero_shot_classify(
                 model, tokenizer,
                 article_text=sample['input'],
                 lang=lang,
-                max_new_tokens=kwargs.get('max_new_tokens', 64),
+                max_new_tokens=eff_max_tokens,
                 model_name=model_name
             )
         except Exception as e:
@@ -976,8 +981,8 @@ def main():
                         help='Filter by language (en / id)')
     parser.add_argument('--gpu-id', type=int, default=0,
                         help='GPU ID (default: 0)')
-    parser.add_argument('--max-new-tokens', type=int, default=64,
-                        help='Max tokens to generate per sample (default: 64)')
+    parser.add_argument('--max-new-tokens', type=int, default=512,
+                        help='Max tokens to generate per sample (default: 512)')
     parser.add_argument('--max-seq-length', type=int, default=2048,
                         help='Max sequence length for Unsloth (default: 2048)')
     args = parser.parse_args()
