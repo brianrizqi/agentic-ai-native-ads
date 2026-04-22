@@ -96,15 +96,27 @@ def _find_python_h_dir():
         os.path.join(inc_dir, pyver) if inc_dir else None,
         # venv include
         os.path.join(os.environ.get("VIRTUAL_ENV", ""), "include", pyver),
-        # standard system paths
+        os.path.join(os.environ.get("VIRTUAL_ENV", ""), "include"),
+        # Multi-arch paths (Ubuntu/Debian)
+        f"/usr/include/x86_64-linux-gnu/{pyver}",
         f"/usr/include/{pyver}",
         f"/usr/local/include/{pyver}",
+        # UV paths
+        os.path.expanduser(f"~/.local/share/uv/python/cpython-{curr_v}.*/include/{pyver}"),
         # check if it's inside the executable's path (common in uv/conda)
         os.path.join(os.path.dirname(os.path.dirname(_sys.executable)), "include", pyver),
+        os.path.join(os.path.dirname(os.path.dirname(_sys.executable)), "include"),
     ]
     
-    print(f"🔍 Searching for {pyver} headers in {len(candidates)} locations...")
-    for d in candidates:
+    # Handle globbing for UV paths
+    import glob
+    expanded_candidates = []
+    for c in candidates:
+        if c and "*" in c: expanded_candidates.extend(glob.glob(c))
+        elif c: expanded_candidates.append(c)
+    
+    print(f"🔍 Searching for {pyver} headers in {len(expanded_candidates)} locations...")
+    for d in expanded_candidates:
         if d and os.path.exists(os.path.join(d, "Python.h")):
             print(f"✅ Found matching Python.h at: {d}")
             return d
