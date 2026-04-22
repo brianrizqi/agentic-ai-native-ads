@@ -85,30 +85,31 @@ def _find_python_h_dir():
     import sysconfig
     import sys as _sys
     
+    curr_v = f"{_sys.version_info.major}.{_sys.version_info.minor}"
+    pyver = f"python{curr_v}"
+    
     # 1. Ask sysconfig directly
     inc_dir = sysconfig.get_path("include")
-    if inc_dir and os.path.exists(os.path.join(inc_dir, "Python.h")):
-        return inc_dir
-        
-    # 2. Try variants of the path (some venvs have it one level up)
-    pyver = f"python{_sys.version_info.major}.{_sys.version_info.minor}"
+    
     candidates = [
+        inc_dir,
         os.path.join(inc_dir, pyver) if inc_dir else None,
-        # fallback to standard places if sysconfig fails
+        # venv include
+        os.path.join(os.environ.get("VIRTUAL_ENV", ""), "include", pyver),
+        # standard system paths
         f"/usr/include/{pyver}",
         f"/usr/local/include/{pyver}",
+        # check if it's inside the executable's path (common in uv/conda)
+        os.path.join(os.path.dirname(os.path.dirname(_sys.executable)), "include", pyver),
     ]
     
+    print(f"🔍 Searching for {pyver} headers in {len(candidates)} locations...")
     for d in candidates:
         if d and os.path.exists(os.path.join(d, "Python.h")):
+            print(f"✅ Found matching Python.h at: {d}")
             return d
             
-    # 3. Last resort fallbacks (very risky, but better than nothing)
-    for v in ["3.11", "3.12", "3.10", "3.9"]:
-        d = f"/usr/include/python{v}"
-        if os.path.exists(os.path.join(d, "Python.h")):
-            return d
-            
+    print(f"❌ Could not find headers for {pyver}! Triton compilation will likely fail or use wrong version.")
     return None
 
 _PYTHON_H_DIR = _find_python_h_dir()
