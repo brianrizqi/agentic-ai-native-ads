@@ -258,44 +258,63 @@ def build_zero_shot_prompt(article_text: str, lang: str) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 
 NATIVE_ADS_PATTERNS = [
-    r"\bnative[\s_\-]*ads?\b",
-    r"\bnative[\s_\-]*advertising\b",
-    r"\biklan[\s_\-]*native\b",
-    r"\bsponsor(ed)?\b",
-    r"\bpromosi(onal)?\b",
+    r"native[\s_\-]*ads?",
+    r"native[\s_\-]*advertising",
+    r"iklan[\s_\-]*native",
+    r"sponsor(?:ed)?",
+    r"promosi(?:onal)?",
+    r"advertorial",
 ]
 
 PURE_NEWS_PATTERNS = [
-    r"\bpure[\s_\-]*news\b",
-    r"\bberita[\s_\-]*murni\b",
-    r"\blegitimate[\s_]*editorial\b",
-    r"\bbukan[\s_]*iklan\b",
+    r"pure[\s_\-]*news",
+    r"berita[\s_\-]*murni",
+    r"legitimate[\s_]*editorial",
+    r"bukan[\s_]*iklan",
+    r"news[\s_\-]*only",
 ]
 
 
-def parse_zero_shot_label(raw_output: str, lang: str) -> str:
+def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> str:
     """
-    Extract predicted label from raw model output.
-    Returns 'native ads', 'berita murni', or 'Unknown'.
-    Uses normalized strings so downstream metrics match evaluate_model.py label space.
+    Truly dynamic label parsing that adapts to different model 'personalities':
+    - DeepSeek-R1: Handles <thought> tags and verbosity.
+    - Qwen/Gemma: Handles concatenated words (PureNews) and instruction repetition.
     """
-    text = raw_output.lower().strip()
+    text = raw_output.lower()
+    model_name_low = model_name.lower()
 
-    # Native ads check first (more distinctive patterns)
-    for p in NATIVE_ADS_PATTERNS:
-        if re.search(p, text):
-            return "native ads" if lang == "id" else "Native Ads"
+    # 1. Handle Reasoning Models (DeepSeek-R1)
+    if "</thought>" in text:
+        text = text.split("</thought>")[-1]
+    elif "r1" in model_name_low and "think" in text:
+        # Fallback if tags are missing but thinking is present
+        parts = text.split("actual answer:")
+        if len(parts) > 1: text = parts[-1]
+    
+    text = text.strip()
 
-    for p in PURE_NEWS_PATTERNS:
-        if re.search(p, text):
-            return "berita murni" if lang == "id" else "Pure News"
+    # 2. Aggressive Substring Matching (Handles concatenated words like 'PureNews')
+    # Order matters: check more specific phrases first
+    native_kws = ["native ads", "nativeads", "native advertising", "nativeadvertising", "iklan native", "iklannative", "advertorial", "sponsored"]
+    pure_kws   = ["berita murni", "beritamurni", "pure news", "purenews", "legitimate editorial", "jurnalistik", "bukan iklan", "bukaniklan"]
 
-    # Fallback: first meaningful token
-    first = text.split()[0] if text.split() else ""
-    if first in {"native", "iklan", "sponsored", "promosi"}:
-        return "native ads" if lang == "id" else "Native Ads"
-    if first in {"pure", "berita", "murni", "legitimate", "editorial", "news"}:
-        return "berita murni" if lang == "id" else "Pure News"
+    # 3. Dynamic Check: Last Line First (High precision)
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    if lines:
+        last_line = lines[-1]
+        if any(kw in last_line for kw in native_kws): return "native ads" if lang == "id" else "Native Ads"
+        if any(kw in last_line for kw in pure_kws): return "berita murni" if lang == "id" else "Pure News"
+
+    # 4. Global Check (High recall)
+    if any(kw in text for kw in native_kws): return "native ads" if lang == "id" else "Native Ads"
+    if any(kw in text for kw in pure_kws): return "berita murni" if lang == "id" else "Pure News"
+
+    # 5. Fuzzy Word-level Check
+    words = text.replace("-", " ").replace("_", " ").split()
+    for w in words:
+        if w in {"native", "ads", "iklan", "sponsored"}: return "native ads" if lang == "id" else "Native Ads"
+        if w in {"pure", "berita", "murni", "news"}: return "berita murni" if lang == "id" else "Pure News"
 
     return "Unknown"
 
@@ -410,6 +429,7 @@ def zero_shot_classify(
     lang: str,
     max_new_tokens: int = 64,
     max_article_chars: int = 3000,
+    model_name: str = "",
 ) -> Dict:
     """
     Run zero-shot classification on a single article.
@@ -446,7 +466,7 @@ def zero_shot_classify(
     new_ids = output_ids[0][inputs["input_ids"].shape[1]:]
     raw_text = tokenizer.decode(new_ids, skip_special_tokens=True).strip()
 
-    label = parse_zero_shot_label(raw_text, lang)
+    label = parse_zero_shot_label(raw_text, lang, model_name=model_name)
 
     return {
         "label":     label,
@@ -505,6 +525,7 @@ def evaluate_zero_shot(model_name: str, test_data: List[Dict], **kwargs) -> Dict
                 article_text=sample['input'],
                 lang=lang,
                 max_new_tokens=kwargs.get('max_new_tokens', 64),
+                model_name=model_name
             )
         except Exception as e:
             print(f"Error on sample {i}: {e}")
