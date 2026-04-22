@@ -81,19 +81,34 @@ os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 _orig_check_call = _sp.check_call
 
 def _find_python_h_dir():
-    """Return the directory containing Python.h, searching known locations ONLY."""
-    pyver = f"python{sys.version_info.major}.{sys.version_info.minor}"
-    candidates = []
-    venv = os.environ.get("VIRTUAL_ENV")
-    if venv:
-        candidates += [os.path.join(venv, "include", pyver), os.path.join(venv, "include")]
-    conda = os.environ.get("CONDA_PREFIX")
-    if conda:
-        candidates += [os.path.join(conda, "include", pyver), os.path.join(conda, "include")]
-    candidates += [f"/usr/include/{pyver}", f"/usr/local/include/{pyver}", "/usr/include/python3.12", "/usr/include/python3.11"]
+    """Return the directory containing Python.h using sysconfig for accuracy."""
+    import sysconfig
+    import sys as _sys
+    
+    # 1. Ask sysconfig directly
+    inc_dir = sysconfig.get_path("include")
+    if inc_dir and os.path.exists(os.path.join(inc_dir, "Python.h")):
+        return inc_dir
+        
+    # 2. Try variants of the path (some venvs have it one level up)
+    pyver = f"python{_sys.version_info.major}.{_sys.version_info.minor}"
+    candidates = [
+        os.path.join(inc_dir, pyver) if inc_dir else None,
+        # fallback to standard places if sysconfig fails
+        f"/usr/include/{pyver}",
+        f"/usr/local/include/{pyver}",
+    ]
+    
     for d in candidates:
         if d and os.path.exists(os.path.join(d, "Python.h")):
             return d
+            
+    # 3. Last resort fallbacks (very risky, but better than nothing)
+    for v in ["3.11", "3.12", "3.10", "3.9"]:
+        d = f"/usr/include/python{v}"
+        if os.path.exists(os.path.join(d, "Python.h")):
+            return d
+            
     return None
 
 _PYTHON_H_DIR = _find_python_h_dir()
