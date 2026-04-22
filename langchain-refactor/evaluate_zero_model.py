@@ -278,45 +278,61 @@ PURE_NEWS_PATTERNS = [
 def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> str:
     """
     Truly dynamic label parsing that adapts to different model 'personalities':
-    - DeepSeek-R1: Handles <thought> tags and verbosity.
+    - DeepSeek-R1: Handles <think> tags and verbosity.
     - Qwen/Gemma: Handles concatenated words (PureNews) and instruction repetition.
     """
     text = raw_output.lower()
-    model_name_low = model_name.lower()
 
-    # 1. Handle Reasoning Models (DeepSeek-R1)
-    if "</thought>" in text:
+    # Clean up common chat template tokens
+    for token in ["<|im_start|>", "<|im_end|>", "</s>", "<s>", "<pad>"]:
+        text = text.replace(token, "")
+
+    # 1. Handle Reasoning Models (DeepSeek-R1 uses <think> and </think>)
+    if "</think>" in text:
+        text = text.split("</think>")[-1]
+    elif "</thought>" in text:
         text = text.split("</thought>")[-1]
-    elif "r1" in model_name_low and "think" in text:
-        # Fallback if tags are missing but thinking is present
-        parts = text.split("actual answer:")
-        if len(parts) > 1: text = parts[-1]
+    elif "<think>" in text: # Has start tag but no end tag (cut off)
+        # Check if the answer is BEFORE the think tag (sometimes happens)
+        before_think = text.split("<think>")[0].strip()
+        if before_think:
+            text = before_think
+        else:
+            return "Unknown" # Cut off during thinking
     
     text = text.strip()
 
-    # 2. Aggressive Substring Matching (Handles concatenated words like 'PureNews')
-    # Order matters: check more specific phrases first
+    # 2. Strict Pattern Matching (Priority 1)
+    # Models often output "Label: native ads" or "**Label:** Pure News"
+    strict_match = re.search(r'(?i)(?:label|jawaban|kategori|prediction|answer)\s*(?:is|:|=|-)?\s*\*?\[?[\'"]?(native ads|native advertising|iklan native|berita murni|pure news)[\'"]?\]?\*?', text)
+    if strict_match:
+        matched_val = strict_match.group(1).lower()
+        if "native" in matched_val or "iklan" in matched_val:
+            return "native ads" if lang == "id" else "Native Ads"
+        if "murni" in matched_val or "pure" in matched_val:
+            return "berita murni" if lang == "id" else "Pure News"
+
+    # 3. Aggressive Substring Matching
     native_kws = ["native ads", "nativeads", "native advertising", "nativeadvertising", "iklan native", "iklannative", "advertorial", "sponsored"]
     pure_kws   = ["berita murni", "beritamurni", "pure news", "purenews", "legitimate editorial", "jurnalistik", "bukan iklan", "bukaniklan"]
 
-    # 3. Dynamic Check: Last Line First (High precision)
-    lines = [line.strip() for line in text.split('\n') if line.strip()]
-    if lines:
-        last_line = lines[-1]
-        if any(kw in last_line for kw in native_kws): return "native ads" if lang == "id" else "Native Ads"
-        if any(kw in last_line for kw in pure_kws): return "berita murni" if lang == "id" else "Pure News"
+    # 4. Dynamic Check: Find the LAST occurrence of either keyword set
+    # This prevents false positives where the model discusses "native ads" in reasoning but concludes "pure news".
+    last_native_idx = max([text.rfind(kw) for kw in native_kws] + [-1])
+    last_pure_idx   = max([text.rfind(kw) for kw in pure_kws] + [-1])
 
-    # 4. Global Check (High recall)
-    if any(kw in text for kw in native_kws): return "native ads" if lang == "id" else "Native Ads"
-    if any(kw in text for kw in pure_kws): return "berita murni" if lang == "id" else "Pure News"
+    if last_native_idx == -1 and last_pure_idx == -1:
+        # 5. Fuzzy Word-level Check
+        words = text.replace("-", " ").replace("_", " ").split()
+        for w in reversed(words): # Check from end to start
+            if w in {"native", "ads", "iklan", "sponsored"}: return "native ads" if lang == "id" else "Native Ads"
+            if w in {"pure", "berita", "murni", "news"}: return "berita murni" if lang == "id" else "Pure News"
+        return "Unknown"
 
-    # 5. Fuzzy Word-level Check
-    words = text.replace("-", " ").replace("_", " ").split()
-    for w in words:
-        if w in {"native", "ads", "iklan", "sponsored"}: return "native ads" if lang == "id" else "Native Ads"
-        if w in {"pure", "berita", "murni", "news"}: return "berita murni" if lang == "id" else "Pure News"
-
-    return "Unknown"
+    if last_native_idx > last_pure_idx:
+        return "native ads" if lang == "id" else "Native Ads"
+    else:
+        return "berita murni" if lang == "id" else "Pure News"
 
 
 def normalize_gt_label(raw_label: str) -> str:
@@ -469,7 +485,8 @@ def zero_shot_classify(
 
     # Decode only newly generated tokens
     new_ids = output_ids[0][inputs["input_ids"].shape[1]:]
-    raw_text = tokenizer.decode(new_ids, skip_special_tokens=True).strip()
+    # Preserve special tokens so we can parse <think> tags from reasoning models
+    raw_text = tokenizer.decode(new_ids, skip_special_tokens=False).strip()
 
     label = parse_zero_shot_label(raw_text, lang, model_name=model_name)
 
