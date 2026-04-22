@@ -30,10 +30,17 @@ Recommended models (run each separately):
 import os
 import sys
 import json
+import re
 import shutil
+import random
+import time
 import subprocess as _sp
 import sysconfig as _sc
 from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Tuple, Optional
+from collections import defaultdict
+import numpy as np
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Fix for Triton compiler error: monkey-patch triton to use ziglang if no system compiler
@@ -124,11 +131,6 @@ from transformers import AutoTokenizer
 HAS_UNSLOTH = True
 
 import argparse
-import time
-from typing import Dict, List, Tuple, Optional
-from collections import defaultdict
-import numpy as np
-from datetime import datetime
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Optional dependencies — same guard pattern as evaluate_model.py
@@ -282,7 +284,6 @@ def load_test_set(dataset_path: str, num_samples: int = 200, lang_filter: str = 
     if lang_filter:
         data = [item for item in data if item.get('lang') == lang_filter.lower()]
         print(f"🌍 Filtered by language: {lang_filter} ({len(data)} samples found)")
-        import random
         random.seed(42)
         random.shuffle(data)
         test_data = data[:num_samples]
@@ -298,7 +299,6 @@ def load_test_set(dataset_path: str, num_samples: int = 200, lang_filter: str = 
 
         print(f"🌍 No language filter. Sampling proportionally from {len(lang_groups)} language(s)...")
 
-        import random
         random.seed(42)
 
         for lang, items in lang_groups.items():
@@ -317,7 +317,6 @@ def load_test_set(dataset_path: str, num_samples: int = 200, lang_filter: str = 
             test_data.extend(remaining[:diff])
 
     # Final shuffle — same seed as evaluate_model.py
-    import random
     random.seed(42)
     random.shuffle(test_data)
 
