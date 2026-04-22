@@ -37,6 +37,12 @@ import time
 import subprocess as _sp
 import sysconfig as _sc
 from pathlib import Path
+
+# Force UTF-8 for stdout/stderr in supercomputer environments
+if sys.stdout.encoding != 'utf-8':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 from datetime import datetime
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
@@ -652,7 +658,7 @@ def llm_as_judge(
             temperature=0,
             default_headers={
                 "HTTP-Referer": "https://github.com/brianrizqi/agentic-ai-native-ads",
-                "X-Title": "Agentic Native Ads Evaluation — Scenario 0 Zero-Shot",
+                "X-Title": "Agentic Native Ads Evaluation - Scenario 0 Zero-Shot",
             }
         )
     else:
