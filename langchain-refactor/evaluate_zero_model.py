@@ -27,13 +27,104 @@ Recommended models (run each separately):
     deepseek-ai/DeepSeek-R1-Distill-Llama-8B
 """
 
-import json
-import argparse
 import os
-import re
-import time
-from pathlib import Path
 import sys
+import json
+import shutil
+import subprocess as _sp
+import sysconfig as _sc
+from pathlib import Path
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Fix for Triton compiler error: monkey-patch triton to use ziglang if no system compiler
+# ─────────────────────────────────────────────────────────────────────────────
+
+_ZIG_BAD_FLAGS = {"-Wno-psabi", "-Wno-format-truncation",
+                  "-mno-avx512f", "-fno-semantic-interposition"}
+
+def _find_cc():
+    """Find first available C compiler, trying ziglang as last resort."""
+    for _c in ["gcc", "clang", "cc", "g++",
+               "/usr/bin/gcc", "/usr/bin/clang",
+               _sc.get_config_var("CC")]:
+        if _c and shutil.which(str(_c).split()[0]):
+            return str(_c).split()[0]
+    # Try ziglang (pip install ziglang)
+    try:
+        import ziglang as _zig
+        _zig_bin = os.path.join(os.path.dirname(_zig.__file__), "zig")
+        if os.path.exists(_zig_bin):
+            _wrapper = "/tmp/_zig_cc"
+            with open(_wrapper, "w") as _f:
+                _f.write(f'#!/bin/sh\nexec "{_zig_bin}" cc "$@"\n')
+            os.chmod(_wrapper, 0o755)
+            print(f"✅ Triton will use ziglang C compiler via {_wrapper}")
+            return _wrapper
+    except ImportError:
+        pass
+    return None
+
+_CC = _find_cc()
+if _CC:
+    os.environ["CC"] = _CC
+
+# Fix CUDA memory fragmentation
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+
+_orig_check_call = _sp.check_call
+
+def _find_python_h_dir():
+    """Return the directory containing Python.h, searching known locations ONLY."""
+    pyver = f"python{sys.version_info.major}.{sys.version_info.minor}"
+    candidates = []
+    venv = os.environ.get("VIRTUAL_ENV")
+    if venv:
+        candidates += [os.path.join(venv, "include", pyver), os.path.join(venv, "include")]
+    conda = os.environ.get("CONDA_PREFIX")
+    if conda:
+        candidates += [os.path.join(conda, "include", pyver), os.path.join(conda, "include")]
+    candidates += [f"/usr/include/{pyver}", f"/usr/local/include/{pyver}", "/usr/include/python3.12", "/usr/include/python3.11"]
+    for d in candidates:
+        if d and os.path.exists(os.path.join(d, "Python.h")):
+            return d
+    return None
+
+_PYTHON_H_DIR = _find_python_h_dir()
+
+import re as _re
+_PYTHON_INC_RE = _re.compile(r"-I.*[/\\]python3\.\d+/?$")
+
+def _filtered_check_call(cmd, *args, **kwargs):
+    if isinstance(cmd, list) and _CC and "zig" in _CC:
+        new_cmd = []
+        _py_replaced = False
+        for x in cmd:
+            if x in _ZIG_BAD_FLAGS: continue
+            if _PYTHON_H_DIR and _PYTHON_INC_RE.match(x):
+                if not _py_replaced:
+                    new_cmd.append(f"-I{_PYTHON_H_DIR}")
+                    _py_replaced = True
+            else:
+                new_cmd.append(x)
+        if _PYTHON_H_DIR and f"-I{_PYTHON_H_DIR}" not in new_cmd:
+            new_cmd.append(f"-I{_PYTHON_H_DIR}")
+        cmd = new_cmd
+    return _orig_check_call(cmd, *args, **kwargs)
+
+_sp.check_call = _filtered_check_call
+
+# ─────────────────────────────────────────────────────────────────────────────
+# IMPORT UNSLOTH FIRST (as requested by UserWarning)
+# ─────────────────────────────────────────────────────────────────────────────
+from unsloth import FastLanguageModel
+import torch
+from transformers import AutoTokenizer
+
+# HAS_UNSLOTH is now assumed True since we're using Unsloth exclusively
+HAS_UNSLOTH = True
+
+import argparse
+import time
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
 import numpy as np
@@ -81,12 +172,6 @@ except ImportError:
     HAS_NLP_METRICS = False
     print("Warning: nltk not installed. pip install nltk")
 
-from unsloth import FastLanguageModel
-import torch
-from transformers import AutoTokenizer
-
-# HAS_UNSLOTH is now assumed True since we're using Unsloth exclusively
-HAS_UNSLOTH = True
 
 
 # ─────────────────────────────────────────────────────────────────────────────
