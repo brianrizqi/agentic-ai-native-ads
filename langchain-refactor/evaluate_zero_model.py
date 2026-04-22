@@ -125,6 +125,13 @@ def _find_python_h_dir():
 
 _PYTHON_H_DIR = _find_python_h_dir()
 
+if _PYTHON_H_DIR:
+    print(f"✅ Found Python.h at: {_PYTHON_H_DIR}")
+    # Set CPATH globally so subprocesses (Triton workers) find it automatically
+    os.environ["CPATH"] = os.environ.get("CPATH", "") + ":" + _PYTHON_H_DIR
+else:
+    print("⚠️  Python.h not found — triton compilation may fail.")
+
 import re as _re
 _PYTHON_INC_RE = _re.compile(r"-I.*[/\\]python3\.\d+/?$")
 
@@ -146,6 +153,7 @@ def _filtered_check_call(cmd, *args, **kwargs):
     return _orig_check_call(cmd, *args, **kwargs)
 
 _sp.check_call = _filtered_check_call
+print(f"✅ Patched subprocess.check_call (CC={_CC or 'not found'}, CPATH={os.environ.get('CPATH')})")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # IMPORT UNSLOTH FIRST (as requested by UserWarning)
