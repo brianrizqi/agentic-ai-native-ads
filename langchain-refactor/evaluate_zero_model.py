@@ -441,11 +441,16 @@ def zero_shot_classify(
 
     prompt = build_zero_shot_prompt(article_text, lang)
 
+    # Use chat template if available (crucial for models like DeepSeek-R1, Qwen-IT, Gemma-IT)
+    if hasattr(tokenizer, "apply_chat_template") and tokenizer.chat_template:
+        messages = [{"role": "user", "content": prompt}]
+        prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
         truncation=True,
-        max_length=1024,
+        max_length=2048, # Increased for chat template overhead
         padding=False,
     )
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
