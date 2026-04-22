@@ -92,6 +92,8 @@ def _find_python_h_dir():
     inc_dir = sysconfig.get_path("include")
     
     candidates = [
+        # The specific path found on your supercomputer
+        "/drive0-storage/brian/agentic-ai-native-ads/venv/lib/python3.10/site-packages/tensorflow/include/external/local_config_python/python_include",
         inc_dir,
         os.path.join(inc_dir, pyver) if inc_dir else None,
         # venv include
@@ -103,9 +105,6 @@ def _find_python_h_dir():
         f"/usr/local/include/{pyver}",
         # UV paths
         os.path.expanduser(f"~/.local/share/uv/python/cpython-{curr_v}.*/include/{pyver}"),
-        # check if it's inside the executable's path (common in uv/conda)
-        os.path.join(os.path.dirname(os.path.dirname(_sys.executable)), "include", pyver),
-        os.path.join(os.path.dirname(os.path.dirname(_sys.executable)), "include"),
     ]
     
     # Handle globbing for UV paths
