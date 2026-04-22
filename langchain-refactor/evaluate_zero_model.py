@@ -5,6 +5,8 @@ Mirror of evaluate_model.py — same load_test_set(), same metrics pipeline,
 same LLM-as-a-Judge, same output format — but loads models via Unsloth
 (off-the-shelf, no LoRA, no fine-tuned weights) and uses a minimal binary prompt.
 
+REQUIRED: unsloth (optimized for inference)
+
 Designed to establish a zero-shot baseline comparable to Hu et al. (AAAI 2024)
 who showed GPT-3.5 underperforms fine-tuned BERT across all prompting strategies.
 
@@ -79,23 +81,12 @@ except ImportError:
     HAS_NLP_METRICS = False
     print("Warning: nltk not installed. pip install nltk")
 
-try:
-    from unsloth import FastLanguageModel
-    HAS_UNSLOTH = True
-except ImportError:
-    HAS_UNSLOTH = False
-    print("Warning: unsloth not installed. pip install unsloth")
-    print("Falling back to standard HuggingFace transformers.")
+from unsloth import FastLanguageModel
+import torch
+from transformers import AutoTokenizer
 
-if not HAS_UNSLOTH:
-    try:
-        import torch
-        from transformers import AutoTokenizer, AutoModelForCausalLM
-        HAS_TRANSFORMERS = True
-    except ImportError:
-        HAS_TRANSFORMERS = False
-        print("Error: Neither unsloth nor transformers is installed.")
-        sys.exit(1)
+# HAS_UNSLOTH is now assumed True since we're using Unsloth exclusively
+HAS_UNSLOTH = True
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -265,36 +256,16 @@ def load_test_set(dataset_path: str, num_samples: int = 200, lang_filter: str = 
 def load_model_unsloth(model_name: str, max_seq_length: int = 2048, gpu_id: int = 0):
     """
     Load off-the-shelf model via Unsloth (no LoRA, no fine-tuned weights).
-    Falls back to standard HuggingFace if Unsloth is not available.
     """
-    import torch
-
-    if HAS_UNSLOTH:
-        print(f"🦥 Loading via Unsloth: {model_name}")
-        model, tokenizer = FastLanguageModel.from_pretrained(
-            model_name=model_name,
-            max_seq_length=max_seq_length,
-            dtype=None,          # Auto-detect (bfloat16 on Ampere+, float16 otherwise)
-            load_in_4bit=True,   # 4-bit quant — same memory footprint as fine-tuned eval
-        )
-        FastLanguageModel.for_inference(model)
-        print(f"✅ Unsloth model loaded (4-bit, inference mode)")
-
-    else:
-        print(f"🤗 Unsloth not found. Loading via HuggingFace transformers: {model_name}")
-        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-        if tokenizer.pad_token is None:
-            tokenizer.pad_token = tokenizer.eos_token
-
-        device = f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu"
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            torch_dtype=torch.float16,
-            device_map="auto",
-            trust_remote_code=True,
-        )
-        model.eval()
-        print(f"✅ HuggingFace model loaded (float16, device_map=auto)")
+    print(f"🦥 Loading via Unsloth: {model_name}")
+    model, tokenizer = FastLanguageModel.from_pretrained(
+        model_name=model_name,
+        max_seq_length=max_seq_length,
+        dtype=None,          # Auto-detect (bfloat16 on Ampere+, float16 otherwise)
+        load_in_4bit=True,   # 4-bit quant — same memory footprint as fine-tuned eval
+    )
+    FastLanguageModel.for_inference(model)
+    print(f"✅ Unsloth model loaded (4-bit, inference mode)")
 
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -305,8 +276,6 @@ def load_model_unsloth(model_name: str, max_seq_length: int = 2048, gpu_id: int 
 # ─────────────────────────────────────────────────────────────────────────────
 # Zero-shot inference
 # ─────────────────────────────────────────────────────────────────────────────
-
-import torch
 
 @torch.no_grad()
 def zero_shot_classify(
