@@ -1,0 +1,30 @@
+================================================================================
+SCENARIO 0 — ZERO-SHOT EVALUATION SUMMARY
+================================================================================
+
+Model:     meta-llama/Llama-3.1-8B-Instruct
+Timestamp: 20260423_201408
+Dataset:   ../data/llm_dataset_12k_refined_full.json
+Samples:   200
+Mode:      zero-shot | no fine-tuning | no RAG | no domain prompt
+
+Overall Metrics:
+  Accuracy: 75.00%
+  Correct:  150/200
+
+BERTScore:
+  Precision: 0.558
+  Recall:    0.641
+  F1:        0.596
+
+NLP Metrics (Reasoning Quality):
+  BLEU:   0.0005
+  METEOR: 0.0162
+
+Per-Class Accuracy:
+  native ads: 75.24%
+  berita murni: 74.74%
+
+LLM-as-a-Judge:
+  Average Rating:  3.04/5.0
+  Samples Judged:  100
