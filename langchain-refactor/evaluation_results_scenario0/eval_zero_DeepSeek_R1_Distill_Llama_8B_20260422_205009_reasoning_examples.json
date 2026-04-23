@@ -1,0 +1,81 @@
+{
+  "_description": "Zero-shot qualitative reasoning examples (Scenario 0). good=score 4-5, borderline=score 3, bad=score 1-2.",
+  "summary": {
+    "total_judged": 88,
+    "good_count": 71,
+    "borderline_count": 0,
+    "bad_count": 17,
+    "avg_judge_score": 3.966
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as pure news based on clear indicators such as the AP attribution, the focus on a player's injury without any promotional content, and the absence of commercial intent. The reasoning is thorough and logically supports the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "Unknown",
+      "correct": false,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "ĊOkay,ĠsoĠIĠneedĠtoĠfigureĠoutĠwhetherĠtheĠgivenĠarticleĠisĠnativeĠadvertisingĠorĠpureĠnews.ĠLetĠmeĠstartĠbyĠunderstandingĠbothĠterms.ĊĊNativeĠadvertisingĠisĠsponsoredĠcontentĠthat'sĠdesignedĠtoĠlookĠlikeĠeditorialĠcontent,ĠoftenĠblendingĠinĠwithĠtheĠsurroundingĠinformationĠtoĠserveĠaĠcommercialĠpurpose.ĠIt'sĠusuallyĠlabeledĠasĠsuchĠbutĠcanĠsometimesĠbeĠsubtle.ĠOnĠtheĠotherĠhand,ĠpureĠnewsĠisĠlegitimateĠreportingĠwithoutĠanyĠcommercialĠintent,ĠjustĠinformativeĠandĠfactual.ĊĊLookingĠatĠtheĠprovid",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identifies the article as 'Berita Murni' based on its content, which is a factual report about archaeological findings without any commercial intent. The reasoning provided is logical and accurately reflects the nature of the article, distinguishing it from native ads.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "Unknown",
+      "correct": false,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "ĊĊ</think>ĊĊBerdasarkanĠartikelĠtersebut,ĠNativeĠAdsĠadalahĠkontenĠberbayaniĠyangĠdirancangĠuntukĠmenyerupaiĠberitaĠeditorialĠnamunĠmemilikiĠtujuanĠkomersial.ĠBeritaĠmurniĠadalahĠlaporanĠeditorialĠyangĠtidakĠmemilikiĠtujuanĠkomersial.ĠArtikelĠyangĠditulisĠdiĠbawahĠnamaĠpenulisĠtertentuĠdiĠZamanĠPerungguĠdapatĠdipastikanĠbahwaĠperempuanĠEropaĠTengahĠyangĠdiperkirakanĠhidupĠ4.000ĠtahunĠlamnyaĠmempunyaiĠrambutĠgelapĠdanĠkulitĠputih.ĠPenelitiĠmenemukanĠbahwaĠperempuanĠtersebutĠdimakamĠdenganĠlimaĠge",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as native advertising based on strong reasoning that highlights promotional elements, such as the presence of company-specific details, calls to action, and the overall tone suggesting a commercial agenda. The analysis effectively distinguishes between native ads and pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "Unknown",
+      "correct": false,
+      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "ĊOkay,ĠsoĠIĠneedĠtoĠdetermineĠwhetherĠtheĠgivenĠarticleĠisĠnativeĠadvertisingĠorĠpureĠnews.ĠLetĠmeĠstartĠbyĠunderstandingĠbothĠterms.ĊĊNativeĠadvertisingĠisĠsponsoredĠcontentĠthat'sĠdesignedĠtoĠlookĠlikeĠeditorialĠcontent,ĠwithĠaĠcommercialĠpurpose.ĠIt'sĠusuallyĠlabeledĠasĠadsĠbutĠblendsĠinĠwithĠtheĠsurroundingĠcontent.ĠOnĠtheĠotherĠhand,ĠpureĠnewsĠisĠlegitimateĠreportingĠwithoutĠanyĠcommercialĠagenda,ĠjustĠinformativeĠandĠfactual.ĊĊLookingĠatĠtheĠarticleĠprovided,ĠitĠstartsĠwithĠ\"Austin,ĠTX,ĠMa",
+      "confidence": 1.0
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as Native Ads despite it being pure news. The reasoning provided does not logically support the label and misinterprets the content, which is focused on a significant corporate event rather than promotional material.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "Unknown",
+      "correct": false,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "ĊĊ</think>ĊĊBerdasarkanĠinformasiĠyangĠdiberikan,Ġ**NativeĠAds**ĠadalahĠkontenĠberbayaniĠyangĠdirancangĠuntukĠmenyerupaiĠberitaĠeditorialĠnamunĠmemilikiĠtujuanĠkomersial.ĠBerbedaĠdariĠ**BeritaĠMurniĠ(ĠEditorial)**,ĠnativeĠadsĠiniĠmempunyaiĠagendanyaĠsendiriĠyangĠbiasanyaĠterkaitĠdenganĠbisnisĠtertentu.ĊĊContohĠperusahaanĠyangĠmenggunakanĠnativeĠadsĠadalahĠ**Carvana**,ĠsebuahĠperusahaanĠmobilĠbekasĠonlineĠyangĠmemilikiĠsekitarĠ2.500Ġkaryawan.ĠPerusahaanĠiniĠmelakukanĠpemutusanĠhubunganĠkerjasamaĠ",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly identifies the article as native ads, while the ground truth is that it is editorial content. The reasoning provided does not logically support the label and fails to recognize the educational intent of the article.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "Unknown",
+      "correct": false,
+      "article_preview": "Sebagai contoh, teori aljabar, operasi hitung bilangan, operasi hitung, bangun ruang dan geometri, fungsi, hingga kalkulus. Jangankan untuk memecahkannya, membaca rumusnya saja sudah terasa memusingka",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "ĊĊ</think>ĊĊBerdasarkanĠpertanyaanĠAnda,Ġ\"ApakahĠartikelĠtersebutĠmerupakanĠnativeĠadsĠatauĠberitaĠeditorial?\"ĠdanĠmemberikanĠcontohĠartikelĠtentangĠmatematika,ĠterutamaĠuntukĠmembantuĠpelajar,ĠkhususnyaĠremaja.ĠArtikelĠtersebutĠdisebutkanĠsebagaiĠ**nativeĠads**ĠjikaĠmemilikiĠtujuanĠkomersial,ĠsedangkanĠ**beritaĠeditorial**ĠbiasanyaĠtidakĠmemilikiĠtujuanĠkomersial.ĊĊ###ĠPenjelasan:Ċ1.Ġ**NativeĠAds**:ĠKontenĠyangĠdirancangĠuntukĠmenampilkanĠiklanĠdalamĠbentukĠyangĠsesuaiĠdenganĠkontenĠsekitarnya.",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a factual news report about a family event. The reasoning provided does not align with the classification, as it fails to recognize the absence of commercial intent and promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Putri pertama Menpan-RB Tjahjo Kumolo, Ajeng mengatakan, ayahnya meninggal dunia pada pukul 11.10 WIB, Jumat (1/7/2022). Ajeng memohon agar kesalahan Tjahjo semasa hidup dimaafka",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "ĊOkay,ĠsoĠI'mĠtryingĠtoĠfigureĠoutĠwhetherĠtheĠarticleĠisĠaĠnativeĠadĠorĠanĠeditorial.ĠTheĠuserĠprovidedĠsomeĠtextĠinĠbothĠlanguagesĠandĠmentionedĠthatĠnativeĠadsĠareĠcommercialĠcontentĠdesignedĠtoĠlookĠlikeĠeditorialĠarticles,ĠwhileĠeditorialsĠareĠnon-commercialĠandĠdon'tĠhaveĠaĠcommercialĠintent.ĊĊFirst,ĠI'llĠreadĠthroughĠtheĠprovidedĠtextĠcarefully.ĠIt'sĠaboutĠaĠfatherĠaskingĠforĠforgivenessĠfromĠhisĠchildrenĠduringĠaĠgathering.ĠItĠmentionsĠtheĠdateĠ(JulyĠ1,Ġ2022)ĠandĠtheĠlocationĠ(Jakarta),Ġ",
+      "confidence": 1.0
+    }
+  ]
+}

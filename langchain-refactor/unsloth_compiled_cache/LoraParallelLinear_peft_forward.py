@@ -1,6 +1,6 @@
 """
-2026.2.1
-2026.2.1
+2026.4.8
+2026.4.6
 5.3.0
 0.24.0
 __UNSLOTH_VERSIONING__
@@ -86,7 +86,7 @@ def unsloth_forward(self, x: torch.Tensor, *args: Any, **kwargs: Any):
             dropout = self.lora_dropout[active_adapter]
             scaling = self.scaling[active_adapter]
             if not torch.is_autocast_enabled(): result, x = result.to(lora_A.weight.dtype), x.to(lora_A.weight.dtype)
-            return lora_forward(result, lora_A, lora_B, dropout, x, scaling)
+            return lora_forward(result, lora_A, lora_B, dropout, x, scaling).to(torch_result_dtype)
 
         result = result.to(torch_result_dtype)
     return result, bias

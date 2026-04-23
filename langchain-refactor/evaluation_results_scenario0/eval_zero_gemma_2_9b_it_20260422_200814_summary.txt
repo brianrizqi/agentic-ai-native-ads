@@ -1,0 +1,30 @@
+================================================================================
+SCENARIO 0 — ZERO-SHOT EVALUATION SUMMARY
+================================================================================
+
+Model:     google/gemma-2-9b-it
+Timestamp: 20260422_200814
+Dataset:   ../data/llm_dataset_12k_refined_full.json
+Samples:   200
+Mode:      zero-shot | no fine-tuning | no RAG | no domain prompt
+
+Overall Metrics:
+  Accuracy: 66.50%
+  Correct:  133/200
+
+BERTScore:
+  Precision: 0.643
+  Recall:    0.704
+  F1:        0.671
+
+NLP Metrics (Reasoning Quality):
+  BLEU:   0.0044
+  METEOR: 0.1061
+
+Per-Class Accuracy:
+  native ads: 78.10%
+  berita murni: 53.68%
+
+LLM-as-a-Judge:
+  Average Rating:  3.10/5.0
+  Samples Judged:  100

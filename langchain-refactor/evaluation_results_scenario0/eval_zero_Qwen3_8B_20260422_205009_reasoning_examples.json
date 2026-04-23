@@ -1,0 +1,104 @@
+{
+  "_description": "Zero-shot qualitative reasoning examples (Scenario 0). good=score 4-5, borderline=score 3, bad=score 1-2.",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 87,
+    "borderline_count": 2,
+    "bad_count": 11,
+    "avg_judge_score": 4.04
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on a thorough analysis of the content, which focuses on a government policy change without any commercial intent or promotional tone. The reasoning is logical and well-supported, highlighting the absence of advertisements or product promotions.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Seperti diketahui, Undang Undang (UU) Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP) mengamanatkan pemberlakuan tarif PPN sebesar 11 persen mulai Jumat (1/4/2022).Kenaikan PPN sebes",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "<think>\nOkay, let's see. I need to determine if the given article is a native ad or pure news. The user provided definitions: native ads are paid content that looks like editorial but have commercial purposes, while pure news is an editorial report without commercial agendas.\n\nFirst, I'll read through the article carefully. The article discusses the Indonesian tax law (UU HPP) and the increase in PPN (Value Added Tax) from 10% to 11% starting April 2022. It mentions concerns about inflation and ",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its informative content about KAI's transportation initiatives, with no commercial intent or promotional tone present. The reasoning provided is logical and supports the classification effectively.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Selain itu, konektivitas antarmoda yang baik juga diharapkan dapat meningkatkan jumlah pengguna transportasi umum.Salah satu upaya yang dilakukan KAI untuk mewujudkan hal tersebut adalah dengan melaku",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "<think>\nOkay, let's tackle this query. The user wants to determine if the given article is a native ad or pure news. First, I need to recall the definitions provided. Native ads are paid content designed to look like editorial news but have commercial purposes. Pure news is an editorial report without commercial agendas.\n\nLooking at the article, it discusses KAI's efforts in improving station areas and integrating multimodal transportation. It mentions events like the resumption of station renov",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its factual reporting of government actions in response to community concerns, with no promotional content or commercial intent present.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Peninjauan tersebut merupakan respons Pemerintah Kabupaten (Pemkab) Kediri atas berbagai keluhan warga setempat, baik yang disampaikan melalui pesan singkat di media sosial maupun secara langsung.Hani",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "<think>\nOkay, let's tackle this. The user wants to know if the given article is a native ad or pure news. First, I need to recall the definitions provided. Native ads are paid content designed to look like editorial news but have commercial purposes. Pure news is an editorial report without commercial intent.\n\nLooking at the article, it starts by mentioning the government of Kediri County responding to complaints from residents. There's a quote from Hanindhito, the Bupati, discussing issues with",
+      "confidence": 1.0
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as 'berita murni,' but the reasoning is somewhat generic and does not fully address the promotional tone present in the call to action. While the article discusses a government program, the presence of a promotional element suggests a more nuanced classification could be warranted.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Melalui Kartu Prakerja, pemerintah memberikan bantuan insentif bagi masyarakat yang sudah memasuki usia produktif tetapi belum kunjung mendapatkan pekerjaan.Kesempatan ini membuat banyak masyarakat in",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "<think>\nOkay, let's tackle this query. The user wants to determine if the given article is a native ad or pure news. First, I need to recall the definitions provided. Native ads are paid content designed to look like editorial news but have commercial purposes. Pure news is an editorial report without commercial intent.\n\nLooking at the article, it's about the Kartu Prakerja program by the government. It explains how to apply, mentions the website, and details the process. The tone seems informat",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model's reasoning identifies key elements of the article that suggest it is a corporate press release, which aligns with the characteristics of native advertising. However, it does not definitively conclude that it is native advertising, leading to a partially correct classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "Unknown",
+      "correct": false,
+      "article_preview": "Blast Furnace Shutdown Completed; Fully Transitioned to EAF Steelmaking\n\nFourth Quarter Results In-Line with Previously Announced Expectations\n\nSAULT STE. MARIE, Ontario, March 11, 2026 (GLOBE NEWSWIR",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "<think>\nOkay, let's see. I need to figure out if this article is native advertising or pure news. The user provided definitions: native ads are sponsored content that looks like editorial but have a commercial purpose, while pure news is unbiased reporting without any commercial agenda.\n\nLooking at the article, it starts with \"Blast Furnace Shutdown Completed; Fully Transitioned to EAF Steelmaking\" which sounds like a company update. Then there's info about Algoma Steel Group Inc., their financi",
+      "confidence": 1.0
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as native ads instead of pure news. While it identified some promotional elements, the core content is an opinion piece discussing Oscar predictions, which aligns more with pure news. The reasoning lacks depth and fails to adequately differentiate between editorial content and promotional intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Last year, I wrote that picking Oscar winners was a mug’s game. This year, figuring out the favourites in the major categories — and also who’s been gaining on them — has gotten downright ugly. So, fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "<think>\nOkay, let's tackle this. The user wants to know if the given article is native advertising or pure news. First, I need to recall the definitions provided. Native advertising is sponsored content that looks like editorial reporting but has a commercial purpose. Pure news is unbiased, editorial reporting without any commercial agenda.\n\nLooking at the article, it starts with the author mentioning they wrote about Oscar winners before. Then they list nominees for major categories, including ",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model's reasoning is confused and does not clearly support a definitive classification. It oscillates between identifying the content as native advertising and pure news without a strong conclusion. The presence of a press release format and self-promotion indicates a commercial agenda, aligning more with native ads, but the reasoning lacks clarity and depth.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "Unknown",
+      "correct": false,
+      "article_preview": "MONCTON, New Brunswick, Feb. 25, 2026 (GLOBE NEWSWIRE) — Major Drilling Group International Inc. (“Major Drilling” or the “Company”) (TSX: MDI), the largest provider of drilling services to the mining",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "<think>\nOkay, let's see. I need to figure out if this article is native advertising or pure news. The user provided definitions: native ads are sponsored content that looks like editorial but has a commercial purpose, while pure news is unbiased reporting without commercial agendas.\n\nLooking at the article, it starts with a press release from Major Drilling Group International Inc., mentioning their Q3 2026 results. They quote the CEO talking about increased financing activity, exploration budge",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 2,
+      "judge_justification": "The model incorrectly classified the article as pure news instead of native ads. While the reasoning discusses the lack of overt promotional language, it fails to recognize that the article is likely a native ad due to its focus on a specific company's performance and strategies, which can serve a commercial purpose.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VIVA– PT Bank Negara Indonesia (Persero) Tbk. atauBNI(kode saham: BBNI) melanjutkan pertumbuhan kinerja kredit usaha rakyat (KUR) yang progresif tahun ini. Hal ini sejalan dengan tren pemulihan ekonom",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "<think>\nOkay, let's see. The user wants to determine if the given article is a native ad or pure news. First, I need to recall the definitions provided. Native ads are paid content designed to look like editorial news but have commercial purposes. Pure news is an editorial report without commercial agendas.\n\nLooking at the article, it starts with \"VIVA–\" which might be the source. Then it talks about BNI's performance in KUR loans, mentioning growth percentages and quotes from a director. It dis",
+      "confidence": 1.0
+    }
+  ]
+}

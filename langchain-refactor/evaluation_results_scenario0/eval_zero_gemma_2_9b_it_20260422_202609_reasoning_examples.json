@@ -1,0 +1,81 @@
+{
+  "_description": "Zero-shot qualitative reasoning examples (Scenario 0). good=score 4-5, borderline=score 3, bad=score 1-2.",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 51,
+    "borderline_count": 0,
+    "bad_count": 49,
+    "avg_judge_score": 3.07
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the factual reporting of a sports injury, with no promotional tone or advertising elements present. The reasoning is clear and aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pure News",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on its factual content about an archaeological discovery, and the reasoning provided logically supports this classification without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "**Berita Murni**\n\n\nPenjelasan:\n\nArtikel tersebut membahas penemuan arkeologi tentang perempuan di Zaman Perunggu dan memberikan informasi faktual tentang penemuan tersebut, seperti lokasi kuburan, artefak yang ditemukan, dan analisis ilmiah yang dilakukan. Tidak ada indikasi bahwa artikel tersebut bertujuan untuk mempromosikan produk",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its factual content regarding President Jokowi's visit to Ukraine. The reasoning provided is logical and accurately reflects the absence of promotional elements, supporting the classification effectively.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Setelah menempuh perjalanan darat selama kurang lebih 11 jam dari Polandia menuju Ukraina, Presiden Jokowi Widodo mengadakan pertemuan tatap muka dengan Presiden Ukraina Volodymyr Zelensky. Apa hasil ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "**berita murni**\n\n\nPenjelasan:\n\nArtikel tersebut memuat informasi faktual tentang kunjungan Presiden Jokowi ke Ukraina, termasuk detail pertemuannya dengan Presiden Zelensky, topik pembicaraan, dan pernyataan-pernyataan resmi. Tidak ada indikasi kuat bahwa artikel tersebut bertujuan untuk mempromosikan produk atau layanan tertentu. Gaya penulisannya",
+      "confidence": 1.0
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'pure news' when it is actually a native ad promoting an event. The reasoning does not support the label, as it fails to recognize the promotional nature of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Pure News",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as pure news when it is a native ad. The reasoning does not support the label, as it fails to recognize the promotional nature of the content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "VANCOUVER, British Columbia and BOSTON, March 10, 2026 (GLOBE NEWSWIRE) — Xenon Pharmaceuticals Inc. (Nasdaq: XENE), a neuroscience-focused biopharmaceutical company dedicated to drug discovery, clini",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Pure News",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the content as 'pure news' when it is actually a native ad. The reasoning does not support the label, as it fails to recognize the promotional nature of the announcement regarding financial results.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "ACHESON, Alberta, Feb. 18, 2026 (GLOBE NEWSWIRE) — North American Construction Group Ltd. (“NACG” or “the Company”) (TSX:NOA.TO/NYSE:NOA) announced today that it will release its financial results for",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Pure News",
+      "confidence": 1.0
+    }
+  ]
+}

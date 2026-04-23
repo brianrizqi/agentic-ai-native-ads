@@ -1,0 +1,30 @@
+================================================================================
+SCENARIO 0 — ZERO-SHOT EVALUATION SUMMARY
+================================================================================
+
+Model:     Qwen/Qwen3-8B
+Timestamp: 20260422_205009
+Dataset:   ../data/llm_dataset_12k_refined_full.json
+Samples:   200
+Mode:      zero-shot | no fine-tuning | no RAG | no domain prompt
+
+Overall Metrics:
+  Accuracy: 63.50%
+  Correct:  127/200
+
+BERTScore:
+  Precision: 0.541
+  Recall:    0.680
+  F1:        0.602
+
+NLP Metrics (Reasoning Quality):
+  BLEU:   0.0011
+  METEOR: 0.0544
+
+Per-Class Accuracy:
+  native ads: 34.29%
+  berita murni: 95.79%
+
+LLM-as-a-Judge:
+  Average Rating:  4.04/5.0
+  Samples Judged:  100
