@@ -1,0 +1,81 @@
+{
+  "_description": "Zero-shot qualitative reasoning examples (Scenario 0). good=score 4-5, borderline=score 3, bad=score 1-2.",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 25,
+    "borderline_count": 0,
+    "bad_count": 75,
+    "avg_judge_score": 2.57
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'Pure News' based on its factual reporting from a reputable source, and the reasoning provided effectively supports this classification without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pure News\nThe article provided is labeled as **Pure News**. \n\nHere's the reasoning:\n\n1. **Source**: The article is attributed to the Associated Press (AP), a reputable news organization known for providing factual, unbiased reporting. This aligns with the characteristics of pure news.\n\n2. **Content**: The",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that aligns with the factual nature of the content, which discusses the layoffs at Carvana without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Berita murni\n\nPenjelasan: Artikel ini menjelaskan fakta-fakta tentang pemecatan karyawan Carvana, termasuk detail seperti jumlah karyawan yang dipecat, alasan pemecatan, serta rencana pemberian kompensasi. Informasi",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) and provided logical reasoning that aligns with the factual nature of the content, which reports on a sports event without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pure News\nThe provided text is a report about recent matches in the AFC Champions League Elite, detailing the progression of teams like Japan's Vissel Kobe, Machida Zelvia, Johor Darul Tazim, and Buriram United. The information presented is factual, summarizing match outcomes, scores,",
+      "confidence": 1.0
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model's prediction of 'native ads' is completely incorrect as the content is a straightforward news report about a shooting incident, lacking any promotional language or intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "No one was hurt after two homes and a vehicle were struck by gunfire early Monday morning in Brampton.\n\nThe shooting happened around 2:40 a.m. on March 9 near Spadina Road and Royal Orchard Drive.\n\nSH",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pure News\n\nThe provided text appears to be a Pure News report. It presents factual information about a shooting incident without any promotional language or commercial intent. The details are reported as they are, with no indication that this content is sponsored or intended to promote a product/service. The presence of police statements and a request for information",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a political party's consideration for a presidential candidate. The reasoning provided does not apply to the content, which lacks any promotional tone or commercial intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Ketua Umum Partai Amanat Nasional (PAN) Zulkifli Hasan menyebut partainya mempertimbangkan usulan untuk mencalonkan Ganjar Pranowo sebagai presiden pada Pilpres 2024.Zulhas mengatakan Ganjar punya mod",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Untuk menentukan apakah artikel tersebut merupakan **native ads** atau **berita murni**, kita perlu menganalisis beberapa aspek:\n\n### 1. **Tujuan Konten**\n- **Native Ads**: Tujuannya jelas komersial, seperti promosi produk, lay",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply to the content, which lacks any promotional tone or commercial intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Aleix Espargaro tampil mengejutkan di awal musim ini. Espargaro mengaku sudah siap bersaing dalam perburuan gelar juara dunia MotoGP 2022. Tidak bisa dipungkiri pebalap Spanyol itu nyaris tidak pernah",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Untuk menentukan apakah artikel tersebut merupakan **native ads** atau **berita murni**, kita perlu menganalisis beberapa aspek:\n\n### 1. **Tujuan Konten**\n- **Native Ads**: Memiliki tujuan komersial (misalnya, promosi produk",
+      "confidence": 1.0
+    }
+  ]
+}

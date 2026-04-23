@@ -1,6 +1,6 @@
 """
-2026.2.1
-2026.2.1
+2026.4.8
+2026.4.6
 5.3.0
 0.24.0
 __UNSLOTH_VERSIONING__
@@ -24,6 +24,7 @@ __UNSLOTH_VERSIONING__
 
 
 import os
+import sys
 import torch
 import importlib.util
 import math
@@ -38,6 +39,9 @@ import math
 UNSLOTH_ENABLE_LOGGING = os.environ.get("UNSLOTH_ENABLE_LOGGING", "0") == "1"
 UNSLOTH_ENABLE_CCE = os.environ.get("UNSLOTH_ENABLE_CCE", "1") == "1"
 UNSLOTH_COMPILE_DISABLE = os.environ.get("UNSLOTH_COMPILE_DISABLE", "0") in ("1", "partial",)
+UNSLOTH_COMPILE_LOCATION = os.environ.get("UNSLOTH_COMPILE_LOCATION", "unsloth_compiled_cache")
+if UNSLOTH_COMPILE_LOCATION not in sys.path:
+    sys.path.insert(0, UNSLOTH_COMPILE_LOCATION)
 
 import logging
 logger_compiler = logging.getLogger(__name__)
@@ -63,9 +67,6 @@ from unsloth_zoo.loss_utils import (
     fused_linear_cross_entropy,
     unsloth_fused_ce_loss,
 )
-
-if UNSLOTH_STUDIO_ENABLED:
-    from unsloth_zoo.loss_utils import fast_linear_cross_entropy
 
 scaled_dot_product_attention = torch.nn.functional.scaled_dot_product_attention
 @torch.compiler.disable(recursive = False)
@@ -241,7 +242,7 @@ class SiglipVisionEmbeddings(nn.Module):
         return patch_pos_embed
 
     def forward(self, pixel_values: torch.FloatTensor, interpolate_pos_encoding=False) -> torch.Tensor:
-        return SiglipVisionEmbeddings_forward(self, pixel_values, interpolate_pos_encoding)
+        return SiglipVisionEmbeddings_forward(self, pixel_values=pixel_values, interpolate_pos_encoding=interpolate_pos_encoding)
 
 
 @torch.compile(fullgraph = True, dynamic = True, options = torch_compile_options)
@@ -290,7 +291,7 @@ class SiglipTextEmbeddings(nn.Module):
         position_ids: torch.LongTensor | None = None,
         inputs_embeds: torch.FloatTensor | None = None,
     ) -> torch.Tensor:
-        return SiglipTextEmbeddings_forward(self, input_ids, position_ids, inputs_embeds)
+        return SiglipTextEmbeddings_forward(self, input_ids=input_ids, position_ids=position_ids, inputs_embeds=inputs_embeds)
 
 
 @torch.compile(fullgraph = True, dynamic = True, options = torch_compile_options)
@@ -306,7 +307,14 @@ def eager_attention_forward(
 ):
     attn_weights = torch.matmul(query, key.transpose(-1, -2)) * scaling
     if attention_mask is not None:
-        attn_weights = attn_weights + attention_mask
+
+        if isinstance(attention_mask, dict):
+
+            attention_mask = attention_mask.get(getattr(module, 'layer_type', None), None)
+
+        if attention_mask is not None:
+
+            attn_weights = attn_weights + attention_mask
 
     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype = torch.float32).to(attn_weights.dtype).to(query.dtype)
     attn_weights = nn.functional.dropout(attn_weights, p=dropout, training=module.training)
@@ -385,7 +393,7 @@ class SiglipAttention(nn.Module):
         attention_mask: torch.Tensor | None = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor | None]:
-        return SiglipAttention_forward(self, hidden_states, attention_mask, **kwargs)
+        return SiglipAttention_forward(self, hidden_states=hidden_states, attention_mask=attention_mask, **kwargs)
 
 
 @torch.compile(fullgraph = False, dynamic = True, options = torch_compile_options)
@@ -404,7 +412,7 @@ class SiglipMLP(nn.Module):
         self.fc2 = nn.Linear(config.intermediate_size, config.hidden_size)
 
     def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
-        return SiglipMLP_forward(self, hidden_states)
+        return SiglipMLP_forward(self, hidden_states=hidden_states)
 
 
 @torch.compile(fullgraph = False, dynamic = True, options = torch_compile_options)
@@ -432,4 +440,4 @@ class SiglipMultiheadAttentionPoolingHead(nn.Module):
         self.mlp = SiglipMLP(config)
 
     def forward(self, hidden_state):
-        return SiglipMultiheadAttentionPoolingHead_forward(self, hidden_state)
+        return SiglipMultiheadAttentionPoolingHead_forward(self, hidden_state=hidden_state)

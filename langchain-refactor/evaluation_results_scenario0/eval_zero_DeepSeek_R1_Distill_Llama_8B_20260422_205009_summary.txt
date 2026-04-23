@@ -1,0 +1,30 @@
+================================================================================
+SCENARIO 0 — ZERO-SHOT EVALUATION SUMMARY
+================================================================================
+
+Model:     deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+Timestamp: 20260422_205009
+Dataset:   ../data/llm_dataset_12k_refined_full.json
+Samples:   200
+Mode:      zero-shot | no fine-tuning | no RAG | no domain prompt
+
+Overall Metrics:
+  Accuracy: 4.00%
+  Correct:  8/200
+
+BERTScore:
+  Precision: 0.458
+  Recall:    0.598
+  F1:        0.518
+
+NLP Metrics (Reasoning Quality):
+  BLEU:   0.0019
+  METEOR: 0.0188
+
+Per-Class Accuracy:
+  native ads: 7.62%
+  berita murni: 0.00%
+
+LLM-as-a-Judge:
+  Average Rating:  3.97/5.0
+  Samples Judged:  88

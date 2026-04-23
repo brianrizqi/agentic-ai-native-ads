@@ -1,6 +1,6 @@
 """
-2026.2.1
-2026.2.1
+2026.4.8
+2026.4.6
 5.3.0
 0.24.0
 __UNSLOTH_VERSIONING__
@@ -32,6 +32,8 @@ from trl.trainer.reward_trainer import (Any, AutoModelForSequenceClassification,
 
 
 import os
+import math
+import logging
 from typing import *
 from dataclasses import dataclass, field
 from packaging.version import Version
@@ -45,7 +47,6 @@ from transformers.training_args import ParallelMode
 from unsloth_zoo.device_type import DEVICE_TYPE, device_synchronize
 
 # Wrap trainer with padding to right and enable training mode
-# Also patches W&B since multiple runs must use wandb.finish()
 import functools
 from types import MethodType
 try:
@@ -55,6 +56,23 @@ except:
 def prepare_for_training_mode(f):
     @functools.wraps(f)
     def wrapper(self, *args, **kwargs):
+        # Finish the previous W&B run if this is a subsequent train() call.
+        # We do this at the START of train() (not the end) so that
+        # evaluate() / log() still work after train() completes.
+        # HF's WandbCallback.setup() will call wandb.init() for the new run.
+        # See: https://github.com/unslothai/unsloth/issues/3954
+        if getattr(self, '_unsloth_training_completed', False):
+            try:
+                import wandb
+                if wandb.run is not None:
+                    wandb.finish()
+                    # Reset HF's WandbCallback so it calls wandb.init() for the new run
+                    for cb in self.callback_handler.callbacks:
+                        if type(cb).__name__ == 'WandbCallback':
+                            cb._initialized = False
+                            break
+            except:
+                pass
         # Enable training mode
         _was_training = None
         # Get gradient checkpointing setting from training arguments
@@ -75,12 +93,9 @@ def prepare_for_training_mode(f):
             reset_unsloth_gradient_checkpointing_buffers()
         except:
             pass
-        # Patch W&B to enable logging on future runs, otherwise it'll overwrite the first run
-        try:
-            import wandb
-            wandb.finish()
-        except:
-            pass
+        # Mark that training completed so the next train() call can
+        # finish this W&B run before starting a new one
+        self._unsloth_training_completed = True
         return output
     return wrapper
 pass
@@ -121,7 +136,7 @@ def chunked_hidden_states_selective_log_softmax(
         if logit_scale_divide != 0.0:
             chunk_logits = chunk_logits / logit_scale_divide
         if logit_softcapping != 0.0:
-            chunk_logits = chunk_logits * torch.tanh(chunk_logits / logit_softcapping)
+            chunk_logits = logit_softcapping * torch.tanh(chunk_logits / logit_softcapping)
 
         chunk_logits = chunk_logits.to(torch.float32)
 
@@ -139,7 +154,7 @@ def chunked_hidden_states_selective_log_softmax(
     return all_per_token_logps
 
 @torch.compile(dynamic = True, fullgraph = True, options = torch_compile_options,)
-def chunked_selective_log_softmax(logits, index):
+def chunked_selective_log_softmax(logits, index, temperature: float = 1.0):
     # Split into 4 chunks only
     chunked_logits = torch.chunk(logits.reshape(-1, logits.shape[-1]), chunks = 4, dim = 0)
     chunked_index  = torch.chunk(index.reshape(-1), chunks = 4, dim = 0)
@@ -147,6 +162,8 @@ def chunked_selective_log_softmax(logits, index):
     # Below loop does the same as selective_log_softmax(chunk_logits, chunk_index)
     for chunk_logits, chunk_index in zip(chunked_logits, chunked_index):
         chunk_logits = chunk_logits.to(torch.float32)
+        if temperature != 1.0:
+            chunk_logits = chunk_logits / temperature
         selected_logits = torch.gather(chunk_logits, dim = -1, index = chunk_index.unsqueeze(-1)).squeeze(-1)
         logsumexp_values = torch.logsumexp(chunk_logits, dim = -1)
         per_token_logps = selected_logits - logsumexp_values
@@ -307,6 +324,17 @@ def autotune_batch_and_chunks(
     final_b = int(b_vals[best_idx].item())
 
     return final_b, final_m
+
+def sanitize_logprob(logprob):
+    """Local port of trl.scripts.vllm_serve.sanitize_logprob.
+    Filters NaN logprobs from vLLM outputs."""
+    value = logprob.logprob
+    if math.isnan(value):
+        logging.getLogger(__name__).warning(
+            f"Generated NaN logprob, token logprob '{logprob}' will be ignored"
+        )
+        return None
+    return value
 @dataclass
 class UnslothRewardConfig(RewardConfig):
     """
@@ -504,8 +532,8 @@ class UnslothRewardConfig(RewardConfig):
         activation_offloading = False,
         vllm_sampling_params = None,
         unsloth_num_chunks = -1,
-        unsloth_logit_chunk_multiplier = None, 
-        unsloth_grpo_mini_batch = None, 
+        unsloth_logit_chunk_multiplier = None,
+        unsloth_grpo_mini_batch = None,
         max_seq_length = None,
         **kwargs,
     ):
@@ -517,14 +545,15 @@ class UnslothRewardConfig(RewardConfig):
             output_dir = 'unsloth_training_checkpoints'
             save_strategy = 'no'
         import multiprocessing as _mp
-        if _mp.get_start_method() != 'fork':
-            dataset_num_proc = None
-        elif dataset_num_proc is None:
-            import psutil
-            dataset_num_proc = min(max((psutil.cpu_count() or 1)+4, 2), 64)
-            memory_gb_left = psutil.virtual_memory().available / (1024**3)
-            if memory_gb_left <= 2: dataset_num_proc = 1
-            else: dataset_num_proc = min(dataset_num_proc, int(memory_gb_left))
+        if dataset_num_proc is None:
+            if _mp.get_start_method() != 'fork':
+                dataset_num_proc = None
+            else:
+                import psutil
+                dataset_num_proc = min(max((psutil.cpu_count() or 1)+4, 2), 64)
+                memory_gb_left = psutil.virtual_memory().available / (1024**3)
+                if memory_gb_left <= 2: dataset_num_proc = 1
+                else: dataset_num_proc = min(dataset_num_proc, int(memory_gb_left))
         if os.environ.get('UNSLOTH_ENABLE_FLEX_ATTENTION', '0') == '1':
             from unsloth_zoo.flex_attention import HAS_FLEX_ATTENTION
             if HAS_FLEX_ATTENTION and pad_to_multiple_of is None:
@@ -1190,6 +1219,15 @@ class UnslothRewardTrainer(_UnslothRewardTrainer):
         if locals().get('preprocess_logits_for_metrics', None) is not None: _output_logits = True
         if _output_logits:
             os.environ['UNSLOTH_RETURN_LOGITS'] = '1'
+        if model is not None:
+            _warnings_issued = getattr(model, 'warnings_issued', None)
+            if _warnings_issued is None:
+                model.warnings_issued = {}
+            elif not isinstance(_warnings_issued, dict):
+                try:
+                    model.warnings_issued = dict(_warnings_issued)
+                except Exception:
+                    model.warnings_issued = {}
         if 'max_seq_length' not in locals() and not hasattr(args, 'max_seq_length'):
             pass
         else:

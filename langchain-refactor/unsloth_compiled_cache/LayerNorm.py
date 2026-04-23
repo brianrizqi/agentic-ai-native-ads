@@ -1,6 +1,6 @@
 """
-2026.2.1
-2026.2.1
+2026.4.8
+2026.4.6
 5.3.0
 0.24.0
 __UNSLOTH_VERSIONING__
@@ -24,6 +24,7 @@ __UNSLOTH_VERSIONING__
 
 
 import os
+import sys
 import torch
 import importlib.util
 import math
@@ -38,6 +39,9 @@ import math
 UNSLOTH_ENABLE_LOGGING = os.environ.get("UNSLOTH_ENABLE_LOGGING", "0") == "1"
 UNSLOTH_ENABLE_CCE = os.environ.get("UNSLOTH_ENABLE_CCE", "1") == "1"
 UNSLOTH_COMPILE_DISABLE = os.environ.get("UNSLOTH_COMPILE_DISABLE", "0") in ("1", "partial",)
+UNSLOTH_COMPILE_LOCATION = os.environ.get("UNSLOTH_COMPILE_LOCATION", "unsloth_compiled_cache")
+if UNSLOTH_COMPILE_LOCATION not in sys.path:
+    sys.path.insert(0, UNSLOTH_COMPILE_LOCATION)
 
 import logging
 logger_compiler = logging.getLogger(__name__)
@@ -64,7 +68,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from typing import Any, List, Optional, Tuple, Union, Dict, Set, Callable
-from transformers.models.qwen3_5.modeling_qwen3_5 import (F)
+
 
 def forward(self, input: Tensor) -> Tensor:
     return F.layer_norm(
