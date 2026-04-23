@@ -3,14 +3,14 @@
   "summary": {
     "total_judged": 100,
     "good_count": 47,
-    "borderline_count": 2,
-    "bad_count": 51,
-    "avg_judge_score": 3.04
+    "borderline_count": 1,
+    "bad_count": 52,
+    "avg_judge_score": 3.0
   },
   "good_examples": [
     {
       "judge_score": 5,
-      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on its factual reporting of RJ Petit's injury without any promotional content. The reasoning provided is logical and accurately reflects the objective nature of the article.",
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) and provided a well-reasoned explanation that highlights the objective tone and lack of promotional content, aligning perfectly with the ground truth.",
       "ground_truth_label": "berita murni",
       "predicted_label": "berita murni",
       "correct": true,
@@ -21,7 +21,7 @@
     },
     {
       "judge_score": 5,
-      "judge_justification": "The model correctly identified the article as 'berita murni' and provided reasoning that aligns with the content, which is factual and informative without any promotional tone.",
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which discusses a scientific discovery without any promotional tone or brand mentions. The reasoning is logical and aligns well with the classification.",
       "ground_truth_label": "berita murni",
       "predicted_label": "berita murni",
       "correct": true,
@@ -32,31 +32,20 @@
     },
     {
       "judge_score": 5,
-      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the factual reporting of a sports event, and the reasoning provided is objective and relevant to the nature of the content.",
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the objective nature of news reporting, focusing on a significant political meeting without any promotional tone.",
       "ground_truth_label": "berita murni",
       "predicted_label": "berita murni",
       "correct": true,
-      "article_preview": "Japan’s Vissel Kobe claimed a place in the quarterfinals of the AFC Champions League Elite with a 2-1 win over FC Seoul of South Korea on Wednesday.\n\nYuya Osako and Yosuke Ideguchi scored late at home",
-      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
-      "model_reasoning": "**Pure News**<|eot_id|>",
+      "article_preview": "Setelah menempuh perjalanan darat selama kurang lebih 11 jam dari Polandia menuju Ukraina, Presiden Jokowi Widodo mengadakan pertemuan tatap muka dengan Presiden Ukraina Volodymyr Zelensky. Apa hasil ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "**berita murni**<|eot_id|>",
       "confidence": 1.0
     }
   ],
   "borderline_examples": [
     {
       "judge_score": 3,
-      "judge_justification": "The model correctly classified the article as native ads, but the reasoning provided is weak and lacks depth. The content appears to be more informational and news-like, which raises questions about the classification.",
-      "ground_truth_label": "native ads",
-      "predicted_label": "native ads",
-      "correct": true,
-      "article_preview": "Austin, TX, March 04, 2026 (GLOBE NEWSWIRE) — Attackers move laterally through a compromised cloud network in 29 minutes. The fastest do it in 27 seconds. Defenders take an average of 241 days to noti",
-      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
-      "model_reasoning": "**Native Ads**<|eot_id|>",
-      "confidence": 1.0
-    },
-    {
-      "judge_score": 3,
-      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning provided is weak and generic. The content discusses a bank's performance in a straightforward manner, which could be interpreted as news rather than promotional content. A more nuanced analysis of the tone and intent of the article is needed to justify the classification.",
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning provided is weak and generic. The content discusses a bank's performance in a way that could be interpreted as promotional, but it lacks a clear identification of a promotional tone or intent, which is necessary for a strong classification.",
       "ground_truth_label": "native ads",
       "predicted_label": "native ads",
       "correct": true,
@@ -69,7 +58,7 @@
   "bad_examples": [
     {
       "judge_score": 1,
-      "judge_justification": "The model incorrectly classified the article as native ads despite it being a pure news piece about a significant layoff at Carvana. The reasoning provided does not support the label and fails to recognize the article's informative nature.",
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a pure news piece about a significant layoff at Carvana. The reasoning provided does not support the label, as there is no promotional tone or advertising intent in the content.",
       "ground_truth_label": "berita murni",
       "predicted_label": "native ads",
       "correct": false,
@@ -80,22 +69,22 @@
     },
     {
       "judge_score": 1,
-      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a political party's consideration for a presidential candidate. The reasoning provided does not logically support the label, as there is no promotional tone or advertising intent in the content.",
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a pure news article about a football match. The reasoning provided does not support the label and fails to recognize the content as news.",
       "ground_truth_label": "berita murni",
       "predicted_label": "native ads",
       "correct": false,
-      "article_preview": "Ketua Umum Partai Amanat Nasional (PAN) Zulkifli Hasan menyebut partainya mempertimbangkan usulan untuk mencalonkan Ganjar Pranowo sebagai presiden pada Pilpres 2024.Zulhas mengatakan Ganjar punya mod",
+      "article_preview": "Penalti panenka Arthur Irawan menjadi penentu kemenangan Persik Kediri saat menang adu penalti 4-2 atas Rans Nusantara dalam Trofeo Ronaldinho di Stadion Kanjuruhan, Minggu (26/6).Persik melakoni pert",
       "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
       "model_reasoning": "**native ads**<|eot_id|>",
       "confidence": 1.0
     },
     {
       "judge_score": 1,
-      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about investment returns in the insurance industry. The reasoning provided does not support the label and fails to recognize the informative nature of the content.",
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news piece about Transjakarta operating tourist buses. The reasoning provided does not support the label and fails to recognize the article's informative nature.",
       "ground_truth_label": "berita murni",
       "predicted_label": "native ads",
       "correct": false,
-      "article_preview": "JAKARTA, KOMPAS.com - Asosiasi Asuransi Jiwa Indonesia (AAJI) mencatat, imbal hasil investasi industri asuransi jiwa pada triwulan pertama tahun 2022 tumbuh 5 kali lipat dibandingkan periode yang sama",
+      "article_preview": "TEMPO.CO, Jakarta - Transjakarta mengoperasikan bus wisata selama libur lebaran, mulai Selasa sampai Minggu, 3 - 8 Mei 2022. Bus wisata yang berwujud bus tingkat ini akan melintas di jalanan ibu kota ",
       "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
       "model_reasoning": "**native ads**<|eot_id|>",
       "confidence": 1.0

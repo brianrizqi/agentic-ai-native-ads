@@ -2,29 +2,29 @@
 SCENARIO 0 — ZERO-SHOT EVALUATION SUMMARY
 ================================================================================
 
-Model:     google/gemma-2-9b-it
-Timestamp: 20260422_200814
+Model:     mistralai/Mistral-7B-Instruct-v0.3
+Timestamp: 20260423_202502
 Dataset:   ../data/llm_dataset_12k_refined_full.json
 Samples:   200
 Mode:      zero-shot | no fine-tuning | no RAG | no domain prompt
 
 Overall Metrics:
-  Accuracy: 66.50%
-  Correct:  133/200
+  Accuracy: 72.00%
+  Correct:  144/200
 
 BERTScore:
-  Precision: 0.643
-  Recall:    0.704
-  F1:        0.671
+  Precision: 0.590
+  Recall:    0.639
+  F1:        0.613
 
 NLP Metrics (Reasoning Quality):
-  BLEU:   0.0044
-  METEOR: 0.1061
+  BLEU:   0.0000
+  METEOR: 0.0000
 
 Per-Class Accuracy:
-  native ads: 78.10%
-  berita murni: 53.68%
+  native ads: 83.81%
+  berita murni: 58.95%
 
 LLM-as-a-Judge:
-  Average Rating:  3.10/5.0
+  Average Rating:  2.79/5.0
   Samples Judged:  100

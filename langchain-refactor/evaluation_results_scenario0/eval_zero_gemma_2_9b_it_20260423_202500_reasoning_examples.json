@@ -1,0 +1,93 @@
+{
+  "_description": "Zero-shot qualitative reasoning examples (Scenario 0). good=score 4-5, borderline=score 3, bad=score 1-2.",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 56,
+    "borderline_count": 1,
+    "bad_count": 43,
+    "avg_judge_score": 3.27
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which reports on a sports injury without any promotional tone or advertising elements. The reasoning is clear and aligns with the objective nature of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pure News \n<end_of_turn><eos>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which discusses a scientific discovery without any promotional tone. The reasoning provided aligns well with the classification, demonstrating a clear understanding of the article's nature.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni \n\n\n<end_of_turn><eos>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the objective nature of news reporting, focusing on factual information about a significant event without promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni \n\n\n<end_of_turn><eos>",
+      "confidence": 1.0
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content appears to be a straightforward news report about a racing event, which suggests it should be classified as pure news rather than native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "MONACO, March 10, 2026 (GLOBE NEWSWIRE) — Giangiacomo Serena di Lapigio (G-Spot) of YCM triumphed for the third year running at the 42nd Primo Cup–UBS Trophy, after three days of racing in Monaco.\n\nOr",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Native Ads \n\n\n<end_of_turn><eos>",
+      "confidence": 1.0
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a news article about Transjakarta operating tourist buses during the holiday. The reasoning provided does not support the label and lacks any objective analysis.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "TEMPO.CO, Jakarta - Transjakarta mengoperasikan bus wisata selama libur lebaran, mulai Selasa sampai Minggu, 3 - 8 Mei 2022. Bus wisata yang berwujud bus tingkat ini akan melintas di jalanan ibu kota ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads \n\n\n<end_of_turn><eos>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about the implementation of a toll road system. The reasoning provided does not support the label and lacks any objective analysis.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "JAKARTA, KOMPAS.com - Uji coba penerapan jalan tol menggunakan transaksi nontunai nirsentuh atau multi lane free flow (MLFF), akan dilakukan pada beberapa titik mulai tahun ini.  Penerapan transaksi i",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads \n\n\n<end_of_turn><eos>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a piece of pure news discussing the emotional aspects of crying. The reasoning provided does not logically support the label and lacks any objective analysis.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "TEMPO.CO, Jakarta - Manusia menangis untuk luapan berbagai suasana hati, seperti haru, bahagia, sakit, sedih, kehilangan. Ketika menangis seseorang akan merasa kelegaan. Itu sebabnya, menangis bermanf",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads \n\n\n<end_of_turn><eos>",
+      "confidence": 1.0
+    }
+  ]
+}

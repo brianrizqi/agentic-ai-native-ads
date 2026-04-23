@@ -1,0 +1,81 @@
+{
+  "_description": "Zero-shot qualitative reasoning examples (Scenario 0). good=score 4-5, borderline=score 3, bad=score 1-2.",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 62,
+    "borderline_count": 0,
+    "bad_count": 38,
+    "avg_judge_score": 3.45
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content, which reports on a sports injury without any promotional tone or advertising elements. The reasoning is clear and aligns well with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SCOTTSDALE, Ariz. (AP) — Colorado Rockies reliever RJ Petit has a sprained UCL ligament in his right elbow, sidelining him indefinitely.\n\nThe club made the announcement on Monday, adding that the 6-fo",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pure News<end_of_turn>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the content, which discusses a scientific discovery without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Penampakan seorang perempuan di Zaman Perunggu terungkap. Ini didapat dari hasil rekonstruksi tengkorak dan sisa-sia DNA dari perempuan Eropa Tengah yang diperkirakan hidup pada 4.000 tahun lalu. Pa",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni<end_of_turn>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided reasoning that aligns with the objective nature of news reporting, focusing on factual information about a significant event without any promotional tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Carvana, perusahaan mobil bekas online memecat 2.500 karyawan sekaligus. Hebohnya lagi perusahaan yang berbasis di Tempe, Arizona, Amerika Serikat itu melakukan pemutusan hubungan kerja secara menda",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "berita murni<end_of_turn>",
+      "confidence": 1.0
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about rental prices in Canada. The reasoning provided does not support the label, as there is no promotional tone or advertising content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Asking rents in Canada fell year-over-year for the 17th straight month in February to an average of $2,030.\n\nThe latest monthly report from Rentals.ca and Urbanation, which is based on average asking ",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Native Ads<end_of_turn>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a film's participation in a festival. The reasoning provided does not support the label and fails to recognize the informative nature of the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "VIVA Showbiz – Kabar gembira datang dari film produksi Indonesian Lantern Media LLC berhasil masuk sebagai salah satu film di Philadelphia Asian American Festival, PAAFF yang akan digelar mulai 3 Nove",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads<end_of_turn>",
+      "confidence": 1.0
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a news piece about a media discussion event. The reasoning provided does not logically support the label and fails to recognize the context of the article.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Lazada Indonesia menggelar Sesi Diskusi Media Terbatas Program Pemberdayaan Generasi Muda Lazada Indonesia. Tidak hanya mengenalkan penerima beasiswa, tetapi juga berbagi tips agar bisa produktif dan ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "native ads\n<end_of_turn>",
+      "confidence": 1.0
+    }
+  ]
+}
