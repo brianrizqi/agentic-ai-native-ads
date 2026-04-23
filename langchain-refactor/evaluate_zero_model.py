@@ -218,35 +218,79 @@ except ImportError:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Zero-shot prompts — minimal binary question, no domain framing
+# Zero-shot prompts — improved with richer native ads indicators
 # Mirrors Hu et al. (AAAI 2024) zero-shot setup for fair comparison
 # ─────────────────────────────────────────────────────────────────────────────
 
-ZERO_SHOT_PROMPT_ID = """Baca artikel berita berikut dengan seksama dan tentukan apakah artikel tersebut merupakan native ads atau berita murni.
+ZERO_SHOT_PROMPT_ID = """Kamu adalah editor berita senior yang bertugas menentukan apakah sebuah artikel adalah **native ads** atau **berita murni**.
 
-Native ads adalah konten berbayar yang dirancang menyerupai berita editorial namun memiliki tujuan komersial.
-Berita murni adalah laporan editorial yang tidak memiliki agenda komersial.
+## Definisi:
+- **Native Ads**: Konten berbayar atau konten PR yang dirancang menyerupai berita editorial, namun memiliki tujuan komersial tersembunyi atau eksplisit. Termasuk siaran pers perusahaan, laporan keuangan korporat, promosi produk/layanan, dan artikel "advertorial".
+- **Berita Murni**: Laporan jurnalistik yang independen, netral, dan tidak memiliki agenda komersial.
 
-Artikel:
+## Indikator Native Ads (perhatikan tanda-tanda ini):
+1. Artikel berasal dari atau tentang satu perusahaan/brand secara dominan
+2. Ada kutipan CEO/direktur/juru bicara perusahaan yang memuji produk/kinerja perusahaan
+3. Format siaran pers: kota, tanggal, nama distributor berita (ANTARA, Globe Newswire, PR Newswire, Business Wire, Bisnis.com, VIVA, dll)
+4. Menyebut angka keuangan perusahaan (pendapatan, laba, pertumbuhan) dari sudut pandang positif perusahaan
+5. Ada ajakan bertindak (call-to-action): kunjungi website, daftar sekarang, hubungi kami
+6. Artikel membahas fitur/keunggulan produk atau program perusahaan
+7. Pemerintah/BUMN mempromosikan program atau layanan tertentu secara tidak netral
+
+## Indikator Berita Murni:
+1. Meliput peristiwa dengan sudut pandang beragam (berbagai narasumber)
+2. Tidak ada promosi eksplisit produk/brand tertentu
+3. Melaporkan fakta negatif/kritik terhadap perusahaan atau pemerintah
+4. Topik: bencana, kriminalitas, politik, olahraga, sains, budaya — tanpa agenda komersial
+
+## Artikel:
 {article}
 
-Jawab dengan tepat salah satu label berikut: native ads atau berita murni.
+## Instruksi:
+Analisis artikel di atas. Tentukan label berdasarkan konten dominan artikel.
+Jika ragu antara keduanya, pilih native ads jika ada elemen promosi korporat, bahkan jika tersamar sebagai berita.
+
+Jawab dengan TEPAT salah satu label berikut (tanpa penjelasan tambahan):
+**native ads** atau **berita murni**
+
 Label:"""
 
-ZERO_SHOT_PROMPT_EN = """Read the following news article carefully and determine whether it is native advertising or pure news.
+ZERO_SHOT_PROMPT_EN = """You are a senior news editor tasked with determining whether an article is **native advertising** or **pure news**.
 
-Native advertising is sponsored content designed to resemble editorial reporting while serving a commercial purpose.
-Pure news is legitimate editorial reporting with no commercial agenda.
+## Definitions:
+- **Native Ads**: Paid or PR content designed to look like editorial news while serving a commercial purpose. Includes corporate press releases, financial results, product/service promotions, and advertorials.
+- **Pure News**: Independent, neutral journalistic reporting with no commercial agenda.
 
-Article:
+## Native Ads Indicators (watch for these signals):
+1. Article is primarily about or originates from a single company/brand
+2. Contains CEO/executive/spokesperson quotes praising company performance or products
+3. Press release format: city, date, wire service name (Globe Newswire, PR Newswire, Business Wire, AP Newswire)
+4. Reports company financials (revenue, profit, growth) from a positive corporate angle
+5. Contains call-to-action: visit website, register now, contact us, learn more
+6. Discusses product features, advantages, or company programs
+7. Government promoting specific programs or services non-neutrally
+
+## Pure News Indicators:
+1. Reports events with multiple perspectives from diverse sources
+2. No explicit promotion of any specific product or brand
+3. Reports negative facts or criticism of companies/governments
+4. Topics: natural disasters, crime, politics, sports, science, culture — without commercial agenda
+
+## Article:
 {article}
 
-Answer with exactly one of the following labels: Native Ads or Pure News.
+## Instructions:
+Analyze the article above. Determine the label based on the article's dominant content.
+If uncertain between the two, choose Native Ads if there are corporate promotional elements, even if disguised as news.
+
+Answer with EXACTLY one of the following labels (no additional explanation):
+**Native Ads** or **Pure News**
+
 Label:"""
 
 
 def build_zero_shot_prompt(article_text: str, lang: str) -> str:
-    """Build minimal binary prompt — no four-dimension framing, no retrieved examples."""
+    """Build zero-shot prompt with richer native ads indicators — no domain prompt, no RAG examples."""
     article_text = article_text.strip()
     if lang == "en":
         return ZERO_SHOT_PROMPT_EN.format(article=article_text)
@@ -324,9 +368,28 @@ def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> s
         if "murni" in matched_val or "pure" in matched_val:
             return "berita murni" if lang == "id" else "Pure News"
 
+    # 2b. Match bold markdown format from new prompt: **native ads** or **berita murni**
+    bold_match = re.search(r'\*\*(native ads?|native advertising|iklan native|berita murni|pure news)\*\*', text)
+    if bold_match:
+        matched_val = bold_match.group(1).lower()
+        if "native" in matched_val or "iklan" in matched_val:
+            return "native ads" if lang == "id" else "Native Ads"
+        if "murni" in matched_val or "pure" in matched_val:
+            return "berita murni" if lang == "id" else "Pure News"
+
     # 3. Aggressive Substring Matching
-    native_kws = ["native ads", "nativeads", "native advertising", "nativeadvertising", "iklan native", "iklannative", "advertorial", "sponsored"]
-    pure_kws   = ["berita murni", "beritamurni", "pure news", "purenews", "legitimate editorial", "jurnalistik", "bukan iklan", "bukaniklan"]
+    # Added press-release wire service names as native ads signals
+    native_kws = [
+        "native ads", "nativeads", "native advertising", "nativeadvertising",
+        "iklan native", "iklannative", "advertorial", "sponsored content",
+        "press release", "globe newswire", "pr newswire", "business wire",
+        "siaran pers", "konten berbayar", "konten pr",
+    ]
+    pure_kws = [
+        "berita murni", "beritamurni", "pure news", "purenews",
+        "legitimate editorial", "jurnalistik", "bukan iklan", "bukaniklan",
+        "independent report", "editorial independen",
+    ]
 
     # 4. Dynamic Check: Find the LAST occurrence of either keyword set
     # This prevents false positives where the model discusses "native ads" in reasoning but concludes "pure news".
@@ -456,7 +519,7 @@ def zero_shot_classify(
     article_text: str,
     lang: str,
     max_new_tokens: int = 64,
-    max_article_chars: int = 3000,
+    max_article_chars: int = 6000,
     model_name: str = "",
 ) -> Dict:
     """
@@ -464,6 +527,7 @@ def zero_shot_classify(
     Returns dict with label, confidence (placeholder 1.0), reasoning (raw output).
     """
     # Truncate very long articles to fit context window
+    # Increased from 3000 to 6000 chars — promotional signals often appear in the body
     if len(article_text) > max_article_chars:
         article_text = article_text[:max_article_chars] + " [...]"
 
