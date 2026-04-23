@@ -315,9 +315,10 @@ def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> s
 
     text = raw_output.lower()
 
-    # Clean up common chat template tokens (extended for DeepSeek-R1's <｜end of sentence｜>)
+    # Clean up common chat template tokens (extended for DeepSeek-R1's <｜end of sentence｜> and Gemma's <end_of_turn>)
     for token in ["<|im_start|>", "<|im_end|>", "</s>", "<s>", "<pad>",
-                  "<｜end of sentence｜>", "<|endoftext|>", "[end]", "[/end]"]:
+                  "<｜end of sentence｜>", "<|endoftext|>", "[end]", "[/end]",
+                  "<end_of_turn>", "<eos>", "<bos>"]:
         text = text.replace(token, "")
 
     # 1. Handle Reasoning Models (DeepSeek-R1 / Qwen3 use <think> and </think>)
@@ -573,6 +574,7 @@ def zero_shot_classify(
     output_ids = model.generate(
         **inputs,
         max_new_tokens=max_new_tokens,
+        max_length=None,  # Suppresses the annoying warning when both are set
         do_sample=False,
         temperature=1.0,
         repetition_penalty=1.1,
