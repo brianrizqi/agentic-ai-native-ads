@@ -218,35 +218,79 @@ except ImportError:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Zero-shot prompts — minimal binary question, no domain framing
+# Zero-shot prompts — improved with richer native ads indicators
 # Mirrors Hu et al. (AAAI 2024) zero-shot setup for fair comparison
 # ─────────────────────────────────────────────────────────────────────────────
 
-ZERO_SHOT_PROMPT_ID = """Baca artikel berita berikut dengan seksama dan tentukan apakah artikel tersebut merupakan native ads atau berita murni.
+ZERO_SHOT_PROMPT_ID = """Kamu adalah editor berita senior yang bertugas menentukan apakah sebuah artikel adalah **native ads** atau **berita murni**.
 
-Native ads adalah konten berbayar yang dirancang menyerupai berita editorial namun memiliki tujuan komersial.
-Berita murni adalah laporan editorial yang tidak memiliki agenda komersial.
+## Definisi:
+- **Native Ads**: Konten berbayar atau konten PR yang dirancang menyerupai berita editorial, namun memiliki tujuan komersial tersembunyi atau eksplisit. Termasuk siaran pers perusahaan, laporan keuangan korporat, promosi produk/layanan, dan artikel "advertorial".
+- **Berita Murni**: Laporan jurnalistik yang independen, netral, dan tidak memiliki agenda komersial.
 
-Artikel:
+## Indikator Native Ads (perhatikan tanda-tanda ini):
+1. Artikel berasal dari atau tentang satu perusahaan/brand secara dominan
+2. Ada kutipan CEO/direktur/juru bicara perusahaan yang memuji produk/kinerja perusahaan
+3. Format siaran pers: kota, tanggal, nama distributor berita (ANTARA, Globe Newswire, PR Newswire, Business Wire, Bisnis.com, VIVA, dll)
+4. Menyebut angka keuangan perusahaan (pendapatan, laba, pertumbuhan) dari sudut pandang positif perusahaan
+5. Ada ajakan bertindak (call-to-action): kunjungi website, daftar sekarang, hubungi kami
+6. Artikel membahas fitur/keunggulan produk atau program perusahaan
+7. Pemerintah/BUMN mempromosikan program atau layanan tertentu secara tidak netral
+
+## Indikator Berita Murni:
+1. Meliput peristiwa dengan sudut pandang beragam (berbagai narasumber)
+2. Tidak ada promosi eksplisit produk/brand tertentu
+3. Melaporkan fakta negatif/kritik terhadap perusahaan atau pemerintah
+4. Topik: bencana, kriminalitas, politik, olahraga, sains, budaya — tanpa agenda komersial
+
+## Artikel:
 {article}
 
-Jawab dengan tepat salah satu label berikut: native ads atau berita murni.
+## Instruksi:
+Analisis artikel di atas. Tentukan label berdasarkan konten dominan artikel.
+Jika ragu antara keduanya, pilih native ads jika ada elemen promosi korporat, bahkan jika tersamar sebagai berita.
+
+Jawab dengan TEPAT salah satu label berikut (tanpa penjelasan tambahan):
+**native ads** atau **berita murni**
+
 Label:"""
 
-ZERO_SHOT_PROMPT_EN = """Read the following news article carefully and determine whether it is native advertising or pure news.
+ZERO_SHOT_PROMPT_EN = """You are a senior news editor tasked with determining whether an article is **native advertising** or **pure news**.
 
-Native advertising is sponsored content designed to resemble editorial reporting while serving a commercial purpose.
-Pure news is legitimate editorial reporting with no commercial agenda.
+## Definitions:
+- **Native Ads**: Paid or PR content designed to look like editorial news while serving a commercial purpose. Includes corporate press releases, financial results, product/service promotions, and advertorials.
+- **Pure News**: Independent, neutral journalistic reporting with no commercial agenda.
 
-Article:
+## Native Ads Indicators (watch for these signals):
+1. Article is primarily about or originates from a single company/brand
+2. Contains CEO/executive/spokesperson quotes praising company performance or products
+3. Press release format: city, date, wire service name (Globe Newswire, PR Newswire, Business Wire, AP Newswire)
+4. Reports company financials (revenue, profit, growth) from a positive corporate angle
+5. Contains call-to-action: visit website, register now, contact us, learn more
+6. Discusses product features, advantages, or company programs
+7. Government promoting specific programs or services non-neutrally
+
+## Pure News Indicators:
+1. Reports events with multiple perspectives from diverse sources
+2. No explicit promotion of any specific product or brand
+3. Reports negative facts or criticism of companies/governments
+4. Topics: natural disasters, crime, politics, sports, science, culture — without commercial agenda
+
+## Article:
 {article}
 
-Answer with exactly one of the following labels: Native Ads or Pure News.
+## Instructions:
+Analyze the article above. Determine the label based on the article's dominant content.
+If uncertain between the two, choose Native Ads if there are corporate promotional elements, even if disguised as news.
+
+Answer with EXACTLY one of the following labels (no additional explanation):
+**Native Ads** or **Pure News**
+
 Label:"""
 
 
 def build_zero_shot_prompt(article_text: str, lang: str) -> str:
-    """Build minimal binary prompt — no four-dimension framing, no retrieved examples."""
+    """Build zero-shot prompt with richer native ads indicators — no domain prompt, no RAG examples."""
     article_text = article_text.strip()
     if lang == "en":
         return ZERO_SHOT_PROMPT_EN.format(article=article_text)
@@ -257,64 +301,108 @@ def build_zero_shot_prompt(article_text: str, lang: str) -> str:
 # Label parsing — handles mixed-language model outputs
 # ─────────────────────────────────────────────────────────────────────────────
 
-NATIVE_ADS_PATTERNS = [
-    r"native[\s_\-]*ads?",
-    r"native[\s_\-]*advertising",
-    r"iklan[\s_\-]*native",
-    r"sponsor(?:ed)?",
-    r"promosi(?:onal)?",
-    r"advertorial",
-]
-
-PURE_NEWS_PATTERNS = [
-    r"pure[\s_\-]*news",
-    r"berita[\s_\-]*murni",
-    r"legitimate[\s_]*editorial",
-    r"bukan[\s_]*iklan",
-    r"news[\s_\-]*only",
-]
-
-
 def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> str:
     """
     Truly dynamic label parsing that adapts to different model 'personalities':
-    - DeepSeek-R1: Handles <think> tags and verbosity.
+    - DeepSeek-R1: Handles <think> tags, GPT2 BPE artifacts (Ġ/Ċ), output "editorial".
+    - Qwen3: Handles <think> cut-off (reasoning models that didn't finish thinking).
     - Qwen/Gemma: Handles concatenated words (PureNews) and instruction repetition.
     """
+    # ── Fix: Clean GPT2 BPE whitespace artifacts from DeepSeek-R1 / LLaMA tokenizers ──
+    # U+0120 (Ġ) represents a space prefix in GPT2-style BPE tokenization
+    # U+010A (Ċ) represents a newline in GPT2-style BPE tokenization
+    raw_output = raw_output.replace('\u0120', ' ').replace('\u010a', '\n')
+
     text = raw_output.lower()
 
-    # Clean up common chat template tokens
-    for token in ["<|im_start|>", "<|im_end|>", "</s>", "<s>", "<pad>"]:
+    # Clean up common chat template tokens (extended for DeepSeek-R1's <｜end of sentence｜>)
+    for token in ["<|im_start|>", "<|im_end|>", "</s>", "<s>", "<pad>",
+                  "<｜end of sentence｜>", "<|endoftext|>", "[end]", "[/end]"]:
         text = text.replace(token, "")
 
-    # 1. Handle Reasoning Models (DeepSeek-R1 uses <think> and </think>)
+    # 1. Handle Reasoning Models (DeepSeek-R1 / Qwen3 use <think> and </think>)
     if "</think>" in text:
-        text = text.split("</think>")[-1]
+        # Take everything AFTER the last </think> tag
+        post_think = text.split("</think>")[-1].strip()
+        # Sometimes the model outputs nothing after </think> — fall back to last part of reasoning
+        text = post_think if post_think else text.split("</think>")[0][-400:]
     elif "</thought>" in text:
         text = text.split("</thought>")[-1]
-    elif "<think>" in text: # Has start tag but no end tag (cut off)
+    elif "<think>" in text:  # Has start tag but no end tag (cut off during generation)
         # Check if the answer is BEFORE the think tag (sometimes happens)
         before_think = text.split("<think>")[0].strip()
         if before_think:
             text = before_think
         else:
-            return "Unknown" # Cut off during thinking
-    
+            # ── Cut-off thinking recovery ──
+            # Model ran out of tokens mid-reasoning.
+            # Take the last 3 non-empty lines (most likely to contain conclusion)
+            inside_think = text.split("<think>", 1)[1]
+            lines = [l.strip() for l in inside_think.strip().split('\n') if l.strip()]
+            text = ' '.join(lines[-3:]) if len(lines) >= 3 else (lines[-1] if lines else inside_think[-400:])
+
     text = text.strip()
 
     # 2. Strict Pattern Matching (Priority 1)
     # Models often output "Label: native ads" or "**Label:** Pure News"
-    strict_match = re.search(r'(?i)(?:label|jawaban|kategori|prediction|answer)\s*(?:is|:|=|-)?\s*\*?\[?[\'"]?(native ads|native advertising|iklan native|berita murni|pure news)[\'"]?\]?\*?', text)
+    strict_match = re.search(
+        r'(?:label|jawaban|kategori|prediction|answer|kesimpulan|conclusion|result)'
+        r'\s*(?:is|nya|:|=|-)?\s*\*?\[?[\'"]?'
+        r'(native ads?|native advertising|iklan native|berita murni|pure news|editorial)',
+        text
+    )
     if strict_match:
         matched_val = strict_match.group(1).lower()
+        if "native" in matched_val or "iklan" in matched_val:
+            return "native ads" if lang == "id" else "Native Ads"
+        # "editorial" without "native" = pure news (DeepSeek pattern)
+        if "murni" in matched_val or "pure" in matched_val or matched_val == "editorial":
+            return "berita murni" if lang == "id" else "Pure News"
+
+    # 2b. Match bold markdown format from new prompt: **native ads** or **berita murni**
+    bold_match = re.search(r'\*\*(native ads?|native advertising|iklan native|berita murni|pure news)\*\*', text)
+    if bold_match:
+        matched_val = bold_match.group(1).lower()
         if "native" in matched_val or "iklan" in matched_val:
             return "native ads" if lang == "id" else "Native Ads"
         if "murni" in matched_val or "pure" in matched_val:
             return "berita murni" if lang == "id" else "Pure News"
 
+    # 2c. Direct sentence conclusion patterns (DeepSeek-R1 pattern)
+    # e.g. "the article is an editorial", "artikel ini adalah berita murni"
+    conclusion_pure = re.search(
+        r'(?:article|artikel|konten|teks)\s+(?:ini\s+)?(?:is|merupakan|adalah|termasuk)\s+'
+        r'(?:an?\s+)?(?:editorial|pure news|berita murni|berita|news article)',
+        text
+    )
+    if conclusion_pure:
+        return "berita murni" if lang == "id" else "Pure News"
+
+    conclusion_native = re.search(
+        r'(?:article|artikel|konten|teks)\s+(?:ini\s+)?(?:is|merupakan|adalah|termasuk)\s+'
+        r'(?:an?\s+)?(?:native ad|native advertising|iklan native|sponsored|advertorial)',
+        text
+    )
+    if conclusion_native:
+        return "native ads" if lang == "id" else "Native Ads"
+
     # 3. Aggressive Substring Matching
-    native_kws = ["native ads", "nativeads", "native advertising", "nativeadvertising", "iklan native", "iklannative", "advertorial", "sponsored"]
-    pure_kws   = ["berita murni", "beritamurni", "pure news", "purenews", "legitimate editorial", "jurnalistik", "bukan iklan", "bukaniklan"]
+    # IMPORTANT: Do NOT include wire service names (globe newswire, press release) here —
+    # models always discuss these in their reasoning, not as final labels.
+    # Only include terms the model would use as a CONCLUSION word.
+    native_kws = [
+        "native ads", "nativeads", "native advertising", "nativeadvertising",
+        "iklan native", "iklannative", "advertorial", "sponsored content",
+        "konten berbayar", "konten pr", "konten promosi",
+    ]
+    pure_kws = [
+        "berita murni", "beritamurni", "pure news", "purenews",
+        "legitimate editorial", "jurnalistik", "bukan iklan", "bukaniklan",
+        "independent report", "editorial independen",
+        # DeepSeek-R1 specific: concludes with just "editorial" or "an editorial"
+        " is an editorial", " is editorial", "adalah editorial", "merupakan editorial",
+        "artikel editorial", "news article", "news report",
+    ]
 
     # 4. Dynamic Check: Find the LAST occurrence of either keyword set
     # This prevents false positives where the model discusses "native ads" in reasoning but concludes "pure news".
@@ -322,11 +410,17 @@ def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> s
     last_pure_idx   = max([text.rfind(kw) for kw in pure_kws] + [-1])
 
     if last_native_idx == -1 and last_pure_idx == -1:
-        # 5. Fuzzy Word-level Check
+        # 5. Fuzzy Word-level Check (scan from end of text toward beginning)
         words = text.replace("-", " ").replace("_", " ").split()
-        for w in reversed(words): # Check from end to start
-            if w in {"native", "ads", "iklan", "sponsored"}: return "native ads" if lang == "id" else "Native Ads"
-            if w in {"pure", "berita", "murni", "news"}: return "berita murni" if lang == "id" else "Pure News"
+        for w in reversed(words):
+            if w in {"native", "ads", "iklan", "sponsored", "advertorial"}:
+                return "native ads" if lang == "id" else "Native Ads"
+            # "berita" removed — too ambiguous (appears in all model reasoning text constantly)
+            if w in {"murni", "editorial"}:
+                return "berita murni" if lang == "id" else "Pure News"
+        # Last resort: "pure" or "news" as standalone word usually = pure news conclusion
+        if re.search(r'\bpure\b|\bnews\b', text):
+            return "berita murni" if lang == "id" else "Pure News"
         return "Unknown"
 
     if last_native_idx > last_pure_idx:
@@ -444,7 +538,7 @@ def zero_shot_classify(
     article_text: str,
     lang: str,
     max_new_tokens: int = 64,
-    max_article_chars: int = 3000,
+    max_article_chars: int = 6000,
     model_name: str = "",
 ) -> Dict:
     """
@@ -466,7 +560,7 @@ def zero_shot_classify(
         prompt,
         return_tensors="pt",
         truncation=True,
-        max_length=2048, # Increased for chat template overhead
+        max_length=2048,
         padding=False,
     )
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
@@ -485,14 +579,15 @@ def zero_shot_classify(
 
     # Decode only newly generated tokens
     new_ids = output_ids[0][inputs["input_ids"].shape[1]:]
-    # Preserve special tokens so we can parse <think> tags from reasoning models
+    # skip_special_tokens=False so we can parse <think> tags from reasoning models.
+    # We clean special tokens manually in parse_zero_shot_label.
     raw_text = tokenizer.decode(new_ids, skip_special_tokens=False).strip()
 
     label = parse_zero_shot_label(raw_text, lang, model_name=model_name)
 
     return {
         "label":     label,
-        "confidence": 1.0,   # Zero-shot has no calibrated confidence
+        "confidence": 1.0,
         "reasoning": raw_text,
         "metadata": {
             "raw_response": raw_text,
@@ -542,11 +637,22 @@ def evaluate_zero_shot(model_name: str, test_data: List[Dict], **kwargs) -> Dict
         lang = sample.get('lang', 'id').lower()
 
         try:
-            # Phase 42: Increase tokens for reasoning models (DeepSeek-R1)
-            eff_max_tokens = kwargs.get('max_new_tokens', 64)
-            if "r1" in model_name.lower() and eff_max_tokens < 512:
-                eff_max_tokens = 512
-                
+            eff_max_tokens = kwargs.get('max_new_tokens', 512)
+            # Auto-bump max_new_tokens based on model family:
+            model_lower = model_name.lower()
+            if "r1" in model_lower or "deepseek" in model_lower:
+                # R1 distill models: long thinking chains
+                if eff_max_tokens < 3000:
+                    eff_max_tokens = 3000
+            elif "qwen3" in model_lower or "qwen-3" in model_lower:
+                # Qwen3 thinking: moderate reasoning
+                if eff_max_tokens < 2048:
+                    eff_max_tokens = 2048
+            elif "gemma" in model_lower or "llama" in model_lower:
+                # Non-reasoning models: 256 is enough for a label + brief explanation
+                if eff_max_tokens > 512:
+                    eff_max_tokens = 256
+
             pred = zero_shot_classify(
                 model, tokenizer,
                 article_text=sample['input'],
