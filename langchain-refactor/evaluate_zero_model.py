@@ -278,28 +278,40 @@ PURE_NEWS_PATTERNS = [
 def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> str:
     """
     Truly dynamic label parsing that adapts to different model 'personalities':
-    - DeepSeek-R1: Handles <think> tags and verbosity.
+    - DeepSeek-R1: Handles <think> tags, GPT2 BPE artifacts (Ġ/Ċ), and verbosity.
+    - Qwen3: Handles <think> cut-off (reasoning models that didn't finish thinking).
     - Qwen/Gemma: Handles concatenated words (PureNews) and instruction repetition.
     """
+    # ── Fix: Clean GPT2 BPE whitespace artifacts from DeepSeek-R1 / LLaMA tokenizers ──
+    # U+0120 (Ġ) represents a space prefix in GPT2-style BPE tokenization
+    # U+010A (Ċ) represents a newline in GPT2-style BPE tokenization
+    raw_output = raw_output.replace('\u0120', ' ').replace('\u010a', '\n')
+
     text = raw_output.lower()
 
     # Clean up common chat template tokens
     for token in ["<|im_start|>", "<|im_end|>", "</s>", "<s>", "<pad>"]:
         text = text.replace(token, "")
 
-    # 1. Handle Reasoning Models (DeepSeek-R1 uses <think> and </think>)
+    # 1. Handle Reasoning Models (DeepSeek-R1 / Qwen3 use <think> and </think>)
     if "</think>" in text:
         text = text.split("</think>")[-1]
     elif "</thought>" in text:
         text = text.split("</thought>")[-1]
-    elif "<think>" in text: # Has start tag but no end tag (cut off)
+    elif "<think>" in text:  # Has start tag but no end tag (cut off during generation)
         # Check if the answer is BEFORE the think tag (sometimes happens)
         before_think = text.split("<think>")[0].strip()
         if before_think:
             text = before_think
         else:
-            return "Unknown" # Cut off during thinking
-    
+            # ── Cut-off thinking recovery ──
+            # Model ran out of tokens mid-reasoning. Extract the last ~200 chars
+            # of the reasoning to find a tentative label conclusion.
+            inside_think = text.split("<think>", 1)[1]
+            # Take the last paragraph (often contains the model's tentative conclusion)
+            last_para = inside_think.strip().rsplit('\n', 3)[-1].strip()
+            text = last_para if last_para else inside_think[-300:]
+
     text = text.strip()
 
     # 2. Strict Pattern Matching (Priority 1)
@@ -542,11 +554,19 @@ def evaluate_zero_shot(model_name: str, test_data: List[Dict], **kwargs) -> Dict
         lang = sample.get('lang', 'id').lower()
 
         try:
-            # Phase 42: Increase tokens for reasoning models (DeepSeek-R1)
-            eff_max_tokens = kwargs.get('max_new_tokens', 64)
-            if "r1" in model_name.lower() and eff_max_tokens < 512:
-                eff_max_tokens = 512
-                
+            eff_max_tokens = kwargs.get('max_new_tokens', 512)
+            # Reasoning models need much more tokens to complete their <think> block
+            # before outputting a label — bump automatically if default is too small.
+            model_lower = model_name.lower()
+            if "r1" in model_lower or "deepseek" in model_lower:
+                # R1 distill models: thinking can be very long
+                if eff_max_tokens < 2048:
+                    eff_max_tokens = 2048
+            elif "qwen3" in model_lower or "qwen-3" in model_lower:
+                # Qwen3 thinking models: moderate reasoning length
+                if eff_max_tokens < 1024:
+                    eff_max_tokens = 1024
+
             pred = zero_shot_classify(
                 model, tokenizer,
                 article_text=sample['input'],
