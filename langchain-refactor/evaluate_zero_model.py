@@ -540,6 +540,7 @@ def zero_shot_classify(
     max_new_tokens: int = 64,
     max_article_chars: int = 6000,
     model_name: str = "",
+    max_seq_length: int = 8192,
 ) -> Dict:
     """
     Run zero-shot classification on a single article.
@@ -556,11 +557,14 @@ def zero_shot_classify(
         messages = [{"role": "user", "content": prompt}]
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
+    # Ensure we leave enough space for max_new_tokens
+    prompt_max_length = max(512, max_seq_length - max_new_tokens - 100)
+
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
         truncation=True,
-        max_length=2048,
+        max_length=prompt_max_length,
         padding=False,
     )
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
@@ -658,7 +662,8 @@ def evaluate_zero_shot(model_name: str, test_data: List[Dict], **kwargs) -> Dict
                 article_text=sample['input'],
                 lang=lang,
                 max_new_tokens=eff_max_tokens,
-                model_name=model_name
+                model_name=model_name,
+                max_seq_length=kwargs.get('max_seq_length', 8192)
             )
         except Exception as e:
             print(f"Error on sample {i}: {e}")
@@ -1111,8 +1116,8 @@ def main():
                         help='GPU ID (default: 0)')
     parser.add_argument('--max-new-tokens', type=int, default=512,
                         help='Max tokens to generate per sample (default: 512)')
-    parser.add_argument('--max-seq-length', type=int, default=2048,
-                        help='Max sequence length for Unsloth (default: 2048)')
+    parser.add_argument('--max-seq-length', type=int, default=8192,
+                        help='Max sequence length for Unsloth (default: 8192)')
     args = parser.parse_args()
 
     # ── Output naming — same convention as evaluate_model.py ──────────────
