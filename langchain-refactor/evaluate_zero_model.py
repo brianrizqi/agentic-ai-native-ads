@@ -301,28 +301,10 @@ def build_zero_shot_prompt(article_text: str, lang: str) -> str:
 # Label parsing — handles mixed-language model outputs
 # ─────────────────────────────────────────────────────────────────────────────
 
-NATIVE_ADS_PATTERNS = [
-    r"native[\s_\-]*ads?",
-    r"native[\s_\-]*advertising",
-    r"iklan[\s_\-]*native",
-    r"sponsor(?:ed)?",
-    r"promosi(?:onal)?",
-    r"advertorial",
-]
-
-PURE_NEWS_PATTERNS = [
-    r"pure[\s_\-]*news",
-    r"berita[\s_\-]*murni",
-    r"legitimate[\s_]*editorial",
-    r"bukan[\s_]*iklan",
-    r"news[\s_\-]*only",
-]
-
-
 def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> str:
     """
     Truly dynamic label parsing that adapts to different model 'personalities':
-    - DeepSeek-R1: Handles <think> tags, GPT2 BPE artifacts (Ġ/Ċ), and verbosity.
+    - DeepSeek-R1: Handles <think> tags, GPT2 BPE artifacts (Ġ/Ċ), output "editorial".
     - Qwen3: Handles <think> cut-off (reasoning models that didn't finish thinking).
     - Qwen/Gemma: Handles concatenated words (PureNews) and instruction repetition.
     """
@@ -333,13 +315,17 @@ def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> s
 
     text = raw_output.lower()
 
-    # Clean up common chat template tokens
-    for token in ["<|im_start|>", "<|im_end|>", "</s>", "<s>", "<pad>"]:
+    # Clean up common chat template tokens (extended for DeepSeek-R1's <｜end of sentence｜>)
+    for token in ["<|im_start|>", "<|im_end|>", "</s>", "<s>", "<pad>",
+                  "<｜end of sentence｜>", "<|endoftext|>", "[end]", "[/end]"]:
         text = text.replace(token, "")
 
     # 1. Handle Reasoning Models (DeepSeek-R1 / Qwen3 use <think> and </think>)
     if "</think>" in text:
-        text = text.split("</think>")[-1]
+        # Take everything AFTER the last </think> tag
+        post_think = text.split("</think>")[-1].strip()
+        # Sometimes the model outputs nothing after </think> — fall back to last part of reasoning
+        text = post_think if post_think else text.split("</think>")[0][-400:]
     elif "</thought>" in text:
         text = text.split("</thought>")[-1]
     elif "<think>" in text:  # Has start tag but no end tag (cut off during generation)
@@ -349,23 +335,28 @@ def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> s
             text = before_think
         else:
             # ── Cut-off thinking recovery ──
-            # Model ran out of tokens mid-reasoning. Extract the last ~200 chars
-            # of the reasoning to find a tentative label conclusion.
+            # Model ran out of tokens mid-reasoning.
+            # Take the last 3 non-empty lines (most likely to contain conclusion)
             inside_think = text.split("<think>", 1)[1]
-            # Take the last paragraph (often contains the model's tentative conclusion)
-            last_para = inside_think.strip().rsplit('\n', 3)[-1].strip()
-            text = last_para if last_para else inside_think[-300:]
+            lines = [l.strip() for l in inside_think.strip().split('\n') if l.strip()]
+            text = ' '.join(lines[-3:]) if len(lines) >= 3 else (lines[-1] if lines else inside_think[-400:])
 
     text = text.strip()
 
     # 2. Strict Pattern Matching (Priority 1)
     # Models often output "Label: native ads" or "**Label:** Pure News"
-    strict_match = re.search(r'(?i)(?:label|jawaban|kategori|prediction|answer)\s*(?:is|:|=|-)?\s*\*?\[?[\'"]?(native ads|native advertising|iklan native|berita murni|pure news)[\'"]?\]?\*?', text)
+    strict_match = re.search(
+        r'(?:label|jawaban|kategori|prediction|answer|kesimpulan|conclusion|result)'
+        r'\s*(?:is|nya|:|=|-)?\s*\*?\[?[\'"]?'
+        r'(native ads?|native advertising|iklan native|berita murni|pure news|editorial)',
+        text
+    )
     if strict_match:
         matched_val = strict_match.group(1).lower()
         if "native" in matched_val or "iklan" in matched_val:
             return "native ads" if lang == "id" else "Native Ads"
-        if "murni" in matched_val or "pure" in matched_val:
+        # "editorial" without "native" = pure news (DeepSeek pattern)
+        if "murni" in matched_val or "pure" in matched_val or matched_val == "editorial":
             return "berita murni" if lang == "id" else "Pure News"
 
     # 2b. Match bold markdown format from new prompt: **native ads** or **berita murni**
@@ -377,18 +368,40 @@ def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> s
         if "murni" in matched_val or "pure" in matched_val:
             return "berita murni" if lang == "id" else "Pure News"
 
+    # 2c. Direct sentence conclusion patterns (DeepSeek-R1 pattern)
+    # e.g. "the article is an editorial", "artikel ini adalah berita murni"
+    conclusion_pure = re.search(
+        r'(?:article|artikel|konten|teks)\s+(?:ini\s+)?(?:is|merupakan|adalah|termasuk)\s+'
+        r'(?:an?\s+)?(?:editorial|pure news|berita murni|berita|news article)',
+        text
+    )
+    if conclusion_pure:
+        return "berita murni" if lang == "id" else "Pure News"
+
+    conclusion_native = re.search(
+        r'(?:article|artikel|konten|teks)\s+(?:ini\s+)?(?:is|merupakan|adalah|termasuk)\s+'
+        r'(?:an?\s+)?(?:native ad|native advertising|iklan native|sponsored|advertorial)',
+        text
+    )
+    if conclusion_native:
+        return "native ads" if lang == "id" else "Native Ads"
+
     # 3. Aggressive Substring Matching
-    # Added press-release wire service names as native ads signals
+    # IMPORTANT: Do NOT include wire service names (globe newswire, press release) here —
+    # models always discuss these in their reasoning, not as final labels.
+    # Only include terms the model would use as a CONCLUSION word.
     native_kws = [
         "native ads", "nativeads", "native advertising", "nativeadvertising",
         "iklan native", "iklannative", "advertorial", "sponsored content",
-        "press release", "globe newswire", "pr newswire", "business wire",
-        "siaran pers", "konten berbayar", "konten pr",
+        "konten berbayar", "konten pr", "konten promosi",
     ]
     pure_kws = [
         "berita murni", "beritamurni", "pure news", "purenews",
         "legitimate editorial", "jurnalistik", "bukan iklan", "bukaniklan",
         "independent report", "editorial independen",
+        # DeepSeek-R1 specific: concludes with just "editorial" or "an editorial"
+        " is an editorial", " is editorial", "adalah editorial", "merupakan editorial",
+        "artikel editorial", "news article", "news report",
     ]
 
     # 4. Dynamic Check: Find the LAST occurrence of either keyword set
@@ -397,11 +410,17 @@ def parse_zero_shot_label(raw_output: str, lang: str, model_name: str = "") -> s
     last_pure_idx   = max([text.rfind(kw) for kw in pure_kws] + [-1])
 
     if last_native_idx == -1 and last_pure_idx == -1:
-        # 5. Fuzzy Word-level Check
+        # 5. Fuzzy Word-level Check (scan from end of text toward beginning)
         words = text.replace("-", " ").replace("_", " ").split()
-        for w in reversed(words): # Check from end to start
-            if w in {"native", "ads", "iklan", "sponsored"}: return "native ads" if lang == "id" else "Native Ads"
-            if w in {"pure", "berita", "murni", "news"}: return "berita murni" if lang == "id" else "Pure News"
+        for w in reversed(words):
+            if w in {"native", "ads", "iklan", "sponsored", "advertorial"}:
+                return "native ads" if lang == "id" else "Native Ads"
+            # "berita" removed — too ambiguous (appears in all model reasoning text constantly)
+            if w in {"murni", "editorial"}:
+                return "berita murni" if lang == "id" else "Pure News"
+        # Last resort: "pure" or "news" as standalone word usually = pure news conclusion
+        if re.search(r'\bpure\b|\bnews\b', text):
+            return "berita murni" if lang == "id" else "Pure News"
         return "Unknown"
 
     if last_native_idx > last_pure_idx:
@@ -527,7 +546,6 @@ def zero_shot_classify(
     Returns dict with label, confidence (placeholder 1.0), reasoning (raw output).
     """
     # Truncate very long articles to fit context window
-    # Increased from 3000 to 6000 chars — promotional signals often appear in the body
     if len(article_text) > max_article_chars:
         article_text = article_text[:max_article_chars] + " [...]"
 
@@ -542,7 +560,7 @@ def zero_shot_classify(
         prompt,
         return_tensors="pt",
         truncation=True,
-        max_length=2048, # Increased for chat template overhead
+        max_length=2048,
         padding=False,
     )
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
@@ -561,14 +579,15 @@ def zero_shot_classify(
 
     # Decode only newly generated tokens
     new_ids = output_ids[0][inputs["input_ids"].shape[1]:]
-    # Preserve special tokens so we can parse <think> tags from reasoning models
+    # skip_special_tokens=False so we can parse <think> tags from reasoning models.
+    # We clean special tokens manually in parse_zero_shot_label.
     raw_text = tokenizer.decode(new_ids, skip_special_tokens=False).strip()
 
     label = parse_zero_shot_label(raw_text, lang, model_name=model_name)
 
     return {
         "label":     label,
-        "confidence": 1.0,   # Zero-shot has no calibrated confidence
+        "confidence": 1.0,
         "reasoning": raw_text,
         "metadata": {
             "raw_response": raw_text,
@@ -619,17 +638,20 @@ def evaluate_zero_shot(model_name: str, test_data: List[Dict], **kwargs) -> Dict
 
         try:
             eff_max_tokens = kwargs.get('max_new_tokens', 512)
-            # Reasoning models need much more tokens to complete their <think> block
-            # before outputting a label — bump automatically if default is too small.
+            # Auto-bump max_new_tokens based on model family:
             model_lower = model_name.lower()
             if "r1" in model_lower or "deepseek" in model_lower:
-                # R1 distill models: thinking can be very long
+                # R1 distill models: long thinking chains
+                if eff_max_tokens < 3000:
+                    eff_max_tokens = 3000
+            elif "qwen3" in model_lower or "qwen-3" in model_lower:
+                # Qwen3 thinking: moderate reasoning
                 if eff_max_tokens < 2048:
                     eff_max_tokens = 2048
-            elif "qwen3" in model_lower or "qwen-3" in model_lower:
-                # Qwen3 thinking models: moderate reasoning length
-                if eff_max_tokens < 1024:
-                    eff_max_tokens = 1024
+            elif "gemma" in model_lower or "llama" in model_lower:
+                # Non-reasoning models: 256 is enough for a label + brief explanation
+                if eff_max_tokens > 512:
+                    eff_max_tokens = 256
 
             pred = zero_shot_classify(
                 model, tokenizer,
