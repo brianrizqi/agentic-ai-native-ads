@@ -1,0 +1,42 @@
+
+================================================================================
+TRAINING PIPELINE STARTED: Mon Jan 12 13:52:42 +07 2026
+================================================================================
+
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+ModuleNotFoundError: No module named 'unsloth'
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+ModuleNotFoundError: No module named 'unsloth'
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+ModuleNotFoundError: No module named 'unsloth'
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+ModuleNotFoundError: No module named 'unsloth'
+
+================================================================================
+ALL MODELS TRAINED SUCCESSFULLY!
+================================================================================
+
+Training Times:
+llama: 0h 0m
+gemma: 0h 0m
+qwen: 0h 0m
+gpt-oss: 0h 0m
+
+Next steps:
+1. Run comparison: python compare_models.py
+2. View results: cat ../results/multi_model_training/model_comparison.json
+
+Models saved in:
+  - ../models/llama-native-ads_merged_16bit
+  - ../models/gemma-native-ads_merged_16bit
+  - ../models/qwen-native-ads_merged_16bit
+  - ../models/gpt-oss-native-ads_merged_16bit
+================================================================================

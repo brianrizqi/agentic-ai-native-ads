@@ -1,0 +1,62 @@
+
+================================================================================
+TRAINING PIPELINE STARTED: Mon Jan 12 13:54:16 +07 2026
+================================================================================
+
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/__init__.py", line 38, in <module>
+    torchvision_compatibility_check()
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/import_fixes.py", line 450, in torchvision_compatibility_check
+    raise ImportError(
+ImportError: Unsloth: torch==2.9.1 requires torchvision>=0.24.0, but found torchvision==0.16.2+cu121. Please refer to https://pytorch.org/get-started/previous-versions/ for more information.
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/__init__.py", line 38, in <module>
+    torchvision_compatibility_check()
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/import_fixes.py", line 450, in torchvision_compatibility_check
+    raise ImportError(
+ImportError: Unsloth: torch==2.9.1 requires torchvision>=0.24.0, but found torchvision==0.16.2+cu121. Please refer to https://pytorch.org/get-started/previous-versions/ for more information.
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/__init__.py", line 38, in <module>
+    torchvision_compatibility_check()
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/import_fixes.py", line 450, in torchvision_compatibility_check
+    raise ImportError(
+ImportError: Unsloth: torch==2.9.1 requires torchvision>=0.24.0, but found torchvision==0.16.2+cu121. Please refer to https://pytorch.org/get-started/previous-versions/ for more information.
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 15, in <module>
+    from unsloth import FastLanguageModel
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/__init__.py", line 38, in <module>
+    torchvision_compatibility_check()
+  File "/home/riset/.local/lib/python3.10/site-packages/unsloth/import_fixes.py", line 450, in torchvision_compatibility_check
+    raise ImportError(
+ImportError: Unsloth: torch==2.9.1 requires torchvision>=0.24.0, but found torchvision==0.16.2+cu121. Please refer to https://pytorch.org/get-started/previous-versions/ for more information.
+
+================================================================================
+ALL MODELS TRAINED SUCCESSFULLY!
+================================================================================
+
+Training Times:
+llama: 0h 0m
+gemma: 0h 0m
+qwen: 0h 0m
+gpt-oss: 0h 0m
+llama: 0h 0m
+gemma: 0h 0m
+qwen: 0h 0m
+gpt-oss: 0h 0m
+
+Next steps:
+1. Run comparison: python compare_models.py
+2. View results: cat ../results/multi_model_training/model_comparison.json
+
+Models saved in:
+  - ../models/llama-native-ads_merged_16bit
+  - ../models/gemma-native-ads_merged_16bit
+  - ../models/qwen-native-ads_merged_16bit
+  - ../models/gpt-oss-native-ads_merged_16bit
+================================================================================

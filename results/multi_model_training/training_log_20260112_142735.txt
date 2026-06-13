@@ -1,0 +1,179 @@
+
+================================================================================
+TRAINING PIPELINE STARTED: Mon Jan 12 14:27:35 +07 2026
+================================================================================
+
+2026-01-12 14:27:39.203527: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning.
+🦥 Unsloth Zoo will now patch everything to make training faster!
+================================================================================
+NATIVE ADS DETECTION - FINE-TUNING
+================================================================================
+Model: llama
+Description: Llama 3.1 8B - Balanced speed/quality
+Base Model: unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit
+Dataset: ../data/llm_dataset_mixed_json.json
+Output: ../models/llama-native-ads
+Max Steps: 1500
+Learning Rate: 0.0001
+Batch Size: 2
+LoRA r: 16
+================================================================================
+
+[1/5] Loading base model with Unsloth...
+==((====))==  Unsloth 2026.1.2: Fast Llama patching. Transformers: 4.57.3.
+   \\   /|    NVIDIA A100-SXM4-40GB MIG 7g.40gb. Num GPUs = 1. Max memory: 39.381 GB. Platform: Linux.
+O^O/ \_/ \    Torch: 2.9.1+cu128. CUDA: 8.0. CUDA Toolkit: 12.8. Triton: 3.5.1
+\        /    Bfloat16 = TRUE. FA [Xformers = None. FA2 = False]
+ "-____-"     Free license: http://github.com/unslothai/unsloth
+Unsloth: Fast downloading is enabled - ignore downloading bars which are red colored!
+Unsloth 2026.1.2 patched 32 layers with 32 QKV layers, 32 O layers and 32 MLP layers.
+[2/5] Adding LoRA adapters...
+[3/5] Loading and formatting dataset...
+Loading dataset from: ../data/llm_dataset_mixed_json.json
+Loaded 15088 samples
+
+📊 Dataset Balance:
+   Native Ads: 6044 (40.1%)
+   Berita Murni: 9044 (59.9%)
+Training samples: 13579
+Evaluation samples: 1509
+[4/5] Setting up Unsloth SFTTrainer with monitoring...
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 334, in <module>
+    main()
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 265, in main
+    eval_steps=args.eval_steps,
+AttributeError: 'Namespace' object has no attribute 'eval_steps'. Did you mean: 'max_steps'?
+2026-01-12 14:28:29.938520: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning.
+🦥 Unsloth Zoo will now patch everything to make training faster!
+================================================================================
+NATIVE ADS DETECTION - FINE-TUNING
+================================================================================
+Model: gemma
+Description: Gemma 2 9B - Google's efficient model
+Base Model: unsloth/gemma-2-9b-it-bnb-4bit
+Dataset: ../data/llm_dataset_mixed_json.json
+Output: ../models/gemma-native-ads
+Max Steps: 1500
+Learning Rate: 0.0001
+Batch Size: 2
+LoRA r: 16
+================================================================================
+
+[1/5] Loading base model with Unsloth...
+Unsloth: If you want to finetune Gemma 2, install flash-attn to make it faster!
+To install flash-attn, do the below:
+
+pip install --no-deps --upgrade "flash-attn>=2.6.3"
+==((====))==  Unsloth 2026.1.2: Fast Gemma2 patching. Transformers: 4.57.3.
+   \\   /|    NVIDIA A100-SXM4-40GB MIG 7g.40gb. Num GPUs = 1. Max memory: 39.381 GB. Platform: Linux.
+O^O/ \_/ \    Torch: 2.9.1+cu128. CUDA: 8.0. CUDA Toolkit: 12.8. Triton: 3.5.1
+\        /    Bfloat16 = TRUE. FA [Xformers = None. FA2 = False]
+ "-____-"     Free license: http://github.com/unslothai/unsloth
+Unsloth: Fast downloading is enabled - ignore downloading bars which are red colored!
+Unsloth 2026.1.2 patched 42 layers with 42 QKV layers, 42 O layers and 42 MLP layers.
+[2/5] Adding LoRA adapters...
+[3/5] Loading and formatting dataset...
+Loading dataset from: ../data/llm_dataset_mixed_json.json
+Loaded 15088 samples
+
+📊 Dataset Balance:
+   Native Ads: 6044 (40.1%)
+   Berita Murni: 9044 (59.9%)
+Training samples: 13579
+Evaluation samples: 1509
+[4/5] Setting up Unsloth SFTTrainer with monitoring...
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 334, in <module>
+    main()
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 265, in main
+    eval_steps=args.eval_steps,
+AttributeError: 'Namespace' object has no attribute 'eval_steps'. Did you mean: 'max_steps'?
+2026-01-12 14:29:16.904538: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning.
+🦥 Unsloth Zoo will now patch everything to make training faster!
+================================================================================
+NATIVE ADS DETECTION - FINE-TUNING
+================================================================================
+Model: qwen
+Description: Qwen 2.5 14B - Best multilingual performance
+Base Model: unsloth/Qwen2.5-14B-Instruct-bnb-4bit
+Dataset: ../data/llm_dataset_mixed_json.json
+Output: ../models/qwen-native-ads
+Max Steps: 1500
+Learning Rate: 0.0001
+Batch Size: 1
+LoRA r: 8
+================================================================================
+
+[1/5] Loading base model with Unsloth...
+==((====))==  Unsloth 2026.1.2: Fast Qwen2 patching. Transformers: 4.57.3.
+   \\   /|    NVIDIA A100-SXM4-40GB MIG 7g.40gb. Num GPUs = 1. Max memory: 39.381 GB. Platform: Linux.
+O^O/ \_/ \    Torch: 2.9.1+cu128. CUDA: 8.0. CUDA Toolkit: 12.8. Triton: 3.5.1
+\        /    Bfloat16 = TRUE. FA [Xformers = None. FA2 = False]
+ "-____-"     Free license: http://github.com/unslothai/unsloth
+Unsloth: Fast downloading is enabled - ignore downloading bars which are red colored!
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.62s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.58s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.59s/it]
+Unsloth 2026.1.2 patched 48 layers with 48 QKV layers, 48 O layers and 48 MLP layers.
+[2/5] Adding LoRA adapters...
+[3/5] Loading and formatting dataset...
+Loading dataset from: ../data/llm_dataset_mixed_json.json
+Loaded 15088 samples
+
+📊 Dataset Balance:
+   Native Ads: 6044 (40.1%)
+   Berita Murni: 9044 (59.9%)
+Training samples: 13579
+Evaluation samples: 1509
+[4/5] Setting up Unsloth SFTTrainer with monitoring...
+Traceback (most recent call last):
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 334, in <module>
+    main()
+  File "/drive0-storage/brian/agentic-ai-native-ads/langchain-refactor/finetune.py", line 265, in main
+    eval_steps=args.eval_steps,
+AttributeError: 'Namespace' object has no attribute 'eval_steps'. Did you mean: 'max_steps'?
+2026-01-12 14:30:08.867326: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+usage: finetune.py [-h] [--model {qwen,llama,gemma}] [--dataset DATASET]
+                   [--output OUTPUT] [--max-steps MAX_STEPS] [--epochs EPOCHS]
+finetune.py: error: argument --model: invalid choice: 'gpt-oss' (choose from 'qwen', 'llama', 'gemma')
+🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning.
+🦥 Unsloth Zoo will now patch everything to make training faster!
+
+================================================================================
+ALL MODELS TRAINED SUCCESSFULLY!
+================================================================================
+
+Training Times:
+llama: 0h 0m
+gemma: 0h 0m
+qwen: 0h 0m
+gpt-oss: 0h 0m
+llama: 0h 0m
+gemma: 0h 0m
+qwen: 0h 0m
+gpt-oss: 0h 0m
+llama: 0h 1m
+gemma: 0h 1m
+qwen: 0h 2m
+gpt-oss: 0h 4m
+llama: 0h 0m
+gemma: 0h 0m
+qwen: 0h 0m
+gpt-oss: 0h 0m
+
+Next steps:
+1. Run comparison: python compare_models.py
+2. View results: cat ../results/multi_model_training/model_comparison.json
+
+Models saved in:
+  - ../models/llama-native-ads_merged_16bit
+  - ../models/gemma-native-ads_merged_16bit
+  - ../models/qwen-native-ads_merged_16bit
+  - ../models/gpt-oss-native-ads_merged_16bit
+================================================================================

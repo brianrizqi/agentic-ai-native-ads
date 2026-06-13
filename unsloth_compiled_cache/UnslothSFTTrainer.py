@@ -1,7 +1,7 @@
 """
-2026.1.2
-2026.1.2
-4.57.3
+2026.2.1
+2026.2.1
+4.57.6
 0.24.0
 __UNSLOTH_VERSIONING__
 """
@@ -26,8 +26,9 @@ from torch import Tensor
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+from unsloth_zoo.temporary_patches.common import torch_compile
 from typing import Any, List, Optional, Tuple, Union, Dict, Set, Callable
-from trl.trainer.sft_trainer import (Any, AutoProcessor, BaseTrainer, Callable, DataCollator, DataCollatorForLanguageModeling, DataCollatorForVisionLanguageModeling, Dataset, EvalPrediction, FLASH_ATTENTION_VARIANTS, IterableDataset, Optional, Path, PeftConfig, PreTrainedModel, PreTrainedTokenizerBase, ProcessorMixin, SFTConfig, SFTTrainer, TrainerCallback, TrainingArguments, Union, clone_chat_template, contextlib, create_model_from_path, dataclass, defaultdict, dft_loss, get_act_offloading_ctx_manager, is_conversational, logger, logging, nn, os, pack_dataset, pad, prepare_peft_model, selective_log_softmax, torch, Callable, DataCollator, DataCollatorForLanguageModeling, Dataset, IterableDataset, Optional, Union, os, pack_dataset, pad, Optional, PreTrainedModel, logger, os, torch, os)
+from trl.trainer.sft_trainer import (Any, AutoProcessor, BaseTrainer, Callable, DataCollator, DataCollatorForLanguageModeling, DataCollatorForVisionLanguageModeling, Dataset, EvalPrediction, FLASH_ATTENTION_VARIANTS, IterableDataset, Optional, Path, PeftConfig, PreTrainedModel, PreTrainedTokenizerBase, ProcessorMixin, SFTConfig, SFTTrainer, TrainerCallback, TrainingArguments, Union, clone_chat_template, contextlib, create_model_from_path, dataclass, defaultdict, dft_loss, get_act_offloading_ctx_manager, is_conversational, logger, logging, nn, os, pack_dataset, pad, selective_log_softmax, torch, Any, AutoProcessor, Callable, DataCollator, DataCollatorForLanguageModeling, DataCollatorForVisionLanguageModeling, Dataset, EvalPrediction, FLASH_ATTENTION_VARIANTS, IterableDataset, Optional, PeftConfig, PreTrainedModel, PreTrainedTokenizerBase, ProcessorMixin, SFTConfig, SFTTrainer, TrainerCallback, TrainingArguments, Union, clone_chat_template, contextlib, create_model_from_path, defaultdict, dft_loss, get_act_offloading_ctx_manager, is_conversational, logger, os, pad, torch, Callable, DataCollator, DataCollatorForLanguageModeling, Dataset, IterableDataset, Optional, Union, os, pack_dataset, pad, Optional, PreTrainedModel, logger, os, torch, os)
 
 
 import os
@@ -39,9 +40,9 @@ import numpy as np
 from contextlib import nullcontext
 from torch.nn import functional as F
 import inspect
-import psutil
 from transformers import DataCollatorForSeq2Seq, DataCollatorForLanguageModeling as TransformersDataCollatorForLanguageModeling
 from transformers.training_args import ParallelMode
+from unsloth_zoo.device_type import DEVICE_TYPE, device_synchronize
 
 # Wrap trainer with padding to right and enable training mode
 # Also patches W&B since multiple runs must use wandb.finish()
@@ -56,17 +57,19 @@ def prepare_for_training_mode(f):
     def wrapper(self, *args, **kwargs):
         # Enable training mode
         _was_training = None
+        # Get gradient checkpointing setting from training arguments
+        use_gc = getattr(self.args, 'gradient_checkpointing', True)
         if hasattr(self, 'model') and hasattr(self.model, "training"):
             _was_training = self.model.training
         if hasattr(self, 'model') and hasattr(self.model, "for_training"):
-            self.model.for_training()
+            self.model.for_training(use_gradient_checkpointing=use_gc)
         output = f(self, *args, **kwargs)
         # Restore previous mode when possible
         if hasattr(self, 'model') and hasattr(self.model, "for_inference"):
             if _was_training is False:
                 self.model.for_inference()
             elif _was_training is True and hasattr(self.model, "for_training"):
-                self.model.for_training()
+                self.model.for_training(use_gradient_checkpointing=use_gc)
         # Reset gradient checkpointing buffers to free memory while staying ready for next run
         try:
             reset_unsloth_gradient_checkpointing_buffers()
@@ -89,6 +92,51 @@ torch_compile_options = {
     "trace.enabled"     : False,
     "triton.cudagraphs" : False,
 }
+
+@torch.compile(dynamic = True, fullgraph = True, options = torch_compile_options,)
+def chunked_hidden_states_selective_log_softmax(
+    hidden_states: torch.Tensor,
+    lm_head: torch.Tensor,
+    index: torch.Tensor,
+    chunks: int = 4,
+    logit_scale_multiply: float = 0.0,
+    logit_scale_divide: float = 0.0,
+    logit_softcapping: float = 0.0,
+    temperature: float = 1.0,
+) -> torch.Tensor:
+    # All Unsloth Zoo code licensed under AGPL3
+    flat_hidden_states = hidden_states.reshape(-1, hidden_states.shape[-1])
+    flat_index = index.reshape(-1)
+
+    chunked_hidden_states = torch.chunk(flat_hidden_states, chunks=chunks, dim=0)
+    chunked_index = torch.chunk(flat_index, chunks=chunks, dim=0)
+
+    all_per_token_logps = []
+
+    for chunk_hidden_states, chunk_index in zip(chunked_hidden_states, chunked_index):
+        chunk_logits = chunk_hidden_states.to(lm_head.dtype) @ lm_head.t()
+
+        if logit_scale_multiply != 0.0:
+            chunk_logits = chunk_logits * logit_scale_multiply
+        if logit_scale_divide != 0.0:
+            chunk_logits = chunk_logits / logit_scale_divide
+        if logit_softcapping != 0.0:
+            chunk_logits = chunk_logits * torch.tanh(chunk_logits / logit_softcapping)
+
+        chunk_logits = chunk_logits.to(torch.float32)
+
+        if temperature != 1.0:
+            chunk_logits = chunk_logits / temperature
+
+        selected_logits = torch.gather(chunk_logits, dim=-1, index=chunk_index.unsqueeze(-1)).squeeze(-1)
+        logsumexp_values = torch.logsumexp(chunk_logits, dim=-1)
+        per_token_logps = selected_logits - logsumexp_values
+        all_per_token_logps.append(per_token_logps)
+
+    all_per_token_logps = torch.concat(all_per_token_logps)
+
+    all_per_token_logps = all_per_token_logps.reshape((hidden_states.shape[0], hidden_states.shape[1]))
+    return all_per_token_logps
 
 @torch.compile(dynamic = True, fullgraph = True, options = torch_compile_options,)
 def chunked_selective_log_softmax(logits, index):
@@ -210,6 +258,55 @@ def align_logprobs_with_mask(
     padded_logprobs[valid_rows, valid_cols] = valid_vals
 
     return padded_logprobs
+
+def autotune_batch_and_chunks(
+    total_input_rows,
+    seq_len,
+    hidden_size,
+    vocab_size,
+    dtype_bytes=16,
+    multiplier=None
+):
+    if multiplier is None:
+        final_m = max(4, seq_len // 4096)
+    else:
+        final_m = multiplier
+
+    if torch.cuda.is_available():
+        free_bytes, _ = torch.cuda.mem_get_info()
+        limit_gb = (free_bytes / (1024**3))*.80
+    elif hasattr(torch, "xpu") and torch.xpu.is_available():
+        # For XPU: estimate free memory from total - reserved
+        total_mem = torch.xpu.get_device_properties(0).total_memory
+        reserved_mem = torch.xpu.memory_reserved()
+        free_bytes = total_mem - reserved_mem
+        limit_gb = (free_bytes / (1024**3)) * 0.80
+    else:
+        # Fallback: assume 8GB available
+        limit_gb = 8.0
+
+    bytes_to_gb = 1024**3
+
+    b_vals = torch.arange(total_input_rows, 0, -1, device='cpu', dtype=torch.float32)
+
+    hidden_gb = (b_vals * seq_len * hidden_size * dtype_bytes) / bytes_to_gb
+
+    base_logits = ((b_vals/total_input_rows) * b_vals * seq_len * vocab_size * dtype_bytes) / bytes_to_gb
+    logits_gb = base_logits / final_m
+
+    total_mem_gb = hidden_gb + logits_gb
+
+    valid_mask = total_mem_gb <= limit_gb
+    valid_indices = torch.nonzero(valid_mask, as_tuple=False)
+
+    if valid_indices.shape[0] == 0:
+        #This means your GPU will OOM
+        return 4, final_m
+
+    best_idx = valid_indices[0].item()
+    final_b = int(b_vals[best_idx].item())
+
+    return final_b, final_m
 @dataclass
 class UnslothSFTConfig(SFTConfig):
     """
@@ -300,6 +397,14 @@ class UnslothSFTConfig(SFTConfig):
         default = -1,
         metadata = {'help': 'Chunk size to reduce memory usage. -1 is most efficient.'},
     )
+    unsloth_logit_chunk_multiplier : Optional[int] = field(
+            default = None,
+            metadata = {'help': 'Multiplier for chunked logit computations.'},
+        )
+    unsloth_grpo_mini_batch : Optional[int] = field(
+        default = None,
+        metadata = {'help': 'Mini batch size for GRPO hidden state accumulation. Default is None unless user defines it.'},
+    )
     max_seq_length : Optional[int] = field(
         default = None,
         metadata = {'help': 'Maximum sequence length to truncate to.'},
@@ -330,6 +435,7 @@ class UnslothSFTConfig(SFTConfig):
         num_train_epochs = 3.0,
         max_steps = -1,
         lr_scheduler_type = 'linear',
+        lr_scheduler_kwargs = None,
         warmup_ratio = 0.1,
         warmup_steps = 0,
         log_level = 'passive',
@@ -455,22 +561,27 @@ class UnslothSFTConfig(SFTConfig):
         activation_offloading = False,
         vllm_sampling_params = None,
         unsloth_num_chunks = -1,
+        unsloth_logit_chunk_multiplier = None, 
+        unsloth_grpo_mini_batch = None, 
         max_seq_length = None,
         **kwargs,
     ):
         if learning_rate < 1e-7: print(f'Unsloth: Your learning rate of `{learning_rate}` is too small and less than 1e-7! Consider increasing it, otherwise gradient updates will be close to 0!')
         if learning_rate > 1: print(f'Unsloth: Your learning rate of `{learning_rate}` is way too larger > 1! Consider decreasing it to 1e-1, otherwise gradient updates will explode!')
+        if num_train_epochs is None:
+            num_train_epochs = 3.0  # Default to 3 epochs if None, max_steps will override
         if output_dir is None and save_strategy == 'steps' and save_steps == 500:
             output_dir = 'unsloth_training_checkpoints'
             save_strategy = 'no'
-        if dataset_num_proc is None:
+        import multiprocessing as _mp
+        if _mp.get_start_method() != 'fork':
+            dataset_num_proc = None
+        elif dataset_num_proc is None:
             import psutil
             dataset_num_proc = min(max((psutil.cpu_count() or 1)+4, 2), 64)
             memory_gb_left = psutil.virtual_memory().available / (1024**3)
-            if   memory_gb_left <=  4: dataset_num_proc = 1 # Too risky, so set to 1
-            elif memory_gb_left <=  6: dataset_num_proc = min(2, dataset_num_proc)
-            elif memory_gb_left <= 10: dataset_num_proc = min(4, dataset_num_proc)
-            elif memory_gb_left <= 14: dataset_num_proc = min(6, dataset_num_proc)
+            if memory_gb_left <= 2: dataset_num_proc = 1
+            else: dataset_num_proc = min(dataset_num_proc, int(memory_gb_left))
         if os.environ.get('UNSLOTH_ENABLE_FLEX_ATTENTION', '0') == '1':
             from unsloth_zoo.flex_attention import HAS_FLEX_ATTENTION
             if HAS_FLEX_ATTENTION and pad_to_multiple_of is None:
@@ -503,6 +614,7 @@ class UnslothSFTConfig(SFTConfig):
             num_train_epochs = num_train_epochs,
             max_steps = max_steps,
             lr_scheduler_type = lr_scheduler_type,
+            lr_scheduler_kwargs = lr_scheduler_kwargs,
             warmup_ratio = warmup_ratio,
             warmup_steps = warmup_steps,
             log_level = log_level,
@@ -628,7 +740,17 @@ class UnslothSFTConfig(SFTConfig):
             activation_offloading = activation_offloading,**kwargs)
         self.vllm_sampling_params = vllm_sampling_params
         self.unsloth_num_chunks = unsloth_num_chunks
+        if unsloth_grpo_mini_batch is not None:
+            if self.generation_batch_size >= unsloth_grpo_mini_batch:
+                self.unsloth_grpo_mini_batch = unsloth_grpo_mini_batch
+            else:
+                raise ValueError(
+                    f"Unsloth GRPO mini batch size needs to be less than or equal to the effective generation batch size, "
+                    f"which is self.per_device_train_batch_size * gradient_accumulation_steps."
+                )
+        self.unsloth_logit_chunk_multiplier = unsloth_logit_chunk_multiplier
         self.max_seq_length = max_seq_length
+
 pass
 
 class _UnslothSFTTrainer(BaseTrainer):
@@ -662,7 +784,7 @@ class _UnslothSFTTrainer(BaseTrainer):
         elif isinstance(args, TrainingArguments) and not isinstance(args, SFTConfig):
             dict_args = args.to_dict()
             dict_args["hub_token"] = args.hub_token  # to_dict hides the hub_token
-            dict_args.pop("push_to_hub_token")
+            dict_args.pop("push_to_hub_token", None)
             args = SFTConfig(**dict_args)
 
         # Model
@@ -683,7 +805,7 @@ class _UnslothSFTTrainer(BaseTrainer):
         # Handle pad token for processors or tokenizers
         if isinstance(processing_class, ProcessorMixin):
             tokenizer = processing_class.tokenizer
-            self._is_vlm = False
+            self._is_vlm = True
         elif isinstance(processing_class, PreTrainedTokenizerBase):
             tokenizer = processing_class
             self._is_vlm = False
@@ -759,7 +881,7 @@ class _UnslothSFTTrainer(BaseTrainer):
         self.num_virtual_tokens = 0
 
         if False:
-            model = prepare_peft_model(model, peft_config, args)
+            pass
             if model.active_adapter in model.peft_config:
                 peft_model_config = model.peft_config[model.active_adapter]
                 self.num_virtual_tokens = getattr(peft_model_config, "num_virtual_tokens", 0)
@@ -787,14 +909,6 @@ class _UnslothSFTTrainer(BaseTrainer):
                     "configuration to one of these supported options or verify that your attention mechanism can "
                     "handle flattened sequences."
                 )
-
-            if args.per_device_train_batch_size == 1 and not args.packing:
-                logger.warning(
-                    "You are using a per_device_train_batch_size of 1 with padding-free training. Using a batch size "
-                    "of 1 anihilate the benefits of padding-free training. Please consider increasing the batch size "
-                    "to at least 2."
-                )
-
         # Decide whether to use completion-only loss: if not specified, then it is set to True if the dataset format
         # is prompt-completion, and False if the dataset format is language modeling.
         dataset_sample = next(iter(train_dataset))
@@ -804,6 +918,13 @@ class _UnslothSFTTrainer(BaseTrainer):
             self.completion_only_loss = args.completion_only_loss
 
         self._is_vision_dataset = "image" in dataset_sample or "images" in dataset_sample
+        # Unsloth: override _is_vlm for VLM models that pass a bare tokenizer
+        if not self._is_vlm and self._is_vision_dataset:
+            _m = model
+            if hasattr(_m, "model"): _m = _m.model
+            if hasattr(getattr(_m, "config", None), "vision_config") or\
+               _m.__class__.__name__.endswith("ForConditionalGeneration"):
+                self._is_vlm = True
         if self._is_vision_dataset and not self._is_vlm:
             raise ValueError(
                 "The dataset appears to be vision-related (contains 'image' or 'images' keys), but the provided "
@@ -867,6 +988,7 @@ class _UnslothSFTTrainer(BaseTrainer):
                     "completion-only loss. To resolve this, apply your formatting function before passing the "
                     "dataset, or disable `completion_only_loss` in `SFTConfig`."
                 )
+            self._unsloth_model_ref = model
             train_dataset = self._prepare_dataset(
                 train_dataset, processing_class, args, args.packing, formatting_func, "train"
             )
@@ -954,6 +1076,34 @@ class _UnslothSFTTrainer(BaseTrainer):
         tokenizer = processing_class
         if is_vlm: tokenizer = processing_class.tokenizer
     
+        # Dynamic detection: check if model's module defines a function
+        # that requires token_type_ids when is_training=True
+        import sys as _sys
+        _needs_token_type_ids = False
+        # Split to avoid compiler substring match on masking_utils names
+        _ccm = 'create_' + 'causal_mask_mapping'
+        _model = getattr(self, '_unsloth_model_ref', None) or getattr(self, 'model', None)
+        if _model is not None:
+            for _m in (_model, getattr(_model, 'model', None)):
+                if _m is None: continue
+                _mod = _sys.modules.get(type(_m).__module__)
+                if _mod is not None and hasattr(_mod, _ccm):
+                    _needs_token_type_ids = True
+                    break
+    
+        if not _needs_token_type_ids:
+            # Fallback: model not yet available, check processor class MRO
+            for _base in type(processing_class).__mro__:
+                _base_mod = getattr(_base, '__module__', '')
+                if 'transformers.models.' in _base_mod:
+                    _modeling_mod = _base_mod.replace('.processing_', '.modeling_')
+                    _mod = _sys.modules.get(_modeling_mod)
+                    if _mod is not None and hasattr(_mod, _ccm):
+                        _needs_token_type_ids = True
+                        break
+        if _needs_token_type_ids and hasattr(args, 'remove_unused_columns'):
+            args.remove_unused_columns = False
+    
         # Get max length
         max_seq_length = getattr(args, "max_length", 0)
         if max_seq_length == 0: max_seq_length = getattr(args, "max_seq_length", 0)
@@ -970,6 +1120,8 @@ class _UnslothSFTTrainer(BaseTrainer):
         used_column_names = ["input_ids"]
         if "attention_mask" in column_names:
             used_column_names.append("attention_mask")
+        if _needs_token_type_ids:
+            used_column_names.append("token_type_ids")
     
         # Check if already tokenized so skip
         from transformers import DataCollatorForSeq2Seq, DataCollatorForLanguageModeling
@@ -1031,32 +1183,34 @@ class _UnslothSFTTrainer(BaseTrainer):
                     example[dataset_text_field] if not do_formatting_func else formatting_func(example),
                     truncation = do_truncation,
                     max_length = max_seq_length,
-                    return_token_type_ids = False,
+                    return_token_type_ids = _needs_token_type_ids,
                     add_special_tokens = add_special_tokens,
                 )
             pass
     
             if not isinstance(dataset, IterableDataset):
-                dataset_num_proc = getattr(args, "dataset_num_proc", None)
-                if dataset_num_proc is None:
-                    import psutil
-                    dataset_num_proc = max((psutil.cpu_count() or 1)+4, 2)
-                    # Check memory left so we can reduce multiprocessing to converse memory
-                    memory_gb_left = psutil.virtual_memory().available / (1024**3)
-                    if memory_gb_left <= 4:
-                        dataset_num_proc = 1 # Too risky, so set to 1
-                    elif memory_gb_left <= 6:
-                        dataset_num_proc = min(2, dataset_num_proc)
-                    elif memory_gb_left <= 8:
-                        dataset_num_proc = min(4, dataset_num_proc)
-                    elif memory_gb_left <= 12:
-                        dataset_num_proc = min(6, dataset_num_proc)
+                import multiprocessing as _mp
+                if _mp.get_start_method() != 'fork':
+                    dataset_num_proc = None
+                else:
+                    dataset_num_proc = getattr(args, "dataset_num_proc", None)
+                    if dataset_num_proc is None:
+                        import psutil
+                        dataset_num_proc = min(max((psutil.cpu_count() or 1)+4, 2), 64)
+                        memory_gb_left = psutil.virtual_memory().available / (1024**3)
+                        if memory_gb_left <= 2:
+                            dataset_num_proc = 1
+                        else:
+                            dataset_num_proc = min(dataset_num_proc, int(memory_gb_left))
                 map_kwargs["num_proc"] = dataset_num_proc
             else:
                 map_kwargs["batch_size"] = dataset._ex_iterable.batch_size
                 
             if use_desc: map_kwargs["desc"] = f'Unsloth: Tokenizing ["{dataset_text_field}"]'
-            dataset = dataset.map(_tokenize, batched = True, **map_kwargs)
+            import warnings as _w
+            with _w.catch_warnings():
+                _w.filterwarnings("ignore", message=".*couldn't be hashed properly.*")
+                dataset = dataset.map(_tokenize, batched = True, remove_columns = list(column_names), **map_kwargs)
     
             # If VLM, switch data collator since .pad is needed!
             if is_vlm and not hasattr(processing_class, "pad"):
@@ -1092,7 +1246,7 @@ class _UnslothSFTTrainer(BaseTrainer):
         # dataset. So we need to override the default signature columns to include "completion_mask" as well.
         if self._signature_columns is None:
             if self._is_vision_dataset:
-                self._signature_columns = ["messages", "prompt", "completion", "images"]
+                self._signature_columns = ["messages", "prompt", "completion", "images", "input_ids", "labels", "attention_mask", "seq_lengths", "completion_mask", "assistant_masks"]
             else:
                 self._signature_columns = ["input_ids", "labels", "seq_lengths", "completion_mask", "assistant_masks"]
 
