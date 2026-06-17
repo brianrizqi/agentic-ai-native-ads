@@ -348,9 +348,10 @@ JAWABAN: """
                     # Re-aligning exactly with the training instruction set
                     en_indicators = [" the ", " and ", " is ", " of ", " with ", " for "]
                     is_english = any(indic in content.lower() for indic in en_indicators)
-                    
+
                     template = ALPACA_EN_MINIMAL_TEMPLATE if is_english else ALPACA_ID_MINIMAL_TEMPLATE
-                    
+
+                    prefix_force = ""
                     suffix_force = '"}'
                 else:
                     # Stage 106: The Safe Haven (Absolute Rollback)
