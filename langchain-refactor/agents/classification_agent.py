@@ -434,23 +434,16 @@ JAWABAN: """
                 ppl_val = None
                 if self.model_tier in ['micro'] and self.local_model_ref is not None:
                     with torch.no_grad():
-                        # Constrained generation: inject '{"label": "' as forced prefix so the
-                        # model generates its actual label token rather than scoring raw vocabulary.
-                        # Logit-based one-token scoring is unreliable because token frequencies
-                        # ("berita" vs "native") are not calibrated against each other.
-                        label_prefix_ids = self.tokenizer.encode(
-                            '{"label": "', add_special_tokens=False, return_tensors="pt"
-                        ).to(self.local_model_ref.device)
-                        gen_input_ids = torch.cat([input_ids, label_prefix_ids], dim=1)
-                        gen_mask = torch.ones(gen_input_ids.shape, dtype=torch.long, device=gen_input_ids.device)
-
+                        # The Alpaca template already ends with '{"label": "' so input_ids
+                        # is already the correct conditioned prefix. Generate the label tokens
+                        # directly — no prefix injection needed (that would double the prefix).
                         generated_ids = self.local_model_ref.generate(
-                            gen_input_ids,
-                            attention_mask=gen_mask,
+                            input_ids,
+                            attention_mask=mask,
                             max_new_tokens=8,
                             do_sample=False
                         )
-                        new_tokens = generated_ids[0][gen_input_ids.shape[1]:]
+                        new_tokens = generated_ids[0][input_ids.shape[1]:]
                         gen_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True).lower().strip()
 
                         if gen_text.startswith("native"):
@@ -458,10 +451,9 @@ JAWABAN: """
                         elif gen_text.startswith("berita"):
                             decision_label = "berita murni"
                         else:
-                            # Fallback: check substring
                             decision_label = "native ads" if "native" in gen_text else "berita murni"
 
-                        ppl_val = 1.0  # generation-based; PPL not meaningful here
+                        ppl_val = 1.0
 
                         # Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
@@ -473,7 +465,7 @@ JAWABAN: """
                             vote_msg = ""
                         reason_msg = f"gen:{gen_text[:20]!r} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Constrained-Gen] {reason_msg}")
+                        print(f"DEBUG [Micro-Gen] {reason_msg}")
                 else:
                     with torch.no_grad():
                         if is_gemma and self.model_tier == 'standard':
