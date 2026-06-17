@@ -434,39 +434,34 @@ JAWABAN: """
                 ppl_val = None
                 if self.model_tier in ['micro'] and self.local_model_ref is not None:
                     with torch.no_grad():
-                        # Inject label prefix so scoring is conditioned on the JSON key.
-                        # Comparing raw end-of-prompt logits for "native"/"berita" is unreliable
-                        # because those tokens' raw frequencies are unrelated to classification.
-                        # Conditioning on '{"label": "' forces the model into label-generation
-                        # context, making "native" vs "berita" directly comparable without bias.
+                        # Constrained generation: inject '{"label": "' as forced prefix so the
+                        # model generates its actual label token rather than scoring raw vocabulary.
+                        # Logit-based one-token scoring is unreliable because token frequencies
+                        # ("berita" vs "native") are not calibrated against each other.
                         label_prefix_ids = self.tokenizer.encode(
                             '{"label": "', add_special_tokens=False, return_tensors="pt"
                         ).to(self.local_model_ref.device)
-                        scored_ids = torch.cat([input_ids, label_prefix_ids], dim=1)
-                        scored_mask = torch.ones(scored_ids.shape, dtype=torch.long, device=scored_ids.device)
+                        gen_input_ids = torch.cat([input_ids, label_prefix_ids], dim=1)
+                        gen_mask = torch.ones(gen_input_ids.shape, dtype=torch.long, device=gen_input_ids.device)
 
-                        outputs = self.local_model_ref(scored_ids, attention_mask=scored_mask)
-                        logits = outputs.logits[0, -1, :]
+                        generated_ids = self.local_model_ref.generate(
+                            gen_input_ids,
+                            attention_mask=gen_mask,
+                            max_new_tokens=8,
+                            do_sample=False
+                        )
+                        new_tokens = generated_ids[0][gen_input_ids.shape[1]:]
+                        gen_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True).lower().strip()
 
-                        t_ads = ["native", "Native"]
-                        t_news = ["berita", "Berita"]
+                        if gen_text.startswith("native"):
+                            decision_label = "native ads"
+                        elif gen_text.startswith("berita"):
+                            decision_label = "berita murni"
+                        else:
+                            # Fallback: check substring
+                            decision_label = "native ads" if "native" in gen_text else "berita murni"
 
-                        def _best_logit(tokens):
-                            scores = []
-                            for t in tokens:
-                                ids = self.tokenizer.encode(t, add_special_tokens=False)
-                                if ids:
-                                    scores.append(logits[ids[0]].item())
-                            return max(scores) if scores else -999.0
-
-                        score_native = _best_logit(t_ads)
-                        score_berita = _best_logit(t_news)
-
-                        decision_label = "native ads" if score_native > score_berita else "berita murni"
-
-                        conf_probs = torch.softmax(torch.tensor([score_native, score_berita]), dim=-1)
-                        p_final = conf_probs[0].item() if decision_label == "native ads" else conf_probs[1].item()
-                        ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
+                        ppl_val = 1.0  # generation-based; PPL not meaningful here
 
                         # Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
@@ -476,9 +471,9 @@ JAWABAN: """
                             vote_msg = f"RAG-W-VOTE:[N:{rag_w_ads:.1f}, B:{rag_w_news:.1f}]"
                         else:
                             vote_msg = ""
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
+                        reason_msg = f"gen:{gen_text[:20]!r} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Label-Prefix] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Constrained-Gen] {reason_msg}")
                 else:
                     with torch.no_grad():
                         if is_gemma and self.model_tier == 'standard':
