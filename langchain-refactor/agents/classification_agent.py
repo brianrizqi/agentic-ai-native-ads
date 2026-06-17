@@ -260,7 +260,8 @@ class ClassificationAgent:
                     RAG_THRESHOLD = 0.75 if is_qwen else 0.75
                 rag_block = ""
                 avg_sim = 0.0
-                
+                selected = []
+
                 if self.use_rag and examples:
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
                     
@@ -470,7 +471,12 @@ JAWABAN: """
                         
                         # Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
-                        vote_msg = f"RAG-W-VOTE:[N:{rag_weighted_ads:.1f}, B:{rag_weighted_news:.1f}]" if rag_status == "RAG-YES" else ""
+                        if rag_status == "RAG-YES" and selected:
+                            rag_w_ads = sum(1.0 for ex in selected if 'native' in str(ex.get('label', '')).lower())
+                            rag_w_news = sum(1.0 for ex in selected if 'native' not in str(ex.get('label', '')).lower())
+                            vote_msg = f"RAG-W-VOTE:[N:{rag_w_ads:.1f}, B:{rag_w_news:.1f}]"
+                        else:
+                            vote_msg = ""
                         reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
                         print(f"DEBUG [Stage 106-Restored] PPL: %.4f | {reason_msg}" % ppl_val)
