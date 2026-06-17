@@ -383,11 +383,20 @@ JAWABAN: """
                 content_processed = content_clean[:max_chars]
 
                 if self.model_tier == 'micro':
-                    # Use title + content matching the finetune.py training format exactly.
-                    user_msg = template.format(
+                    # Inject RAG examples as labeled few-shot context before the article.
+                    # The model wasn't trained with RAG context but labeled examples still
+                    # help steer predictions on borderline cases.
+                    rag_hint = ""
+                    if selected:
+                        rag_hint = "\n[Reference examples from knowledge base]:\n"
+                        for ex in selected[:2]:  # max 2 examples to stay within context
+                            ex_label = "native ads" if "native" in str(ex.get("label", "")).lower() else "pure news"
+                            rag_hint += f"- Example ({ex_label}): {str(ex.get('content', ''))[:150]}...\n"
+                        rag_hint += "\nNow classify the article below:\n"
+                    user_msg = (rag_hint + template.format(
                         title=title or content[:70],
                         content=content_processed
-                    ).strip()
+                    )).strip()
                 else:
                     # Stage 116: For small tier, only inject RAG context if it's high confidence
                     if self.model_tier == 'small' and avg_sim < 0.75:
@@ -448,6 +457,16 @@ JAWABAN: """
 
                 # Final Structure
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
+
+                # RAG override for micro tier: if model says "native ads" but all retrieved
+                # examples are "berita murni" with high similarity, flip the prediction.
+                # This corrects the model's over-prediction of native ads on clear news articles.
+                if self.model_tier == 'micro' and result.get('label') == 'native ads' and selected:
+                    rag_berita_count = sum(1 for ex in selected if 'native' not in str(ex.get('label', '')).lower())
+                    if rag_berita_count == len(selected) and avg_sim >= 1.0:
+                        result['label'] = 'berita murni'
+                        result['reasoning'] = f"[RAG-override] All {len(selected)} retrieved examples are berita murni (sim={avg_sim:.2f}). " + result.get('reasoning', '')
+
                 result['metadata'] = {
                     'model': self.model_name, 
                     'raw_response': raw_response,
