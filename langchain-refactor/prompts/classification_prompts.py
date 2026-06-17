@@ -526,6 +526,47 @@ Konten: {content}
 
 Output (JSON):"""
 
+# Micro-tier training-matched templates (matches finetune.py exactly)
+# These must match the templates used in finetune.py load_and_format_dataset()
+# to avoid training/inference mismatch for micro-tier models.
+MICRO_EN_TRAINING_TEMPLATE = """Classify the following article as 'native ads' or 'pure news'.
+
+Native Ads combine ALL of these traits:
+1. Positive/neutral tone (not critical of the subject)
+2. Persuasive language (convincing/inviting)
+3. Promotes a product, brand, or institution
+4. Only one viewpoint (not objective)
+
+Pure News:
+- Can be positive/neutral/negative
+- Objective, presents multiple viewpoints
+- Does not promote products/brands
+
+Title: {title}
+Content: {content}
+
+Output (JSON):
+"""
+
+MICRO_ID_TRAINING_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+"""
+
 # Phase 39: Alpaca Format Restoration (Gemma 3 270M Target 65%)
 # -----------------------------------------------------------------------------
 # Re-aligning the model prompt exactly with its Unsloth fine-tuning template.

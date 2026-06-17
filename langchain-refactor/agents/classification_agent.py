@@ -237,7 +237,8 @@ class ClassificationAgent:
                     ADVANCED_8B_GOLD_TEMPLATE,
                     QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE,
                     ALPACA_ID_MINIMAL_TEMPLATE, ALPACA_EN_MINIMAL_TEMPLATE,
-                    BILINGUAL_SILENT_TEMPLATE, GEMMA_LARGE_TEMPLATE
+                    BILINGUAL_SILENT_TEMPLATE, GEMMA_LARGE_TEMPLATE,
+                    MICRO_EN_TRAINING_TEMPLATE, MICRO_ID_TRAINING_TEMPLATE
                 )
                 # Phase 200: Detect model family for Gemma-specific routing
                 is_gemma = self._get_model_family(self.model_name) == 'gemma'
@@ -345,15 +346,15 @@ JAWABAN: """
                     prefix_force = ""
                     suffix_force = ""
                 elif self.model_tier == 'micro':
-                    # Phase 42: Golden Recalibration (No-RAG Strategy)
-                    # Re-aligning exactly with the training instruction set
+                    # Use the same template as finetune.py to avoid training/inference mismatch.
+                    # finetune.py wraps EN/ID_PROMPT_TEMPLATE in apply_chat_template — we must do the same.
                     en_indicators = [" the ", " and ", " is ", " of ", " with ", " for "]
                     is_english = any(indic in content.lower() for indic in en_indicators)
 
-                    template = ALPACA_EN_MINIMAL_TEMPLATE if is_english else ALPACA_ID_MINIMAL_TEMPLATE
+                    template = MICRO_EN_TRAINING_TEMPLATE if is_english else MICRO_ID_TRAINING_TEMPLATE
 
                     prefix_force = ""
-                    suffix_force = '"}'
+                    suffix_force = ""
                 else:
                     # Stage 106: The Safe Haven (Absolute Rollback)
                     # Returning to the proven 78% structure.
@@ -375,21 +376,18 @@ JAWABAN: """
                     max_chars = 400
                 elif is_qwen:
                     max_chars = 5000
+                elif self.model_tier == 'micro':
+                    max_chars = 400  # matches finetune.py sample['input'][:400]
                 else:
                     max_chars = self.max_chars
                 content_processed = content_clean[:max_chars]
 
                 if self.model_tier == 'micro':
-                    # Extract a substantial chunk
-                    micro_context = ""
-                    if rag_block and len(rag_block) > 50:
-                        micro_context = f"Petunjuk: {rag_block.strip()[:500]}..."
-                    
-                    micro_content = content_processed
-                    if title and title.strip() and title.lower() not in content_processed.lower():
-                        micro_content = f"{title}\n{content_processed}"
-                    
-                    user_msg = template.format(content=micro_content, context_short=micro_context).strip()
+                    # Use title + content matching the finetune.py training format exactly.
+                    user_msg = template.format(
+                        title=title or content[:70],
+                        content=content_processed
+                    ).strip()
                 else:
                     # Stage 116: For small tier, only inject RAG context if it's high confidence
                     if self.model_tier == 'small' and avg_sim < 0.75:
@@ -420,7 +418,9 @@ JAWABAN: """
                     templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                     print(f"DEBUG [Gemma-200] Using GEMMA_LARGE_TEMPLATE | Tier: {self.model_tier} | MaxChars: {self.max_chars}")
                 elif self.model_tier == 'micro':
-                    templated_prompt = user_msg
+                    # Apply chat template matching finetune.py training format exactly.
+                    messages = [{"role": "user", "content": user_msg}]
+                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 else:
                     # Llama Standard / other families
                     messages = [{"role": "user", "content": user_msg}]
@@ -430,57 +430,21 @@ JAWABAN: """
                 input_ids = input_encoding["input_ids"].to(self.local_model_ref.device)
                 mask = input_encoding["attention_mask"].to(self.local_model_ref.device)
                 
-                # Phase 75: Llama Compatibility (Restored)
                 ppl_val = None
-                if self.model_tier in ['micro'] and self.local_model_ref is not None:
-                    with torch.no_grad():
-                        # The Alpaca template already ends with '{"label": "' so input_ids
-                        # is already the correct conditioned prefix. Generate the label tokens
-                        # directly — no prefix injection needed (that would double the prefix).
-                        generated_ids = self.local_model_ref.generate(
-                            input_ids,
-                            attention_mask=mask,
-                            max_new_tokens=8,
-                            do_sample=False
-                        )
-                        new_tokens = generated_ids[0][input_ids.shape[1]:]
-                        gen_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True).lower().strip()
-
-                        if gen_text.startswith("native"):
-                            decision_label = "native ads"
-                        elif gen_text.startswith("berita"):
-                            decision_label = "berita murni"
-                        else:
-                            decision_label = "native ads" if "native" in gen_text else "berita murni"
-
-                        ppl_val = 1.0
-
-                        # Reporting
-                        rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
-                        if rag_status == "RAG-YES" and selected:
-                            rag_w_ads = sum(1.0 for ex in selected if 'native' in str(ex.get('label', '')).lower())
-                            rag_w_news = sum(1.0 for ex in selected if 'native' not in str(ex.get('label', '')).lower())
-                            vote_msg = f"RAG-W-VOTE:[N:{rag_w_ads:.1f}, B:{rag_w_news:.1f}]"
-                        else:
-                            vote_msg = ""
-                        reason_msg = f"gen:{gen_text[:20]!r} | {vote_msg} | Sim:{avg_sim:.2f}"
-                        raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Micro-Gen] {reason_msg}")
-                else:
-                    with torch.no_grad():
-                        if is_gemma and self.model_tier == 'standard':
-                            # Phase 200: Use HuggingFacePipeline invoke() for Gemma large —
-                            # exactly matching commit 198afc5 (March 25, 98.5% accuracy).
-                            # The pipeline already has stop_sequence="}\n" and repetition_penalty=1.1
-                            # configured, which is critical for clean JSON termination.
-                            invoke_result = self.llm.invoke(templated_prompt)
-                            # HuggingFacePipeline returns AIMessage — extract string content
-                            raw_response = invoke_result.content if hasattr(invoke_result, 'content') else str(invoke_result)
-                            print(f"DEBUG [Gemma-200] Pipeline invoke | resp: {raw_response[:80]}")
-                        else:
-                            max_new_tokens = 100
-                            generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=max_new_tokens, do_sample=False)
-                            raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
+                with torch.no_grad():
+                    if is_gemma and self.model_tier == 'standard':
+                        # Phase 200: Use HuggingFacePipeline invoke() for Gemma large —
+                        # exactly matching commit 198afc5 (March 25, 98.5% accuracy).
+                        # The pipeline already has stop_sequence="}\n" and repetition_penalty=1.1
+                        # configured, which is critical for clean JSON termination.
+                        invoke_result = self.llm.invoke(templated_prompt)
+                        # HuggingFacePipeline returns AIMessage — extract string content
+                        raw_response = invoke_result.content if hasattr(invoke_result, 'content') else str(invoke_result)
+                        print(f"DEBUG [Gemma-200] Pipeline invoke | resp: {raw_response[:80]}")
+                    else:
+                        max_new_tokens = 100
+                        generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=max_new_tokens, do_sample=False)
+                        raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
 
                 # Final Structure
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
