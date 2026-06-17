@@ -145,8 +145,7 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         use_rag=kwargs.get('use_rag', False),
         is_mcq=kwargs.get('is_mcq', False), # Phase 47: Stop forcing MCQ via the caller
         model_tier=kwargs.get('tier', 'base'), # Phase 40: Pass tier from CLI
-        rag_top_k=kwargs.get('top_k', 3), # Stage 75: Support Top-K from CLI
-        ads_bonus=kwargs.get('ads_bonus', None)
+        rag_top_k=kwargs.get('top_k', 3) # Stage 75: Support Top-K from CLI
     )
     
     # Initialize RAG if requested
@@ -753,10 +752,6 @@ def main():
                        help='Filter evaluation by language (e.g. "en", "id")')
     parser.add_argument('--gpu-id', type=int, default=0,
                        help='GPU ID to use (0, 1, etc.) or -1 for "auto" (default: 0)')
-    parser.add_argument('--ads-bonus', type=float, default=None,
-                       help='Logit bonus added to native-ads score for micro-tier logit classification '
-                            '(default: 4.38 for micro, 0.0 for small). '
-                            'Lower values = more berita murni predictions. Try 1.5-2.5 for balanced 2000-sample eval.')
     args = parser.parse_args()
     
     # Extract model name from path
@@ -795,8 +790,7 @@ def main():
         vectorstore_dir=args.vectorstore_dir,
         embedding_model=args.embedding_model,
         gpu_id=args.gpu_id,
-        tier=args.tier, # Phase 40: Pass tier from CLI
-        ads_bonus=args.ads_bonus
+        tier=args.tier # Phase 40: Pass tier from CLI
     )
     
     # Compute BERTScore
