@@ -254,6 +254,8 @@ class ClassificationAgent:
                 # Reverting to 0.3 for a broader context awareness.
                 if self.model_tier == 'small':
                     RAG_THRESHOLD = 0.3
+                elif self.model_tier == 'micro':
+                    RAG_THRESHOLD = 0.5  # lower threshold so more samples benefit from RAG override
                 else:
                     RAG_THRESHOLD = 0.75 if is_qwen else 0.75
                 rag_block = ""
@@ -383,20 +385,14 @@ JAWABAN: """
                 content_processed = content_clean[:max_chars]
 
                 if self.model_tier == 'micro':
-                    # Inject RAG examples as labeled few-shot context before the article.
-                    # The model wasn't trained with RAG context but labeled examples still
-                    # help steer predictions on borderline cases.
-                    rag_hint = ""
-                    if selected:
-                        rag_hint = "\n[Reference examples from knowledge base]:\n"
-                        for ex in selected[:2]:  # max 2 examples to stay within context
-                            ex_label = "native ads" if "native" in str(ex.get("label", "")).lower() else "pure news"
-                            rag_hint += f"- Example ({ex_label}): {str(ex.get('content', ''))[:150]}...\n"
-                        rag_hint += "\nNow classify the article below:\n"
-                    user_msg = (rag_hint + template.format(
+                    # Use title + content matching the finetune.py training format exactly.
+                    # RAG context is NOT injected into the prompt — the 1B model was not trained
+                    # with RAG context, so adding it causes format mismatch and hurts accuracy.
+                    # RAG is instead used as a post-generation override (see below).
+                    user_msg = template.format(
                         title=title or content[:70],
                         content=content_processed
-                    )).strip()
+                    ).strip()
                 else:
                     # Stage 116: For small tier, only inject RAG context if it's high confidence
                     if self.model_tier == 'small' and avg_sim < 0.75:
@@ -458,14 +454,17 @@ JAWABAN: """
                 # Final Structure
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
 
-                # RAG override for micro tier: if model says "native ads" but all retrieved
-                # examples are "berita murni" with high similarity, flip the prediction.
-                # This corrects the model's over-prediction of native ads on clear news articles.
+                # RAG override for micro tier: correct the model's over-prediction of native ads.
+                # The 1B model is biased toward "native ads" on borderline articles (profiles,
+                # entertainment, sports). Use RAG majority vote to flip predictions when retrieved
+                # examples strongly indicate berita murni.
                 if self.model_tier == 'micro' and result.get('label') == 'native ads' and selected:
                     rag_berita_count = sum(1 for ex in selected if 'native' not in str(ex.get('label', '')).lower())
-                    if rag_berita_count == len(selected) and avg_sim >= 1.0:
+                    rag_native_count = len(selected) - rag_berita_count
+                    # Flip if majority of retrieved examples are berita murni AND similarity is decent
+                    if rag_berita_count > rag_native_count and avg_sim >= 0.8:
                         result['label'] = 'berita murni'
-                        result['reasoning'] = f"[RAG-override] All {len(selected)} retrieved examples are berita murni (sim={avg_sim:.2f}). " + result.get('reasoning', '')
+                        result['reasoning'] = f"[RAG-override] {rag_berita_count}/{len(selected)} retrieved examples are berita murni (sim={avg_sim:.2f}). " + result.get('reasoning', '')
 
                 result['metadata'] = {
                     'model': self.model_name, 
