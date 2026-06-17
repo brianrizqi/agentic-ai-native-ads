@@ -42,7 +42,8 @@ class ClassificationAgent:
         use_rag: bool = False,
         is_mcq: bool = False,
         model_tier: Optional[str] = None,
-        rag_top_k: int = 3
+        rag_top_k: int = 3,
+        ads_bonus: Optional[float] = None
     ):
         """
         Initialize Classification Agent.
@@ -56,7 +57,9 @@ class ClassificationAgent:
         self.use_rag = use_rag
         self.is_mcq = is_mcq
         self.rag_top_k = rag_top_k
-        
+        # None means "use default calibrated value for this tier"
+        self.ads_bonus = ads_bonus
+
         # Tier Detection (Phase 66: Radical Reduction for Micro)
         # Phase 200: Treat 'base' (argparse default) as unset — trigger auto-detection.
         # When user runs without --tier, argparse passes 'base' which is truthy but meaningless.
@@ -448,7 +451,8 @@ JAWABAN: """
                         
                         # Stage 115: Permanent Neutral Zone (The 88.5% Key)
                         # RAG stays in the PROMPT only. Logit uses fixed +1.0 news correction.
-                        base_bonus_ads = 0.0 if self.model_tier == 'small' else 4.38
+                        default_bonus = 0.0 if self.model_tier == 'small' else 4.38
+                        base_bonus_ads = self.ads_bonus if self.ads_bonus is not None else default_bonus
                         rag_bias_news = 1.0  # Permanent: compensates model's innate ads bias
                         rag_bias_ads = 0.0
                         
