@@ -42,8 +42,7 @@ class ClassificationAgent:
         use_rag: bool = False,
         is_mcq: bool = False,
         model_tier: Optional[str] = None,
-        rag_top_k: int = 3,
-        ads_bonus: Optional[float] = None
+        rag_top_k: int = 3
     ):
         """
         Initialize Classification Agent.
@@ -57,8 +56,6 @@ class ClassificationAgent:
         self.use_rag = use_rag
         self.is_mcq = is_mcq
         self.rag_top_k = rag_top_k
-        # None means "use default calibrated value for this tier"
-        self.ads_bonus = ads_bonus
 
         # Tier Detection (Phase 66: Radical Reduction for Micro)
         # Phase 200: Treat 'base' (argparse default) as unset — trigger auto-detection.
@@ -437,38 +434,40 @@ JAWABAN: """
                 ppl_val = None
                 if self.model_tier in ['micro'] and self.local_model_ref is not None:
                     with torch.no_grad():
-                        outputs = self.local_model_ref(input_ids, attention_mask=mask)
+                        # Inject label prefix so scoring is conditioned on the JSON key.
+                        # Comparing raw end-of-prompt logits for "native"/"berita" is unreliable
+                        # because those tokens' raw frequencies are unrelated to classification.
+                        # Conditioning on '{"label": "' forces the model into label-generation
+                        # context, making "native" vs "berita" directly comparable without bias.
+                        label_prefix_ids = self.tokenizer.encode(
+                            '{"label": "', add_special_tokens=False, return_tensors="pt"
+                        ).to(self.local_model_ref.device)
+                        scored_ids = torch.cat([input_ids, label_prefix_ids], dim=1)
+                        scored_mask = torch.ones(scored_ids.shape, dtype=torch.long, device=scored_ids.device)
+
+                        outputs = self.local_model_ref(scored_ids, attention_mask=scored_mask)
                         logits = outputs.logits[0, -1, :]
-                        
-                        # Stage 106: The Safe Haven (Restored to 78.00%)
-                        t_ads = ["native", " native", " iklan", " iklan"]
-                        t_news = ["berita", " berita", " Berita", " Berita"]
-                        
-                        v_native = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_ads if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
-                        v_news = sorted([logits[self.tokenizer.encode(t, add_special_tokens=False)[0]].item() for t in t_news if self.tokenizer.encode(t, add_special_tokens=False)], reverse=True)
-                        
-                        score_native = (v_native[0] + v_native[1]) / 2.0 if len(v_native) > 1 else v_native[0]
-                        score_berita = (v_news[0] + v_news[1]) / 2.0 if len(v_news) > 1 else v_news[0]
-                        
-                        # Stage 115: Permanent Neutral Zone (The 88.5% Key)
-                        # RAG stays in the PROMPT only. Logit uses fixed +1.0 news correction.
-                        default_bonus = 0.0 if self.model_tier == 'small' else 4.38
-                        base_bonus_ads = self.ads_bonus if self.ads_bonus is not None else default_bonus
-                        rag_bias_news = 1.0  # Permanent: compensates model's innate ads bias
-                        rag_bias_ads = 0.0
-                        
-                        final_score_berita = score_berita + rag_bias_news
-                        final_score_native = score_native + base_bonus_ads + rag_bias_ads
-                        
-                        decision_label = "native ads" if final_score_native > final_score_berita else "berita murni"
-                        
-                        s_winner = final_score_native if decision_label == "native ads" else final_score_berita
-                        s_loser = final_score_berita if decision_label == "native ads" else final_score_native
-                        
-                        conf_probs = torch.softmax(torch.tensor([float(s_winner), float(s_loser)]), dim=-1)
-                        p_final = conf_probs[0].item()
+
+                        t_ads = ["native", "Native"]
+                        t_news = ["berita", "Berita"]
+
+                        def _best_logit(tokens):
+                            scores = []
+                            for t in tokens:
+                                ids = self.tokenizer.encode(t, add_special_tokens=False)
+                                if ids:
+                                    scores.append(logits[ids[0]].item())
+                            return max(scores) if scores else -999.0
+
+                        score_native = _best_logit(t_ads)
+                        score_berita = _best_logit(t_news)
+
+                        decision_label = "native ads" if score_native > score_berita else "berita murni"
+
+                        conf_probs = torch.softmax(torch.tensor([score_native, score_berita]), dim=-1)
+                        p_final = conf_probs[0].item() if decision_label == "native ads" else conf_probs[1].item()
                         ppl_val = 1.0 / p_final if p_final > 1e-5 else 1.50
-                        
+
                         # Reporting
                         rag_status = "RAG-YES" if rag_block and len(rag_block) > 20 else "RAG-NO"
                         if rag_status == "RAG-YES" and selected:
@@ -477,9 +476,9 @@ JAWABAN: """
                             vote_msg = f"RAG-W-VOTE:[N:{rag_w_ads:.1f}, B:{rag_w_news:.1f}]"
                         else:
                             vote_msg = ""
-                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | BiasBN:{rag_bias_news:.1f} AD:{base_bonus_ads+rag_bias_ads:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
+                        reason_msg = f"N:{score_native:.1f} vs B:{score_berita:.1f} | {vote_msg} | Sim:{avg_sim:.2f}"
                         raw_response = f'{{"label": "{decision_label}", "analysis": "{reason_msg}"}}'
-                        print(f"DEBUG [Stage 106-Restored] PPL: %.4f | {reason_msg}" % ppl_val)
+                        print(f"DEBUG [Label-Prefix] PPL: %.4f | {reason_msg}" % ppl_val)
                 else:
                     with torch.no_grad():
                         if is_gemma and self.model_tier == 'standard':
