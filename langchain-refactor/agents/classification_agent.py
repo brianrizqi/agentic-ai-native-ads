@@ -454,17 +454,6 @@ JAWABAN: """
                 # Final Structure
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
 
-                # RAG override for micro tier: correct the model's over-prediction of native ads.
-                # The 1B model is biased toward "native ads" on borderline articles (profiles,
-                # entertainment, sports). Use RAG majority vote to flip predictions when retrieved
-                # examples strongly indicate berita murni.
-                if self.model_tier == 'micro' and result.get('label') == 'native ads' and selected:
-                    rag_berita_count = sum(1 for ex in selected if 'native' not in str(ex.get('label', '')).lower())
-                    rag_native_count = len(selected) - rag_berita_count
-                    # Flip if majority of retrieved examples are berita murni AND similarity is decent
-                    if rag_berita_count > rag_native_count and avg_sim >= 0.8:
-                        result['label'] = 'berita murni'
-                        result['reasoning'] = f"[RAG-override] {rag_berita_count}/{len(selected)} retrieved examples are berita murni (sim={avg_sim:.2f}). " + result.get('reasoning', '')
 
                 result['metadata'] = {
                     'model': self.model_name, 
