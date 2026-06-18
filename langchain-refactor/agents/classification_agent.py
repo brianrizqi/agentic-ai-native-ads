@@ -469,6 +469,9 @@ JAWABAN: """
                         'mengalahkan', 'skor', 'klasemen', 'semifinal', 'perempat final',
                         'grup a', 'grup b', 'grup c', 'tim nasional', 'timnas', 'kesebelasan',
                         'babak penyisihan', 'babak final', 'medali', 'podium', 'gol ke',
+                        # English sports
+                        'championship', 'tournament', 'gold medal', 'silver medal', 'bronze medal',
+                        'quarter-final', 'match result', 'world cup', 'grand prix',
                     ]
                     CRIME_DISASTER_KW = [
                         'tersangka', 'terdakwa', 'ditangkap polisi', 'kasus korupsi',
@@ -476,25 +479,75 @@ JAWABAN: """
                         'sidang pengadilan', 'vonis hakim', 'hukuman penjara',
                         'kecelakaan lalu lintas', 'kebakaran gedung', 'kebakaran hutan',
                         'tewas', 'meninggal dunia akibat', 'penangkapan',
+                        # English
+                        'arrested', 'charged with', 'convicted', 'sentenced to', 'earthquake',
+                        'flood victims', 'casualties', 'death toll',
                     ]
+                    PROFILE_BM_KW = [
+                        # Profile/biography of public figures (not commercial)
+                        'anak pertama dari', 'anak kedua dari', 'putri dari gubernur',
+                        'putri dari presiden', 'putri dari menteri', 'putra dari gubernur',
+                        'putra dari presiden', 'putra dari menteri',
+                        'kelahiran', 'riwayat hidup', 'profil singkat',
+                        'lulusan fakultas', 'lulusan universitas', 'alma mater',
+                        'meraih gelar', 'menempuh pendidikan', 'pendidikan di',
+                        'mengabdi kepada negara', 'dokter militer', 'dokter tni',
+                        # English
+                        'born in', 'graduated from', 'alumni of', 'first child of',
+                    ]
+                    EDUCATION_KW = [
+                        'jurusan kuliah', 'program studi', 'jumlah peminat', 'sepi peminat',
+                        'seleksi nasional', 'snmptn', 'sbmptn', 'perguruan tinggi negeri',
+                        'ujian masuk', 'mahasiswa baru', 'kelulusan', 'wisuda',
+                        'skripsi', 'penelitian ilmiah', 'dosen pengampu', 'kampus',
+                        # English
+                        'university admission', 'college major', 'enrollment',
+                    ]
+                    MILITARY_GOV_KW = [
+                        'tni ad', 'tni au', 'tni al', 'polri', 'letda', 'letnan',
+                        'kolonel', 'jenderal', 'perwira', 'bhayangkara',
+                        'batalyon', 'satuan militer', 'dinas militer',
+                        'kebijakan pemerintah', 'peraturan pemerintah', 'dprd', 'anggaran negara',
+                    ]
+                    ENTERTAINMENT_NEWS_KW = [
+                        # Clearly news about entertainment (not promotion of a show/product)
+                        'korban tragedi itaewon', 'meninggal dalam', 'syuting terhenti',
+                        'rating drama', 'box office', 'penghargaan film', 'festival film',
+                        'oscar', 'grammy', 'emmy award', 'cannes', 'bafta',
+                        'aktris meninggal', 'aktor meninggal', 'penyanyi meninggal',
+                        # English
+                        'passed away', 'tragedy victim', 'award ceremony',
+                    ]
+
                     # Counter-signals: presence means it IS likely a native ad
                     NA_COUNTER_KW = [
                         'promo', 'diskon', 'penawaran spesial', 'dapatkan sekarang',
                         'hubungi kami', 'kunjungi website', 'harga terjangkau',
                         'produk unggulan', 'layanan terbaik', 'order sekarang',
                         'sponsor', 'brand ambassador', 'harga mulai', 'free ongkir',
+                        'cicilan', 'cashback', 'voucher', 'kode promo',
+                        # English
+                        'click here', 'buy now', 'shop now', 'limited offer', 'exclusive deal',
+                        'subscribe now', 'get yours', 'special price',
                     ]
 
                     sports_hits = sum(1 for kw in SPORTS_KW if kw in combined_text)
                     crime_hits = sum(1 for kw in CRIME_DISASTER_KW if kw in combined_text)
+                    profile_hits = sum(1 for kw in PROFILE_BM_KW if kw in combined_text)
+                    edu_hits = sum(1 for kw in EDUCATION_KW if kw in combined_text)
+                    military_hits = sum(1 for kw in MILITARY_GOV_KW if kw in combined_text)
+                    entertainment_hits = sum(1 for kw in ENTERTAINMENT_NEWS_KW if kw in combined_text)
                     na_counter_hits = sum(1 for kw in NA_COUNTER_KW if kw in combined_text)
-                    total_bm_hits = sports_hits + crime_hits
+
+                    total_bm_hits = sports_hits + crime_hits + profile_hits + edu_hits + military_hits + entertainment_hits
 
                     if total_bm_hits >= 2 and na_counter_hits == 0:
                         result['label'] = 'berita murni'
                         result['reasoning'] = (
                             f"[ContentOverride] {total_bm_hits} berita murni signals "
-                            f"(sports={sports_hits}, crime/disaster={crime_hits}), "
+                            f"(sports={sports_hits}, crime/disaster={crime_hits}, "
+                            f"profile={profile_hits}, edu={edu_hits}, "
+                            f"military={military_hits}, entertainment={entertainment_hits}), "
                             f"no promotional counter-signals. "
                             + result.get('reasoning', '')
                         )
