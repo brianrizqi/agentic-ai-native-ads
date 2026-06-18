@@ -455,14 +455,58 @@ JAWABAN: """
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
 
 
+                # Keyword-based override for micro tier.
+                # The 1B model over-predicts "native ads" for sports, crime, and disaster content
+                # because it pattern-matches on named entities (people, organizations) rather than
+                # promotional intent. This filter catches clear false positives.
+                if self.model_tier == 'micro' and result.get('label') == 'native ads':
+                    combined_text = ((title or '') + ' ' + content).lower()
+
+                    SPORTS_KW = [
+                        'pertandingan', 'laga ke', 'piala uber', 'piala thomas', 'piala sudirman',
+                        'olimpiade', 'sea games', 'asian games', 'bulutangkis', 'bulu tangkis',
+                        'badminton', 'sepak bola', 'renang', 'atletik', 'maraton', 'tinju',
+                        'mengalahkan', 'skor', 'klasemen', 'semifinal', 'perempat final',
+                        'grup a', 'grup b', 'grup c', 'tim nasional', 'timnas', 'kesebelasan',
+                        'babak penyisihan', 'babak final', 'medali', 'podium', 'gol ke',
+                    ]
+                    CRIME_DISASTER_KW = [
+                        'tersangka', 'terdakwa', 'ditangkap polisi', 'kasus korupsi',
+                        'gempa bumi', 'banjir bandang', 'tanah longsor', 'korban jiwa',
+                        'sidang pengadilan', 'vonis hakim', 'hukuman penjara',
+                        'kecelakaan lalu lintas', 'kebakaran gedung', 'kebakaran hutan',
+                        'tewas', 'meninggal dunia akibat', 'penangkapan',
+                    ]
+                    # Counter-signals: presence means it IS likely a native ad
+                    NA_COUNTER_KW = [
+                        'promo', 'diskon', 'penawaran spesial', 'dapatkan sekarang',
+                        'hubungi kami', 'kunjungi website', 'harga terjangkau',
+                        'produk unggulan', 'layanan terbaik', 'order sekarang',
+                        'sponsor', 'brand ambassador', 'harga mulai', 'free ongkir',
+                    ]
+
+                    sports_hits = sum(1 for kw in SPORTS_KW if kw in combined_text)
+                    crime_hits = sum(1 for kw in CRIME_DISASTER_KW if kw in combined_text)
+                    na_counter_hits = sum(1 for kw in NA_COUNTER_KW if kw in combined_text)
+                    total_bm_hits = sports_hits + crime_hits
+
+                    if total_bm_hits >= 2 and na_counter_hits == 0:
+                        result['label'] = 'berita murni'
+                        result['reasoning'] = (
+                            f"[ContentOverride] {total_bm_hits} berita murni signals "
+                            f"(sports={sports_hits}, crime/disaster={crime_hits}), "
+                            f"no promotional counter-signals. "
+                            + result.get('reasoning', '')
+                        )
+
                 result['metadata'] = {
-                    'model': self.model_name, 
+                    'model': self.model_name,
                     'raw_response': raw_response,
                     'raw_prompt': templated_prompt if self.provider == "local" else ""
                 }
                 if ppl_val is not None:
                     result['metadata']['ppl'] = round(ppl_val, 4)
-                    
+
                 self._log_inference(title, content, result)
                 return result
         except Exception as e:
