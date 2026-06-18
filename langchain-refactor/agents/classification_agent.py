@@ -580,6 +580,8 @@ JAWABAN: """
         """Stage 28: Clean JSON-First Parser."""
         try:
             resp_clean = response.strip()
+            # Strip Qwen3 thinking tokens (<think>...</think>) before JSON parsing
+            resp_clean = re.sub(r'<think>.*?</think>', '', resp_clean, flags=re.DOTALL).strip()
             # Stage 42: Clean JSON-First Parser. (Matches ALPACA prefix force)
             if prefix_forced and not resp_clean.startswith("{") and prefix_forced == '{"label": "':
                 resp_clean = prefix_forced + resp_clean
