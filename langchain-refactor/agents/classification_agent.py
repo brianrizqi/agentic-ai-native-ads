@@ -414,7 +414,18 @@ JAWABAN: """
                         {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
                         {"role": "user", "content": user_msg}
                     ]
-                    templated_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                    # Qwen3 has thinking mode enabled by default — disable it so the model
+                    # outputs JSON directly without <think>...</think> tokens that exhaust
+                    # max_new_tokens before the actual JSON response is generated.
+                    try:
+                        templated_prompt = self.tokenizer.apply_chat_template(
+                            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+                        )
+                    except TypeError:
+                        # Qwen2 and older versions don't support enable_thinking
+                        templated_prompt = self.tokenizer.apply_chat_template(
+                            messages, tokenize=False, add_generation_prompt=True
+                        )
                 elif is_gemma and self.model_tier == 'standard':
                     # Phase 200: Gemma 3 uses apply_chat_template with user role only.
                     # Gemma 3 does NOT need a system prompt — it confuses the model.
