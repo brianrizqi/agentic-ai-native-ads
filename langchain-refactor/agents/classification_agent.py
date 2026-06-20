@@ -72,7 +72,7 @@ class ClassificationAgent:
         is_qwen = "qwen" in self.model_name.lower()
         is_gemma_large = ("gemma" in self.model_name.lower() and self.model_tier == 'standard')
         if is_qwen:
-            self.use_rag = False
+            # Respect the passed use_rag parameter
             self.max_chars = 2200
         elif is_gemma_large:
             # Phase 200: Gemma 3 12B — use same max_chars as other standard models.
@@ -307,7 +307,10 @@ class ClassificationAgent:
                 # Stage 31: Split Master Prompt by model family/tier
                 # Phase 200: Gemma 3 Large (12B+) gets dedicated template
                 if is_qwen:
-                    template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
+                    if self.use_rag:
+                        template = ULTIMATE_GOLD_STANDARD_TEMPLATE
+                    else:
+                        template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
 
 ### CONTEXT REFERENCE (PANDUAN GAYA BAHASA):
 {context}
@@ -323,7 +326,7 @@ Isi: {content}
 🔴 KATEGORI: NATIVE ADS (WAJIB DIPILIH JIKA ADA SALAH SATU):
 1. Corporate / Government PR (Advertorial): Rilis pers, klaim prestasi, atau liputan yang memoles citra positif Perusahaan, BUMN (misal: KAI, Pertamina, dll), atau Pemerintah Daerah (Pemkab/Pemkot/Kementerian).
 2. Financial / Business Announcement: Pengumuman dividen, laba, ekspansi bisnis, atau korporasi ("Globe Newswire", "PR Newswire", "TSX", dll).
-3. Event & Product Promotion: Liputan pameran (otomotif/IMOS, gadget, travel fair) atau peluncuran produk/layanan dengan ragam bahasa positif/persuasif.
+3. Event & Product Promotion: Liputan pameran (otomotif/IMOS, gadget, travel fair) or peluncuran produk/layanan dengan ragam bahasa positif/persuasif.
 4. Soft-Selling: Artikel kesehatan, gaya hidup, atau review yang menonjolkan satu entitas komersial secara dominan tanpa unsur kritis/musibah.
 
 🟢 KATEGORI: BERITA MURNI (WAJIB DIPILIH JIKA ADA SALAH SATU):
