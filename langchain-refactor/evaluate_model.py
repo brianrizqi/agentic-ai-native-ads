@@ -761,8 +761,7 @@ def main():
     # Create timestamped output filename
     from datetime import datetime
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    num_samples = len(test_data)
-    output_filename = f'eval_{model_name}_{timestamp}_{num_samples}samples'
+    output_filename = f'eval_{model_name}_{timestamp}_{args.num_samples}samples'
     if args.use_rag:
         output_filename += f'_rag_top{args.top_k}'
     
