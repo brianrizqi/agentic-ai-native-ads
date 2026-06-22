@@ -238,7 +238,8 @@ class ClassificationAgent:
                     QWEN_GOLD_MINIMALIST_V3, ENGLISH_MARKDOWN_TEMPLATE,
                     ALPACA_ID_MINIMAL_TEMPLATE, ALPACA_EN_MINIMAL_TEMPLATE,
                     BILINGUAL_SILENT_TEMPLATE, GEMMA_LARGE_TEMPLATE,
-                    MICRO_EN_TRAINING_TEMPLATE, MICRO_ID_TRAINING_TEMPLATE
+                    MICRO_EN_TRAINING_TEMPLATE, MICRO_ID_TRAINING_TEMPLATE,
+                    QWEN_STANDARD_TRAINING_TEMPLATE
                 )
                 # Phase 200: Detect model family for Gemma-specific routing
                 is_gemma = self._get_model_family(self.model_name) == 'gemma'
@@ -307,38 +308,10 @@ class ClassificationAgent:
                 # Stage 31: Split Master Prompt by model family/tier
                 # Phase 200: Gemma 3 Large (12B+) gets dedicated template
                 if is_qwen:
-                    template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
-
-### CONTEXT REFERENCE (PANDUAN GAYA BAHASA):
-{context}
-
-⚠️ PENGINGAT: Gunakan contoh RAG di atas hanya sebagai referensi. Keputusan final harus murni berdasarkan aturan di bawah.
-
-### DATA ARTIKEL UTAMA:
-Judul: {title}
-Isi: {content}
-
-### PANDUAN PRINSIP (BILINGUAL MASTER RULES):
-
-🔴 KATEGORI: NATIVE ADS (WAJIB DIPILIH JIKA ADA SALAH SATU):
-1. Corporate / Government PR (Advertorial): Rilis pers, klaim prestasi, atau liputan yang memoles citra positif Perusahaan, BUMN (misal: KAI, Pertamina, dll), atau Pemerintah Daerah (Pemkab/Pemkot/Kementerian).
-2. Financial / Business Announcement: Pengumuman dividen, laba, ekspansi bisnis, atau korporasi ("Globe Newswire", "PR Newswire", "TSX", dll).
-3. Event & Product Promotion: Liputan pameran (otomotif/IMOS, gadget, travel fair) atau peluncuran produk/layanan dengan ragam bahasa positif/persuasif.
-4. Soft-Selling: Artikel kesehatan, gaya hidup, atau review yang menonjolkan satu entitas komersial secara dominan tanpa unsur kritis/musibah.
-
-🟢 KATEGORI: BERITA MURNI (WAJIB DIPILIH JIKA ADA SALAH SATU):
-1. Public Grief / Disasters: Kecelakaan lalulintas, musibah alam, cuaca, atau berita duka/kematian.
-2. Crisis / Legal Issues: Persidangan hukum murni, skandal kriminal, atau PHK/kebangkrutan.
-3. Macro Policy & Pure Event: Kebijakan makro negara (contoh: aturan pajak/PPN, pemilu), diplomasi presiden antar negara, atau laporan langsung skor pertandingan olahraga. No PR!
-
-Format Respon (JSON WAJIB):
-{{
-  "analysis": "Penjelasan singkat menggunakan prinsip kategori di atas (maks 2 kalimat).",
-  "label": "native ads/berita murni"
-}}
-
-JAWABAN: """
-                    prefix_force = "" 
+                    # Use exact training format from finetune_multi_model.py to avoid
+                    # training/inference template mismatch.
+                    template = QWEN_STANDARD_TRAINING_TEMPLATE
+                    prefix_force = ""
                     suffix_force = ""
                 elif is_gemma and self.model_tier == 'standard':
                     # Phase 200: Gemma 3 12B+ — Full reasoning template with proper chat format.
@@ -403,9 +376,9 @@ JAWABAN: """
                         # This matches the March 25 winning path exactly.
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
                     elif is_qwen and self.model_tier == 'standard':
-                        # Qwen3 fine-tuned without RAG context in prompt — injecting RAG hurts accuracy.
-                        # RAG retrieval still runs for logging purposes but is NOT injected into the prompt.
-                        user_msg = template.format(title=title or content[:70], content=content_processed, context="").strip()
+                        # QWEN_STANDARD_TRAINING_TEMPLATE only has {content} (no title, no context).
+                        # Matches finetune_multi_model.py training format exactly.
+                        user_msg = template.format(content=content_processed).strip()
                     else:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
