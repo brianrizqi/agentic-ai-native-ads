@@ -567,6 +567,23 @@ Konten: {content}
 Output (JSON):
 """
 
+# Standard-tier training-matched template for Qwen3/DeepSeek (matches finetune_multi_model.py exactly)
+# finetune_multi_model.py uses: "Klasifikasikan... Konten:\n{input}\nOutput (JSON):\n{output}"
+# No title field, no context field — must match training format to avoid inference mismatch.
+QWEN_STANDARD_TRAINING_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Konten:
+{content}
+
+Output (JSON):"""
+
+
 # Phase 39: Alpaca Format Restoration (Gemma 3 270M Target 65%)
 # -----------------------------------------------------------------------------
 # Re-aligning the model prompt exactly with its Unsloth fine-tuning template.
