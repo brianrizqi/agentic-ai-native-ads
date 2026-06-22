@@ -387,8 +387,27 @@ class ClassificationAgent:
                 
                 # Phase 141/153/200: Prompt Dispatcher
                 if is_qwen:
+                    qwen_system = (
+                        "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia.\n\n"
+                        "Native ads HARUS memiliki SEMUA ciri berikut secara bersamaan:\n"
+                        "1. Nada positif/netral (tidak mengkritik subjek)\n"
+                        "2. Bahasa persuasif (mengajak/meyakinkan)\n"
+                        "3. Mempromosikan produk, brand, atau instansi KOMERSIAL secara spesifik\n"
+                        "4. Hanya satu sudut pandang (tidak objektif)\n\n"
+                        "Yang WAJIB diklasifikasikan sebagai BERITA MURNI:\n"
+                        "- Profil/biografi tokoh publik (pejabat, atlet, TNI/Polri, seniman) tanpa promosi produk komersial\n"
+                        "- Profil anak/keluarga pejabat publik\n"
+                        "- Laporan hasil/skor pertandingan olahraga\n"
+                        "- Berita bencana, kecelakaan, atau kriminalitas\n"
+                        "- Artikel pendidikan tentang jurusan, kampus, atau program studi\n"
+                        "- Berita kebijakan pemerintah yang tidak berpromosi komersial\n"
+                        "- Berita pengadaan/distribusi vaksin atau program pemerintah\n"
+                        "- Berita hiburan tentang drama, film, atau artis tanpa promosi produk\n"
+                        "- Artikel faktual tentang bahan alami/tradisional tanpa menyebut brand komersial\n\n"
+                        "Output JSON: {\"label\": \"native ads\" atau \"berita murni\", \"confidence\": 0.X, \"reasoning\": \"...\"}"
+                    )
                     messages = [
-                        {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
+                        {"role": "system", "content": qwen_system},
                         {"role": "user", "content": user_msg}
                     ]
                     # Qwen3 has thinking mode enabled by default — disable it so the model
@@ -443,11 +462,10 @@ class ClassificationAgent:
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
 
 
-                # Keyword-based override for micro tier.
-                # The 1B model over-predicts "native ads" for sports, crime, and disaster content
-                # because it pattern-matches on named entities (people, organizations) rather than
-                # promotional intent. This filter catches clear false positives.
-                if self.model_tier == 'micro' and result.get('label') == 'native ads':
+                # Keyword-based override for micro tier and Qwen standard tier.
+                # Both models over-predict "native ads" for non-promotional content.
+                # This filter catches clear false positives based on content category signals.
+                if (self.model_tier == 'micro' or is_qwen) and result.get('label') == 'native ads':
                     combined_text = ((title or '') + ' ' + content).lower()
 
                     SPORTS_KW = [
