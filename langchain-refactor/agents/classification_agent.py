@@ -308,9 +308,33 @@ class ClassificationAgent:
                 # Stage 31: Split Master Prompt by model family/tier
                 # Phase 200: Gemma 3 Large (12B+) gets dedicated template
                 if is_qwen:
-                    # Use exact training format from finetune_multi_model.py to avoid
-                    # training/inference template mismatch.
-                    template = QWEN_STANDARD_TRAINING_TEMPLATE
+                    template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
+
+### DATA ARTIKEL UTAMA:
+Judul: {title}
+Isi: {content}
+
+### PANDUAN PRINSIP (BILINGUAL MASTER RULES):
+
+🔴 KATEGORI: NATIVE ADS (WAJIB DIPILIH JIKA ADA SALAH SATU):
+1. Corporate / Government PR (Advertorial): Rilis pers, klaim prestasi, atau liputan yang memoles citra positif Perusahaan, BUMN (misal: KAI, Pertamina, dll), atau Pemerintah Daerah (Pemkab/Pemkot/Kementerian).
+2. Financial / Business Announcement: Pengumuman dividen, laba, ekspansi bisnis, atau korporasi ("Globe Newswire", "PR Newswire", "TSX", dll).
+3. Event & Product Promotion: Liputan pameran (otomotif/IMOS, gadget, travel fair) atau peluncuran produk/layanan dengan ragam bahasa positif/persuasif.
+4. Soft-Selling: Artikel kesehatan, gaya hidup, atau review yang menonjolkan satu entitas komersial secara dominan tanpa unsur kritis/musibah.
+
+🟢 KATEGORI: BERITA MURNI (WAJIB DIPILIH JIKA ADA SALAH SATU):
+1. Public Grief / Disasters: Kecelakaan lalulintas, musibah alam, cuaca, atau berita duka/kematian.
+2. Crisis / Legal Issues: Persidangan hukum murni, skandal kriminal, atau PHK/kebangkrutan.
+3. Macro Policy & Pure Event: Kebijakan makro negara (contoh: aturan pajak/PPN, pemilu), diplomasi presiden antar negara, atau laporan langsung skor pertandingan olahraga. No PR!
+
+Format Respon (JSON WAJIB):
+{{
+  "label": "native ads/berita murni",
+  "confidence": 0.X,
+  "reasoning": "Penjelasan singkat menggunakan prinsip kategori di atas (maks 2 kalimat)."
+}}
+
+JAWABAN: """
                     prefix_force = ""
                     suffix_force = ""
                 elif is_gemma and self.model_tier == 'standard':
@@ -376,9 +400,8 @@ class ClassificationAgent:
                         # This matches the March 25 winning path exactly.
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
                     elif is_qwen and self.model_tier == 'standard':
-                        # QWEN_STANDARD_TRAINING_TEMPLATE only has {content} (no title, no context).
-                        # Matches finetune_multi_model.py training format exactly.
-                        user_msg = template.format(content=content_processed).strip()
+                        # Complex Qwen template uses {title} and {content} (no RAG context).
+                        user_msg = template.format(title=title or content[:70], content=content_processed).strip()
                     else:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
