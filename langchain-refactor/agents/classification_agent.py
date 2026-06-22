@@ -310,6 +310,11 @@ class ClassificationAgent:
                 if is_qwen:
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
 
+### CONTEXT REFERENCE (PANDUAN GAYA BAHASA):
+{context}
+
+⚠️ PENGINGAT: Gunakan contoh RAG di atas hanya sebagai referensi. Keputusan final harus murni berdasarkan aturan di bawah.
+
 ### DATA ARTIKEL UTAMA:
 Judul: {title}
 Isi: {content}
@@ -329,9 +334,8 @@ Isi: {content}
 
 Format Respon (JSON WAJIB):
 {{
-  "label": "native ads/berita murni",
-  "confidence": 0.X,
-  "reasoning": "Penjelasan singkat menggunakan prinsip kategori di atas (maks 2 kalimat)."
+  "analysis": "Penjelasan singkat menggunakan prinsip kategori di atas (maks 2 kalimat).",
+  "label": "native ads/berita murni"
 }}
 
 JAWABAN: """
@@ -400,8 +404,9 @@ JAWABAN: """
                         # This matches the March 25 winning path exactly.
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
                     elif is_qwen and self.model_tier == 'standard':
-                        # Complex Qwen template uses {title} and {content} (no RAG context).
-                        user_msg = template.format(title=title or content[:70], content=content_processed).strip()
+                        # Qwen template has {title}, {content}, {context}.
+                        # RAG injection disabled — pass empty context to avoid prompt contamination.
+                        user_msg = template.format(title=title or content[:70], content=content_processed, context="").strip()
                     else:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
@@ -410,27 +415,8 @@ JAWABAN: """
                 
                 # Phase 141/153/200: Prompt Dispatcher
                 if is_qwen:
-                    qwen_system = (
-                        "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia.\n\n"
-                        "Native ads HARUS memiliki SEMUA ciri berikut secara bersamaan:\n"
-                        "1. Nada positif/netral (tidak mengkritik subjek)\n"
-                        "2. Bahasa persuasif (mengajak/meyakinkan)\n"
-                        "3. Mempromosikan produk, brand, atau instansi KOMERSIAL secara spesifik\n"
-                        "4. Hanya satu sudut pandang (tidak objektif)\n\n"
-                        "Yang WAJIB diklasifikasikan sebagai BERITA MURNI:\n"
-                        "- Profil/biografi tokoh publik (pejabat, atlet, TNI/Polri, seniman) tanpa promosi produk komersial\n"
-                        "- Profil anak/keluarga pejabat publik\n"
-                        "- Laporan hasil/skor pertandingan olahraga\n"
-                        "- Berita bencana, kecelakaan, atau kriminalitas\n"
-                        "- Artikel pendidikan tentang jurusan, kampus, atau program studi\n"
-                        "- Berita kebijakan pemerintah yang tidak berpromosi komersial\n"
-                        "- Berita pengadaan/distribusi vaksin atau program pemerintah\n"
-                        "- Berita hiburan tentang drama, film, atau artis tanpa promosi produk\n"
-                        "- Artikel faktual tentang bahan alami/tradisional tanpa menyebut brand komersial\n\n"
-                        "Output JSON: {\"label\": \"native ads\" atau \"berita murni\", \"confidence\": 0.X, \"reasoning\": \"...\"}"
-                    )
                     messages = [
-                        {"role": "system", "content": qwen_system},
+                        {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
                         {"role": "user", "content": user_msg}
                     ]
                     # Qwen3 has thinking mode enabled by default — disable it so the model
@@ -485,10 +471,10 @@ JAWABAN: """
                 result = self._parse_response(raw_response, content=content, title=title, prefix_forced=prefix_force)
 
 
-                # Keyword-based override for micro tier and Qwen standard tier.
-                # Both models over-predict "native ads" for non-promotional content.
-                # This filter catches clear false positives based on content category signals.
-                if (self.model_tier == 'micro' or is_qwen) and result.get('label') == 'native ads':
+                # Keyword-based override for micro tier ONLY.
+                # Qwen standard tier has its own balanced classification — do NOT apply this override,
+                # as government/program keywords (kebijakan, TNI) also appear in native ads articles.
+                if self.model_tier == 'micro' and result.get('label') == 'native ads':
                     combined_text = ((title or '') + ' ' + content).lower()
 
                     SPORTS_KW = [
