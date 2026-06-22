@@ -402,6 +402,10 @@ JAWABAN: """
                         # Do NOT use rag_block (built from examples list) — use the `context` param passed in.
                         # This matches the March 25 winning path exactly.
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
+                    elif is_qwen and self.model_tier == 'standard':
+                        # Qwen3 fine-tuned without RAG context in prompt — injecting RAG hurts accuracy.
+                        # RAG retrieval still runs for logging purposes but is NOT injected into the prompt.
+                        user_msg = template.format(title=title or content[:70], content=content_processed, context="").strip()
                     else:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
