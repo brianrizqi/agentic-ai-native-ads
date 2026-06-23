@@ -783,14 +783,15 @@ def main():
     
     # Evaluate
     results = evaluate_model(
-        args.model, 
-        test_data, 
+        args.model,
+        test_data,
         lora_path=args.lora_path,
         use_rag=args.use_rag,
         vectorstore_dir=args.vectorstore_dir,
         embedding_model=args.embedding_model,
         gpu_id=args.gpu_id,
-        tier=args.tier # Phase 40: Pass tier from CLI
+        tier=args.tier,
+        top_k=args.top_k
     )
     
     # Compute BERTScore
