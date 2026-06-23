@@ -264,21 +264,20 @@ class ClassificationAgent:
                 selected = []
 
                 if self.use_rag and examples:
-                    candidates = [ex for ex in examples if ex.get('similarity_score', 0) >= RAG_THRESHOLD]
-                    
+                    # FAISS returns L2 distances (lower = more similar, range 0–2).
+                    # Filter out very dissimilar docs (L2 > RAG_THRESHOLD interpreted as max distance).
+                    # For small/micro tiers, RAG_THRESHOLD is now used as max L2 distance to include.
+                    max_l2 = 1.0  # exclude docs with L2 distance > 1.0 (cosine_sim < 0.5)
+                    candidates = [ex for ex in examples if ex.get('similarity_score', 0) <= max_l2]
+
                     if candidates:
-                        # Phase 86: The Entity Fortress (Restored Stage 81 Foundation)
+                        # Sort ascending by L2 distance so most-similar examples come first.
                         if self.model_tier == 'micro':
-                            # Minimalist RAG limit to 1
-                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:1]
+                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0))[:1]
                         else:
-                            # Stage 104: The Champion Setup (Top-3)
-                            # Reverting to Top-3 which gave our best 78% result.
                             current_k = 3 if self.model_tier == 'small' else self.rag_top_k
-                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0), reverse=True)[:current_k]
-                        
-                        # 2. Canonical Sort (by similarity for logical flow)
-                        selected = sorted(selected, key=lambda x: x.get('similarity_score', 0), reverse=True)
+                            selected = sorted(candidates, key=lambda x: x.get('similarity_score', 0))[:current_k]
+
                         avg_sim = sum([x.get('similarity_score', 0) for x in selected]) / len(selected)
                     else:
                         selected = []
@@ -310,10 +309,8 @@ class ClassificationAgent:
                 if is_qwen:
                     template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
 
-### CONTEXT REFERENCE (PANDUAN GAYA BAHASA):
+### CONTOH ARTIKEL SERUPA (GUNAKAN SEBAGAI REFERENSI POLA):
 {context}
-
-⚠️ PENGINGAT: Gunakan contoh RAG di atas hanya sebagai referensi. Keputusan final harus murni berdasarkan aturan di bawah.
 
 ### DATA ARTIKEL UTAMA:
 Judul: {title}
@@ -395,8 +392,9 @@ JAWABAN: """
                         content=content_processed
                     ).strip()
                 else:
-                    # Stage 116: For small tier, only inject RAG context if it's high confidence
-                    if self.model_tier == 'small' and avg_sim < 0.75:
+                    # For small tier, only inject RAG context when retrieved examples are relevant
+                    # (avg L2 distance <= 0.8 means reasonably similar documents).
+                    if self.model_tier == 'small' and avg_sim > 0.8:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context="").strip()
                     elif is_gemma and self.model_tier == 'standard':
                         # Phase 200: Gemma large gets context string directly from get_context_for_classification()
