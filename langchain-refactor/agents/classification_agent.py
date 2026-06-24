@@ -250,7 +250,11 @@ class ClassificationAgent:
                 # Phase 143: Platinum RAG Reset (Re-enabled for Qwen)
                 # ---------------------------------------------------------------------
                 is_qwen = "qwen" in self.model_name.lower()
-                
+                # Phase 211: ALL standard-tier local models (qwen, deepseek-r1, llama, etc.)
+                # were fine-tuned via finetune.py with the SAME format. They MUST use the exact
+                # training template at inference — Gemma-large keeps its own dedicated path.
+                is_training_fmt = (self.model_tier == 'standard' and not is_gemma)
+
                 # Phase 86: The Entity Fortress (Restored Stage 81 Foundation)
                 # Stage 96: Balanced Retrieval
                 # Reverting to 0.3 for a broader context awareness.
@@ -308,15 +312,17 @@ class ClassificationAgent:
                 
                 # Stage 31: Split Master Prompt by model family/tier
                 # Phase 200: Gemma 3 Large (12B+) gets dedicated template
-                if is_qwen:
-                    # Phase 210: Exact train/inference alignment.
-                    # Qwen3-8B was fine-tuned on QWEN_TRAIN_{ID,EN}_TEMPLATE (no system
-                    # prompt, content[:400], output {label,confidence,reasoning}). Using ANY
-                    # other prompt puts the fine-tuned model off-distribution and tanks accuracy.
+                if is_training_fmt:
+                    # Phase 210/211: Exact train/inference alignment for ALL fine-tuned
+                    # standard local models (qwen3-8b, deepseek-r1-llama-8b, llama-8b, ...).
+                    # They were fine-tuned on QWEN_TRAIN_{ID,EN}_TEMPLATE (= finetune.py's
+                    # TRAINING_PROMPT_TEMPLATE / EN_PROMPT_TEMPLATE): no system prompt,
+                    # content[:400], output {label,confidence,reasoning}. Any other prompt
+                    # puts the model off-distribution and collapses it to one class.
                     # Language-detect to pick the same template language as training.
                     en_indicators = [" the ", " and ", " is ", " of ", " with ", " for "]
-                    is_qwen_english = any(ind in (" " + content.lower() + " ") for ind in en_indicators)
-                    template = QWEN_TRAIN_EN_TEMPLATE if is_qwen_english else QWEN_TRAIN_ID_TEMPLATE
+                    is_en_article = any(ind in (" " + content.lower() + " ") for ind in en_indicators)
+                    template = QWEN_TRAIN_EN_TEMPLATE if is_en_article else QWEN_TRAIN_ID_TEMPLATE
                     prefix_force = ""
                     suffix_force = ""
                 elif is_gemma and self.model_tier == 'standard':
@@ -355,8 +361,8 @@ class ClassificationAgent:
                 # March 25 winning config (198afc5) so the confusion matrix is perfectly identical.
                 if is_gemma and self.model_tier == 'standard':
                     max_chars = 400
-                elif is_qwen:
-                    max_chars = 400  # Phase 210: match finetune.py sample['input'][:400] exactly
+                elif is_training_fmt:
+                    max_chars = 400  # Phase 210/211: match finetune.py sample['input'][:400] exactly
                 elif self.model_tier == 'micro':
                     max_chars = 400  # matches finetune.py sample['input'][:400]
                 else:
@@ -382,8 +388,8 @@ class ClassificationAgent:
                         # Do NOT use rag_block (built from examples list) — use the `context` param passed in.
                         # This matches the March 25 winning path exactly.
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
-                    elif is_qwen and self.model_tier == 'standard':
-                        # Phase 210: Exact training format — {title} + {content} only.
+                    elif is_training_fmt:
+                        # Phase 210/211: Exact training format — {title} + {content} only.
                         # RAG is injected as multi-turn few-shot in the dispatcher below,
                         # NOT inlined here, so every turn stays in the training distribution.
                         user_msg = template.format(title=title or content[:70], content=content_processed)
@@ -394,11 +400,12 @@ class ClassificationAgent:
                 full_prompt = user_msg
                 
                 # Phase 141/153/200: Prompt Dispatcher
-                if is_qwen:
-                    # Phase 210: NO system prompt (training had none). Build multi-turn
+                if is_training_fmt:
+                    # Phase 210/211: NO system prompt (training had none). Build multi-turn
                     # few-shot from the balanced retrieved examples — each example rendered
                     # in the EXACT training template with its known JSON answer, so the
                     # fine-tuned model sees them as in-distribution demonstrations.
+                    # Applies to qwen3-8b, deepseek-r1-llama-8b, llama-8b, etc.
                     messages = []
                     if self.use_rag and selected:
                         for ex in selected:
@@ -416,18 +423,14 @@ class ClassificationAgent:
                             messages.append({"role": "user", "content": ex_user})
                             messages.append({"role": "assistant", "content": ex_answer})
                     messages.append({"role": "user", "content": user_msg})
-                    # Qwen3 has thinking mode enabled by default — disable it so the model
-                    # outputs JSON directly without <think>...</think> tokens that exhaust
-                    # max_new_tokens before the actual JSON response is generated.
-                    try:
-                        templated_prompt = self.tokenizer.apply_chat_template(
-                            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
-                        )
-                    except TypeError:
-                        # Qwen2 and older versions don't support enable_thinking
-                        templated_prompt = self.tokenizer.apply_chat_template(
-                            messages, tokenize=False, add_generation_prompt=True
-                        )
+                    # Phase 211: Replicate finetune.py:505 EXACTLY — plain apply_chat_template
+                    # with add_generation_prompt=True and NO enable_thinking arg. Training never
+                    # injected an empty <think></think> block, so inference must not either.
+                    # The model was SFT'd to emit JSON directly; any <think> is stripped in
+                    # _parse_response, and max_new_tokens=256 leaves room if it does reason.
+                    templated_prompt = self.tokenizer.apply_chat_template(
+                        messages, tokenize=False, add_generation_prompt=True
+                    )
                 elif is_gemma and self.model_tier == 'standard':
                     # Phase 200: Gemma 3 uses apply_chat_template with user role only.
                     # Gemma 3 does NOT need a system prompt — it confuses the model.
@@ -460,7 +463,9 @@ class ClassificationAgent:
                         raw_response = invoke_result.content if hasattr(invoke_result, 'content') else str(invoke_result)
                         print(f"DEBUG [Gemma-200] Pipeline invoke | resp: {raw_response[:80]}")
                     else:
-                        max_new_tokens = 100
+                        # Phase 211: give reasoning-capable models (deepseek-r1) headroom so a
+                        # short <think> block can't crowd out the JSON answer and force a fallback.
+                        max_new_tokens = 256 if is_training_fmt else 100
                         generated_ids = self.local_model_ref.generate(input_ids, attention_mask=mask, max_new_tokens=max_new_tokens, do_sample=False)
                         raw_response = self.tokenizer.decode(generated_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
 
