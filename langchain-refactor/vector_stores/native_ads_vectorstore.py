@@ -167,22 +167,30 @@ class NativeAdsVectorStore:
     def similarity_search_with_score(
         self,
         query: str,
-        k: int = 5
+        k: int = 5,
+        filter_label: Optional[str] = None
     ) -> List[tuple]:
         """
         Search with similarity scores.
-        
+
         Args:
             query: Query text
             k: Number of results
-            
+            filter_label: Optional label filter ('native ads' or 'berita murni')
+
         Returns:
             List of (Document, score) tuples
         """
         if self.vectorstore is None:
             logger.warning("Vector store not initialized")
             return []
-        
+
+        if filter_label:
+            # fetch_k must be large: FAISS filters AFTER retrieving fetch_k nearest docs,
+            # so a small fetch_k can return zero of a minority label. Scan a wide pool.
+            return self.vectorstore.similarity_search_with_score(
+                query, k=k, filter={"label": filter_label}, fetch_k=200
+            )
         return self.vectorstore.similarity_search_with_score(query, k=k)
     
     def save(self) -> None:

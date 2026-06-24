@@ -239,7 +239,8 @@ class ClassificationAgent:
                     ALPACA_ID_MINIMAL_TEMPLATE, ALPACA_EN_MINIMAL_TEMPLATE,
                     BILINGUAL_SILENT_TEMPLATE, GEMMA_LARGE_TEMPLATE,
                     MICRO_EN_TRAINING_TEMPLATE, MICRO_ID_TRAINING_TEMPLATE,
-                    QWEN_STANDARD_TRAINING_TEMPLATE
+                    QWEN_STANDARD_TRAINING_TEMPLATE,
+                    QWEN_TRAIN_ID_TEMPLATE, QWEN_TRAIN_EN_TEMPLATE
                 )
                 # Phase 200: Detect model family for Gemma-specific routing
                 is_gemma = self._get_model_family(self.model_name) == 'gemma'
@@ -265,9 +266,10 @@ class ClassificationAgent:
 
                 if self.use_rag and examples:
                     # FAISS returns L2 distances (lower = more similar, range 0–2).
-                    # Filter out very dissimilar docs (L2 > RAG_THRESHOLD interpreted as max distance).
-                    # For small/micro tiers, RAG_THRESHOLD is now used as max L2 distance to include.
-                    max_l2 = 1.0  # exclude docs with L2 distance > 1.0 (cosine_sim < 0.5)
+                    # Keep a relatively loose cutoff so the balanced minority-class example
+                    # (which is naturally a bit farther in embedding space) is NOT stripped —
+                    # otherwise the few-shot collapses back to one class and re-biases the model.
+                    max_l2 = 1.5  # drop only clearly-unrelated docs (cosine_sim < ~ -0.1)
                     candidates = [ex for ex in examples if ex.get('similarity_score', 0) <= max_l2]
 
                     if candidates:
@@ -307,35 +309,14 @@ class ClassificationAgent:
                 # Stage 31: Split Master Prompt by model family/tier
                 # Phase 200: Gemma 3 Large (12B+) gets dedicated template
                 if is_qwen:
-                    template = """Tugas: Bertindaklah sebagai Jaksa Penuntut Media yang objektif. Klasifikasikan artikel di bawah sebagai "native ads" (iklan tersembunyi/rilis pers) atau "berita murni" (jurnalistik publik).
-
-### CONTOH ARTIKEL SERUPA (GUNAKAN SEBAGAI REFERENSI POLA):
-{context}
-
-### DATA ARTIKEL UTAMA:
-Judul: {title}
-Isi: {content}
-
-### PANDUAN PRINSIP (BILINGUAL MASTER RULES):
-
-🔴 KATEGORI: NATIVE ADS (WAJIB DIPILIH JIKA ADA SALAH SATU):
-1. Corporate / Government PR (Advertorial): Rilis pers, klaim prestasi, atau liputan yang memoles citra positif Perusahaan, BUMN (misal: KAI, Pertamina, dll), atau Pemerintah Daerah (Pemkab/Pemkot/Kementerian).
-2. Financial / Business Announcement: Pengumuman dividen, laba, ekspansi bisnis, atau korporasi ("Globe Newswire", "PR Newswire", "TSX", dll).
-3. Event & Product Promotion: Liputan pameran (otomotif/IMOS, gadget, travel fair) atau peluncuran produk/layanan dengan ragam bahasa positif/persuasif.
-4. Soft-Selling: Artikel kesehatan, gaya hidup, atau review yang menonjolkan satu entitas komersial secara dominan tanpa unsur kritis/musibah.
-
-🟢 KATEGORI: BERITA MURNI (WAJIB DIPILIH JIKA ADA SALAH SATU):
-1. Public Grief / Disasters: Kecelakaan lalulintas, musibah alam, cuaca, atau berita duka/kematian.
-2. Crisis / Legal Issues: Persidangan hukum murni, skandal kriminal, atau PHK/kebangkrutan.
-3. Macro Policy & Pure Event: Kebijakan makro negara (contoh: aturan pajak/PPN, pemilu), diplomasi presiden antar negara, atau laporan langsung skor pertandingan olahraga. No PR!
-
-Format Respon (JSON WAJIB):
-{{
-  "analysis": "Penjelasan singkat menggunakan prinsip kategori di atas (maks 2 kalimat).",
-  "label": "native ads/berita murni"
-}}
-
-JAWABAN: """
+                    # Phase 210: Exact train/inference alignment.
+                    # Qwen3-8B was fine-tuned on QWEN_TRAIN_{ID,EN}_TEMPLATE (no system
+                    # prompt, content[:400], output {label,confidence,reasoning}). Using ANY
+                    # other prompt puts the fine-tuned model off-distribution and tanks accuracy.
+                    # Language-detect to pick the same template language as training.
+                    en_indicators = [" the ", " and ", " is ", " of ", " with ", " for "]
+                    is_qwen_english = any(ind in (" " + content.lower() + " ") for ind in en_indicators)
+                    template = QWEN_TRAIN_EN_TEMPLATE if is_qwen_english else QWEN_TRAIN_ID_TEMPLATE
                     prefix_force = ""
                     suffix_force = ""
                 elif is_gemma and self.model_tier == 'standard':
@@ -375,7 +356,7 @@ JAWABAN: """
                 if is_gemma and self.model_tier == 'standard':
                     max_chars = 400
                 elif is_qwen:
-                    max_chars = 5000
+                    max_chars = 400  # Phase 210: match finetune.py sample['input'][:400] exactly
                 elif self.model_tier == 'micro':
                     max_chars = 400  # matches finetune.py sample['input'][:400]
                 else:
@@ -402,9 +383,10 @@ JAWABAN: """
                         # This matches the March 25 winning path exactly.
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
                     elif is_qwen and self.model_tier == 'standard':
-                        # Qwen template has {title}, {content}, {context}.
-                        # RAG injection disabled — pass empty context to avoid prompt contamination.
-                        user_msg = template.format(title=title or content[:70], content=content_processed, context="").strip()
+                        # Phase 210: Exact training format — {title} + {content} only.
+                        # RAG is injected as multi-turn few-shot in the dispatcher below,
+                        # NOT inlined here, so every turn stays in the training distribution.
+                        user_msg = template.format(title=title or content[:70], content=content_processed)
                     else:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
@@ -413,10 +395,27 @@ JAWABAN: """
                 
                 # Phase 141/153/200: Prompt Dispatcher
                 if is_qwen:
-                    messages = [
-                        {"role": "system", "content": "Anda adalah expert classifier untuk mendeteksi native advertising dalam berita Indonesia."},
-                        {"role": "user", "content": user_msg}
-                    ]
+                    # Phase 210: NO system prompt (training had none). Build multi-turn
+                    # few-shot from the balanced retrieved examples — each example rendered
+                    # in the EXACT training template with its known JSON answer, so the
+                    # fine-tuned model sees them as in-distribution demonstrations.
+                    messages = []
+                    if self.use_rag and selected:
+                        for ex in selected:
+                            ex_content = str(ex.get('content', ''))[:400]
+                            # Derive a title the same way finetune.py did for title-less samples
+                            ex_sentences = re.split(r'[.!?]\s+', ex_content)
+                            ex_title = (ex_sentences[0][:100] if ex_sentences else ex_content[:100]).strip()
+                            ex_label = 'native ads' if 'native' in str(ex.get('label', '')).lower() else 'berita murni'
+                            ex_reasoning = str(ex.get('reasoning', ''))[:150]
+                            ex_user = template.format(title=ex_title, content=ex_content)
+                            ex_answer = json.dumps(
+                                {"label": ex_label, "confidence": 0.9, "reasoning": ex_reasoning},
+                                ensure_ascii=False
+                            )
+                            messages.append({"role": "user", "content": ex_user})
+                            messages.append({"role": "assistant", "content": ex_answer})
+                    messages.append({"role": "user", "content": user_msg})
                     # Qwen3 has thinking mode enabled by default — disable it so the model
                     # outputs JSON directly without <think>...</think> tokens that exhaust
                     # max_new_tokens before the actual JSON response is generated.
