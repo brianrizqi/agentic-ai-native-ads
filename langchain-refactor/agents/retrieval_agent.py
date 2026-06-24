@@ -172,6 +172,55 @@ class RetrievalAgent:
             logger.error(f"Error getting examples for history: {e}")
             return []
     
+    def _search_by_label(
+        self,
+        text: str,
+        label: str,
+        k: int
+    ) -> List[Dict[str, Any]]:
+        """Retrieve top-k most similar examples filtered to a specific label."""
+        if not self.vectorstore:
+            return []
+        try:
+            results = self.vectorstore.similarity_search_with_score(
+                text[:500], k=k * 2, filter_label=label
+            )
+            examples = []
+            for doc, score in results[:k]:
+                examples.append({
+                    "content": doc.page_content,
+                    "label": doc.metadata.get("label", label),
+                    "reasoning": doc.metadata.get("reasoning", ""),
+                    "similarity_score": float(score),
+                })
+            return examples
+        except Exception as e:
+            logger.error(f"Label-filtered search error ({label}): {e}")
+            return []
+
+    def get_balanced_examples_for_history(
+        self,
+        text: str,
+        top_k: int = 4
+    ) -> List[Dict[str, Any]]:
+        """
+        Get balanced RAG examples: top_k/2 native ads + top_k/2 berita murni.
+        Interleaved so the model sees contrast between both classes.
+        Prevents the retrieval from being dominated by one class and biasing predictions.
+        """
+        k_per_class = max(1, (top_k + 1) // 2)
+        native_examples = self._search_by_label(text, "native ads", k_per_class)
+        news_examples = self._search_by_label(text, "berita murni", k_per_class)
+
+        # Interleave: ads, news, ads, news — so the model always sees contrast
+        combined = []
+        for i in range(max(len(native_examples), len(news_examples))):
+            if i < len(native_examples):
+                combined.append(native_examples[i])
+            if i < len(news_examples):
+                combined.append(news_examples[i])
+        return combined[:top_k]
+
     def search_by_topic(
         self,
         topic: str,

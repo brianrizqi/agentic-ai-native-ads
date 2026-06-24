@@ -584,6 +584,54 @@ Konten:
 Output (JSON):"""
 
 
+# -----------------------------------------------------------------------------
+# EXACT training-format templates (must match finetune.py byte-for-byte).
+# finetune.py trains Qwen3-8B with these — inference MUST use the same format,
+# otherwise the fine-tuned model is off-distribution and accuracy collapses.
+#   - ID samples  -> QWEN_TRAIN_ID_TEMPLATE  (finetune.py TRAINING_PROMPT_TEMPLATE)
+#   - EN samples  -> QWEN_TRAIN_EN_TEMPLATE  (finetune.py EN_PROMPT_TEMPLATE)
+# No system prompt; content truncated to 400 chars; output is
+# {"label","confidence","reasoning"}.
+# -----------------------------------------------------------------------------
+QWEN_TRAIN_ID_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+"""
+
+QWEN_TRAIN_EN_TEMPLATE = """Classify the following article as 'native ads' or 'pure news'.
+
+Native Ads combine ALL of these traits:
+1. Positive/neutral tone (not critical of the subject)
+2. Persuasive language (convincing/inviting)
+3. Promotes a product, brand, or institution
+4. Only one viewpoint (not objective)
+
+Pure News:
+- Can be positive/neutral/negative
+- Objective, presents multiple viewpoints
+- Does not promote products/brands
+
+Title: {title}
+Content: {content}
+
+Output (JSON):
+"""
+
+
 # Phase 39: Alpaca Format Restoration (Gemma 3 270M Target 65%)
 # -----------------------------------------------------------------------------
 # Re-aligning the model prompt exactly with its Unsloth fine-tuning template.

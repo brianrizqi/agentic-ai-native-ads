@@ -224,8 +224,11 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
                         minimalist=minimalist
                     )
                 elif agent.provider == "local" and agent.tokenizer:
-                    examples = retriever.get_examples_for_history(
-                        sample['input'], 
+                    # Balanced retrieval: equal native ads + berita murni examples.
+                    # Plain top-K retrieval biases toward whichever class dominates the
+                    # embedding neighborhood, causing systematic over-prediction of that class.
+                    examples = retriever.get_balanced_examples_for_history(
+                        sample['input'],
                         top_k=eff_top_k
                     )
                 else:
