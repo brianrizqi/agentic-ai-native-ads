@@ -369,8 +369,15 @@ class TrainingMonitor(TrainerCallback):
         print(f"\n📈 Training curves saved to: {output_path}")
 
 
-def load_and_format_dataset(dataset_path: str, tokenizer=None, model_key: str = "gemma3") -> Dataset:
-    """Load dataset and format using chat templates for better instruction following."""
+def load_and_format_dataset(dataset_path: str, tokenizer=None, model_key: str = "gemma3",
+                            use_rag: bool = False, rag_top_k: int = 4,
+                            embed_model: str = "sentence-transformers/all-MiniLM-L6-v2") -> Dataset:
+    """Load dataset and format using chat templates for better instruction following.
+
+    When use_rag=True, each sample's prompt embeds `rag_top_k` balanced reference
+    examples retrieved from the training pool (excluding itself), so the fine-tuned
+    model LEARNS to consume retrieved context — making inference-time RAG in-distribution.
+    """
     
     print(f"Loading dataset from: {dataset_path}")
     
@@ -416,50 +423,7 @@ def load_and_format_dataset(dataset_path: str, tokenizer=None, model_key: str = 
     else:
         print(f"📝 Using JSON output format for {model_key} model")
     
-    # Filter and format
-    formatted_data = []
-    skipped = 0
-    for sample in data:
-        # Data Cleaning - Skip samples with errors or empty output
-        output_raw = sample.get('output', '')
-        if "Error: No JSON found" in output_raw or not output_raw:
-            skipped += 1
-            continue
-            
-        try:
-            output_json = json.loads(output_raw)
-            reasoning = output_json.get('reasoning', '')
-            label = output_json.get('label', 'berita murni')
-            
-            if len(reasoning) < 10:
-                skipped += 1
-                continue
-        except Exception:
-            skipped += 1
-            continue
-        
-        # Build title
-        if has_title:
-            title = sample.get('title', '')
-        else:
-            import re
-            sentences = re.split(r'[.!?]\s+', sample['input'])
-            title = sentences[0][:100] if sentences else sample['input'][:100]
-        
-        # Determine language for bilingual training
-        lang = sample.get('lang', 'id').lower()
-        
-        if use_mcq:
-            # MCQ format for 270M: Reasoning + Jawaban: A/B
-            mcq_label = "A" if label == "native ads" else "B"
-            expected_output = f"{reasoning}\nJawaban: {mcq_label}"
-            user_text = REASONING_MCQ_PROMPT_TEMPLATE.format(
-                title=title,
-                content=sample['input'][:400]
-            )
-        elif lang == 'en':
-            # English prompt template for EN samples
-            EN_PROMPT_TEMPLATE = """Classify the following article as 'native ads' or 'pure news'.
+    EN_PROMPT_TEMPLATE = """Classify the following article as 'native ads' or 'pure news'.
 
 Native Ads combine ALL of these traits:
 1. Positive/neutral tone (not critical of the subject)
@@ -477,41 +441,147 @@ Content: {content}
 
 Output (JSON):
 """
-            expected_output = json.dumps({
-                "label": label,
-                "confidence": output_json.get('confidence', 0.9),
-                "reasoning": reasoning[:150]
-            }, ensure_ascii=False)
-            user_text = EN_PROMPT_TEMPLATE.format(
-                title=title,
-                content=sample['input'][:400]
-            )
+
+    # --- Pass 1: parse & collect valid samples (so RAG can index over them) ---
+    import re
+    valid = []
+    skipped = 0
+    for sample in data:
+        output_raw = sample.get('output', '')
+        if "Error: No JSON found" in output_raw or not output_raw:
+            skipped += 1
+            continue
+        try:
+            output_json = json.loads(output_raw)
+            reasoning = output_json.get('reasoning', '')
+            label = output_json.get('label', 'berita murni')
+            if len(reasoning) < 10:
+                skipped += 1
+                continue
+        except Exception:
+            skipped += 1
+            continue
+
+        if has_title:
+            title = sample.get('title', '')
         else:
-            # JSON format for larger ID models: Full JSON output
+            sentences = re.split(r'[.!?]\s+', sample['input'])
+            title = sentences[0][:100] if sentences else sample['input'][:100]
+
+        valid.append({
+            'input': sample['input'],
+            'title': title,
+            'label': label,
+            'reasoning': reasoning,
+            'confidence': output_json.get('confidence', 0.9),
+            'lang': sample.get('lang', 'id').lower(),
+        })
+
+    # --- Build leakage-safe RAG retrieval index over the training pool ---
+    rag_index = None
+    if use_rag and not use_mcq:
+        from prompts.classification_prompts import (
+            RAG_ID_TEMPLATE, RAG_EN_TEMPLATE, build_rag_examples_block
+        )
+        rag_index = _build_rag_index(valid, embed_model)
+        print(f"📚 [RAG] Train-time RAG ON (top_k={rag_top_k}). Each sample retrieves "
+              f"{rag_top_k} balanced neighbors EXCLUDING itself (no leakage).")
+
+    # --- Pass 2: build training texts ---
+    formatted_data = []
+    for idx, s in enumerate(valid):
+        title, label = s['title'], s['label']
+        reasoning, lang = s['reasoning'], s['lang']
+        content400 = s['input'][:400]
+
+        if use_mcq:
+            mcq_label = "A" if label == "native ads" else "B"
+            expected_output = f"{reasoning}\nJawaban: {mcq_label}"
+            user_text = REASONING_MCQ_PROMPT_TEMPLATE.format(title=title, content=content400)
+        else:
             expected_output = json.dumps({
                 "label": label,
-                "confidence": output_json.get('confidence', 0.9),
-                "reasoning": reasoning[:150]  # Truncate for efficiency
+                "confidence": s['confidence'],
+                "reasoning": reasoning[:150],
             }, ensure_ascii=False)
-            user_text = TRAINING_PROMPT_TEMPLATE.format(
-                title=title,
-                content=sample['input'][:400]
-            )
-        
+
+            if rag_index is not None:
+                examples = _retrieve_balanced(rag_index, valid, idx, rag_top_k)
+                ex_lang = 'en' if lang == 'en' else 'id'
+                block = build_rag_examples_block(examples, lang=ex_lang)
+                tmpl = RAG_EN_TEMPLATE if lang == 'en' else RAG_ID_TEMPLATE
+                user_text = tmpl.format(examples=block, title=title, content=content400)
+            else:
+                tmpl = EN_PROMPT_TEMPLATE if lang == 'en' else TRAINING_PROMPT_TEMPLATE
+                user_text = tmpl.format(title=title, content=content400)
+
         if tokenizer is not None:
-            messages = [
-                {"role": "user", "content": user_text}
-            ]
+            messages = [{"role": "user", "content": user_text}]
             text_prompt_only = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             text = text_prompt_only + expected_output + tokenizer.eos_token
         else:
             text = user_text + expected_output
-        
+
         formatted_data.append({"text": text})
-    
-    print(f"\n✅ Formatted {len(formatted_data)} samples for training.")
-    
+
+    print(f"\n✅ Formatted {len(formatted_data)} samples for training (skipped {skipped}).")
+
     return Dataset.from_list(formatted_data)
+
+
+def _build_rag_index(valid, embed_model_name):
+    """Encode all training inputs once and split indices by label for balanced,
+    leakage-safe retrieval during training."""
+    from sentence_transformers import SentenceTransformer
+    import numpy as np
+    print(f"\n🔎 [RAG] Encoding {len(valid)} samples with {embed_model_name} ...")
+    model = SentenceTransformer(embed_model_name)
+    texts = [s['input'][:500] for s in valid]
+    emb = model.encode(texts, batch_size=64, show_progress_bar=True, normalize_embeddings=True)
+    emb = np.asarray(emb, dtype='float32')
+    native_idx = np.array([i for i, s in enumerate(valid) if 'native' in s['label'].lower()], dtype=int)
+    berita_idx = np.array([i for i, s in enumerate(valid) if 'native' not in s['label'].lower()], dtype=int)
+    return {'emb': emb, 'native_idx': native_idx, 'berita_idx': berita_idx}
+
+
+def _retrieve_balanced(rag_index, valid, self_idx, top_k):
+    """Retrieve top_k examples nearest to self_idx, split evenly across the two
+    labels and EXCLUDING self_idx (prevents the model from copying its own answer)."""
+    import numpy as np
+    emb = rag_index['emb']
+    q = emb[self_idx]
+    k_half = max(1, top_k // 2)
+
+    def nearest(pool_idx):
+        if len(pool_idx) == 0:
+            return []
+        sims = emb[pool_idx] @ q  # cosine on normalized vectors
+        order = np.argsort(-sims)
+        out = []
+        for j in order:
+            gi = int(pool_idx[j])
+            if gi == self_idx:
+                continue  # leakage guard
+            out.append(gi)
+            if len(out) >= k_half:
+                break
+        return out
+
+    nat = nearest(rag_index['native_idx'])
+    ber = nearest(rag_index['berita_idx'])
+    combined = []
+    for a, b in zip(nat, ber):
+        combined.append(a)
+        combined.append(b)
+    combined += nat[len(ber):] + ber[len(nat):]
+    combined = combined[:top_k]
+    # NOTE: deliberately omit 'title' so build_rag_examples_block derives it from
+    # content — identically to inference, where the vectorstore stores no title.
+    return [{
+        'label': valid[i]['label'],
+        'content': valid[i]['input'],
+        'reasoning': valid[i]['reasoning'],
+    } for i in combined]
 
 
 def main():
@@ -531,14 +601,31 @@ def main():
                        help='Evaluation frequency (steps)')
     parser.add_argument('--num-gpu', type=int, default=None,
                        help='Number of GPUs to use (default: all available)')
+    parser.add_argument('--use-rag', action='store_true',
+                       help='Train with RAG: embed balanced retrieved examples (leakage-safe) '
+                            'into each prompt so inference-time RAG is in-distribution')
+    parser.add_argument('--rag-top-k', type=int, default=4,
+                       help='Number of balanced reference examples per sample for train-time RAG')
+    parser.add_argument('--embed-model', type=str,
+                       default='sentence-transformers/all-MiniLM-L6-v2',
+                       help='Embedding model for train-time RAG retrieval (match the inference vectorstore)')
     args = parser.parse_args()
     
     # Get model configuration
     config = MODEL_CONFIGS[args.model]
-    
+
+    # Train-time RAG embeds extra reference examples → prompts get longer.
+    # Bump the sequence length so they aren't truncated (which would drop the query/answer).
+    if args.use_rag:
+        rag_seq = 4096
+        if config['max_seq_length'] < rag_seq:
+            print(f"📏 [RAG] Raising max_seq_length {config['max_seq_length']} → {rag_seq} to fit embedded examples")
+            config['max_seq_length'] = rag_seq
+
     # Set output directory
     if args.output is None:
-        args.output = f"../models/{args.model}-native-ads"
+        suffix = "-rag" if args.use_rag else ""
+        args.output = f"../models/{args.model}-native-ads{suffix}"
     
     print("="*80)
     print("NATIVE ADS DETECTION - FINE-TUNING")
@@ -607,7 +694,9 @@ def main():
     
     # 3. Load and prepare dataset
     print("[3/5] Loading and formatting dataset...")
-    dataset = load_and_format_dataset(args.dataset, tokenizer=tokenizer, model_key=args.model)
+    dataset = load_and_format_dataset(args.dataset, tokenizer=tokenizer, model_key=args.model,
+                                      use_rag=args.use_rag, rag_top_k=args.rag_top_k,
+                                      embed_model=args.embed_model)
     
     # Split train/eval
     split = dataset.train_test_split(test_size=0.1, seed=42)

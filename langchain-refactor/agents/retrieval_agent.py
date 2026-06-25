@@ -178,21 +178,31 @@ class RetrievalAgent:
         label: str,
         k: int
     ) -> List[Dict[str, Any]]:
-        """Retrieve top-k most similar examples filtered to a specific label."""
+        """Retrieve top-k most similar examples filtered to a specific label.
+
+        Excludes any doc that is (near-)identical to the query — if the test article
+        also lives in the vectorstore, returning it as its own 'reference' would leak
+        the ground-truth label. Over-fetch then drop self-matches before taking top-k.
+        """
         if not self.vectorstore:
             return []
         try:
             results = self.vectorstore.similarity_search_with_score(
-                text[:500], k=k * 2, filter_label=label
+                text[:500], k=k * 4, filter_label=label
             )
+            query_key = text.strip()[:200]
             examples = []
-            for doc, score in results[:k]:
+            for doc, score in results:
+                if doc.page_content.strip()[:200] == query_key:
+                    continue  # leakage guard: skip the query article itself
                 examples.append({
                     "content": doc.page_content,
                     "label": doc.metadata.get("label", label),
                     "reasoning": doc.metadata.get("reasoning", ""),
                     "similarity_score": float(score),
                 })
+                if len(examples) >= k:
+                    break
             return examples
         except Exception as e:
             logger.error(f"Label-filtered search error ({label}): {e}")
