@@ -632,6 +632,86 @@ Output (JSON):
 """
 
 
+# -----------------------------------------------------------------------------
+# Phase 220: TRAIN-TIME RAG templates (single-turn, rules-once + embedded examples).
+# Used IDENTICALLY by finetune.py (training) and classification_agent.py (inference)
+# so the model is trained to consume retrieved examples — making RAG in-distribution.
+# Multi-turn few-shot was abandoned: it repeats the rule block per example (token waste)
+# and is structurally OOD for an SFT model, which collapsed accuracy.
+# -----------------------------------------------------------------------------
+RAG_ID_TEMPLATE = """Klasifikasikan berita berikut sebagai "native ads" atau "berita murni".
+
+Native Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:
+1. Nada positif/netral (tidak mengkritik subjek)
+2. Bahasa persuasif (mengajak/meyakinkan)
+3. Mempromosikan produk/brand/instansi
+4. Hanya satu sudut pandang (tidak objektif)
+
+Berita Murni:
+- Bisa positif/netral/negatif
+- Objektif, menyajikan berbagai sudut pandang
+- Tidak mempromosikan produk/brand
+
+Contoh referensi berlabel (gunakan untuk mengenali pola, jangan disalin):
+{examples}
+Sekarang klasifikasikan artikel ini:
+Judul: {title}
+Konten: {content}
+
+Output (JSON):
+"""
+
+RAG_EN_TEMPLATE = """Classify the following article as 'native ads' or 'pure news'.
+
+Native Ads combine ALL of these traits:
+1. Positive/neutral tone (not critical of the subject)
+2. Persuasive language (convincing/inviting)
+3. Promotes a product, brand, or institution
+4. Only one viewpoint (not objective)
+
+Pure News:
+- Can be positive/neutral/negative
+- Objective, presents multiple viewpoints
+- Does not promote products/brands
+
+Labeled reference examples (use to recognize patterns, do not copy):
+{examples}
+Now classify this article:
+Title: {title}
+Content: {content}
+
+Output (JSON):
+"""
+
+
+def build_rag_examples_block(examples, lang="id", content_chars=300, reasoning_chars=100):
+    """Render retrieved examples into the {examples} slot of RAG_{ID,EN}_TEMPLATE.
+
+    MUST be called identically in finetune.py and classification_agent.py.
+    Each example dict needs: 'label', optional 'title', 'content'/'input', 'reasoning'.
+    """
+    import json as _json
+    import re as _re
+    lines = []
+    for i, ex in enumerate(examples, 1):
+        label = "native ads" if "native" in str(ex.get("label", "")).lower() else "berita murni"
+        ans = _json.dumps(
+            {"label": label, "confidence": 0.9,
+             "reasoning": str(ex.get("reasoning", ""))[:reasoning_chars]},
+            ensure_ascii=False,
+        )
+        content = str(ex.get("content", ex.get("input", "")))[:content_chars]
+        title = str(ex.get("title", "")).strip()
+        if not title:
+            sents = _re.split(r"[.!?]\s+", content)
+            title = (sents[0][:100] if sents else content[:100]).strip()
+        if lang == "en":
+            lines.append(f"[Example {i}]\nTitle: {title}\nContent: {content}\nAnswer: {ans}\n")
+        else:
+            lines.append(f"[Contoh {i}]\nJudul: {title}\nKonten: {content}\nJawaban: {ans}\n")
+    return "\n".join(lines)
+
+
 # Phase 39: Alpaca Format Restoration (Gemma 3 270M Target 65%)
 # -----------------------------------------------------------------------------
 # Re-aligning the model prompt exactly with its Unsloth fine-tuning template.

@@ -240,7 +240,8 @@ class ClassificationAgent:
                     BILINGUAL_SILENT_TEMPLATE, GEMMA_LARGE_TEMPLATE,
                     MICRO_EN_TRAINING_TEMPLATE, MICRO_ID_TRAINING_TEMPLATE,
                     QWEN_STANDARD_TRAINING_TEMPLATE,
-                    QWEN_TRAIN_ID_TEMPLATE, QWEN_TRAIN_EN_TEMPLATE
+                    QWEN_TRAIN_ID_TEMPLATE, QWEN_TRAIN_EN_TEMPLATE,
+                    RAG_ID_TEMPLATE, RAG_EN_TEMPLATE, build_rag_examples_block
                 )
                 # Phase 200: Detect model family for Gemma-specific routing
                 is_gemma = self._get_model_family(self.model_name) == 'gemma'
@@ -389,10 +390,21 @@ class ClassificationAgent:
                         # This matches the March 25 winning path exactly.
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=context or "").strip()
                     elif is_training_fmt:
-                        # Phase 210/211: Exact training format — {title} + {content} only.
-                        # RAG is injected as multi-turn few-shot in the dispatcher below,
-                        # NOT inlined here, so every turn stays in the training distribution.
-                        user_msg = template.format(title=title or content[:70], content=content_processed)
+                        # Phase 220: Single-turn format, identical to finetune.py.
+                        # Render directly from the balanced, interleaved, self-excluded
+                        # `examples` list (NOT the L2-re-sorted `selected`) so the example
+                        # block matches train-time _retrieve_balanced order exactly.
+                        if self.use_rag and examples:
+                            ex_lang = 'en' if is_en_article else 'id'
+                            block = build_rag_examples_block(examples, lang=ex_lang)
+                            rag_tmpl = RAG_EN_TEMPLATE if is_en_article else RAG_ID_TEMPLATE
+                            user_msg = rag_tmpl.format(
+                                examples=block,
+                                title=title or content[:70],
+                                content=content_processed,
+                            )
+                        else:
+                            user_msg = template.format(title=title or content[:70], content=content_processed)
                     else:
                         user_msg = template.format(title=title or content[:70], content=content_processed, context=rag_block or "").strip()
                 
@@ -401,33 +413,13 @@ class ClassificationAgent:
                 
                 # Phase 141/153/200: Prompt Dispatcher
                 if is_training_fmt:
-                    # Phase 210/211: NO system prompt (training had none). Build multi-turn
-                    # few-shot from the balanced retrieved examples — each example rendered
-                    # in the EXACT training template with its known JSON answer, so the
-                    # fine-tuned model sees them as in-distribution demonstrations.
-                    # Applies to qwen3-8b, deepseek-r1-llama-8b, llama-8b, etc.
-                    messages = []
-                    if self.use_rag and selected:
-                        for ex in selected:
-                            ex_content = str(ex.get('content', ''))[:400]
-                            # Derive a title the same way finetune.py did for title-less samples
-                            ex_sentences = re.split(r'[.!?]\s+', ex_content)
-                            ex_title = (ex_sentences[0][:100] if ex_sentences else ex_content[:100]).strip()
-                            ex_label = 'native ads' if 'native' in str(ex.get('label', '')).lower() else 'berita murni'
-                            ex_reasoning = str(ex.get('reasoning', ''))[:150]
-                            ex_user = template.format(title=ex_title, content=ex_content)
-                            ex_answer = json.dumps(
-                                {"label": ex_label, "confidence": 0.9, "reasoning": ex_reasoning},
-                                ensure_ascii=False
-                            )
-                            messages.append({"role": "user", "content": ex_user})
-                            messages.append({"role": "assistant", "content": ex_answer})
-                    messages.append({"role": "user", "content": user_msg})
-                    # Phase 211: Replicate finetune.py:505 EXACTLY — plain apply_chat_template
-                    # with add_generation_prompt=True and NO enable_thinking arg. Training never
-                    # injected an empty <think></think> block, so inference must not either.
-                    # The model was SFT'd to emit JSON directly; any <think> is stripped in
-                    # _parse_response, and max_new_tokens=256 leaves room if it does reason.
+                    # Phase 220: Single-turn, identical to finetune.py:505. The RAG examples
+                    # (if any) are already embedded INSIDE user_msg via RAG_{ID,EN}_TEMPLATE,
+                    # so this is one user turn — exactly matching how the model was trained.
+                    # NO system prompt, NO enable_thinking injection. Any <think> is stripped
+                    # in _parse_response; max_new_tokens=256 leaves room if it does reason.
+                    # Applies to qwen3-8b(-rag), deepseek-r1-llama-8b(-rag), llama-8b, etc.
+                    messages = [{"role": "user", "content": user_msg}]
                     templated_prompt = self.tokenizer.apply_chat_template(
                         messages, tokenize=False, add_generation_prompt=True
                     )

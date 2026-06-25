@@ -198,11 +198,10 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             context = ""
             examples = None
             if retriever:
-                # Phase 116: Force a broad pool (Top-20) to ensure 3:2 Skew can find enough Ads.
-                # This fixes the 85.5% plateau where Ads were starving in a Top-5 pool.
-                # Phase 40: Respect User Top-K (Stop over-fetching for Micro)
-                eff_top_k = kwargs.get('top_k', 5)
-                if eff_top_k < 5: eff_top_k = 5
+                # Phase 220: Respect --top-k EXACTLY. For train-time RAG the eval top_k MUST
+                # equal the --rag-top-k used during fine-tuning (default 4), otherwise the
+                # number of embedded examples differs from training and breaks alignment.
+                eff_top_k = kwargs.get('top_k', 4)
                 max_reasoning = None
                 minimalist = False
                 
