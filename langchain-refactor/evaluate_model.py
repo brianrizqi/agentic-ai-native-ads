@@ -754,10 +754,37 @@ def main():
                        help='Filter evaluation by language (e.g. "en", "id")')
     parser.add_argument('--gpu-id', type=int, default=0,
                        help='GPU ID to use (0, 1, etc.) or -1 for "auto" (default: 0)')
+    parser.add_argument('--allow-rag-mismatch', action='store_true',
+                       help='Override the safety check that blocks --use-rag on a non "-rag" model')
     args = parser.parse_args()
-    
+
     # Extract model name from path
     model_path = Path(args.model)
+
+    # ---- Safety guard (Phase 220): RAG flag must match the model's training ----
+    # --use-rag only works on a model fine-tuned with train-time RAG (finetune.py --use-rag),
+    # whose dir is named "...-rag". Running --use-rag on a plain model is out-of-distribution
+    # and collapses accuracy (the 52% inverted-class failure). Block it loudly.
+    model_is_rag = '-rag' in model_path.name.lower()
+    if args.use_rag and not model_is_rag and not args.allow_rag_mismatch:
+        print("\n" + "="*80)
+        print("❌ REFUSING TO RUN: --use-rag on a non-RAG model")
+        print("="*80)
+        print(f"Model: {args.model}")
+        print("This model was NOT trained with train-time RAG (its name lacks '-rag'),")
+        print("so injecting retrieved examples is out-of-distribution and WILL collapse accuracy.")
+        print("\nFix one of these:")
+        print("  1. Retrain first:  python finetune.py --model <m> --use-rag --rag-top-k 4")
+        print("     then evaluate ../models/<m>-native-ads-rag")
+        print("  2. Drop --use-rag to evaluate this plain model.")
+        print("  3. Pass --allow-rag-mismatch to override (NOT recommended).")
+        print("="*80 + "\n")
+        sys.exit(1)
+    if model_is_rag and not args.use_rag:
+        print("\n⚠️  WARNING: this is a '-rag' model but --use-rag is NOT set. It was trained")
+        print("    WITH embedded examples, so evaluating it plain is also off-distribution.")
+        print("    Add --use-rag (and --vectorstore-dir / --top-k) for a fair result.\n")
+
     model_name = model_path.name.replace('_merged_16bit', '').replace('-', '_')
     
     # Create timestamped output filename
