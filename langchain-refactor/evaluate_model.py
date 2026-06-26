@@ -172,9 +172,9 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         rag_top_k=kwargs.get('top_k', 3) # Stage 75: Support Top-K from CLI
     )
     
-    # Initialize RAG if requested
+    # Initialize RAG if requested (prompt-injection RAG OR post-hoc KNN vote)
     retriever = None
-    if kwargs.get('use_rag'):
+    if kwargs.get('use_rag') or kwargs.get('rag_vote'):
         try:
             from agents.retrieval_agent import RetrievalAgent
             from vector_stores.native_ads_vectorstore import NativeAdsVectorStore
@@ -221,14 +221,20 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
             # Get RAG context if enabled
             context = ""
             examples = None
-            if retriever:
+            knn_neighbors = None
+            eff_top_k = kwargs.get('top_k', 4)
+            # Phase 221: post-hoc KNN vote retrieves nearest neighbors but does NOT touch
+            # the prompt — keeps the model in-distribution. Done separately from injection.
+            if retriever and kwargs.get('rag_vote'):
+                knn_neighbors = retriever.get_examples_for_history(sample['input'], top_k=eff_top_k)
+
+            if retriever and kwargs.get('use_rag'):
                 # Phase 220: Respect --top-k EXACTLY. For train-time RAG the eval top_k MUST
                 # equal the --rag-top-k used during fine-tuning (default 4), otherwise the
                 # number of embedded examples differs from training and breaks alignment.
-                eff_top_k = kwargs.get('top_k', 4)
                 max_reasoning = None
                 minimalist = False
-                
+
                 # Phase 20: Use examples for multi-turn history-based RAG for local models
                 # Phase 200: Exception — Gemma large (12B+) uses llm.invoke() pipeline,
                 # which reads from `context` string, NOT from `examples` list.
@@ -256,13 +262,25 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
                     )
                 else:
                     context = retriever.get_context_for_classification(
-                        sample['input'], 
+                        sample['input'],
                         top_k=eff_top_k,
                         max_reasoning_length=max_reasoning,
                         minimalist=minimalist
                     )
-                
+
             pred = agent.classify(sample['input'], title=title, context=context, examples=examples)
+
+            # Phase 221: post-hoc KNN override. Only flips the model when the neighborhood
+            # disagrees AND is both confident (margin) and close (min L2 distance). Keeps the
+            # model's call otherwise — conservative, targets the model's weak recall.
+            if knn_neighbors:
+                kl, kmargin, kdist = knn_vote_label(knn_neighbors)
+                if (kl and kl != pred.get('label')
+                        and kmargin >= kwargs.get('rag_vote_margin', 0.6)
+                        and kdist <= kwargs.get('rag_vote_maxdist', 0.8)):
+                    pred['label'] = kl
+                    pred['reasoning'] = (f"[KNN-vote override m={kmargin:.2f} d={kdist:.2f}] "
+                                         + str(pred.get('reasoning', '')))
 
             pred_label = pred.get('label', 'unknown')
             pred_reasoning = pred.get('reasoning', '')
@@ -753,7 +771,14 @@ def main():
     parser.add_argument('--tier', type=str, default='base', choices=['base', 'micro', 'small', 'standard', 'premium'],
                        help='Model tier (base, micro, small, standard, premium) for prompt selection')
     parser.add_argument('--use-rag', action='store_true',
-                       help='Use RAG during evaluation')
+                       help='Prompt-injection RAG (requires a model trained with train-time RAG)')
+    parser.add_argument('--rag-vote', action='store_true',
+                       help='Post-hoc KNN vote: keep the plain in-distribution prompt, but correct '
+                            'the prediction using nearest-neighbor labels. Works on ANY model, no retrain.')
+    parser.add_argument('--rag-vote-margin', type=float, default=0.6,
+                       help='KNN vote: min weighted margin [0-1] required to override the model')
+    parser.add_argument('--rag-vote-maxdist', type=float, default=0.8,
+                       help='KNN vote: only override when nearest neighbor L2 distance <= this')
     parser.add_argument('--vectorstore-dir', type=str, default='data/vectorstore',
                        help='Directory for FAISS vectorstore')
     parser.add_argument('--embedding-model', type=str, default='sentence-transformers/all-MiniLM-L6-v2',
@@ -817,6 +842,8 @@ def main():
     output_filename = f'eval_{model_name}_{timestamp}_{args.num_samples}samples'
     if args.use_rag:
         output_filename += f'_rag_top{args.top_k}'
+    if args.rag_vote:
+        output_filename += f'_knnvote_top{args.top_k}'
     
     # Create output directory
     output_dir = Path(args.output_dir)
@@ -844,7 +871,10 @@ def main():
         embedding_model=args.embedding_model,
         gpu_id=args.gpu_id,
         tier=args.tier,
-        top_k=args.top_k
+        top_k=args.top_k,
+        rag_vote=args.rag_vote,
+        rag_vote_margin=args.rag_vote_margin,
+        rag_vote_maxdist=args.rag_vote_maxdist
     )
     
     # Compute BERTScore
