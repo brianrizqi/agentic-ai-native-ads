@@ -815,20 +815,16 @@ def main():
     # whose dir is named "...-rag". Running --use-rag on a plain model is out-of-distribution
     # and collapses accuracy (the 52% inverted-class failure). Block it loudly.
     model_is_rag = '-rag' in model_path.name.lower()
-    if args.use_rag and not model_is_rag and not args.allow_rag_mismatch:
+    if args.use_rag and not model_is_rag:
+        # Warn loudly but DO NOT block — the user is in control of their own runs.
         print("\n" + "="*80)
-        print("❌ REFUSING TO RUN: --use-rag on a non-RAG model")
+        print("⚠️  WARNING: --use-rag on a non-RAG model (running anyway)")
         print("="*80)
         print(f"Model: {args.model}")
-        print("This model was NOT trained with train-time RAG (its name lacks '-rag'),")
-        print("so injecting retrieved examples is out-of-distribution and WILL collapse accuracy.")
-        print("\nFix one of these:")
-        print("  1. Retrain first:  python finetune.py --model <m> --use-rag --rag-top-k 4")
-        print("     then evaluate ../models/<m>-native-ads-rag")
-        print("  2. Drop --use-rag to evaluate this plain model.")
-        print("  3. Pass --allow-rag-mismatch to override (NOT recommended).")
+        print("This model was NOT trained with train-time RAG (name lacks '-rag'), so injecting")
+        print("retrieved examples is out-of-distribution — expect LOW accuracy (~52-65%).")
+        print("For the best result on THIS model, drop --use-rag (plain run ≈ 82%).")
         print("="*80 + "\n")
-        sys.exit(1)
     if model_is_rag and not args.use_rag:
         print("\n⚠️  WARNING: this is a '-rag' model but --use-rag is NOT set. It was trained")
         print("    WITH embedded examples, so evaluating it plain is also off-distribution.")
