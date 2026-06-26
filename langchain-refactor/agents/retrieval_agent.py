@@ -157,16 +157,23 @@ class RetrievalAgent:
         try:
             from tools.retrieval_tools import VectorSearchTool
             retriever = VectorSearchTool(vectorstore=self.vectorstore)
-            results = retriever.run({"query": text[:500], "top_k": top_k})
-            
+            # Over-fetch so we can drop self-matches and still return top_k
+            results = retriever.run({"query": text[:500], "top_k": top_k * 4})
+
+            query_key = text.strip()[:200]
             examples = []
             for doc_dict in results: # VectorSearchTool returns list of dicts with 'content', 'metadata', 'similarity_score'
+                content = doc_dict.get('content', '')
+                if content.strip()[:200] == query_key:
+                    continue  # leakage guard: skip the query article itself
                 examples.append({
-                    "content": doc_dict.get('content', ''),
+                    "content": content,
                     "label": doc_dict.get('metadata', {}).get('label', 'unknown'),
                     "reasoning": doc_dict.get('metadata', {}).get('reasoning', ''),
                     "similarity_score": doc_dict.get('similarity_score', 0.0)
                 })
+                if len(examples) >= top_k:
+                    break
             return examples
         except Exception as e:
             logger.error(f"Error getting examples for history: {e}")
