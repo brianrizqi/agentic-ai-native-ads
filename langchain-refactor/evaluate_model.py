@@ -129,6 +129,30 @@ def load_test_set(dataset_path: str, num_samples: int = 100, lang_filter: str = 
     return test_data
 
 
+def knn_vote_label(neighbors: List[Dict]) -> Tuple[Optional[str], float, float]:
+    """Weighted KNN vote over L2-distance neighbors (lower distance = closer).
+
+    Returns (winning_label, margin in [0,1], min_distance). Used by --rag-vote to
+    correct the model post-hoc WITHOUT touching its (in-distribution) prompt.
+    """
+    if not neighbors:
+        return None, 0.0, 99.0
+    vote = {'native ads': 0.0, 'berita murni': 0.0}
+    min_dist = 99.0
+    for n in neighbors:
+        l2 = float(n.get('similarity_score', 2.0))
+        min_dist = min(min_dist, l2)
+        w = max(0.0, 1.0 - l2 / 2.0)  # L2 in [0,2] -> weight in [0,1]
+        lab = 'native ads' if 'native' in str(n.get('label', '')).lower() else 'berita murni'
+        vote[lab] += w
+    total = vote['native ads'] + vote['berita murni']
+    if total <= 0:
+        return None, 0.0, min_dist
+    if vote['native ads'] >= vote['berita murni']:
+        return 'native ads', (vote['native ads'] - vote['berita murni']) / total, min_dist
+    return 'berita murni', (vote['berita murni'] - vote['native ads']) / total, min_dist
+
+
 def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[str] = None, **kwargs) -> Dict:
     """Evaluate model on test set with comprehensive metrics."""
     
