@@ -200,9 +200,10 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         'ground_truth_labels': [],
         'predicted_labels': [],
         'reasoning_texts': {'ground_truth': [], 'predicted': []},
-        'perplexities': []
+        'perplexities': [],
+        'debug_samples': []  # first few raw prompt/response pairs for diagnosis
     }
-    
+
     print(f"\nEvaluating on {len(test_data)} samples...")
     
     for i, sample in enumerate(test_data):
@@ -301,6 +302,17 @@ def evaluate_model(model_path: str, test_data: List[Dict], lora_path: Optional[s
         else:
             gt_reasoning = str(gt_reasoning)
             
+        # Capture the first 8 raw prompt/response pairs for diagnosis (cheap, high-signal)
+        if len(results['debug_samples']) < 8:
+            meta = pred.get('metadata', {})
+            results['debug_samples'].append({
+                'idx': i,
+                'ground_truth': gt_label,
+                'predicted': pred_label,
+                'raw_prompt': str(meta.get('raw_prompt', ''))[:4000],
+                'raw_response': str(meta.get('raw_response', ''))[:2000],
+            })
+
         # Update metrics
         results['total'] += 1
         results['by_class'][gt_label]['total'] += 1
@@ -888,6 +900,13 @@ def main():
         # Export qualitative reasoning examples (good / borderline / bad)
         examples_path = output_dir / f'{output_filename}_reasoning_examples.json'
         export_reasoning_examples(results, judge_results, str(examples_path))
+
+    # Dump raw prompt/response samples for diagnosis
+    if results.get('debug_samples'):
+        debug_path = output_dir / f'{output_filename}_raw_debug.json'
+        with open(debug_path, 'w', encoding='utf-8') as f:
+            json.dump(results['debug_samples'], f, ensure_ascii=False, indent=2)
+        print(f"\n🐞 Raw prompt/response dump saved to: {debug_path}")
 
     # Plot confusion matrix
     cm_path = output_dir / f'{output_filename}_confusion_matrix.png'
