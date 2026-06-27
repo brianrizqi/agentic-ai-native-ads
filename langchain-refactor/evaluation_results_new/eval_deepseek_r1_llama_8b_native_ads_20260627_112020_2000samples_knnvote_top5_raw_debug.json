@@ -1,0 +1,58 @@
+[
+  {
+    "idx": 0,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: Pasalnya, nilai kearifan lokal merupakan sumber daya unik yang dapat d\nContent: Pasalnya, nilai kearifan lokal merupakan sumber daya unik yang dapat digunakan untuk membangun keunggulan kompetitif berkelanjutan pada produk yang dihasilkan. Oleh karena itu, nilai tersebut perlu dikelola secara arif dan bijak.Salah satu pelaku UMKM asal Kampung Kadu Ketug, Desa Kanekes, Kabupaten Lebak, Provinsi Banten, Amir bin Salim, menyadari potensi kearifan lokal dari daerahnya. Melalui ke\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.\"}"
+  },
+  {
+    "idx": 1,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: Dengan pembaruan tersebut, pengguna bisa lebih berhemat dalam melakuka\nContent: Dengan pembaruan tersebut, pengguna bisa lebih berhemat dalam melakukan transfer uang dan mendapatkan pengalaman yang makin menyenangkan dalam bertransaksi digital.Pembaruan fitur Kirim Uang juga menegaskan posisi DANA sebagai dompet digital pilihan masyarakat untuk transfer uang.Chief of Product DANA Rangga Wiseno mengatakan, fitur Kirim Uang menjadi andalan dan dipercaya pengguna DANA.“Guna memp\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Thearticlecontainspromotionalorpersuasiveelementstowardsaspecificproduct/brand.\"}"
+  },
+  {
+    "idx": 2,
+    "ground_truth": "berita murni",
+    "predicted": "berita murni",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: - Wakil Menteri Pariwisata dan Ekonomi Kreatif (Wamenprekraf) Republik\nContent: - Wakil Menteri Pariwisata dan Ekonomi Kreatif (Wamenprekraf) Republik Indonesia, Angela Tanoesoedibjo mendukung penuh terlaksananya Art Jakarta Gardens 2022. Angela mengatakan, Art Jakarta Gardens 2022 yang merupakan ruang berkreasi bagi para seniman akan mampu menarik pengunjung sebagaimana yang ingin dicapai pihak penyelenggara sebanyak 8.000 orang dalam seminggu. \"Saya cukup yakin target 8.000\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.\"}"
+  },
+  {
+    "idx": 3,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: VIVA– Kepala Biro Humas dan Informasi PublikKementanKuntoro Boga Andri\nKonten: VIVA– Kepala Biro Humas dan Informasi PublikKementanKuntoro Boga Andri mengatakan saat ini secara keseluruhan pemerintah telah mendatangkan 800 ribu dosisvaksin PMK. Selanjutnya akan secara berturut tahap kedua hingga 3 juta dosis. “Vaksin ini sesuai yang disampaikan Bapak Mentan tadi malam saat menerima Vaksin di Kargo Bandara Sukarno Hatta, vaksin darurat ini akan gratis atau tidak dipungut biay\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}"
+  },
+  {
+    "idx": 4,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: Saat ini, di Indonesia sendiri sudah ada beberapa token dalam negeri. \nKonten: Saat ini, di Indonesia sendiri sudah ada beberapa token dalam negeri. Salah satunya adalah token Nanobyte (NBT). Token kripto dariexchangeNanovest tersebut didukung oleh Sinarmas Financial Group.Sebagai informasi, NBT merupakan token investasi aset kripto yang dibangun di atas ekosistem Binance Smart Chain dan menggunakan standar BEP-20 dengan total suplai maksimal token yang beredar sebanyak 10 m\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}"
+  },
+  {
+    "idx": 5,
+    "ground_truth": "berita murni",
+    "predicted": "berita murni",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: , Pertandingan tim bulu tangkis putri Indonesia melawan Jerman tersaji\nKonten: , Pertandingan tim bulu tangkis putri Indonesia melawan Jerman tersaji dalam laga kedua Grup A Piala Uber di Impact Arena Bangkok, Thailand, Selasa pagi, 10 Mei 2022. Indonesia untuk sementara mampu memimpin 20 setelah merebut dua partai pertama. Tiga partai lainnya masih akan berlangsung. Komang Ayu Cahya Dewi membuka keunggulan bagi Indonesia. Bermain selama 39 menit, pemain berperingkat 203 dun\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Artikelbersifatnetraldanobjektif,menyajikaninformasitanpapromosiproduk/brand.\"}"
+  },
+  {
+    "idx": 6,
+    "ground_truth": "berita murni",
+    "predicted": "berita murni",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: VIVA Showbiz – Drama mendatang MBC berjudul “Kkokdu’s Gye Jeol” (“The \nContent: VIVA Showbiz – Drama mendatang MBC berjudul “Kkokdu’s Gye Jeol” (“The Season of Kkokdu”) telah melanjutkan proses syuting. Lee Ji Han yang merupakan salah satu korban dari tragedi Itaewon tadinya membintangi drama tersebut.Pada 7 November 2022, sebuah sumber dari MBC membagikan bahwa tim produksi telah melanjutkan syuting untuk drama itu dan mereka sedang mencari pengganti untuk peran Lee Ji Han.“\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.\"}"
+  },
+  {
+    "idx": 7,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: Pijat menjadi salah satu cara untuk membuat tubuh dan pikiran menjadi \nKonten: Pijat menjadi salah satu cara untuk membuat tubuh dan pikiran menjadi lebih rileks. Ditambah dengan suasana dan tempat yang mendukung, momen pijat bisa terasa begitu menenangkan. Hal itu yang coba ditawarkan oleh Pullman Ciawi Vimala Hills Resort Spa. Salah satu menu pijatan yang tersedia di Pullman hotel dan resort Ciawi adalah Traditional Javanese Remedy atau Pijat Tradisional Jawa. Kali ini tim\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}"
+  }
+]
