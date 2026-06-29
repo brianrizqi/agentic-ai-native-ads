@@ -1,0 +1,58 @@
+[
+  {
+    "idx": 0,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: Untuk mengupayakan hal itu, DJKI Kemenkumham membuat nota kesepahaman \nKonten: Untuk mengupayakan hal itu, DJKI Kemenkumham membuat nota kesepahaman antara Pemerintah Kabupaten (Pemkab) Toraja Utara dengan Kantor Wilayah (Kanwil) Kemenkumham Sulawesi Selatan tentang Perlindungan dan Pemanfaatan KI.Penandatanganan tersebut disaksikan langsung oleh Pelaksana Tugas (Plt) DJKI Razilu di Hotel Toraja Heritage, Toraja, Sulawesi Selatan, Rabu (23/3/2022).Pada kesempatan tersebut, R\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}"
+  },
+  {
+    "idx": 1,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: JAKARTA - Kementerian Pemuda dan Olah Raga terus melakukan upaya berko\nContent: JAKARTA - Kementerian Pemuda dan Olah Raga terus melakukan upaya berkolaborasi dengan berbagai pihak. Kali ini, dalam giat Anugerah Syiar Ramadhan 2020, Kemenpora berkolaborasi dengan MUI beserta KPI, tujuannya adalah memberi apresiasi kepada pemuda Indonesia, pemuda Indonesia yang berprestasi di bidang syiar Ramadhan yang disiarkan di berbagai media Televisi. Kementerian Pemuda dan Olah Raga bera\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Thearticlecontainspromotionalorpersuasiveelementstowardsaspecificproduct/brand.\"}"
+  },
+  {
+    "idx": 2,
+    "ground_truth": "berita murni",
+    "predicted": "berita murni",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: PHILADELPHIA (AP) — The federal government’s demand for information ab\nContent: PHILADELPHIA (AP) — The federal government’s demand for information about the membership of Jewish groups from the University of Pennsylvania in an investigation into whether antisemitism has created a hostile environment for employees landed Tuesday before a federal judge who will decide whether to enforce a subpoena.\n\nThe Equal Employment Opportunity Commission’s probe of the Ivy League school i\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.\"}"
+  },
+  {
+    "idx": 3,
+    "ground_truth": "berita murni",
+    "predicted": "berita murni",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: Presiden Joko Widodo mengakui pembangunan infrastruktur belum merata. \nKonten: Presiden Joko Widodo mengakui pembangunan infrastruktur belum merata. Hal itu ia sampaikan setelah melihat video petugas pemilu mendatangi daerah terpencil.Jokowi mengatakan penyelenggaraan Pemilu Serentak 2024 tidak mudah. Komisi Pemilihan Umum (KPU) harus menggelar pemilihan di 17 ribu pulau dengan kondisi geografis beragam.\"Ada yang bawa motor terpeleset tadi karena infrastruktur kita memang be\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Artikelbersifatnetraldanobjektif,menyajikaninformasitanpapromosiproduk/brand.\"}"
+  },
+  {
+    "idx": 4,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: SAN FRANCISCO, Feb. 24, 2026 (GLOBE NEWSWIRE) — The leading cause of A\nContent: SAN FRANCISCO, Feb. 24, 2026 (GLOBE NEWSWIRE) — The leading cause of AI project failure is data preparation bottlenecks created by disconnected tools. Today, Tray.ai, the leader in enterprise orchestration for data and AI, announced Tray Data Engineering, a new solution that combines data transformation, AI, and agent development to eliminate the delays that cause 60% of enterprise AI projects to \n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Thearticlecontainspromotionalorpersuasiveelementstowardsaspecificproduct/brand.\"}"
+  },
+  {
+    "idx": 5,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: VIVA– Menteri Sosial RI Tri Rismaharini memerintahkan seluruh jajarann\nKonten: VIVA– Menteri Sosial RI Tri Rismaharini memerintahkan seluruh jajarannya untuk merespon cepat kasus melalui 41 Unit Pelaksana Tugas (UPT) baik balai maupun loka di seluruh Indonesia. Seperti yang dilakukan oleh Tim Balai “Phala Martha” mendampingi Tim Balai Prof Dr Soeharso Surakarta merespon cepat anak dengan tulang paha kiri tidak terbentuk sempurna. Hasil asesmen fisik tim dan rontgen rumah sak\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"nativeads\",\"confidence\":0.85,\"reasoning\":\"Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.\"}"
+  },
+  {
+    "idx": 6,
+    "ground_truth": "native ads",
+    "predicted": "native ads",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Classify the following article as 'native ads' or 'pure news'.\n\nNative Ads combine ALL of these traits:\n1. Positive/neutral tone (not critical of the subject)\n2. Persuasive language (convincing/inviting)\n3. Promotes a product, brand, or institution\n4. Only one viewpoint (not objective)\n\nPure News:\n- Can be positive/neutral/negative\n- Objective, presents multiple viewpoints\n- Does not promote products/brands\n\nTitle: Selain meningkatkan reputasi Indonesia di mata dunia,eventberskala int\nContent: Selain meningkatkan reputasi Indonesia di mata dunia,eventberskala internasional tersebut juga dapat memberikan harapan baru kepada pelaku usaha mikro kecil dan menengah (UMKM) lokal yang terpuruk akibat pandemi Covid-19.Salah satu pelaku UMKM binaan Pertamina sekaligus pemilik Lombok Mulya Craft Mulyadi mengatakan, ajang balap motor internasional di Mandalika menjadi pembangkit semangat bagi pela\n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.\"}"
+  },
+  {
+    "idx": 7,
+    "ground_truth": "berita murni",
+    "predicted": "berita murni",
+    "raw_prompt": "<｜begin▁of▁sentence｜><｜User｜>Klasifikasikan berita berikut sebagai \"native ads\" atau \"berita murni\".\n\nNative Ads adalah konten yang MENGGABUNGKAN semua ciri berikut:\n1. Nada positif/netral (tidak mengkritik subjek)\n2. Bahasa persuasif (mengajak/meyakinkan)\n3. Mempromosikan produk/brand/instansi\n4. Hanya satu sudut pandang (tidak objektif)\n\nBerita Murni:\n- Bisa positif/netral/negatif\n- Objektif, menyajikan berbagai sudut pandang\n- Tidak mempromosikan produk/brand\n\nJudul: Lionel Messi menandai penampilan ke-1.000 dalam kariernya sebagai pese\nKonten: Lionel Messi menandai penampilan ke-1.000 dalam kariernya sebagai pesepakbola profesional dengan gol yang mengantar Argentina lolos ke perempat final Piala Dunia 2022. Messi kembali menunjukkan bahwa ia punya kemampuan mengantar tim yang dibelanya keluar dari situasi terjepit. Dalam situasi Albiceleste kesulitan membongkar pertahanan Australia, tembakan kaki kiri Messi di menit ke-35 menghadirkan \n\nOutput (JSON):\n<｜Assistant｜><think>\n",
+    "raw_response": "{\"label\":\"beritamurni\",\"confidence\":0.85,\"reasoning\":\"Artikelbersifatnetraldanobjektif,menyajikaninformasitanpapromosiproduk/brand.\"}"
+  }
+]

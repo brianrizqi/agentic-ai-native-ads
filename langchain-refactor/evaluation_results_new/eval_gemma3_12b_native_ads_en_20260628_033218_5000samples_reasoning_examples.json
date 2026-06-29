@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 16,
+    "borderline_count": 3,
+    "bad_count": 81,
+    "avg_judge_score": 2.26
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PHILADELPHIA (AP) — The federal government’s demand for information about the membership of Jewish groups from the University of Pennsylvania in an investigation into whether antisemitism has created ",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Presiden Joko Widodo mengakui pembangunan infrastruktur belum merata. Hal itu ia sampaikan setelah melihat video petugas pemilu mendatangi daerah terpencil.Jokowi mengatakan penyelenggaraan Pemilu Ser",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Lionel Messi menandai penampilan ke-1.000 dalam kariernya sebagai pesepakbola profesional dengan gol yang mengantar Argentina lolos ke perempat final Piala Dunia 2022. Messi kembali menunjukkan bahwa ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not clearly indicate promotional intent, making the classification somewhat questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Untuk mengupayakan hal itu, DJKI Kemenkumham membuat nota kesepahaman antara Pemerintah Kabupaten (Pemkab) Toraja Utara dengan Kantor Wilayah (Kanwil) Kemenkumham Sulawesi Selatan tentang Perlindungan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content does not clearly indicate promotional elements, making the classification somewhat questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Kapolri Jenderal Listyo Sigit Prabowo membuka kegiatan lomba menembak bersama TNI-Polridan insan media di Mako Brimob, Kelapa Dua, Depok, Jawa Barat, Sabtu (11/6). Acara ini merupakan salah satu",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content primarily discusses government assistance for vendors, which does not inherently promote a product or brand, suggesting it could be classified as news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Untuk diketahui, BLT untuk PKL dan pedagang warung tegal (warteg) senilai Rp 1,2 juta per orang siap disalurkan usai pemerintah memutuskan hal tersebut dalam rapat terbatas (ratas) yang diselenggaraka",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads', failing to recognize the promotional nature of the content related to Helios Fairfax Partners Corporation.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "NOT FOR DISTRIBUTION TO U.S. NEWS WIRE SERVICES OR DISSEMINATION IN THE UNITED STATES\n\nTORONTO, Feb. 20, 2026 (GLOBE NEWSWIRE) — Helios Fairfax Partners Corporation (“Helios Fairfax”) (TSX: HFPC.U) an",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply, as the content focuses on community support during Ramadhan without promoting a product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Bulan suci Ramadhan, menjadi semangat bagi kader dan pengurus DPD Partai Perindo Kabupaten Lamongan, untuk semakin peduli dan berbagi dengan sesama. Diantaranya membagikan ratusan paket takjil grati",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning about promotional content is not applicable here, as the article discusses economic growth and investment without promoting a specific product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Menteri Keuangan Sri Mulyani mengungkapkan syarat untuk mempertahankan pertumbuhan ekonomi tetap kuat di tengah berbagai tantangan saat ini adalah investasi dan ekspor harus tumbuh di atas 5 persen.Me",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ]
+}

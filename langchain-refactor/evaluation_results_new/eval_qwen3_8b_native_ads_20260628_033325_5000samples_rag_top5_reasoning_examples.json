@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 14,
+    "borderline_count": 4,
+    "bad_count": 82,
+    "avg_judge_score": 2.16
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PHILADELPHIA (AP) — The federal government’s demand for information about the membership of Jewish groups from the University of Pennsylvania in an investigation into whether antisemitism has created ",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Presiden Joko Widodo mengakui pembangunan infrastruktur belum merata. Hal itu ia sampaikan setelah melihat video petugas pemilu mendatangi daerah terpencil.Jokowi mengatakan penyelenggaraan Pemilu Ser",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Lionel Messi menandai penampilan ke-1.000 dalam kariernya sebagai pesepakbola profesional dengan gol yang mengantar Argentina lolos ke perempat final Piala Dunia 2022. Messi kembali menunjukkan bahwa ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is weak and generic. The article does not clearly promote a product or brand, making the reasoning for the classification insufficient.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Untuk mengupayakan hal itu, DJKI Kemenkumham membuat nota kesepahaman antara Pemerintah Kabupaten (Pemkab) Toraja Utara dengan Kantor Wilayah (Kanwil) Kemenkumham Sulawesi Selatan tentang Perlindungan",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not clearly promote a product or brand, making the reasoning less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Menteri Sosial RI Tri Rismaharini memerintahkan seluruh jajarannya untuk merespon cepat kasus melalui 41 Unit Pelaksana Tugas (UPT) baik balai maupun loka di seluruh Indonesia. Seperti yang dila",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is weak and generic. The article content does not clearly indicate a promotional tone or intent, making the reasoning less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Usai rapat terbatas dengan Presiden Joko Widodo, Menteri Koordinator Bidang Perekonomian sekaligus Ketua Komite Penanganan COVID-19 dan Pemulihan Ekonomi Nasional (KPCPEN)Airlangga Hartartomenya",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model's prediction is completely wrong as the article is a straightforward news piece about government policy, with no promotional tone or intent. The reasoning provided does not apply to the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "MONTREAL - The federal government has agreed to Quebec’s demand to extend temporary work permits for skilled workers while the province processes their permanent residency applications.\n\nJoël Lightbou",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a legislative discussion. The reasoning provided does not apply, as the article does not promote any product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "KOMPAS.com - Dewan Perwakilan Rakyat (DPR) bakal mengkaji wacana legalisasi ganja untuk kebutuhan medis. Hal itu diungkapkan Wakil Ketua DPR Sufmi Dasco Ahmad ketika menerima Santi Warastuti di ruang ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply, as the article discusses a government policy without promotional intent.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Pemerintah memberikan kelonggaran terkait jadwal masuk sekolah terutama di 3 provinsi. Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi ( Kemendikbudristek ) menyebutkan libur sekolah di DKI",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    }
+  ]
+}
