@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 18,
+    "borderline_count": 2,
+    "bad_count": 80,
+    "avg_judge_score": 2.29
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its neutral and objective tone, providing factual information without any promotional content. The reasoning is clear and directly supports the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Pertandingan tim bulu tangkis putri Indonesia melawan Jerman tersaji dalam laga kedua Grup A Piala Uber di Impact Arena Bangkok, Thailand, Selasa pagi, 10 Mei 2022. Indonesia untuk sementara mampu m",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikelbersifatnetraldanobjektif,menyajikaninformasitanpapromosiproduk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that aligns with the objective nature of news content, as there is no promotional tone present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Letda Ckm Jason Antoni Wibowo, pria kelahiran 13 November 1993, memilih jalan untuk menjadi bagian dari TNI AD . Alasannya hanya satu, yaitu mengabdi kepada negara menjadi dokter militer. Jason meny",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on the content, which is a straightforward sports report without promotional elements. The reasoning accurately reflects the neutral tone and absence of product promotion.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SAN ANTONIO (AP) — Nikola Jokic had 31 points, 20 rebounds and 12 assists, Jamal Murray scored 39 points and the Denver Nuggets rallied to beat San Antonio 136-131 on Thursday night, snapping the Spur",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Thearticlecontainspositive/neutraltonesanddoesnotpromoteproducts/brands.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. It does not clearly articulate why the content is promotional or persuasive, which is essential for a strong classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Kepala Biro Humas dan Informasi PublikKementanKuntoro Boga Andri mengatakan saat ini secara keseluruhan pemerintah telah mendatangkan 800 ribu dosisvaksin PMK. Selanjutnya akan secara berturut t",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly classified the article as native ads, but the reasoning is weak and generic. The content appears to be a straightforward announcement about a resignation, lacking promotional elements typically associated with native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Toronto, Ontario, March 05, 2026 (GLOBE NEWSWIRE) — Spirit Blockchain Capital Inc. (the “Company” or “Spirit”) (CSE: SPIR) announces that Yves La Rose has resigned as a director of the Company, effect",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Thearticlecontainspromotionalorpersuasiveelementstowardsaspecificproduct/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have been 'native ads'. The reasoning provided does not support the label, as the content discusses local wisdom as a competitive advantage, which aligns more with promotional content than neutral news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Pasalnya, nilai kearifan lokal merupakan sumber daya unik yang dapat digunakan untuk membangun keunggulan kompetitif berkelanjutan pada produk yang dihasilkan. Oleh karena itu, nilai tersebut perlu di",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply, as the content does not promote any product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Pendaftaran sekolah kedinasan telah resmi ditutup pada 30 April 2022 lalu. Tahapan selanjutnya yang akan dihadapi para peserta adalah seleksi yang akan menyaring calon mahasiswa atau taruna/taruni s",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikelmengandungunsurpromosiataupersuasiterhadapproduk/brandtertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when it should have identified it as a native ad. The reasoning provided does not address the promotional nature of the content, which is essential for accurate classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "AUSTIN, Texas, Feb. 17, 2026 (GLOBE NEWSWIRE) -- AINewsWire Editorial Coverage: As artificial intelligence (AI) evolves beyond generative chat systems into agentic AI capable of autonomous action, a c",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Thearticleisneutralandobjective,presentinginformationwithoutproduct/brandpromotion.",
+      "confidence": 0.99
+    }
+  ]
+}

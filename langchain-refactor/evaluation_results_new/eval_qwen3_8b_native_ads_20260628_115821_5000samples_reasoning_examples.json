@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 20,
+    "borderline_count": 0,
+    "bad_count": 80,
+    "avg_judge_score": 2.07
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a clear, logical reasoning that accurately reflects the content's neutral reporting on President Joko Widodo's statements regarding infrastructure and the election process, with no promotional elements present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Presiden Joko Widodo mengakui pembangunan infrastruktur belum merata. Hal itu ia sampaikan setelah melihat video petugas pemilu mendatangi daerah terpencil.Jokowi mengatakan penyelenggaraan Pemilu Ser",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "The article is a neutral news piece reporting on President Joko Widodo's acknowledgment of uneven infrastructure development and his comments on the challenges faced by the General Election Commission (KPU) in preparing for the 2024 elections. It does not contain promotional or marketing content.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided logical reasoning that highlights the neutral and objective nature of the content, which is typical for news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "ST. PAUL, Minn. (AP) — Rookie Peyton Anderson scored her first career goal to spark the Minnesota Frost to a 4-1 victory over the Seattle Torrent on Friday night in the PWHL.\n\nMinnesota (8-3-3-4) need",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is neutral and objective, reporting on a sports event without promotional elements.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided sound reasoning, noting the objective nature of the information without any promotional language.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "MONTREAL - The federal government has agreed to Quebec’s demand to extend temporary work permits for skilled workers while the province processes their permanent residency applications.\n\nJoël Lightbou",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article presents objective information without promotional language.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about Messi's milestone. The reasoning provided does not logically support the label, as there are no promotional elements present in the text.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Lionel Messi menandai penampilan ke-1.000 dalam kariernya sebagai pesepakbola profesional dengan gol yang mengantar Argentina lolos ke perempat final Piala Dunia 2022. Messi kembali menunjukkan bahwa ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "The text contains promotional or marketing elements.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about a wedding, and it provided no reasoning to support its prediction.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Foto pernikahan Barbie Hsu dan DJ Koo mengemuka ke publik setelah keduanya resmi menikah sekitar empat bulan lalu. Foto pernikahan itu dipamerkan DJ Koo ketika menjadi bintang tamu dalam You Quiz On t",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Tidak ditemukan alasan (JSON regex fallback).",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided is absent, which fails to support the prediction and does not address the content's nature.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Putra Fairuz A Rafiq dari Galih Ginanjar, King Faaz menjadi perhatian publik, belakangan ini. Bukan hanya tampan, cara Faaz berbicara dan sikapnya yang dewasa melebihi usianya pun membuat netizen ka",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Tidak ditemukan alasan (JSON regex fallback).",
+      "confidence": 0.99
+    }
+  ]
+}

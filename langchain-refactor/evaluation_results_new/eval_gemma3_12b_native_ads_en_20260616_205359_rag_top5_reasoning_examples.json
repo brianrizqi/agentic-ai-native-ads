@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 49,
+    "borderline_count": 4,
+    "bad_count": 47,
+    "avg_judge_score": 3.02
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Pertandingan tim bulu tangkis putri Indonesia melawan Jerman tersaji dalam laga kedua Grup A Piala Uber di Impact Arena Bangkok, Thailand, Selasa pagi, 10 Mei 2022. Indonesia untuk sementara mampu m",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "VANCOUVER - Vancouver has moved closer to an official snowless winter after a chilly blast failed to result in the benchmark one centimetre of accumulation at the city’s airport.\n\nAs much as four cent",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided a logical reasoning that accurately reflects the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SAN ANTONIO (AP) — Nikola Jokic had 31 points, 20 rebounds and 12 assists, Jamal Murray scored 39 points and the Denver Nuggets rallied to beat San Antonio 136-131 on Thursday night, snapping the Spur",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is weak and generic. The article content does not clearly promote a product or brand, making the reasoning for the classification less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Kepala Biro Humas dan Informasi PublikKementanKuntoro Boga Andri mengatakan saat ini secara keseluruhan pemerintah telah mendatangkan 800 ribu dosisvaksin PMK. Selanjutnya akan secara berturut t",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning is weak and generic. The article discusses a vaccine donation, which is more informational than promotional, suggesting it could be classified as pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Hari ini 680.400 dosisvaksinModerna tiba di tanah air dalam kedatangan tahap ke-117. Vaksin dalam bentuk jadi ini merupakan donasi pemerintah Belanda. \"Pemerintah Indonesia menyampaikan apresias",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning is weak and generic. While the article does mention a program and financial benefits, it lacks clear promotional language or persuasive tone typically associated with native ads. It could also be interpreted as news reporting on a government initiative.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Wakil Presiden Ma'ruf Amin kembali menyerahkan manfaat ProgramBPJSKetenagakerjaan (BPJAMSOSTEK) senilai 2,8 miliar kepada 10 ahli waris keluarga peserta di Pangkalpinang yang merupakan lanjutan ",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when the ground truth is 'native ads'. The reasoning provided does not address the promotional nature of the content, which is essential for distinguishing between native ads and pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Islamabad, Pakistan, Feb. 28, 2026 (GLOBE NEWSWIRE) — Pakistan’s Minister for Information and Broadcasting, Attaullah Tarar, issued a comprehensive statement today addressing the current security and ",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when it should have identified it as 'native ads' due to the presence of a company name and stock symbols, indicating promotional content.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Vancouver, British Columbia, Feb. 17, 2026 (GLOBE NEWSWIRE) — North American Niobium and Critical Minerals Corp. (CSE: NIOB) (OTCQB: NIOMF) (FSE: KS82.F) (“North American Niobium” or the “Company”) is",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about a community service project. The reasoning provided does not logically support the label, as the article does not promote any product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Rumah milik warga duafa Gampong Jawa Nurmalia telah selesai dibedah. Rumah seorang janda dengan tiga anak itu kini tak lagi berdinding kayu lusuh dan beralaskan tanah. Perbaikan rumah tersebut bersumb",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    }
+  ]
+}

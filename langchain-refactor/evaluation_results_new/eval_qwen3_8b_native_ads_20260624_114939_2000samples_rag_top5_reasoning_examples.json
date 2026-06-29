@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 18,
+    "borderline_count": 2,
+    "bad_count": 80,
+    "avg_judge_score": 2.25
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Pertandingan tim bulu tangkis putri Indonesia melawan Jerman tersaji dalam laga kedua Grup A Piala Uber di Impact Arena Bangkok, Thailand, Selasa pagi, 10 Mei 2022. Indonesia untuk sementara mampu m",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its neutral and informative content, which aligns with the ground truth. The reasoning provided is logical and accurately reflects the absence of promotional elements, confirming the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "VANCOUVER - Vancouver has moved closer to an official snowless winter after a chilly blast failed to result in the benchmark one centimetre of accumulation at the city’s airport.\n\nAs much as four cent",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is neutral and informative, presenting facts without promotional or persuasive elements.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on its neutral and objective presentation of a sports event, with no promotional content. The reasoning effectively supports the label.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SAN ANTONIO (AP) — Nikola Jokic had 31 points, 20 rebounds and 12 assists, Jamal Murray scored 39 points and the Denver Nuggets rallied to beat San Antonio 136-131 on Thursday night, snapping the Spur",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is neutral and objective, presenting information about a sports game without promoting any product, brand, or institution.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning provided is weak and generic. The article content does not clearly promote a product or brand, making the reasoning for the classification insufficient.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Kepala Biro Humas dan Informasi PublikKementanKuntoro Boga Andri mengatakan saat ini secara keseluruhan pemerintah telah mendatangkan 800 ribu dosisvaksin PMK. Selanjutnya akan secara berturut t",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly classified the article as native ads, but the reasoning is weak and generic. The article presents a straightforward resignation announcement without promotional intent, which suggests it should be classified as pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Toronto, Ontario, March 05, 2026 (GLOBE NEWSWIRE) — Spirit Blockchain Capital Inc. (the “Company” or “Spirit”) (CSE: SPIR) announces that Yves La Rose has resigned as a director of the Company, effect",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel memiliki nada netral dan bersifat persuasif dengan tujuan mempromosikan atau meyakinkan pembaca tentang subjek tertentu.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) instead of 'native ads', which is the correct label according to the ground truth. The reasoning provided does not support the label, as the article contains promotional content related to a corporate event.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "TORONTO, Feb. 17, 2026 (GLOBE NEWSWIRE) — Constellation Software Inc. (TSX:CSU) announced today it will host a fourth quarter conference call and live audio webcast on March 10, 2026 at 8:00 a.m. ET.\n",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news piece about a police award. The reasoning provided does not apply, as there is no promotional tone or product mention in the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "VIVA – Kapolres Situbondo AKBP Andi Sinjaya menyambut dan memberikan penghargaan kepada salah satu anggota Polres Situbondo yang telah selesai melaksanakan tugas di bawah organisasi Internasional Pers",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel memiliki nada positif dan mempromosikan produk/brand tertentu dengan bahasa persuasif.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided does not support the label, as the article discusses a company event, which is indicative of promotional content typical of native ads.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "NEW YORK, March 05, 2026 (GLOBE NEWSWIRE) — Xanadu Quantum Technologies Inc. (“Xanadu”), a leading photonic quantum computing company, yesterday hosted its 2026 Analyst Day at the Nasdaq MarketSite in",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa unsur persuasi atau promosi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ]
+}

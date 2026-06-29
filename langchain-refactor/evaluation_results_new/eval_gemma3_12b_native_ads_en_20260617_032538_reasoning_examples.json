@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 19,
+    "borderline_count": 1,
+    "bad_count": 80,
+    "avg_judge_score": 2.35
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its neutral and objective tone, providing accurate reasoning that aligns with the characteristics of pure news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": ", Pertandingan tim bulu tangkis putri Indonesia melawan Jerman tersaji dalam laga kedua Grup A Piala Uber di Impact Arena Bangkok, Thailand, Selasa pagi, 10 Mei 2022. Indonesia untuk sementara mampu m",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "VANCOUVER - Vancouver has moved closer to an official snowless winter after a chilly blast failed to result in the benchmark one centimetre of accumulation at the city’s airport.\n\nAs much as four cent",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "SAN ANTONIO (AP) — Nikola Jokic had 31 points, 20 rebounds and 12 assists, Jamal Murray scored 39 points and the Denver Nuggets rallied to beat San Antonio 136-131 on Thursday night, snapping the Spur",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads,' but the reasoning is weak and generic. The article content does not clearly indicate promotional intent, making the classification questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Kepala Biro Humas dan Informasi PublikKementanKuntoro Boga Andri mengatakan saat ini secara keseluruhan pemerintah telah mendatangkan 800 ribu dosisvaksin PMK. Selanjutnya akan secara berturut t",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about charitable activities during Ramadhan. The reasoning provided does not apply, as there is no promotion of a product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Bulan suci Ramadhan, menjadi semangat bagi kader dan pengurus DPD Partai Perindo Kabupaten Lamongan, untuk semakin peduli dan berbagi dengan sesama. Diantaranya membagikan ratusan paket takjil grati",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning about promotional content is not applicable here, as the article discusses a government official's request for collaboration on a public event, which is typical of news reporting.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Menteri Ketenagakerjaan Ida Fauziyah meminta KADIN Indonesia ikut mendukung dan berkolaborasi untuk mensukseskan perhelatan G20 di tahun 2022 ini. Ia pun meyakini G20 bisa membantu dalam upaya Pemulih",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided does not support the label, as the article likely contains promotional content related to a specific individual and organization, indicating a native ad rather than objective news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Vail, Colorado, March 05, 2026 (GLOBE NEWSWIRE) — Johnny Huard, Ph.D., Chief Scientific Officer and Director of the Linda & Mitch Hart Center for Regenerative and Personalized Medicine at Steadman Phi",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/deepseek-r1-llama-8b-native-ads
+Timestamp: 20260625_064552
+Dataset: ../data/llm_dataset_12k_refined_full.json
+Samples: 2000
+
+Overall Metrics:
+  Accuracy: 82.30%
+  Correct: 1646/2000
+
+BERTScore:
+  Precision: 0.593
+  Recall: 0.662
+  F1: 0.626
+
+NLP Metrics (Reasoning Quality):
+  BLEU: 0.0088
+  METEOR: 0.0684
+
+Perplexity: 1.01
+
+Per-Class Accuracy:
+  native ads: 74.11%
+  berita murni: 89.83%
