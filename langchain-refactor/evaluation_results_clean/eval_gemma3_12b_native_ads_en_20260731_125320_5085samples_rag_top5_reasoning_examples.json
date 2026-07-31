@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 17,
+    "borderline_count": 2,
+    "bad_count": 81,
+    "avg_judge_score": 2.35
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PSM Makassar meraih kemenangan 3-1 atas wakil Singapura, Tampines Rovers dalam laga lanjutan Grup H Piala AFC 2022 di Stadion Kuala Lumpur, Malaysia, Senin (27/6) malam WIB.Tampines yang tampil agresi",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on its neutral and objective tone, providing factual information without any promotional content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Sebuah gunung berapi bawah laut yang lama tidak aktif di dekat Antartika telah terbangun, memicu serentetan 85.000 gempa bumi.Rentetan itu, yang dimulai pada Agustus 2020 dan mered",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on its neutral and objective presentation of information about a basketball game, with no promotional content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "NEW YORK (AP) — Day’Ron Sharpe matched a season high with 19 points, Ochai Agbaji added 18 and the Brooklyn Nets beat the injury-plagued Memphis Grizzlies 126-115 on Monday night for their second stra",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not clearly indicate promotional elements, making the classification questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "JAKARTA - Tidak ada yang lebih membahagiakan orang tua saat melihat anak-anak mereka berhasil dalam hidupnya. Dari hal yang sederhana, seperti melihat mereka mengambil langkah pertama, hingga pencapai",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not clearly indicate promotional intent, making the classification questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Untuk mengatasi masalah tersebut, OJK bersama 11 kementerian dan lembaga pemerintahan membentuk Satgas Waspada Investasi (SWI). Satgas ini bertugas melakukan pencegahan dengan memberikan informasi kep",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news piece about a public event. The reasoning provided does not apply, as there are no promotional elements present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Pemerintah Kota (Pemkot) Surabaya kembali menggelar pelaksanaan Salat Idul Fitri berjamaah di Taman Surya Balai Kota, 1 Syawal 1443 Hijriyah. Setelah dua tahun lamanya Salat Id di lokasi itu ditiada",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a news piece about farmers facing locust attacks. The reasoning provided does not apply, as there is no promotional content present.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Sawah petani di Sumba Timur, Nusa Tenggara Timur (NTT) diserang hama belalang. Akibatnya, petani terancam mengalami gagal panen. Agar tak merugi, Kementerian Pertanian (Kementan) menyarankan kepada ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' when the ground truth is 'native ads'. The reasoning provided does not support the label, as the article discusses a government meeting, which could be part of a promotional context.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Menteri Pemuda dan Olahraga Republik Indonesia (Menpora RI) Zainudin Amali mengikuti rapat terbatas (ratas) bersama Presiden Joko Widodo di Istana Kepresidenan Jakarta, Rabu (2/6). Pertemuan tersebut ",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 17,
+    "borderline_count": 2,
+    "bad_count": 81,
+    "avg_judge_score": 2.29
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a strong reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Mercedes is among “three or four potential buyers” for a 24% stake in rival Formula 1 team Alpine, the French team’s executive adviser Flavio Briatore said Friday.\n\nAhead of the Chinese Grand Prix, Br",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' and provided strong reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Vinnie Pasquantino had the World Baseball Classic’s first three-homer game, leading Italy over Mexico 9-1 on Wednesday night to win Pool B and advance the United States to the quarterfinals as group’s",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that highlights the neutral and objective nature of the content, without any promotional elements.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "KOMPAS.com - Membaca buku atau berita, di layar ponsel bukan perkara yang mudah bagi sebagian orang. Membaca tulisan terlalu lama di ponsel bisa membuat mereka pusing atau mata terasa pedih. Persoalan",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The article does not clearly promote a specific product or brand, which makes the classification less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Pemerintah mengapresiasi para guru yang telah berjuang dan mendedikasikan diri mencerdaskan anak bangsa, khususnya di masa pandemi yang penuh tantangan. Pemerintah terus mendorong peningkatan ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The article discusses a donation of oxygen to hospitals, which is more aligned with news content rather than promotional material. The reasoning does not adequately address the context of the article.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "PT PLN (Persero) menyalurkan bantuan 11,9 ton oksigen ke tiga rumah sakit di Jawa Tengah dan 1 rumah sakit di Daerah Istimewa Yogyakarta (DIY) pada Rabu, (14/7), kemarin. Bantuan tersebut diberikan un",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not logically support the label, as the content does not contain promotional elements or a persuasive tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Cancer dikenal sebagai zodiak yang sangat emosional atau banyak melibatkan perasaan. Bagaimana, ya, kira-kira sensasi bercinta dengan zodiak berlambang kepiting ini?\"Orang Cancer adalah orang yang ped",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when it should have identified it as a native ad. The reasoning provided does not support the label, as the content is promotional in nature regarding Amaroq's transition to the Main Market of the LSE.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Reykjavík, Feb. 18, 2026 (GLOBE NEWSWIRE) —\n\nAmaroq Ltd.\n\n(“Amaroq” or the “Company”)\n\nIntention to transition to the Main Market of the London Stock Exchange (“LSE”) and appointment of Citigroup Glob",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not logically support the label, as there are no promotional elements present in the content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Sekretaris Jenderal Partai Persatuan Indonesia (Perindo) Ahmad Rofiq menyebutkan, terciptanya kesejahteraan masyarakat tidak bisa hanya dilakukan dengan sebuah kata. Namun, perlu ada aksi nyata guna",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ]
+}

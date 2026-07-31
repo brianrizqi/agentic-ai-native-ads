@@ -112,21 +112,59 @@ class ClassificationAgent:
             return ChatOpenAI(model_name=self.model_name, temperature=self.temperature, api_key=api_key)
         elif self.provider == "local":
             try:
-                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, BitsAndBytesConfig, GenerationConfig
+                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, BitsAndBytesConfig, GenerationConfig, PreTrainedTokenizerFast
                 import torch
                 hf_token = "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"
                 
-                # Phase 65: Nuclear Stability Reloaded (Safe Tokenizer Loading)
-                try:
-                    tokenizer = AutoTokenizer.from_pretrained(
-                        self.model_name, token=hf_token, trust_remote_code=True, 
-                        fix_mistral_regex=True
-                    )
-                except TypeError:
-                    # Fallback for transformers versions where this is already handled or causes conflicts
-                    tokenizer = AutoTokenizer.from_pretrained(
-                        self.model_name, token=hf_token, trust_remote_code=True
-                    )
+                # Phase 65+: Safe Tokenizer Loading
+                # Bypasses a confirmed transformers v5 bug (huggingface/transformers
+                # issue #45488): AutoTokenizer/LlamaTokenizer silently rewrites a
+                # correct ByteLevel BPE pre-tokenizer into a broken Metaspace one for
+                # DeepSeek/Llama-3 style tokenizers, deleting all spaces on decode.
+                # We load tokenizer.json directly via the Rust `tokenizers` binding
+                # and wrap it in a generic PreTrainedTokenizerFast, which does not
+                # go through the buggy LlamaTokenizer.__init__ path at all.
+                tokenizer = None
+                local_tokenizer_json = os.path.join(self.model_name, "tokenizer.json") \
+                    if os.path.isdir(self.model_name) else None
+
+                if local_tokenizer_json and os.path.isfile(local_tokenizer_json):
+                    try:
+                        from tokenizers import Tokenizer as _RawTokenizer
+                        raw_tok = _RawTokenizer.from_file(local_tokenizer_json)
+                        tokenizer = PreTrainedTokenizerFast(tokenizer_object=raw_tok)
+                        # Carry over special-token config from tokenizer_config.json
+                        # if present, so chat templates / added tokens still work.
+                        try:
+                            tokenizer_ref = AutoTokenizer.from_pretrained(
+                                self.model_name, token=hf_token, trust_remote_code=True
+                            )
+                            tokenizer.bos_token = getattr(tokenizer_ref, "bos_token", tokenizer.bos_token)
+                            tokenizer.eos_token = getattr(tokenizer_ref, "eos_token", tokenizer.eos_token)
+                            tokenizer.pad_token = getattr(tokenizer_ref, "pad_token", tokenizer.eos_token)
+                            if getattr(tokenizer_ref, "chat_template", None):
+                                tokenizer.chat_template = tokenizer_ref.chat_template
+                        except Exception as _meta_err:
+                            print(f"WARNING: could not copy special-token metadata: {_meta_err}")
+                        print(f"DEBUG: Loaded SAFE bypass tokenizer for {self.model_name} "
+                              f"(raw tokenizer.json, no LlamaTokenizer override)")
+                    except Exception as _safe_load_err:
+                        print(f"WARNING: safe tokenizer bypass failed ({_safe_load_err}), "
+                              f"falling back to AutoTokenizer.")
+                        tokenizer = None
+
+                if tokenizer is None:
+                    # Fallback: standard AutoTokenizer path (used for Hub repo ids,
+                    # or local folders without a tokenizer.json).
+                    try:
+                        tokenizer = AutoTokenizer.from_pretrained(
+                            self.model_name, token=hf_token, trust_remote_code=True,
+                            fix_mistral_regex=True
+                        )
+                    except TypeError:
+                        tokenizer = AutoTokenizer.from_pretrained(
+                            self.model_name, token=hf_token, trust_remote_code=True
+                        )
                 tokenizer.padding_side = "left"
                 bnb_config = None
                 if torch.cuda.is_available():

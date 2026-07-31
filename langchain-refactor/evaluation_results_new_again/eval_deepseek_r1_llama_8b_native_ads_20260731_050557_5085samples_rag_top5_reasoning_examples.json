@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 19,
+    "borderline_count": 0,
+    "bad_count": 81,
+    "avg_judge_score": 2.26
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' based on the focus on an individual's experience without any promotional content. The reasoning is clear and directly supports the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "EDMONTON - Jaq Horvath is likely a shock to people who walk through the doors of her Edmonton tattoo shop and ask to see the owner.\n\n“They expect a big, tattooed man, right?” said Horvath with Aces N ",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Thearticlefocusesonanindividual'sexperienceandstory,withoutpromotingaproductorbrand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly classified the article as 'berita murni' (pure news) based on the content discussing a potential business transaction in Formula 1. However, the reasoning provided is insufficient and lacks detail, which prevents it from achieving a perfect score.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Mercedes is among “three or four potential buyers” for a 24% stake in rival Formula 1 team Alpine, the French team’s executive adviser Flavio Briatore said Friday.\n\nAhead of the Chinese Grand Prix, Br",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Tidak ditemukan alasan (JSON regex fallback).",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that aligns with the absence of marketing elements. However, the reasoning could be more detailed to enhance its depth.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "KOMPAS.com - Membaca buku atau berita, di layar ponsel bukan perkara yang mudah bagi sebagian orang. Membaca tulisan terlalu lama di ponsel bisa membuat mereka pusing atau mata terasa pedih. Persoalan",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Thearticleisgeneralnewswithoutmarketingelements.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a baseball game. There is no promotional tone or advertising content present, and the reasoning provided is absent, making the classification completely wrong.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Vinnie Pasquantino had the World Baseball Classic’s first three-homer game, leading Italy over Mexico 9-1 on Wednesday night to win Pool B and advance the United States to the quarterfinals as group’s",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Tidak ditemukan alasan (JSON regex fallback).",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the content as 'berita murni' (pure news) when it is actually a native ad. The reasoning fails to recognize the promotional intent and brand mention, leading to a completely wrong label.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "NEW YORK, Feb. 26, 2026 (GLOBE NEWSWIRE) — via AINewsWire — Nightfood Holdings Inc. (NGTF) today announces its placement in an editorial published by AINewsWire (“AINW”), one of 75+ brands within the ",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Thetextisgeneralnewswithoutmarketingorpromotionalintent.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when it is actually a native ad. The reasoning fails to recognize the promotional nature of the content, which is a clear announcement about the company's activities, indicating a marketing intent.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Vancouver, British Columbia, March 12, 2026 (GLOBE NEWSWIRE) — NevGold Corp. (“NevGold” or the “Company”) (TSXV:NAU) (OTCQX:NAUFF) (Frankfurt:5E50) is pleased to announce that the permits have been re",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Thearticleisageneralnewsreleaseaboutthecompany'sactivitiesanddoesnotcontainmarketingorpromotionalcontent.",
+      "confidence": 0.99
+    }
+  ]
+}

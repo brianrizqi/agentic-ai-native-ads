@@ -1,0 +1,104 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 17,
+    "borderline_count": 2,
+    "bad_count": 81,
+    "avg_judge_score": 2.31
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any brand or product.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Mercedes is among “three or four potential buyers” for a 24% stake in rival Formula 1 team Alpine, the French team’s executive adviser Flavio Briatore said Friday.\n\nAhead of the Chinese Grand Prix, Br",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly classified the article as 'berita murni' based on its neutral and objective presentation of information regarding a sports event, with no promotional content.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "Vinnie Pasquantino had the World Baseball Classic’s first three-homer game, leading Italy over Mexico 9-1 on Wednesday night to win Pool B and advance the United States to the quarterfinals as group’s",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "KOMPAS.com - Dewan Perwakilan Rakyat (DPR) bakal mengkaji wacana legalisasi ganja untuk kebutuhan medis. Hal itu diungkapkan Wakil Ketua DPR Sufmi Dasco Ahmad ketika menerima Santi Warastuti di ruang ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The article does not explicitly promote a product or brand, making the reasoning less convincing.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Pemerintah mengapresiasi para guru yang telah berjuang dan mendedikasikan diri mencerdaskan anak bangsa, khususnya di masa pandemi yang penuh tantangan. Pemerintah terus mendorong peningkatan ke",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as 'native ads,' but the reasoning provided is weak and generic. The article discusses a donation of oxygen to hospitals, which is more aligned with news content rather than promotional material. The reasoning does not adequately support the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "PT PLN (Persero) menyalurkan bantuan 11,9 ton oksigen ke tiga rumah sakit di Jawa Tengah dan 1 rumah sakit di Daerah Istimewa Yogyakarta (DIY) pada Rabu, (14/7), kemarin. Bantuan tersebut diberikan un",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply, as the article does not contain promotional content or a persuasive tone.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": ", Amerika Serikat menjatuhkan sanksi kepada 5 WNI karena diduga menjadifasilitator keuangan ISIS untuk kegiatan teror. Lima orang ini adalahDwi Dahlia Susanti, Rudi Heryadi, Ari Kardian, Muhammad Dand",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being a straightforward news report about a government official's statement. The reasoning provided does not logically support the label, as the content does not promote or persuade regarding a product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Menteri Perdagangan (Mendag) Zulkifli Hasan mengatakan Badan Pengawas Obat dan Makanan (BPOM) telah mengeluarkan izin edar minyak goreng kemasan sederhana.\"Sudah (beres). Menteri perdagangan (mendag) ",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided does not apply, as the article does not promote any product or brand.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "Rumah milik warga duafa Gampong Jawa Nurmalia telah selesai dibedah. Rumah seorang janda dengan tiga anak itu kini tak lagi berdinding kayu lusuh dan beralaskan tanah. Perbaikan rumah tersebut bersumb",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ]
+}

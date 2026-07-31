@@ -89,7 +89,7 @@ class NativeAdsVectorStore:
             doc = Document(
                 page_content=content[:1500],  # Phase 138: Deeper Indexing (500 -> 1500)
                 metadata={
-                    'id': i,
+                    'id': item.get('id', i),
                     'label': label,
                     'reasoning': reasoning,
                     'source': 'training_dataset'
