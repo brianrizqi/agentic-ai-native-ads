@@ -170,7 +170,10 @@ class RetrievalAgent:
                     "content": content,
                     "label": doc_dict.get('metadata', {}).get('label', 'unknown'),
                     "reasoning": doc_dict.get('metadata', {}).get('reasoning', ''),
-                    "similarity_score": doc_dict.get('similarity_score', 0.0)
+                    # L2 distance: lower = closer. Default to the far end (2.0), not 0.0 --
+                    # a missing score must never read as a perfect match, which would give
+                    # the neighbor maximum vote weight and auto-pass the --rag-vote maxdist gate.
+                    "similarity_score": doc_dict.get('similarity_score', 2.0)
                 })
                 if len(examples) >= top_k:
                     break
