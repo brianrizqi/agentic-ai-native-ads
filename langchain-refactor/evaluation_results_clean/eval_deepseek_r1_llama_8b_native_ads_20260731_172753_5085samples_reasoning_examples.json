@@ -1,0 +1,81 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 20,
+    "borderline_count": 0,
+    "bad_count": 80,
+    "avg_judge_score": 1.98
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, which aligns with the ground truth. The reasoning, while not detailed, suggests a failure in text analysis rather than a misunderstanding of the content. The article promotes a partnership aimed at enhancing children's reading interest, which supports the native ads classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Dalam upaya meningkatkan minat baca anak-anak khususnya di daerah 3T (Terluar, Terdepan dan Tertinggal) PT Jasa Raharja bekerja sama dengan PT Balai Pustaka membuat Taman Bacaan Sekolah di 6 wilayah. ",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the content as native ads, which aligns with the ground truth. The reasoning, while not detailed, suggests an attempt to analyze the text, indicating a logical approach. However, it lacks depth in explaining why the content is promotional.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Sebagai informasi The 22ndTST merupakan acara seminar dantrainingperpajakan tahunan yang ditujukan untuk praktisi pajak dan mahasiswa pascasarjana. Acara diselenggarakan secara virtual dan digelar ole",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the content as native ads, which aligns with the ground truth. The reasoning, while not explicitly detailed, suggests a recognition of promotional elements in the text. However, it lacks depth in explaining why the content is classified as native ads, which prevents a perfect score.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Sejalan dengan itu, produk-produkskincaresemakin menjamur di pasaran. Semuanya menjanjikan hasil yang maksimal. Tak ayal, hal tersebut menimbulkan kebingungan dalam memilih produk.Di tengah kebingunga",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news. The reasoning provided is irrelevant and does not support the label, indicating a failure to recognize the content as news.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Pemerintah Kota (Pemkot) Surabaya kembali menggelar pelaksanaan Salat Idul Fitri berjamaah di Taman Surya Balai Kota, 1 Syawal 1443 Hijriyah. Setelah dua tahun lamanya Salat Id di lokasi itu ditiada",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about a volcanic eruption. The reasoning provided is irrelevant and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "TEMPO.CO, Jakarta - Sebuah gunung berapi bawah laut yang lama tidak aktif di dekat Antartika telah terbangun, memicu serentetan 85.000 gempa bumi.Rentetan itu, yang dimulai pada Agustus 2020 dan mered",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a news report about a basketball game. The reasoning provided is irrelevant and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "NEW YORK (AP) — Day’Ron Sharpe matched a season high with 19 points, Ochai Agbaji added 18 and the Brooklyn Nets beat the injury-plagued Memphis Grizzlies 126-115 on Monday night for their second stra",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    }
+  ]
+}

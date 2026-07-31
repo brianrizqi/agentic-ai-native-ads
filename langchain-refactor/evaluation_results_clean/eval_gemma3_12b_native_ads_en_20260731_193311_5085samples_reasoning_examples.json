@@ -1,0 +1,115 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 16,
+    "borderline_count": 3,
+    "bad_count": 81,
+    "avg_judge_score": 2.29
+  },
+  "good_examples": [
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "PSM Makassar meraih kemenangan 3-1 atas wakil Singapura, Tampines Rovers dalam laga lanjutan Grup H Piala AFC 2022 di Stadion Kuala Lumpur, Malaysia, Senin (27/6) malam WIB.Tampines yang tampil agresi",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided logical reasoning that highlights the neutral and objective nature of the content, which does not promote any products or brands.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "- Pemerintah Kota (Pemkot) Surabaya kembali menggelar pelaksanaan Salat Idul Fitri berjamaah di Taman Surya Balai Kota, 1 Syawal 1443 Hijriyah. Setelah dua tahun lamanya Salat Id di lokasi itu ditiada",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 5,
+      "judge_justification": "The model correctly identified the article as 'berita murni' and provided a logical reasoning that highlights the neutral and objective nature of the content, which is appropriate for news classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "berita murni",
+      "correct": true,
+      "article_preview": "TEMPO.CO, Jakarta - Sebuah gunung berapi bawah laut yang lama tidak aktif di dekat Antartika telah terbangun, memicu serentetan 85.000 gempa bumi.Rentetan itu, yang dimulai pada Agustus 2020 dan mered",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. The content does not clearly indicate promotional elements, making the classification questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "JAKARTA - Tidak ada yang lebih membahagiakan orang tua saat melihat anak-anak mereka berhasil dalam hidupnya. Dari hal yang sederhana, seperti melihat mereka mengambil langkah pertama, hingga pencapai",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is weak and generic. While the article does promote a program, it lacks a clear promotional tone that typically characterizes native ads, making the classification somewhat questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Hal tersebut ditunjukkan melalui program Magang Kampus Merdeka. Program yang dapat diikuti oleh mahasiswa semester 5 dan 6 ini bertujuan untuk mendorong kemerdekaan belajar di perguruan tinggi dengan ",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the label as 'native ads', but the reasoning provided is weak and generic. The article content does not clearly indicate promotional intent, making the classification questionable.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Untuk mengatasi masalah tersebut, OJK bersama 11 kementerian dan lembaga pemerintahan membentuk Satgas Waspada Investasi (SWI). Satgas ini bertugas melakukan pencegahan dengan memberikan informasi kep",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "confidence": 0.99
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided does not support the label, as the article discusses a labor union and a picket line, which could indicate a promotional or advocacy angle rather than pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Members of USW Local 3505 stand on the picket line outside Slacan Industries in Brantford, Ont.\n\nBRANTFORD, Ont., March 11, 2026 (GLOBE NEWSWIRE) — Members of United Steelworkers (USW) Local 3505 at S",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when the ground truth is 'native ads.' The reasoning provided does not support the label, as the article discusses a company's intention to transition to a stock exchange, which is indicative of promotional content rather than neutral news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Reykjavík, Feb. 18, 2026 (GLOBE NEWSWIRE) —\n\nAmaroq Ltd.\n\n(“Amaroq” or the “Company”)\n\nIntention to transition to the Main Market of the London Stock Exchange (“LSE”) and appointment of Citigroup Glob",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as 'berita murni' (pure news) when it should have identified it as a native ad. The reasoning provided does not account for the promotional nature of the event and the involvement of NHL alumni, which indicates a marketing intent.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "berita murni",
+      "correct": false,
+      "article_preview": "Unplug and Play free skate experiences hosted at three iconic NHL arenas\n\nNHL alumni/players available for meet-and-greet with youth\n\nTORONTO, March 06, 2026 (GLOBE NEWSWIRE) — Rogers Communications t",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "confidence": 0.99
+    }
+  ]
+}

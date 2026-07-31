@@ -1,0 +1,27 @@
+================================================================================
+EVALUATION SUMMARY
+================================================================================
+
+Model: ../models/gemma3-12b-native-ads-en_merged_16bit/
+Timestamp: 20260731_125320
+Dataset: ../data/test_heldout.json
+Samples: 5085
+
+Overall Metrics:
+  Accuracy: 90.42%
+  Correct: 4598/5085
+
+BERTScore:
+  Precision: 0.982
+  Recall: 0.980
+  F1: 0.981
+
+NLP Metrics (Reasoning Quality):
+  BLEU: 0.8962
+  METEOR: 0.9118
+
+Perplexity: 104032.09
+
+Per-Class Accuracy:
+  berita murni: 86.19%
+  native ads: 94.63%

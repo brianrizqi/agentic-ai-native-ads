@@ -1,0 +1,93 @@
+{
+  "_description": "Qualitative reasoning examples, grouped by LLM-as-a-Judge score. good=score 4-5 (deep & correct), borderline=score 3 (correct but shallow), bad=score 1-2 (wrong label or incoherent reasoning).",
+  "summary": {
+    "total_judged": 100,
+    "good_count": 19,
+    "borderline_count": 1,
+    "bad_count": 80,
+    "avg_judge_score": 2.13
+  },
+  "good_examples": [
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, which aligns with the ground truth. The reasoning, however, lacks depth and does not explicitly address the promotional tone or intent of the content, which would strengthen the justification for the classification.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Dalam upaya meningkatkan minat baca anak-anak khususnya di daerah 3T (Terluar, Terdepan dan Tertinggal) PT Jasa Raharja bekerja sama dengan PT Balai Pustaka membuat Taman Bacaan Sekolah di 6 wilayah. ",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, aligning with the ground truth. However, the reasoning provided is vague and lacks depth, failing to explain why the content is promotional or how it deviates from pure news.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Kesiapsiagaan nasional merupakan salah satu langkah mempersiapkan elemen masyarakat untuk mencegah dan menghadapi paham radikal serta aksi terorisme.Kepala BNPT Komisaris Jenderal Polisi (Komjen Pol) ",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 4,
+      "judge_justification": "The model correctly identified the article as native ads, which aligns with the ground truth. However, the reasoning provided is vague and does not clearly explain why the content is promotional in nature, which slightly weakens the overall evaluation.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "VIVA– Selama pandemi Covid-19, Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi (Kemendikburistek) terus menghadirkan terobosanMerdeka Belajardan memastikan masyarakat benar-benar merasakan ma",
+      "ground_truth_reasoning": "Artikel mengandung unsur promosi atau persuasi terhadap produk/brand tertentu.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    }
+  ],
+  "borderline_examples": [
+    {
+      "judge_score": 3,
+      "judge_justification": "The model correctly identified the article as native ads, but the reasoning provided is vague and does not clearly explain why the content is promotional or lacks journalistic integrity.",
+      "ground_truth_label": "native ads",
+      "predicted_label": "native ads",
+      "correct": true,
+      "article_preview": "Members of USW Local 3505 stand on the picket line outside Slacan Industries in Brantford, Ont.\n\nBRANTFORD, Ont., March 11, 2026 (GLOBE NEWSWIRE) — Members of United Steelworkers (USW) Local 3505 at S",
+      "ground_truth_reasoning": "The article contains promotional or persuasive elements towards a specific product/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    }
+  ],
+  "bad_examples": [
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads instead of pure news, and the reasoning provided is nonsensical and does not support the label.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "- Pemerintah Kota (Pemkot) Surabaya kembali menggelar pelaksanaan Salat Idul Fitri berjamaah di Taman Surya Balai Kota, 1 Syawal 1443 Hijriyah. Setelah dua tahun lamanya Salat Id di lokasi itu ditiada",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads despite it being pure news about a volcanic eruption. The reasoning provided is irrelevant and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "TEMPO.CO, Jakarta - Sebuah gunung berapi bawah laut yang lama tidak aktif di dekat Antartika telah terbangun, memicu serentetan 85.000 gempa bumi.Rentetan itu, yang dimulai pada Agustus 2020 dan mered",
+      "ground_truth_reasoning": "Artikel bersifat netral dan objektif, menyajikan informasi tanpa promosi produk/brand.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    },
+    {
+      "judge_score": 1,
+      "judge_justification": "The model incorrectly classified the article as native ads when it is clearly a news report about a basketball game. The reasoning provided is irrelevant and does not support the classification.",
+      "ground_truth_label": "berita murni",
+      "predicted_label": "native ads",
+      "correct": false,
+      "article_preview": "NEW YORK (AP) — Day’Ron Sharpe matched a season high with 19 points, Ochai Agbaji added 18 and the Brooklyn Nets beat the injury-plagued Memphis Grizzlies 126-115 on Monday night for their second stra",
+      "ground_truth_reasoning": "The article is neutral and objective, presenting information without product/brand promotion.",
+      "model_reasoning": "Pencarian teks manual (JSON gagal).",
+      "confidence": 0.9
+    }
+  ]
+}
