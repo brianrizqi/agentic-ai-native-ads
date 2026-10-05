@@ -1,0 +1,9 @@
+# Large or copyrighted artifacts produced on the supercomputer: never push to the public repo.
+models/
+index/
+cache/
+results/
+judge/
+logs/
+# Split files contain full article text; keep only the manifest and the id/hash table.
+splits/*/*.jsonl
