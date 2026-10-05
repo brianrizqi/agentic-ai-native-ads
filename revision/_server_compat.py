@@ -39,6 +39,11 @@ def _find_cc():
         pass
     return None
 
+# torch.compile builds Triton kernels in a subprocess pool by default. Those worker
+# processes never import this module, so the zig/Python.h patch below does not reach
+# them and the build fails. One compile thread keeps compilation in this process.
+os.environ.setdefault("TORCHINDUCTOR_COMPILE_THREADS", "1")
+
 _CC = _find_cc()
 if _CC:
     os.environ["CC"] = _CC

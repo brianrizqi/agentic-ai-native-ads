@@ -54,8 +54,13 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=None)
     ap.add_argument("--max-seq-length", type=int, default=4096)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--compile", action="store_true",
+                    help="Allow torch.compile during generation (off by default: it needs a working C compiler)")
     args = ap.parse_args()
 
+    import os
+    if not args.compile:
+        os.environ.setdefault("TORCHDYNAMO_DISABLE", "1")  # must be set before torch is imported
     import _server_compat  # noqa: F401
     from unsloth import FastLanguageModel
     import numpy as np
@@ -93,7 +98,6 @@ def main():
     todo = [r for r in rows if r["id"] not in done]
     print(f"{len(rows)} articles, {len(done)} already done, {len(todo)} to run | format={fmt} rag={args.rag}")
 
-    import os
     model, tokenizer = FastLanguageModel.from_pretrained(model_name=args.model, max_seq_length=args.max_seq_length,
                                                          dtype=None, load_in_4bit=True, token=os.environ.get("HF_TOKEN"))
     FastLanguageModel.for_inference(model)
