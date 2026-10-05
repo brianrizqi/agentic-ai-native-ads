@@ -11,7 +11,8 @@ leaves the reference block out of that share of prompts, so ONE adapter is valid
 with and without retrieval at inference: the Non-RAG vs RAG comparison then differs
 only in the prompt, not in the weights.
 
-Validation loss is computed on val.jsonl; the best checkpoint by eval_loss is kept.
+Loss is computed on the answer tokens only (prompt tokens are masked). Validation loss
+on a fixed subset of val.jsonl selects the best checkpoint.
 test.jsonl and test_xsource.jsonl are never opened by this script.
 """
 
@@ -56,8 +57,27 @@ def build_examples(rows, tokenizer, fmt, use_evidence, retriever, k, rag_dropout
             n_rag += 1
         prompt = apply_chat(tokenizer, build_prompt(r["text"], r["lang"], fmt, use_evidence, neighbors,
                                                     max_chars=max_chars, ref_chars=nb_chars))
-        out.append({"text": prompt + build_target(r, fmt, use_evidence) + tokenizer.eos_token})
+        out.append({"prompt": prompt, "target": build_target(r, fmt, use_evidence) + tokenizer.eos_token})
     return out, n_rag
+
+
+def tokenize(examples, tok, max_len):
+    """Prompt tokens get label -100, so the loss covers the answer (signals + label) only.
+
+    Tokenized exactly as infer.py does (chat template already holds BOS, so no special tokens
+    are added). Examples longer than max_len are dropped and counted rather than truncated,
+    because truncation would cut the answer.
+    """
+    rows, dropped = [], 0
+    for ex in examples:
+        p = tok(ex["prompt"], add_special_tokens=False)["input_ids"]
+        t = tok(ex["target"], add_special_tokens=False)["input_ids"]
+        if len(p) + len(t) > max_len:
+            dropped += 1
+            continue
+        rows.append({"input_ids": p + t, "attention_mask": [1] * (len(p) + len(t)),
+                     "labels": [-100] * len(p) + t})
+    return rows, dropped
 
 
 def main():
@@ -89,9 +109,9 @@ def main():
     import _server_compat  # noqa: F401  (must precede unsloth on the cluster)
     from unsloth import FastLanguageModel
     import torch
+    import math
     from datasets import Dataset
-    from transformers import EarlyStoppingCallback, TrainingArguments
-    from trl import SFTTrainer
+    from transformers import DataCollatorForSeq2Seq, EarlyStoppingCallback, Trainer, TrainingArguments
     from common import env_versions, read_jsonl, write_json
     from retrieval import Retriever
 
@@ -132,24 +152,28 @@ def main():
                                   args.rag_dropout, args.max_chars, args.neighbor_chars, args.seed)
     va, n_rag_va = build_examples(val, tokenizer, args.format, use_evidence, retriever, args.k,
                                   args.rag_dropout, args.max_chars, args.neighbor_chars, args.seed + 1)
-    lengths = [len(tok(x["text"], add_special_tokens=False)["input_ids"]) for x in tr[:500]]
-    too_long = sum(L > args.max_seq_length for L in lengths)
-    print(f"train={len(tr)} (with references: {n_rag_tr})  val={len(va)} (with references: {n_rag_va})")
-    print(f"token length (first 500): max={max(lengths)} mean={sum(lengths)/len(lengths):.0f}; "
-          f"{too_long} exceed max_seq_length={args.max_seq_length}")
-    if too_long:
-        print("⚠️  Some examples would be truncated, cutting the target. Lower --max-chars or raise --max-seq-length.")
     with open(out / "example_prompt.txt", "w", encoding="utf-8") as f:
-        f.write(tr[0]["text"])
+        f.write(tr[0]["prompt"] + tr[0]["target"])
+    tr_tok, drop_tr = tokenize(tr, tok, args.max_seq_length)
+    va_tok, drop_va = tokenize(va, tok, args.max_seq_length)
+    lengths = [len(x["input_ids"]) for x in tr_tok]
+    answer = [sum(l != -100 for l in x["labels"]) for x in tr_tok]
+    print(f"train={len(tr_tok)} (with references: {n_rag_tr})  val={len(va_tok)} (with references: {n_rag_va})")
+    print(f"tokens: max={max(lengths)} mean={sum(lengths) / len(lengths):.0f}; answer tokens mean="
+          f"{sum(answer) / len(answer):.0f}; dropped as too long: train {drop_tr}, val {drop_va}")
+    if drop_tr or drop_va:
+        print("⚠️  Examples longer than max_seq_length were dropped. Lower --max-chars or raise --max-seq-length.")
 
-    trainer = SFTTrainer(
-        model=model, tokenizer=tokenizer,
-        train_dataset=Dataset.from_list(tr), eval_dataset=Dataset.from_list(va),
-        dataset_text_field="text", max_seq_length=args.max_seq_length, dataset_num_proc=2, packing=False,
+    total_steps = math.ceil(len(tr_tok) / (args.per_device_batch * args.grad_accum)) * args.epochs
+    trainer = Trainer(
+        model=model,
+        train_dataset=Dataset.from_list(tr_tok), eval_dataset=Dataset.from_list(va_tok),
+        data_collator=DataCollatorForSeq2Seq(tok, padding=True, label_pad_token_id=-100),
         args=TrainingArguments(
             per_device_train_batch_size=args.per_device_batch, per_device_eval_batch_size=args.per_device_batch,
             gradient_accumulation_steps=args.grad_accum, num_train_epochs=args.epochs,
-            learning_rate=args.learning_rate, warmup_ratio=args.warmup_ratio, weight_decay=args.weight_decay,
+            learning_rate=args.learning_rate, warmup_steps=max(1, int(args.warmup_ratio * total_steps)),
+            weight_decay=args.weight_decay,
             lr_scheduler_type="cosine", optim="adamw_8bit", seed=args.seed,
             fp16=not torch.cuda.is_bf16_supported(), bf16=torch.cuda.is_bf16_supported(),
             logging_steps=10, eval_strategy="steps", eval_steps=args.eval_steps,
@@ -171,7 +195,8 @@ def main():
         "max_chars": args.max_chars, "neighbor_chars": args.neighbor_chars,
         "hyperparameters": {k: getattr(args, k) for k in SHARED}, "overrides": overrides,
         "effective_batch": args.per_device_batch * args.grad_accum,
-        "n_train": len(tr), "n_val": len(va), "n_train_with_references": n_rag_tr,
+        "n_train": len(tr_tok), "n_val": len(va_tok), "n_train_with_references": n_rag_tr,
+        "n_dropped_too_long": {"train": drop_tr, "val": drop_va}, "loss": "answer tokens only",
         "split_dir": str(split_dir), "split_manifest": json.load(open(split_dir / "manifest.json"))["file_sha256"],
         "train_metrics": stats.metrics, "best_checkpoint": trainer.state.best_model_checkpoint,
         "best_eval_loss": trainer.state.best_metric, "log_history": trainer.state.log_history,
