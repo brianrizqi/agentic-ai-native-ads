@@ -91,6 +91,32 @@ def _find_python_h_dir():
     return None
 
 _PYTHON_H_DIR = _find_python_h_dir()
+
+# The subprocess.check_call patch below only exists in processes that import this
+# module, but torch/unsloth compile Triton kernels in worker subprocesses too. Put the
+# same flag filtering and Python.h fix into the compiler wrapper itself, so every
+# process that invokes $CC gets it.
+if _CC and "zig" in _CC:
+    try:
+        import ziglang as _zig
+        _zig_bin = os.path.join(os.path.dirname(_zig.__file__), "zig")
+        _pyh = f' "-I{_PYTHON_H_DIR}"' if _PYTHON_H_DIR else ""
+        with open(_CC, "w") as _f:
+            _f.write(
+                "#!/bin/bash\n"
+                "args=()\n"
+                'for a in "$@"; do\n'
+                '  case "$a" in\n'
+                "    -Wno-psabi|-Wno-format-truncation|-mno-avx512f|-fno-semantic-interposition) continue ;;\n"
+                "    -I*/include/python3.*) continue ;;\n"
+                "  esac\n"
+                '  args+=("$a")\n'
+                "done\n"
+                f'exec "{_zig_bin}" cc "${{args[@]}}"{_pyh}\n'
+            )
+        os.chmod(_CC, 0o755)
+    except ImportError:
+        pass
 if _PYTHON_H_DIR:
     print(f"✅ Found Python.h at: {_PYTHON_H_DIR}")
 else:
