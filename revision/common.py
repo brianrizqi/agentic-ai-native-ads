@@ -43,6 +43,9 @@ SIGNAL_VALUES = {
 
 def norm_label(value) -> Optional[str]:
     s = str(value or "").strip().lower()
+    # A copied schema line ("native ads|berita murni") names both classes: not an answer.
+    if "|" in s or ("native" in s and ("murni" in s or "news" in s)):
+        return None
     if "native" in s or s in ("ads", "iklan", "a"):
         return NATIVE
     if "murni" in s or "news" in s or "berita" in s or s == "b":

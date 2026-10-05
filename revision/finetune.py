@@ -75,6 +75,8 @@ def main():
     ap.add_argument("--max-chars", type=int, default=1500, help="Article characters in the prompt")
     ap.add_argument("--neighbor-chars", type=int, default=400)
     ap.add_argument("--max-train", type=int, default=None, help="Debug only: subsample train")
+    ap.add_argument("--max-val", type=int, default=400,
+                    help="Validation articles used for eval loss (fixed random subset; full val is slow to score)")
     ap.add_argument("--eval-steps", type=int, default=100)
     ap.add_argument("--merge", action="store_true", help="Also save a merged 16-bit copy")
     ap.add_argument("--num-gpu", type=int, default=1)
@@ -100,6 +102,8 @@ def main():
     val = read_jsonl(split_dir / "val.jsonl")
     if args.max_train:
         train = random.Random(0).sample(train, min(args.max_train, len(train)))
+    if args.max_val:
+        val = random.Random(1).sample(val, min(args.max_val, len(val)))
     use_evidence = bool(args.evidence_file)
     if use_evidence:
         ev = {r["id"]: r["evidence"] for r in read_jsonl(args.evidence_file)}
