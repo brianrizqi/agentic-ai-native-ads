@@ -11,7 +11,9 @@
 #
 # DEADLINE is when the server reservation ends. BUFFER_H (default 4) hours are kept
 # free at the end for backing up results. Estimates (hours, A100 40 GB) come from the
-# measured RANA runs: 12B fine-tune 5.9 h, 12B inference 2.1 s/article.
+# measured RANA runs: 12B fine-tune 5.9 h, 12B inference 2.1 s/article without retrieval
+# and 3.5 s/article with it. Ablations and the k sweep use the first 1,000 test articles
+# (the test file is pre-shuffled); paired tests compare them on the same articles.
 # Jobs never share the GPU, so memory stays safe and timing figures stay valid.
 cd "$(dirname "$0")/.."
 LOG=revision/logs
@@ -59,7 +61,7 @@ factorial_format() {  # one extra output format on the factorial model, test par
         --rag --format "$f" --out "$out"
   fi
   if [ -f "$out/run_config.json" ]; then
-    run "infer_${m}_$f" 2 bash -c "python revision/infer.py --model $out --test-file $SPLIT/test.jsonl --out $res/test__norag.jsonl && \
+    run "infer_${m}_$f" 3 bash -c "python revision/infer.py --model $out --test-file $SPLIT/test.jsonl --out $res/test__norag.jsonl && \
       python revision/infer.py --model $out --test-file $SPLIT/test.jsonl --out $res/test__rag_k5.jsonl --rag --k 5"
   fi
 }
@@ -69,7 +71,7 @@ echo "[$(date '+%F %T')] GPU free, queue starts (deadline $DEADLINE, buffer ${BU
 run stats_rana 1 bash revision/run_all.sh stats
 
 # 1. Retrieval controls on RANA (R1-C2, R1-C3, R1-C4)
-run ablation_gemma3-12b 9 bash revision/run_all.sh ablation gemma3-12b
+run ablation_gemma3-12b 7 env MAXN=1000 bash revision/run_all.sh ablation gemma3-12b
 # 2. Faithfulness on RANA (R1-C5)
 run faithful_gemma3-12b 2 env FAITH=flip_each bash revision/run_all.sh faithful gemma3-12b
 # 3. Encoder baselines on the same split (R1-C9)
@@ -78,17 +80,17 @@ if [ -f revision/results/encoders__bert-base-multilingual-cased/test_xsource.jso
 else
   run encoders 2 bash revision/run_all.sh encoders
 fi
-# 4. Output-format factorial on one model (R1-C5, R2-4): Gemma 3 4B, all four formats
-main_model gemma3-4b 4 4
+# 4. Gemma 3 4B: main run, then retrieval depth on two model sizes (R2-3)
+main_model gemma3-4b 4 5
+run ksweep_gemma3-12b 3 env KS="1 3 10" MAXN=1000 bash revision/run_all.sh ksweep gemma3-12b
+run ksweep_gemma3-4b 2 env KS="1 3 10" MAXN=1000 bash revision/run_all.sh ksweep gemma3-4b
+# 5. Output-format factorial on one model (R1-C5, R2-4): Gemma 3 4B, all four formats
 factorial_format gemma3-4b label_first 4
 factorial_format gemma3-4b label_only 4
 factorial_format gemma3-4b assessment_only 4
-# 5. Further models for the main table (R1-C10, R1-C11)
-main_model qwen3-8b 5 4
-main_model gemma3-1b 3 3
-# 6. Retrieval depth on two model sizes (R2-3)
-run ksweep_gemma3-12b 4 env KS="1 3 10" bash revision/run_all.sh ksweep gemma3-12b
-run ksweep_gemma3-1b 2 env KS="1 3 10" bash revision/run_all.sh ksweep gemma3-1b
+# 6. Further models for the main table (R1-C10, R1-C11)
+main_model qwen3-8b 5 6
+main_model gemma3-1b 3 4
 # 7. Optional, only if time remains
 main_model llama3.2-1b 3 3
 run zeroshot_gemma3-12b 2 bash revision/run_all.sh zeroshot gemma3-12b

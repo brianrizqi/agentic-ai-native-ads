@@ -80,18 +80,18 @@ infer)
   ;;
 ksweep)
   for m in ${models:-$ABL_MODELS}; do
-    for k in ${KS:-1 3 7 10}; do infer "$m" $FMT test "rag_k$k" --rag --k "$k"; done
+    for k in ${KS:-1 3 7 10}; do infer "$m" $FMT test "rag_k$k" --rag --k "$k" ${MAXN:+--max-samples $MAXN}; done
   done
   ;;
 ablation)
   for m in ${models:-$ABL_MODELS}; do
-    infer "$m" $FMT test rag_k5_random      --rag --rag-mode random
-    infer "$m" $FMT test rag_k5_flipped     --rag --rag-mode flipped
-    infer "$m" $FMT test rag_k5_nolabels    --rag --hide-labels
-    infer "$m" $FMT test rag_k5_notext      --rag --hide-text
-    infer "$m" $FMT test rag_k5_maxsim0.90  --rag --max-sim 0.90
-    infer "$m" $FMT test rag_k5_lang-cross  --rag --neighbor-lang cross
-    infer "$m" $FMT test rag_k5_minilm      --rag --index-dir revision/index/minilm
+    infer "$m" $FMT test rag_k5_random      --rag --rag-mode random ${MAXN:+--max-samples $MAXN}
+    infer "$m" $FMT test rag_k5_flipped     --rag --rag-mode flipped ${MAXN:+--max-samples $MAXN}
+    infer "$m" $FMT test rag_k5_nolabels    --rag --hide-labels ${MAXN:+--max-samples $MAXN}
+    infer "$m" $FMT test rag_k5_notext      --rag --hide-text ${MAXN:+--max-samples $MAXN}
+    infer "$m" $FMT test rag_k5_maxsim0.90  --rag --max-sim 0.90 ${MAXN:+--max-samples $MAXN}
+    infer "$m" $FMT test rag_k5_lang-cross  --rag --neighbor-lang cross ${MAXN:+--max-samples $MAXN}
+    infer "$m" $FMT test rag_k5_minilm      --rag --index-dir revision/index/minilm ${MAXN:+--max-samples $MAXN}
   done
   ;;
 factorial)
