@@ -61,6 +61,13 @@ def build_examples(rows, tokenizer, fmt, use_evidence, retriever, k, rag_dropout
     return out, n_rag
 
 
+def split_hashes(split_dir):
+    """SHA-256 of the partition files this adapter was trained against (reproducibility record)."""
+    import hashlib
+    return {f.name: hashlib.sha256(f.read_bytes()).hexdigest()
+            for f in sorted(Path(split_dir).glob("*.jsonl"))}
+
+
 def tokenize(examples, tok, max_len):
     """Prompt tokens get label -100, so the loss covers the answer (signals + label) only.
 
@@ -206,7 +213,7 @@ def main():
         "effective_batch": args.per_device_batch * args.grad_accum,
         "n_train": len(tr_tok), "n_val": len(va_tok), "n_train_with_references": n_rag_tr,
         "n_dropped_too_long": {"train": drop_tr, "val": drop_va}, "loss": "answer tokens only",
-        "split_dir": str(split_dir), "split_manifest": json.load(open(split_dir / "manifest.json"))["file_sha256"],
+        "split_dir": str(split_dir), "split_file_sha256": split_hashes(split_dir),
         "train_metrics": stats.metrics, "best_checkpoint": trainer.state.best_model_checkpoint,
         "best_eval_loss": trainer.state.best_metric, "log_history": trainer.state.log_history,
         "versions": env_versions(),
