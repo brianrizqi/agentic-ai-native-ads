@@ -27,7 +27,7 @@ INDEX=revision/index/bge-m3
 FMT=reasoning_first
 MAIN_MODELS="gemma3-12b qwen3-8b gemma2-9b deepseek-r1-llama-8b qwen3.5-9b gemma3-4b llama3.2-1b qwen2.5-14b gemma3-1b qwen3.5-2b gemma3-270m"
 ABL_MODELS="gemma3-12b qwen3-8b gemma3-1b"        # R2: k and ablations on several model sizes
-FACTORIAL_MODELS="gemma3-12b qwen3-8b"             # R1-C5 / R2: same model, four output formats
+FACTORIAL_MODELS="${FACTORIAL_MODELS:-gemma3-4b}"   # R1-C5 / R2: same model, four output formats
 # Decide BEFORE the first finetune and keep it for every run:
 #   EVIDENCE=revision/splits/main/evidence.jsonl bash revision/run_all.sh finetune   -> targets carry per-signal evidence
 #   (unset)                                                                         -> targets carry the four signals only
@@ -80,7 +80,7 @@ infer)
   ;;
 ksweep)
   for m in ${models:-$ABL_MODELS}; do
-    for k in 1 3 7 10; do infer "$m" $FMT test "rag_k$k" --rag --k "$k"; done
+    for k in ${KS:-1 3 7 10}; do infer "$m" $FMT test "rag_k$k" --rag --k "$k"; done
   done
   ;;
 ablation)
@@ -90,7 +90,6 @@ ablation)
     infer "$m" $FMT test rag_k5_nolabels    --rag --hide-labels
     infer "$m" $FMT test rag_k5_notext      --rag --hide-text
     infer "$m" $FMT test rag_k5_maxsim0.90  --rag --max-sim 0.90
-    infer "$m" $FMT test rag_k5_lang-same   --rag --neighbor-lang same
     infer "$m" $FMT test rag_k5_lang-cross  --rag --neighbor-lang cross
     infer "$m" $FMT test rag_k5_minilm      --rag --index-dir revision/index/minilm
   done
@@ -107,7 +106,7 @@ factorial)
   ;;
 faithful)
   for m in ${models:-gemma3-12b}; do
-    for v in flip_each all_yes all_no; do
+    for v in ${FAITH:-flip_each all_yes all_no}; do
       infer "$m" $FMT test "rag_k5_intervene-$v" --rag --intervene $v --max-samples 500
     done
   done
