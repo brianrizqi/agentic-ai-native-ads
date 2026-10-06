@@ -99,12 +99,17 @@ def main():
                     help="Validation articles used for eval loss (fixed random subset; full val is slow to score)")
     ap.add_argument("--eval-steps", type=int, default=100)
     ap.add_argument("--merge", action="store_true", help="Also save a merged 16-bit copy")
+    ap.add_argument("--force", action="store_true", help="Retrain even if this output already holds a finished adapter")
     ap.add_argument("--num-gpu", type=int, default=1)
     for key, val in SHARED.items():
         ap.add_argument("--" + key.replace("_", "-"), type=type(val), default=val)
     args = ap.parse_args()
     if args.rag and not args.index_dir:
         ap.error("--rag needs --index-dir")
+
+    if (Path(args.out) / "run_config.json").exists() and not args.force:
+        print(f"✅ {args.out} already holds a finished adapter, skipping (use --force to retrain)")
+        return
 
     import _server_compat  # noqa: F401  (must precede unsloth on the cluster)
     from unsloth import FastLanguageModel
@@ -182,7 +187,11 @@ def main():
             output_dir=str(out / "checkpoints"), report_to="none", dataloader_num_workers=0),
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
-    stats = trainer.train()
+    # A session that ended mid-training resumes from its last checkpoint instead of restarting.
+    ckpts = sorted((out / "checkpoints").glob("checkpoint-*"), key=lambda p: int(p.name.split("-")[1]))
+    if ckpts:
+        print(f"↻ resuming from {ckpts[-1]}")
+    stats = trainer.train(resume_from_checkpoint=str(ckpts[-1]) if ckpts else None)
 
     model.save_pretrained(str(out))
     tokenizer.save_pretrained(str(out))

@@ -5,6 +5,10 @@
 #   DEADLINE="2026-10-09 18:00" nohup bash revision/queue_all.sh > revision/logs/queue.log 2>&1 &
 #   cat revision/logs/queue.log          # START / OK / FAIL / SKIP per job
 #
+# Safe to rerun in a new reservation with a new DEADLINE: finished adapters are skipped,
+# an interrupted fine-tune resumes from its last checkpoint, and inference continues from
+# the last finished article.
+#
 # DEADLINE is when the server reservation ends. BUFFER_H (default 4) hours are kept
 # free at the end for backing up results. Estimates (hours, A100 40 GB) come from the
 # measured RANA runs: 12B fine-tune 5.9 h, 12B inference 2.1 s/article.
@@ -35,7 +39,11 @@ run() {  # run <name> <estimated hours> <command...>
 
 main_model() {  # fine-tune + Non-RAG/RAG inference on test and withheld publisher
   local m=$1 ft=$2 inf=$3
-  run "ft_$m" "$ft" bash revision/run_all.sh finetune "$m"
+  if [ -f "revision/models/${m}__reasoning_first/run_config.json" ]; then
+    echo "[$(date '+%F %T')] DONE  ft_$m (adapter exists)"
+  else
+    run "ft_$m" "$ft" bash revision/run_all.sh finetune "$m"
+  fi
   if [ -f "revision/models/${m}__reasoning_first/run_config.json" ]; then
     run "infer_$m" "$inf" bash revision/run_all.sh infer "$m"
   fi
@@ -44,8 +52,12 @@ main_model() {  # fine-tune + Non-RAG/RAG inference on test and withheld publish
 factorial_format() {  # one extra output format on the factorial model, test partition only
   local m=$1 f=$2 ft=$3
   local out="revision/models/${m}__$f" res="revision/results/${m}__$f"
-  run "ft_${m}_$f" "$ft" python revision/finetune.py --model "$m" --split-dir $SPLIT --index-dir $INDEX \
-      --rag --format "$f" --out "$out"
+  if [ -f "$out/run_config.json" ]; then
+    echo "[$(date '+%F %T')] DONE  ft_${m}_$f (adapter exists)"
+  else
+    run "ft_${m}_$f" "$ft" python revision/finetune.py --model "$m" --split-dir $SPLIT --index-dir $INDEX \
+        --rag --format "$f" --out "$out"
+  fi
   if [ -f "$out/run_config.json" ]; then
     run "infer_${m}_$f" 2 bash -c "python revision/infer.py --model $out --test-file $SPLIT/test.jsonl --out $res/test__norag.jsonl && \
       python revision/infer.py --model $out --test-file $SPLIT/test.jsonl --out $res/test__rag_k5.jsonl --rag --k 5"
@@ -61,7 +73,11 @@ run ablation_gemma3-12b 9 bash revision/run_all.sh ablation gemma3-12b
 # 2. Faithfulness on RANA (R1-C5)
 run faithful_gemma3-12b 2 env FAITH=flip_each bash revision/run_all.sh faithful gemma3-12b
 # 3. Encoder baselines on the same split (R1-C9)
-run encoders 2 bash revision/run_all.sh encoders
+if [ -f revision/results/encoders__bert-base-multilingual-cased/test_xsource.jsonl ]; then
+  echo "[$(date '+%F %T')] DONE  encoders (results exist)"
+else
+  run encoders 2 bash revision/run_all.sh encoders
+fi
 # 4. Output-format factorial on one model (R1-C5, R2-4): Gemma 3 4B, all four formats
 main_model gemma3-4b 4 4
 factorial_format gemma3-4b label_first 4
@@ -77,6 +93,12 @@ run ksweep_gemma3-1b 2 env KS="1 3 10" bash revision/run_all.sh ksweep gemma3-1b
 main_model llama3.2-1b 3 3
 run zeroshot_gemma3-12b 2 bash revision/run_all.sh zeroshot gemma3-12b
 main_model deepseek-r1-llama-8b 5 4
+# 8. Remaining models of the first submission (second reservation)
+main_model gemma2-9b 5 4
+main_model qwen3.5-9b 5 4
+main_model qwen3.5-2b 3 3
+main_model gemma3-270m 3 3
+main_model qwen2.5-14b 7 6
 
 run stats_all 1 env FACTORIAL_MODELS=gemma3-4b bash revision/run_all.sh stats
 echo "[$(date '+%F %T')] QUEUE DONE"
