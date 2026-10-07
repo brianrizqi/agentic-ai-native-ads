@@ -317,9 +317,10 @@ def main():
     import csv
     with open(out / "ids_hashes.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["id", "split", "cluster_id", "text_sha256", "lang", "label", "host", "url"])
+        # Source URLs are deliberately left out: article URLs and texts are not redistributed.
+        w.writerow(["id", "split", "cluster_id", "text_sha256", "lang", "label", "host", "section"])
         for r in sorted(records, key=lambda r: int(r["id"]) if r["id"].isdigit() else r["id"]):
-            w.writerow([r["id"], r["split"], r["cluster_id"], r["text_sha256"], r["lang"], r["label"], r["host"], r["url"]])
+            w.writerow([r["id"], r["split"], r["cluster_id"], r["text_sha256"], r["lang"], r["label"], r["host"], r["section"]])
 
     def dist(rows):
         c = Counter((r["lang"], r["label"]) for r in rows)
