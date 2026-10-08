@@ -63,7 +63,7 @@ def table(caption, label, header, rows, colspec, wide=True, note=None):
         lines.append("\\renewcommand{\\tblwidth}{\\textwidth}%")
     lines += ["\\small", "\\centering", f"\\caption{{{caption}}}\\label{{{label}}}",
               f"\\begin{{tabular*}}{{\\tblwidth}}{{@{{\\extracolsep{{\\fill}}}}{colspec}@{{}}}}", "\\toprule",
-              " & ".join(f"\\textbf{{{h}}}" for h in header) + " \\\\", "\\midrule"]
+              " & ".join(h if h.startswith("$") else f"\\textbf{{{h}}}" for h in header) + " \\\\", "\\midrule"]
     lines += [" & ".join(r) + " \\\\" for r in rows]
     lines += ["\\bottomrule", "\\end{tabular*}"]
     if note:
