@@ -44,6 +44,8 @@ def pval(v):
     if v in (None, ""):
         return "--"
     v = float(v)
+    if v < 1e-15:  # below double precision: report a bound, not 0
+        return "$<10^{-15}$"
     if v < 1e-3:
         m, e = f"{v:.1e}".split("e")
         return f"${m}\\times10^{{{int(e)}}}$"
