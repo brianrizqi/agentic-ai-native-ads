@@ -107,6 +107,8 @@ def main():
     ap.add_argument("--eval-steps", type=int, default=100)
     ap.add_argument("--merge", action="store_true", help="Also save a merged 16-bit copy")
     ap.add_argument("--force", action="store_true", help="Retrain even if this output already holds a finished adapter")
+    ap.add_argument("--no-compile", action="store_true",
+                    help="Disable torch.compile (needed where Unsloth compiles kernels that require a C++ compiler)")
     ap.add_argument("--num-gpu", type=int, default=1)
     for key, val in SHARED.items():
         ap.add_argument("--" + key.replace("_", "-"), type=type(val), default=val)
@@ -118,6 +120,11 @@ def main():
         print(f"✅ {args.out} already holds a finished adapter, skipping (use --force to retrain)")
         return
 
+    import os
+    # Unsloth compiles Gemma 2 attention (logit softcapping) with torch.compile, whose CPU part
+    # needs a C++ compiler the cluster does not have. Eager mode computes the same thing.
+    if args.no_compile or args.model.startswith("gemma2") or "gemma-2" in MODELS.get(args.model, args.model):
+        os.environ.setdefault("TORCHDYNAMO_DISABLE", "1")
     import _server_compat  # noqa: F401  (must precede unsloth on the cluster)
     from unsloth import FastLanguageModel
     import torch
