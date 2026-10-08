@@ -74,18 +74,34 @@ def mcc(gold, pred):
     return (tp * tn - fp * fn) / den if den else 0.0
 
 
+def bootstrap_macro_f1(gold, pred, n_boot, rng, chunk=250):
+    """Macro-F1 over bootstrap resamples, vectorized (same definition as prf)."""
+    codes = {lab: i for i, lab in enumerate(LABELS)}
+    g = np.array([codes[x] for x in gold], dtype=np.int8)
+    p = np.array([codes.get(x, -1) for x in pred], dtype=np.int8)  # invalid = -1, never a class
+    out = []
+    for start in range(0, n_boot, chunk):
+        S = rng.integers(0, len(g), size=(min(chunk, n_boot - start), len(g)))
+        G, P = g[S], p[S]
+        f1s = []
+        for c in range(len(LABELS)):
+            tp = ((G == c) & (P == c)).sum(1)
+            fp = ((G != c) & (P == c)).sum(1)
+            fn = ((G == c) & (P != c)).sum(1)
+            prec = np.divide(tp, tp + fp, out=np.zeros(len(tp)), where=(tp + fp) > 0)
+            rec = np.divide(tp, tp + fn, out=np.zeros(len(tp)), where=(tp + fn) > 0)
+            f1s.append(np.divide(2 * prec * rec, prec + rec, out=np.zeros(len(tp)), where=(prec + rec) > 0))
+        out.extend(np.mean(f1s, axis=0).tolist())
+    return out
+
+
 def core_metrics(rows, n_boot, rng):
     gold = [r["label_gold"] for r in rows]
     pred = [r.get("label_pred") or "invalid" for r in rows]
     n, k = len(gold), sum(g == p for g, p in zip(gold, pred))
     per, macro = prf(gold, pred, LABELS)
     lo, hi = wilson(k, n)
-    boots = []
-    if n_boot and n:
-        idx = np.arange(n)
-        for _ in range(n_boot):
-            s = rng.choice(idx, n)
-            boots.append(prf([gold[i] for i in s], [pred[i] for i in s], LABELS)[1])
+    boots = bootstrap_macro_f1(gold, pred, n_boot, rng) if n_boot and n else []
     rec = [per[l][1] for l in LABELS]
     return {
         "n": n, "accuracy": k / n if n else float("nan"), "acc_ci_low": lo, "acc_ci_high": hi,
