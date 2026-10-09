@@ -44,6 +44,8 @@ def pval(v):
     if v in (None, ""):
         return "--"
     v = float(v)
+    if v < 1e-15:  # below double precision: report a bound, not 0
+        return "$<10^{-15}$"
     if v < 1e-3:
         m, e = f"{v:.1e}".split("e")
         return f"${m}\\times10^{{{int(e)}}}$"
@@ -61,7 +63,7 @@ def table(caption, label, header, rows, colspec, wide=True, note=None):
         lines.append("\\renewcommand{\\tblwidth}{\\textwidth}%")
     lines += ["\\small", "\\centering", f"\\caption{{{caption}}}\\label{{{label}}}",
               f"\\begin{{tabular*}}{{\\tblwidth}}{{@{{\\extracolsep{{\\fill}}}}{colspec}@{{}}}}", "\\toprule",
-              " & ".join(f"\\textbf{{{h}}}" for h in header) + " \\\\", "\\midrule"]
+              " & ".join(h if h.startswith("$") else f"\\textbf{{{h}}}" for h in header) + " \\\\", "\\midrule"]
     lines += [" & ".join(r) + " \\\\" for r in rows]
     lines += ["\\bottomrule", "\\end{tabular*}"]
     if note:
@@ -188,7 +190,9 @@ def main():
         t = next((r for r in sg if r["run"] == "gemma3-12b__reasoning_first/test__rag_k5" and r["signal"] == s), None)
         x = next((r for r in sg if r["run"] == "gemma3-12b__reasoning_first/test_xsource__rag_k5" and r["signal"] == s), None)
         if t or x:
-            rows.append([esc(s), pc(t and t["accuracy"]), pc(t and t["macro_f1"]), pc(x and x["accuracy"]), pc(x and x["macro_f1"])])
+            label = {"positive_tone": "Positive tone", "persuasive": "Persuasive language",
+                     "brand_promotion": "Brand promotion", "single_perspective": "Single perspective"}[s]
+            rows.append([label, pc(t and t["accuracy"]), pc(t and t["macro_f1"]), pc(x and x["accuracy"]), pc(x and x["macro_f1"])])
     if rows:
         save("tbl_signals", table("Agreement (\\%) of the signals RANA reports with the annotators: accuracy and macro-F1 on the test partition and the withheld publisher.",
                                   "tbl_signals", ["Signal", "Test acc.", "Test F1", "Withheld acc.", "Withheld F1"], rows, "LRRRR", wide=False))
