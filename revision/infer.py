@@ -97,6 +97,8 @@ def main():
     done = {r["id"] for r in read_jsonl(out)} if out.exists() else set()
     todo = [r for r in rows if r["id"] not in done]
     print(f"{len(rows)} articles, {len(done)} already done, {len(todo)} to run | format={fmt} rag={args.rag}")
+    if not todo:
+        return  # finished run: skip loading the model
 
     model, tokenizer = FastLanguageModel.from_pretrained(model_name=args.model, max_seq_length=args.max_seq_length,
                                                          dtype=None, load_in_4bit=True, token=os.environ.get("HF_TOKEN"))
