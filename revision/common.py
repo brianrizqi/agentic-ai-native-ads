@@ -164,6 +164,7 @@ def write_jsonl(path, rows: Iterable[dict]) -> int:
 
 
 def append_jsonl(path, row: dict) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
 

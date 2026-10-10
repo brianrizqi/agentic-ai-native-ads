@@ -19,7 +19,7 @@ MODEL_NAMES = {
     "llama3.2-1b": "Llama 3.2 1B", "deepseek-r1-llama-8b": "DeepSeek-R1-Distill-Llama-8B",
 }
 FORMAT_NAMES = {"label_only": "Label only", "label_first": "Label first",
-                "reasoning_first": "Reasoning first (RANA)", "assessment_only": "Assessment only"}
+                "reasoning_first": "Reasoning first (RANA format)", "assessment_only": "Assessment only"}
 ABLATION_NAMES = {
     "rag_k5_random": "Random neighbors", "rag_k5_flipped": "Neighbor labels inverted",
     "rag_k5_nolabels": "Neighbor labels hidden", "rag_k5_notext": "Neighbor text hidden",
