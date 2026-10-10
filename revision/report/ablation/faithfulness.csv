@@ -1,0 +1,5 @@
+run,variant,n,label_follows_rule,label_changed,invalid_after
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,flip_brand_promotion,500,0.78,0.338,0.008
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,flip_persuasive,500,0.63,0.196,0.012
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,flip_positive_tone,500,0.63,0.196,0.012
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,flip_single_perspective,500,0.434,0.022,0.014

@@ -1,0 +1,4 @@
+run,lang,n,accuracy,acc_ci_low,acc_ci_high,macro_f1,macro_f1_ci_low,macro_f1_ci_high,precision_native_ads,recall_native_ads,f1_native_ads,precision_berita_murni,recall_berita_murni,f1_berita_murni,mcc,balanced_accuracy,n_invalid,n_label_from_regex,fisher_p
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,en,173,0.99422,0.967989,0.998979,0.994219,0.982424,1.0,0.988636,1.0,0.994286,1.0,0.988372,0.994152,0.988504,0.994186,0,0,
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,id,327,0.963303,0.936961,0.978885,0.963012,0.941488,0.984304,0.971751,0.960894,0.966292,0.953333,0.966216,0.959732,0.926097,0.963555,0,0,
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,id_minus_en,500,-0.030917,-0.057685,-0.000407,,,,,,,,,,,,,,0.040612

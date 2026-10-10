@@ -1,0 +1,73 @@
+# Results summary
+
+| run | n | acc [95% CI] | macro-F1 [95% CI] | MCC | invalid |
+|---|---|---|---|---|---|
+| gemma3-12b__reasoning_first/test__rag_k5 | 2165 | 0.9709 [0.9629, 0.9772] | 0.9709 [0.9640, 0.9778] | 0.9420 | 0 |
+| gemma3-12b__reasoning_first/test__norag | 2165 | 0.9686 [0.9604, 0.9751] | 0.9686 [0.9612, 0.9760] | 0.9373 | 0 |
+| qwen3.5-9b__reasoning_first/test__rag_k5 | 2165 | 0.9681 [0.9599, 0.9747] | 0.9681 [0.9607, 0.9750] | 0.9364 | 0 |
+| gemma2-9b__reasoning_first/test__rag_k5 | 2165 | 0.9663 [0.9578, 0.9731] | 0.9663 [0.9588, 0.9741] | 0.9327 | 0 |
+| qwen3-8b__reasoning_first/test__rag_k5 | 2165 | 0.9649 [0.9563, 0.9719] | 0.9649 [0.9575, 0.9723] | 0.9301 | 0 |
+| qwen3.5-9b__reasoning_first/test__norag | 2165 | 0.9630 [0.9542, 0.9702] | 0.9630 [0.9552, 0.9708] | 0.9268 | 0 |
+| qwen2.5-14b__reasoning_first/test__rag_k5 | 2165 | 0.9626 [0.9537, 0.9698] | 0.9626 [0.9543, 0.9704] | 0.9259 | 0 |
+| gemma2-9b__reasoning_first/test__norag | 2165 | 0.9617 [0.9527, 0.9690] | 0.9617 [0.9533, 0.9695] | 0.9234 | 0 |
+| qwen3.5-2b__reasoning_first/test__rag_k5 | 2165 | 0.9612 [0.9522, 0.9686] | 0.9612 [0.9528, 0.9690] | 0.9228 | 0 |
+| qwen3-8b__reasoning_first/test__norag | 2165 | 0.9594 [0.9502, 0.9669] | 0.9594 [0.9510, 0.9672] | 0.9188 | 0 |
+| gemma3-4b__reasoning_first/test__rag_k5 | 2165 | 0.9589 [0.9497, 0.9665] | 0.9589 [0.9501, 0.9672] | 0.9180 | 0 |
+| qwen2.5-14b__reasoning_first/test__norag | 2165 | 0.9566 [0.9472, 0.9644] | 0.9566 [0.9473, 0.9649] | 0.9136 | 0 |
+| gemma3-4b__reasoning_first/test__norag | 2165 | 0.9520 [0.9421, 0.9602] | 0.9520 [0.9432, 0.9607] | 0.9039 | 0 |
+| llama3.2-1b__reasoning_first/test__rag_k5 | 2165 | 0.9515 [0.9416, 0.9598] | 0.9515 [0.9413, 0.9602] | 0.9030 | 0 |
+| llama3.2-1b__reasoning_first/test__norag | 2165 | 0.9469 [0.9366, 0.9556] | 0.9469 [0.9367, 0.9561] | 0.8939 | 0 |
+| qwen3.5-2b__reasoning_first/test__norag | 2165 | 0.9436 [0.9331, 0.9526] | 0.9436 [0.9344, 0.9533] | 0.8874 | 0 |
+| gemma3-1b__reasoning_first/test__rag_k5 | 2165 | 0.9436 [0.9331, 0.9526] | 0.9436 [0.9335, 0.9533] | 0.8877 | 0 |
+| deepseek-r1-llama-8b__reasoning_first/test__rag_k5 | 2165 | 0.9413 [0.9306, 0.9505] | 0.9413 [0.9306, 0.9510] | 0.8828 | 0 |
+| gemma3-270m__reasoning_first/test__norag | 2165 | 0.9349 [0.9237, 0.9445] | 0.9381 [0.9277, 0.9481] | 0.8829 | 15 |
+| gemma3-270m__reasoning_first/test__rag_k5 | 2165 | 0.9316 [0.9202, 0.9415] | 0.9359 [0.9259, 0.9463] | 0.8810 | 20 |
+| deepseek-r1-llama-8b__reasoning_first/test__norag | 2165 | 0.9335 [0.9222, 0.9432] | 0.9335 [0.9224, 0.9436] | 0.8672 | 0 |
+| gemma3-1b__reasoning_first/test__norag | 2165 | 0.9321 [0.9207, 0.9420] | 0.9320 [0.9209, 0.9420] | 0.8662 | 0 |
+| deepseek-r1-llama-8b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.8737 [0.8597, 0.8865] | 0.8735 [0.8595, 0.8873] | 0.7530 | 0 |
+| qwen3.5-9b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.8496 [0.8346, 0.8634] | 0.8492 [0.8346, 0.8634] | 0.7066 | 0 |
+| deepseek-r1-llama-8b__reasoning_first/test_xsource__norag | 2367 | 0.8454 [0.8303, 0.8594] | 0.8448 [0.8298, 0.8582] | 0.7008 | 0 |
+| qwen3.5-9b__reasoning_first/test_xsource__norag | 2367 | 0.8327 [0.8171, 0.8472] | 0.8320 [0.8170, 0.8471] | 0.6756 | 0 |
+| gemma2-9b__reasoning_first/test_xsource__norag | 2367 | 0.8264 [0.8106, 0.8411] | 0.8262 [0.8107, 0.8403] | 0.6561 | 0 |
+| qwen2.5-14b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.8082 [0.7918, 0.8236] | 0.8067 [0.7908, 0.8220] | 0.6324 | 0 |
+| gemma3-1b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.8019 [0.7853, 0.8174] | 0.8019 [0.7854, 0.8179] | 0.6042 | 0 |
+| qwen2.5-14b__reasoning_first/test_xsource__norag | 2367 | 0.8010 [0.7844, 0.8166] | 0.8007 [0.7843, 0.8160] | 0.6064 | 0 |
+| gemma2-9b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.7997 [0.7831, 0.8154] | 0.7993 [0.7839, 0.8159] | 0.6056 | 0 |
+| gemma3-12b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.7921 [0.7753, 0.8080] | 0.7917 [0.7741, 0.8073] | 0.5901 | 0 |
+| gemma3-12b__reasoning_first/test_xsource__norag | 2367 | 0.7858 [0.7688, 0.8019] | 0.7858 [0.7700, 0.8022] | 0.5728 | 0 |
+| gemma3-1b__reasoning_first/test_xsource__norag | 2367 | 0.7850 [0.7680, 0.8010] | 0.7843 [0.7665, 0.8004] | 0.5708 | 0 |
+| gemma3-270m__reasoning_first/test_xsource__rag_k5 | 2367 | 0.7795 [0.7623, 0.7957] | 0.7828 [0.7661, 0.7997] | 0.5727 | 21 |
+| gemma3-4b__reasoning_first/test_xsource__norag | 2367 | 0.7659 [0.7485, 0.7826] | 0.7659 [0.7490, 0.7820] | 0.5324 | 0 |
+| qwen3-8b__reasoning_first/test_xsource__norag | 2367 | 0.7583 [0.7407, 0.7752] | 0.7583 [0.7412, 0.7752] | 0.5166 | 0 |
+| qwen3-8b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.7465 [0.7286, 0.7636] | 0.7458 [0.7278, 0.7632] | 0.4995 | 0 |
+| gemma3-4b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.7317 [0.7135, 0.7492] | 0.7317 [0.7148, 0.7492] | 0.4642 | 0 |
+| qwen3.5-2b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.7186 [0.7002, 0.7364] | 0.7186 [0.7001, 0.7359] | 0.4375 | 0 |
+| gemma3-270m__reasoning_first/test_xsource__norag | 2367 | 0.7144 [0.6959, 0.7322] | 0.7172 [0.6998, 0.7350] | 0.4370 | 20 |
+| qwen3.5-2b__reasoning_first/test_xsource__norag | 2367 | 0.7123 [0.6937, 0.7302] | 0.7097 [0.6921, 0.7276] | 0.4279 | 0 |
+| llama3.2-1b__reasoning_first/test_xsource__rag_k5 | 2367 | 0.7076 [0.6890, 0.7256] | 0.7073 [0.6889, 0.7245] | 0.4186 | 0 |
+| llama3.2-1b__reasoning_first/test_xsource__norag | 2367 | 0.6848 [0.6658, 0.7032] | 0.6848 [0.6650, 0.7026] | 0.3697 | 0 |
+
+| A | B | b | c | diff [95% CI] | p exact | p Holm |
+|---|---|---|---|---|---|---|
+| deepseek-r1-llama-8b__reasoning_first/test__norag | deepseek-r1-llama-8b__reasoning_first/test__rag_k5 | 24 | 41 | +0.0079 [+0.0009, +0.0152] | 0.0464 | 0.533 |
+| gemma2-9b__reasoning_first/test__norag | gemma2-9b__reasoning_first/test__rag_k5 | 12 | 22 | +0.0046 [-0.0005, +0.0102] | 0.121 | 1 |
+| gemma3-12b__reasoning_first/test__norag | gemma3-12b__reasoning_first/test__rag_k5 | 8 | 13 | +0.0023 [-0.0018, +0.0065] | 0.383 | 1 |
+| gemma3-1b__reasoning_first/test__norag | gemma3-1b__reasoning_first/test__rag_k5 | 28 | 53 | +0.0115 [+0.0037, +0.0194] | 0.00728 | 0.109 |
+| gemma3-270m__reasoning_first/test__norag | gemma3-270m__reasoning_first/test__rag_k5 | 56 | 49 | -0.0032 [-0.0125, +0.0060] | 0.558 | 1 |
+| gemma3-4b__reasoning_first/test__norag | gemma3-4b__reasoning_first/test__rag_k5 | 17 | 32 | +0.0069 [+0.0009, +0.0134] | 0.0444 | 0.533 |
+| llama3.2-1b__reasoning_first/test__norag | llama3.2-1b__reasoning_first/test__rag_k5 | 30 | 40 | +0.0046 [-0.0037, +0.0120] | 0.282 | 1 |
+| qwen2.5-14b__reasoning_first/test__norag | qwen2.5-14b__reasoning_first/test__rag_k5 | 11 | 24 | +0.0060 [+0.0009, +0.0111] | 0.041 | 0.532 |
+| qwen3-8b__reasoning_first/test__norag | qwen3-8b__reasoning_first/test__rag_k5 | 18 | 30 | +0.0055 [-0.0005, +0.0125] | 0.111 | 1 |
+| qwen3.5-2b__reasoning_first/test__norag | qwen3.5-2b__reasoning_first/test__rag_k5 | 11 | 49 | +0.0176 [+0.0111, +0.0245] | 7.56e-07 | 1.51e-05 |
+| qwen3.5-9b__reasoning_first/test__norag | qwen3.5-9b__reasoning_first/test__rag_k5 | 11 | 22 | +0.0051 [+0.0000, +0.0106] | 0.0801 | 0.801 |
+| deepseek-r1-llama-8b__reasoning_first/test_xsource__norag | deepseek-r1-llama-8b__reasoning_first/test_xsource__rag_k5 | 72 | 139 | +0.0283 [+0.0165, +0.0397] | 4.65e-06 | 8.83e-05 |
+| gemma2-9b__reasoning_first/test_xsource__norag | gemma2-9b__reasoning_first/test_xsource__rag_k5 | 130 | 67 | -0.0266 [-0.0389, -0.0148] | 8.46e-06 | 0.000152 |
+| gemma3-12b__reasoning_first/test_xsource__norag | gemma3-12b__reasoning_first/test_xsource__rag_k5 | 76 | 91 | +0.0063 [-0.0046, +0.0165] | 0.279 | 1 |
+| gemma3-1b__reasoning_first/test_xsource__norag | gemma3-1b__reasoning_first/test_xsource__rag_k5 | 138 | 178 | +0.0169 [+0.0017, +0.0308] | 0.0281 | 0.393 |
+| gemma3-270m__reasoning_first/test_xsource__norag | gemma3-270m__reasoning_first/test_xsource__rag_k5 | 88 | 242 | +0.0651 [+0.0507, +0.0798] | 9.16e-18 | 2.01e-16 |
+| gemma3-4b__reasoning_first/test_xsource__norag | gemma3-4b__reasoning_first/test_xsource__rag_k5 | 158 | 77 | -0.0342 [-0.0461, -0.0224] | 1.37e-07 | 2.88e-06 |
+| llama3.2-1b__reasoning_first/test_xsource__norag | llama3.2-1b__reasoning_first/test_xsource__rag_k5 | 136 | 190 | +0.0228 [+0.0089, +0.0380] | 0.00327 | 0.0523 |
+| qwen2.5-14b__reasoning_first/test_xsource__norag | qwen2.5-14b__reasoning_first/test_xsource__rag_k5 | 105 | 122 | +0.0072 [-0.0051, +0.0194] | 0.288 | 1 |
+| qwen3-8b__reasoning_first/test_xsource__norag | qwen3-8b__reasoning_first/test_xsource__rag_k5 | 166 | 138 | -0.0118 [-0.0258, +0.0030] | 0.121 | 1 |
+| qwen3.5-2b__reasoning_first/test_xsource__norag | qwen3.5-2b__reasoning_first/test_xsource__rag_k5 | 132 | 147 | +0.0063 [-0.0072, +0.0203] | 0.402 | 1 |
+| qwen3.5-9b__reasoning_first/test_xsource__norag | qwen3.5-9b__reasoning_first/test_xsource__rag_k5 | 64 | 104 | +0.0169 [+0.0059, +0.0279] | 0.00252 | 0.0428 |

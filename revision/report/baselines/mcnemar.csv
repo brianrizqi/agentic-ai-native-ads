@@ -1,0 +1,4 @@
+A,B,n_paired,acc_A,acc_B,diff_B_minus_A,diff_ci_low,diff_ci_high,b_only_A_correct,c_only_B_correct,p_exact,odds_ratio_c_over_b,cohens_g,p_holm,p_bh
+knn/bge-m3/test__weighted_k5,gemma3-12b__reasoning_first/test__rag_k5,2165,0.893764,0.970901,0.077136,0.064665,0.089607,20,187,0.0,9.146341,0.403382,0.0,0.0
+encoders__xlm-roberta-base/test,gemma3-12b__reasoning_first/test__rag_k5,2165,0.962587,0.970901,0.008314,0.000462,0.015704,28,46,0.047393,1.631579,0.121622,0.047393,0.047393
+encoders__indobert-base-p1/test,gemma3-12b__reasoning_first/test__rag_k5,2165,0.948268,0.970901,0.022633,0.013857,0.031409,23,72,0.0,3.085106,0.257895,1e-06,1e-06

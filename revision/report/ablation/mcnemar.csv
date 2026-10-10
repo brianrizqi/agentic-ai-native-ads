@@ -1,0 +1,14 @@
+A,B,n_paired,acc_A,acc_B,diff_B_minus_A,diff_ci_low,diff_ci_high,b_only_A_correct,c_only_B_correct,p_exact,odds_ratio_c_over_b,cohens_g,p_holm,p_bh
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k5_random,1000,0.978,0.976,-0.002,-0.008,0.004,6,4,0.753906,0.692308,0.1,1.0,0.89098
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k5_flipped,1000,0.978,0.945,-0.033,-0.046,-0.021,37,4,0.0,0.12,0.402439,1e-06,1e-06
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k5_nolabels,1000,0.978,0.973,-0.005,-0.01,0.0,6,1,0.125,0.230769,0.357143,1.0,0.40625
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k5_notext,1000,0.978,0.971,-0.007,-0.013,-0.002,8,1,0.039062,0.176471,0.388889,0.46875,0.169271
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k5_maxsim0.90,1000,0.978,0.978,0.0,0.0,0.0,0,0,1.0,1.0,0.0,1.0,1.0
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k5_lang-cross,1000,0.978,0.974,-0.004,-0.01,0.002,7,3,0.34375,0.466667,0.2,1.0,0.541667
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k5_minilm,1000,0.978,0.976,-0.002,-0.006,0.001,3,1,0.625,0.428571,0.25,1.0,0.8125
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k1,1000,0.978,0.971,-0.007,-0.013,-0.002,8,1,0.039062,0.176471,0.388889,0.46875,0.169271
+gemma3-4b__reasoning_first/test__rag_k5,gemma3-4b__reasoning_first/test__rag_k1,1000,0.965,0.96,-0.005,-0.013,0.003,12,7,0.359283,0.6,0.131579,1.0,0.541667
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k3,1000,0.978,0.975,-0.003,-0.008,0.001,4,1,0.375,0.333333,0.3,1.0,0.541667
+gemma3-4b__reasoning_first/test__rag_k5,gemma3-4b__reasoning_first/test__rag_k3,1000,0.965,0.965,0.0,-0.006,0.006,4,4,1.0,1.0,0.0,1.0,1.0
+gemma3-12b__reasoning_first/test__rag_k5,gemma3-12b__reasoning_first/test__rag_k10,1000,0.978,0.975,-0.003,-0.008,0.001,4,1,0.375,0.333333,0.3,1.0,0.541667
+gemma3-4b__reasoning_first/test__rag_k5,gemma3-4b__reasoning_first/test__rag_k10,1000,0.965,0.97,0.005,-0.001,0.012,3,8,0.226562,2.428571,0.227273,1.0,0.541667

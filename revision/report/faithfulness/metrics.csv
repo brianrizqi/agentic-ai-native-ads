@@ -1,0 +1,2 @@
+n,accuracy,acc_ci_low,acc_ci_high,macro_f1,macro_f1_ci_low,macro_f1_ci_high,precision_native_ads,recall_native_ads,f1_native_ads,precision_berita_murni,recall_berita_murni,f1_berita_murni,mcc,balanced_accuracy,n_invalid,n_label_from_regex,run,mean_t_retrieval_s,mean_t_generation_s
+500,0.974,0.956029,0.984744,0.9739,0.95917,0.987915,0.977358,0.973684,0.975518,0.970213,0.974359,0.972281,0.947807,0.974022,0,0,gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,0.026167,2.295062

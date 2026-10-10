@@ -1,0 +1,6 @@
+run,signal,n,coverage,accuracy,macro_f1
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,positive_tone,500,1.0,0.826,0.686613
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,persuasive,500,1.0,0.868,0.854559
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,brand_promotion,500,1.0,0.864,0.852431
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,single_perspective,500,1.0,0.796,0.7066
+gemma3-12b__reasoning_first/test__rag_k5_intervene-flip_each,label_matches_rule_on_own_signals,500,,0.982,

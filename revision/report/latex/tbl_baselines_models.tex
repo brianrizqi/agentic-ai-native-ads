@@ -1,0 +1,21 @@
+\begin{table*}[t]
+\renewcommand{\tblwidth}{\textwidth}%
+\small
+\centering
+\caption{RANA against trained baselines on the same partition: accuracy and macro-F1 (\%) on the test partition and the withheld publisher.}\label{tbl_sota}
+\begin{tabular*}{\tblwidth}{@{\extracolsep{\fill}}LRRRR@{}}
+\toprule
+\textbf{System} & \textbf{Test acc.} & \textbf{Test F1} & \textbf{Withheld acc.} & \textbf{Withheld F1} \\
+\midrule
+kNN, MiniLM, weighted $k=5$ & 83.09 & 83.02 & 72.20 & 72.14 \\
+kNN, e5-large, weighted $k=5$ & 90.53 & 90.52 & 83.69 & 83.65 \\
+kNN, bge-m3, weighted $k=5$ & 89.38 & 89.37 & 85.09 & 85.06 \\
+IndoBERT & 94.83 & 94.83 & 86.40 & 86.30 \\
+Multilingual BERT & 95.47 & 95.47 & 87.24 & 87.17 \\
+XLM-RoBERTa & 96.26 & 96.26 & 66.46 & 66.12 \\
+Gemma 3 12B, zero-shot & 74.87 & 74.87 & -- & -- \\
+RANA without retrieval & 96.86 & 96.86 & 78.58 & 78.58 \\
+RANA & 97.09 & 97.09 & 79.21 & 79.17 \\
+\bottomrule
+\end{tabular*}
+\end{table*}

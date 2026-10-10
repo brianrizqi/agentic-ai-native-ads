@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\renewcommand{\tblwidth}{\textwidth}%
+\small
+\centering
+\caption{Retrieval controls for RANA on the same 1,000 test articles: accuracy (\%) with standard retrieval, under the control, the paired difference with its 95\% bootstrap interval, and Holm-adjusted McNemar $p$.}\label{tbl_ablation}
+\begin{tabular*}{\tblwidth}{@{\extracolsep{\fill}}LRRRR@{}}
+\toprule
+\textbf{Condition} & \textbf{Standard} & \textbf{Control} & \textbf{Difference} & \textbf{$p$} \\
+\midrule
+Random neighbors & 97.80 & 97.60 & -0.20 [-0.80, +0.40] & 1.000 \\
+Neighbor labels inverted & 97.80 & 94.50 & -3.30 [-4.60, -2.20] & $1.0\times10^{-6}$ \\
+Neighbor labels hidden & 97.80 & 97.30 & -0.50 [-1.10, +0.00] & 1.000 \\
+Neighbor text hidden & 97.80 & 97.10 & -0.70 [-1.30, -0.20] & 0.469 \\
+Neighbors above cosine 0.90 removed & 97.80 & 97.80 & +0.00 [+0.00, +0.00] & 1.000 \\
+Other-language neighbors only & 97.80 & 97.40 & -0.40 [-1.00, +0.20] & 1.000 \\
+MiniLM index instead of bge-m3 & 97.80 & 97.60 & -0.20 [-0.60, +0.20] & 1.000 \\
+\bottomrule
+\end{tabular*}
+\end{table*}

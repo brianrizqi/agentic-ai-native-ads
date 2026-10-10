@@ -1,0 +1,7 @@
+A,B,n_paired,acc_A,acc_B,diff_B_minus_A,diff_ci_low,diff_ci_high,b_only_A_correct,c_only_B_correct,p_exact,odds_ratio_c_over_b,cohens_g,p_holm,p_bh
+gemma3-4b__label_only/test__norag,gemma3-4b__reasoning_first/test__norag,2165,0.955658,0.951963,-0.003695,-0.012009,0.004619,47,39,0.450548,0.831579,0.046512,1.0,0.844244
+gemma3-4b__label_only/test__rag_k5,gemma3-4b__reasoning_first/test__rag_k5,2165,0.959353,0.958891,-0.000462,-0.008314,0.006928,36,35,1.0,0.972603,0.007042,1.0,1.0
+gemma3-4b__label_first/test__norag,gemma3-4b__reasoning_first/test__norag,2165,0.954734,0.951963,-0.002771,-0.011085,0.005081,42,36,0.571587,0.858824,0.038462,1.0,0.844244
+gemma3-4b__label_first/test__rag_k5,gemma3-4b__reasoning_first/test__rag_k5,2165,0.960739,0.958891,-0.001848,-0.008776,0.005543,33,29,0.703537,0.880597,0.032258,1.0,0.844244
+gemma3-4b__assessment_only/test__norag,gemma3-4b__reasoning_first/test__norag,2165,0.941339,0.951963,0.010624,0.003695,0.017552,19,42,0.004444,2.179487,0.188525,0.02222,0.013332
+gemma3-4b__assessment_only/test__rag_k5,gemma3-4b__reasoning_first/test__rag_k5,2165,0.947806,0.958891,0.011085,0.004619,0.018014,16,40,0.001842,2.454545,0.214286,0.011049,0.011049

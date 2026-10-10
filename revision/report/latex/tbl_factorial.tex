@@ -1,0 +1,16 @@
+\begin{table*}[t]
+\renewcommand{\tblwidth}{\textwidth}%
+\small
+\centering
+\caption{Output formats trained on Gemma 3 4B with identical data and settings: accuracy (\%) without and with retrieval, macro-F1, mean signal macro-F1 against annotators, and how often the label follows the all-four rule applied to the model's own signals.}\label{tbl_factorial}
+\begin{tabular*}{\tblwidth}{@{\extracolsep{\fill}}LRRRRR@{}}
+\toprule
+\textbf{Format} & \textbf{Acc.} & \textbf{Acc. RAG} & \textbf{Macro-F1} & \textbf{Signal F1} & \textbf{Label = rule} \\
+\midrule
+Label only & 95.57 & 95.94 & 95.94 & -- & -- \\
+Label first & 95.47 & 96.07 & 96.07 & 76.98 & 95.38 \\
+Reasoning first (RANA) & 95.20 & 95.89 & 95.89 & 77.08 & 98.11 \\
+Assessment only & 94.13 & 94.78 & 94.78 & 77.64 & 100.00 \\
+\bottomrule
+\end{tabular*}
+\end{table*}
