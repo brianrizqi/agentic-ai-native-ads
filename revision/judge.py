@@ -206,8 +206,14 @@ def cmd_agreement(a):
     key = json.load(open(Path(a.key)))
     raters = []
     for f in a.human:
-        with open(f, encoding="utf-8") as fh:
-            raters.append({int(r["item"]): r for r in csv.DictReader(fh)})
+        if f.endswith(".xlsx"):
+            from openpyxl import load_workbook
+            vals = list(load_workbook(f, read_only=True).active.iter_rows(values_only=True))
+            rows = [{h: ("" if v is None else str(v)) for h, v in zip(vals[0], r)} for r in vals[1:] if r[0] is not None]
+        else:
+            with open(f, encoding="utf-8") as fh:
+                rows = list(csv.DictReader(fh))
+        raters.append({int(float(r["item"])): r for r in rows})
     judged = {(r["id"], r["run"]): r for pat in a.judged for f in glob.glob(pat) for r in read_jsonl(f)}
     preds = {}
     for k in key:
