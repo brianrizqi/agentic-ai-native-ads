@@ -12,8 +12,9 @@ The API key is read from the OPENROUTER_API_KEY environment variable; never put 
     python revision/judge.py export-human --judged revision/judge/*.jsonl --n 120 \
         --out revision/judge/human_sheet.csv
 
-   Give each assessor a copy (rater_A.csv, rater_B.csv, rater_C.csv). They fill every score column with 1-5
-   (5 = best on every criterion, so no_hallucination 5 = no invented content) without seeing model names.
+   One row per distinct article, an equal share per model. Give each assessor a copy (rater_A.csv,
+   rater_B.csv, rater_C.csv). Per row they mark each of the four assessments and the label 1 (agree) or
+   0 (disagree), and rate editorial_usefulness and examples_helpful from 1 to 5, without seeing model names.
 
 3) Agreement among humans and between humans and the judge:
     python revision/judge.py agreement --human rater_A.csv rater_B.csv rater_C.csv \
@@ -124,34 +125,79 @@ def cmd_run(a):
             print(sample, {k: round(float(np.mean([r["scores"].get(k, np.nan) for r in sub])), 3) for k in CRITERIA})
 
 
+SIGNAL_NAMES_ID = {"positive_tone": "Nada positif", "persuasive": "Bahasa persuasif",
+                   "brand_promotion": "Promosi merek", "single_perspective": "Satu perspektif"}
+HUMAN_SIGNAL_COLS = [f"{s}_ok" for s in SIGNALS]
+HUMAN_COLS = HUMAN_SIGNAL_COLS + ["label_ok", "editorial_usefulness", "examples_helpful"]
+
+
+def readable_output(p):
+    sig = p.get("signals_pred") or {}
+    lines = [f"{SIGNAL_NAMES_ID[s]}: {sig.get(s, '-')}" for s in SIGNALS]
+    return "\n".join(lines + [f"LABEL: {p.get('label_pred')}"])
+
+
+def readable_neighbors(p, train_text, chars=250):
+    out = []
+    for i, n in enumerate(p.get("neighbors") or [], 1):
+        snippet = " ".join(train_text.get(n["id"], "").split())[:chars]
+        out.append(f"[{i}] {n.get('label_shown')}: {snippet}...")
+    return "\n\n".join(out)
+
+
 def cmd_export(a):
-    judged = [r for pat in a.judged for f in glob.glob(pat) for r in read_jsonl(f) if r["scores"]]
+    """One row per distinct article, an equal share per model, natural samples only, order shuffled.
+
+    Raters see the article, the model's four assessments and label, and the five retrieved training
+    articles with their labels. They mark each assessment and the label as agreed (1) or not (0), and
+    rate editorial usefulness and usefulness of the retrieved articles from 1 to 5.
+    """
     rng = random.Random(a.seed)
-    natural = [r for r in judged if r["sample"] == "natural"]
-    items = rng.sample(natural, min(a.n, len(natural)))
+    by_run = {}
+    for pat in a.judged:
+        for f in sorted(glob.glob(pat)):
+            for r in read_jsonl(f):
+                if r["scores"] and r["sample"] == "natural":
+                    by_run.setdefault(r["run"], []).append(r)
+    runs = sorted(by_run)
+    per_run = a.n // len(runs)
+    used, items = set(), []
+    for run in runs:
+        pool = [r for r in by_run[run] if r["id"] not in used]
+        rng.shuffle(pool)
+        take = pool[:per_run]
+        used.update(r["id"] for r in take)
+        items += take
+    rng.shuffle(items)
     test = {r["id"]: r["text"] for r in read_jsonl(a.test_file)}
+    train = {r["id"]: r["text"] for r in read_jsonl(a.train_file)}
+    preds = {run: {p["id"]: p for p in read_jsonl(run)} for run in runs}
     with open(a.out, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["item", "article", "assistant_output"] + list(CRITERIA) + ["comment"])
+        w.writerow(["item", "article", "assistant_output", "retrieved_examples"] + HUMAN_COLS + ["comment"])
         key = []
         for n, r in enumerate(items, 1):
-            w.writerow([n, test[r["id"]][:3000], r["output"]] + [""] * len(CRITERIA) + [""])
+            p = preds[r["run"]][r["id"]]
+            w.writerow([n, test[r["id"]][:3000], readable_output(p), readable_neighbors(p, train)]
+                       + [""] * len(HUMAN_COLS) + [""])
             key.append({"item": n, "id": r["id"], "run": r["run"]})
     write_json(Path(a.out).with_suffix(".key.json"), key)
-    print(f"✅ {len(items)} items -> {a.out} (unblinding key: {Path(a.out).with_suffix('.key.json')}, keep it from raters)")
+    print(f"✅ {len(items)} distinct articles ({per_run} per model, {len(runs)} models) -> {a.out}")
+    print(f"   unblinding key: {Path(a.out).with_suffix('.key.json')} (keep it from raters)")
 
 
-def kalpha_interval(matrix):
-    """Krippendorff's alpha, interval metric. matrix: raters x items, np.nan = missing."""
+def kalpha(matrix, metric="interval"):
+    """Krippendorff's alpha. matrix: raters x items, np.nan = missing; metric 'interval' or 'nominal'."""
     m = np.asarray(matrix, dtype=float)
     units = [m[:, j][~np.isnan(m[:, j])] for j in range(m.shape[1])]
     units = [u for u in units if len(u) >= 2]
     n = sum(len(u) for u in units)
     if n < 2:
         return float("nan")
-    do = sum(((u[:, None] - u[None, :]) ** 2).sum() / (len(u) - 1) for u in units) / n
+    dist = (lambda x, y: (x - y) ** 2) if metric == "interval" else (lambda x, y: (x != y).astype(float))
+    do = sum(dist(u[:, None], u[None, :]).sum() / (len(u) - 1) for u in units) / n
     allv = np.concatenate(units)
-    de = ((allv[:, None] - allv[None, :]) ** 2).sum() / (n * (n - 1))
+    de = dist(allv[:, None], allv[None, :]).sum() / (n * (n - 1))
     return 1 - do / de if de else float("nan")
 
 
@@ -163,22 +209,44 @@ def cmd_agreement(a):
         with open(f, encoding="utf-8") as fh:
             raters.append({int(r["item"]): r for r in csv.DictReader(fh)})
     judged = {(r["id"], r["run"]): r for pat in a.judged for f in glob.glob(pat) for r in read_jsonl(f)}
-    result = {}
-    for c in CRITERIA:
-        mat = [[float(rt[k["item"]][c]) if rt.get(k["item"]) and rt[k["item"]][c].strip() else np.nan
-                for k in key] for rt in raters]
-        human_mean = np.nanmean(mat, axis=0)
-        judge = np.array([float(judged[(k["id"], k["run"])]["scores"].get(c, np.nan)) for k in key])
-        ok = ~np.isnan(human_mean) & ~np.isnan(judge)
-        result[c] = {"alpha_humans_interval": kalpha_interval(mat),
-                     "alpha_humans_plus_judge": kalpha_interval(mat + [judge.tolist()]),
-                     "spearman_judge_vs_human_mean": float(spearmanr(judge[ok], human_mean[ok]).statistic) if ok.sum() > 2 else None,
-                     "mean_human": float(np.nanmean(human_mean)), "mean_judge": float(np.nanmean(judge)),
-                     "n_items": int(ok.sum()), "n_raters": len(raters)}
+    preds = {}
+    for k in key:
+        preds.setdefault(k["run"], {p["id"]: p for p in read_jsonl(k["run"])})
+
+    def col(c):
+        return np.array([[float(rt[k["item"]][c]) if rt.get(k["item"]) and str(rt[k["item"]].get(c, "")).strip()
+                          else np.nan for k in key] for rt in raters])
+
+    result = {"n_items": len(key), "n_raters": len(raters)}
+    # Agreement among raters
+    for c in HUMAN_COLS:
+        result[f"alpha_{c}"] = kalpha(col(c), "nominal" if c.endswith("_ok") else "interval")
+    # Do raters accept the assessments that match the annotators more often than those that do not?
+    acc_match, acc_miss = [], []
+    for s in SIGNALS:
+        m = np.nanmean(col(f"{s}_ok"), axis=0)
+        for k, v in zip(key, m):
+            p = preds[k["run"]][k["id"]]
+            if np.isnan(v) or not p.get("signals_pred"):
+                continue
+            (acc_match if p["signals_pred"].get(s) == p["signals_gold"].get(s) else acc_miss).append(v)
+    result["rater_accepts_assessment_matching_annotators"] = float(np.mean(acc_match)) if acc_match else None
+    result["rater_accepts_assessment_not_matching_annotators"] = float(np.mean(acc_miss)) if acc_miss else None
+    # Judge against raters
+    n_ok = np.nansum([np.nanmean(col(c), axis=0) for c in HUMAN_SIGNAL_COLS], axis=0)
+    for jc, human in (("signal_correctness", n_ok), ("editorial_usefulness", np.nanmean(col("editorial_usefulness"), axis=0))):
+        judge = np.array([float((judged.get((k["id"], k["run"])) or {}).get("scores", {}).get(jc, np.nan)) for k in key])
+        ok = ~np.isnan(judge) & ~np.isnan(human)
+        result[f"spearman_judge_{jc}_vs_raters"] = float(spearmanr(judge[ok], human[ok]).statistic) if ok.sum() > 2 else None
+    # Means per model
+    per_model = {}
+    for c in ("editorial_usefulness", "examples_helpful", "label_ok"):
+        m = np.nanmean(col(c), axis=0)
+        for k, v in zip(key, m):
+            per_model.setdefault(Path(k["run"]).parent.name, {}).setdefault(c, []).append(v)
+    result["per_model"] = {mdl: {c: float(np.nanmean(v)) for c, v in d.items()} for mdl, d in per_model.items()}
     write_json(a.out, result)
-    for c, v in result.items():
-        print(f"{c:22s} α_humans={v['alpha_humans_interval']:.3f}  α_with_judge={v['alpha_humans_plus_judge']:.3f}  "
-              f"ρ(judge,human)={v['spearman_judge_vs_human_mean']}")
+    print(json.dumps(result, indent=2))
 
 
 def main():
@@ -195,6 +263,7 @@ def main():
     e = sub.add_parser("export-human")
     e.add_argument("--judged", nargs="+", required=True)
     e.add_argument("--test-file", default="revision/splits/main/test.jsonl")
+    e.add_argument("--train-file", default="revision/splits/main/train.jsonl")
     e.add_argument("--n", type=int, default=120)
     e.add_argument("--out", required=True)
     e.add_argument("--seed", type=int, default=0)
